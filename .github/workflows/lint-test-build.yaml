@@ -55,6 +55,12 @@ jobs:
           tags: |
             us-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT }}/isle/drupal:${{ steps.extract_tag.outputs.tag }}
 
+      - name: Install mkcert
+        run: |-
+          curl -JLO "https://dl.filippo.io/mkcert/latest?for=linux/amd64"
+          chmod +x mkcert-v*-linux-amd64
+          sudo cp mkcert-v*-linux-amd64 /usr/local/bin/mkcert
+
       - run: ./scripts/ci/test.sh
 
       - name: Set up QEMU
