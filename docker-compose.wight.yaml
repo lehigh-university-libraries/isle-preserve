@@ -6,20 +6,20 @@ services:
       ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
   mergepdf:
-    image: lehighlts/scyllaridae-mergepdf:main
+    image: lehighlts/scyllaridae-mergepdf:main@sha256:a89e2370ff1ad68d9c3a1ff6c135ebfd3951f9015f4a8491a3441d3505a4e79f
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
-    image: lehighlts/scyllaridae-libreoffice:main
+    image: lehighlts/scyllaridae-libreoffice:main@sha256:70c78b32889d40470a7c6b4c1b1c5b65d5e03f168df35b5544ee71a3299a4e11
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: lehighlts/scyllaridae-imagemagick:main
+    image: lehighlts/scyllaridae-imagemagick:main@sha256:ea88146452f43d1217b61ec8597957f8ec3da71f8abf1b6b027d91ce92e2cbca
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -31,9 +31,9 @@ services:
   selenium:
     # once https://github.com/minkphp/MinkSelenium2Driver supports selenium 4
     # we can get newer browser support
-    image: selenium/standalone-firefox:3.141
+    image: selenium/standalone-firefox:3.141@sha256:738eeec4eba6e44d0e5f0697e36b77b907e3c6fb647759a82fe47dec0d188abf
   mariadb:
-    image: mariadb:11.7.2-noble
+    image: mariadb:11.7.2-noble@sha256:310d29fbb58169dcddb384b0ff138edb081e2773d6e2eceb976b3668089f2f84
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
