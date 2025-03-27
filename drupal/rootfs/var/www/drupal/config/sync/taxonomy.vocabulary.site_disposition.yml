@@ -1,0 +1,8 @@
+uuid: 388f1eb1-3f2a-4306-a7d6-fb38b3afcadd
+langcode: en
+status: true
+dependencies: {  }
+name: 'Site Disposition'
+vid: site_disposition
+description: 'Used to identify items to place in features across the site.'
+weight: 0

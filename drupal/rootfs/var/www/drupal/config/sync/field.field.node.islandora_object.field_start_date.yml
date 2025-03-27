@@ -1,0 +1,21 @@
+uuid: 4f3c4a8c-5140-428c-89cd-4db7bb82abc4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_start_date
+    - node.type.islandora_object
+  module:
+    - controlled_access_terms
+id: node.islandora_object.field_start_date
+field_name: field_start_date
+entity_type: node
+bundle: islandora_object
+label: 'Start date'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: edtf

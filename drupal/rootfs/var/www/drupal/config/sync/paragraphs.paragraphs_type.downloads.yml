@@ -1,0 +1,10 @@
+uuid: c2e70151-7afa-4cc9-bde2-0608078ffb6e
+langcode: en
+status: true
+dependencies: {  }
+id: downloads
+label: Downloads
+icon_uuid: null
+icon_default: null
+description: 'Attaches a document for downloading.'
+behavior_plugins: {  }

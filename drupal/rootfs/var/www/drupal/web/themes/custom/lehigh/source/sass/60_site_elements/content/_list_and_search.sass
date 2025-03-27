@@ -1,0 +1,82 @@
+/**
+ *  @file _list.sass
+ *  @category 60_site_elements
+ *  @group content
+ *  @theme LOCAL
+ *  @description Defines a basic content card view.
+ *
+ **/
+
+
+article.node--view-mode-list, article.node--view-mode-search-result
+  border: none !important
+  max-width: none
+
+  .list-view-container
+    display: flex
+    flex-direction: column
+    +bp($tablet)
+      flex-direction: row
+
+    .list-view-img
+      header
+        article.contextual-region
+          margin-bottom: 0
+          .field_media_image 
+            background: linear-gradient(to right, #d4d5d5, #ffffff, #d4d5d5)
+            border-radius: $border-radius
+            img.img-landscape
+              border-radius: $border-radius
+
+    .list-view-content
+      border-radius: $border-radius
+      border: 1px solid neutral(20)
+      padding: rv(-3)
+      width: 100%
+
+
+      .content-label-compact, .item-label
+        margin: 0 !important
+
+    .content-label-compact + h3
+      margin-top: 0
+
+    h3
+      font-weight: $normal
+
+    &.card
+      max-width: 100%
+
+    .more
+      margin-bottom: 0
+      float: right
+      padding-right: rv(-3)
+      +arrow-right
+		
+
+    > header
+      width: 100%
+
+      +bp($tablet)
+        width: auto
+
+    figure
+      +proportional-height(100%,0.75)
+
+      +bp($tablet)
+        +proportional-height(200px,0.75)
+        min-width: 200px
+        margin-right: rv(2)
+
+      img
+        width: 100%
+        height: auto
+
+      &.figure-portrait
+        img
+          height: 100%
+          width: auto
+          margin: 0 auto
+
+    .node--content
+      padding: 0

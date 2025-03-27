@@ -1,0 +1,10 @@
+uuid: bcd728a2-eb0c-4dc5-8a3c-b7df0a5a1ee7
+langcode: en
+status: true
+dependencies: {  }
+id: quotation
+label: Quotation
+icon_uuid: null
+icon_default: null
+description: 'A highlighted quotation with optional attribution.'
+behavior_plugins: {  }

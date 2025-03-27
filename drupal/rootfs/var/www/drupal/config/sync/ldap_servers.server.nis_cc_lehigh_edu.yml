@@ -1,0 +1,38 @@
+uuid: 411c4771-264a-4971-a7bc-70242eff77d6
+langcode: en
+status: true
+dependencies: {  }
+id: nis_cc_lehigh_edu
+label: nis.cc.lehigh.edu
+type: openldap
+address: nis.cc.lehigh.edu
+port: 389
+timeout: 10
+encryption: none
+weight: null
+bind_method: anon_user
+binddn: null
+bindpw: null
+basedn:
+  - 'dc=lehigh,dc=edu'
+user_attr: uid
+account_name_attr: ''
+mail_attr: mail
+mail_template: ''
+picture_attr: ''
+unique_persistent_attr: uid
+unique_persistent_attr_binary: false
+user_dn_expression: 'uid=%username,%basedn'
+testing_drupal_username: ''
+testing_drupal_user_dn: ''
+grp_unused: true
+grp_object_cat: ''
+grp_nested: false
+grp_user_memb_attr_exists: false
+grp_user_memb_attr: ''
+grp_memb_attr: ''
+grp_memb_attr_match_user_attr: ''
+grp_derive_from_dn: false
+grp_derive_from_dn_attr: ''
+grp_test_grp_dn: ''
+grp_test_grp_dn_writeable: ''

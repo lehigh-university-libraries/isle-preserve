@@ -1,0 +1,61 @@
+/**
+ *  @file _slide.sass
+ *  @category 60_site_elements
+ *  @group content
+ *  @theme LOCAL
+ *  @description Defines a basic content slide view.
+ *
+ **/
+
+
+.slide
+  background: $black
+  min-height: 500px
+
+  > a
+    display: block
+    position: relative
+    width: 100%
+    min-height: inherit
+    height: inherit  // slide views often require 100% height. This defers to site container
+    border: 0
+
+    &:hover
+      border: 0
+
+    .node--content
+      height: inherit
+      +gradient-overlay-slide(0deg,$black)
+
+      &:before
+        mix-blend-mode: darken // Gradient overlay mixin uses 'multiply', which doesn't work in situations where the slider inset against a dark background. This will colour match.
+
+      +bp($tablet)
+        padding-bottom: rv($edge_padding_factor) * 3 // fudge to give clearance to caption. Should be calibrated to overlay gradient so contrasts are maintained on text.
+
+      div, article, figure
+        height: inherit
+
+    .figure-portrait
+      +standard-edge_padding()
+
+    footer
+      position: absolute
+      bottom: rv($mobile_edge_padding_factor)
+      left: rv($mobile_edge_padding_factor)
+      right: rv($mobile_edge_padding_factor)
+      border-top: 1px solid neutral(70)
+      padding-top: rv($mobile_edge_padding_factor)
+      z-index: 3 // Clear gradient from gradient-overlay-dark
+
+      +bp($tablet)
+        bottom: rv($edge_padding_factor)
+        left: rv($edge_padding_factor)
+        right: rv($edge_padding_factor)
+        padding-top: rv($edge_padding_factor)
+
+      h2, h3
+        margin-top: 0
+
+      .more-info
+        margin-top: rv(-3)

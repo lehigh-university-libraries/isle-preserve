@@ -1,0 +1,25 @@
+uuid: 1862c997-d898-4b02-8222-892572deeea0
+langcode: en
+status: true
+dependencies:
+  config:
+    - image.style.large
+    - image.style.medium
+    - image.style.small
+  theme:
+    - lehigh
+id: medium
+label: Medium
+image_style_mappings:
+  -
+    image_mapping_type: image_style
+    image_mapping: large
+    breakpoint_id: lehigh.lrg
+    multiplier: 1x
+  -
+    image_mapping_type: image_style
+    image_mapping: medium
+    breakpoint_id: lehigh.med
+    multiplier: 1x
+breakpoint_group: lehigh
+fallback_image_style: small

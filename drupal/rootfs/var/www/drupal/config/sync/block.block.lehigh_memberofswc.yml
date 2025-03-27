@@ -1,0 +1,35 @@
+uuid: dc2ce036-aa72-44c9-8798-047d35b86413
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.member_of_swc
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_memberofswc
+theme: lehigh
+region: quaternary_content
+weight: -14
+provider: null
+plugin: 'facet_block:member_of_swc'
+settings:
+  id: 'facet_block:member_of_swc'
+  label: 'Member Of'
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: memberofswc
+visibility:
+  context_all:
+    id: context_all
+    negate: null
+    values: collection
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

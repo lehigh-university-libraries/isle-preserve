@@ -1,0 +1,8 @@
+uuid: 05831506-0f90-4d6e-bbc2-094795ef9ffd
+langcode: en
+status: true
+dependencies: {  }
+name: 'Geographic naf'
+vid: geographic_naf
+description: ''
+weight: 0

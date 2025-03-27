@@ -1,0 +1,8 @@
+uuid: 8d8e4937-2f7c-4e92-8baa-36b310adb94a
+langcode: en
+status: true
+dependencies: {  }
+name: 'Digital Origin'
+vid: digital_origin
+description: ''
+weight: 0

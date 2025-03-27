@@ -1,0 +1,36 @@
+uuid: 0fcbec4d-58e7-4cee-98e4-ad6815159b83
+langcode: en
+status: false
+dependencies:
+  module:
+    - advanced_search
+    - islandora
+    - system
+  theme:
+    - seven
+id: seven_search
+theme: seven
+region: header
+weight: -18
+provider: null
+plugin: search_block
+settings:
+  id: search_block
+  label: Search
+  label_display: '0'
+  provider: advanced_search
+  block_id: search
+  search_view_machine_name: view.solr_search_content.page_1
+  search_textfield_label: Keyword
+  search_placeholder: ''
+  search_submit_label: Search
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''
+  request_path:
+    id: request_path
+    negate: true
+    pages: /search

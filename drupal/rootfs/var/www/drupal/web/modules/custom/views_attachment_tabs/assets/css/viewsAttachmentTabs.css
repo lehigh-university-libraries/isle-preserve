@@ -1,0 +1,11 @@
+/*
+ * @file
+ * Supports the viewAttachmentTab module.
+ */
+
+
+/* Hide attachment tabs by default */
+
+.view-attachment-tab-hidden {
+  display: none;
+}

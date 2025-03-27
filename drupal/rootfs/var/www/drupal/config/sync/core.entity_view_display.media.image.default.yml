@@ -1,0 +1,89 @@
+uuid: befd9d16-a6f8-4587-b973-642390eab5e2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.media.image.field_file_size
+    - field.field.media.image.field_height
+    - field.field.media.image.field_media_image
+    - field.field.media.image.field_media_of
+    - field.field.media.image.field_media_use
+    - field.field.media.image.field_mime_type
+    - field.field.media.image.field_original_name
+    - field.field.media.image.field_site_disposition
+    - field.field.media.image.field_width
+    - media.type.image
+    - responsive_image.styles.wide
+  module:
+    - svg_image_responsive
+_core:
+  default_config_hash: mH-3GLriL2Vx34DOnmHTqPxMCEmqJLtesug6_H_6piM
+id: media.image.default
+targetEntityType: media
+bundle: image
+mode: default
+content:
+  field_gemini_uri:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_media_image:
+    type: responsive_image
+    label: hidden
+    settings:
+      responsive_image_style: wide
+      image_link: ''
+      image_loading:
+        attribute: lazy
+      svg_attributes:
+        width: null
+        height: null
+      svg_render_as_image: true
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_media_of:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_media_use:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  langcode:
+    type: language
+    label: above
+    settings:
+      link_to_entity: false
+      native_language: false
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  name:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  created: true
+  field_file_size: true
+  field_height: true
+  field_mime_type: true
+  field_original_name: true
+  field_site_disposition: true
+  field_width: true
+  search_api_excerpt: true
+  thumbnail: true
+  uid: true

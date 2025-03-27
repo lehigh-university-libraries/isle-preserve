@@ -1,0 +1,11 @@
+uuid: bf58218e-3620-4e5b-afac-2b25bca8b61a
+langcode: en
+status: true
+dependencies:
+  module:
+    - bulk_update_fields
+id: bulk_update_fields_on_paragraphs_type
+label: 'Bulk Update Paragraphs type Fields'
+type: paragraphs_type
+plugin: bulk_update_fields_action_base
+configuration: {  }

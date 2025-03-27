@@ -1,0 +1,8 @@
+uuid: 90197135-8187-4a85-9daf-8a1b53935e48
+langcode: en
+status: true
+dependencies: {  }
+name: 'Geographic local'
+vid: geographic_local
+description: ''
+weight: 0

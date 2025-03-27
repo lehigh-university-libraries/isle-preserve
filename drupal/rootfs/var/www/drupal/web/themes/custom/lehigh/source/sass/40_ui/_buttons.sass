@@ -1,0 +1,46 @@
+/**
+ *  @file _buttons.sass
+ *  @category 40_ui
+ *  @theme LOCAL
+ *  @description button classes for their definitions.
+ *
+ **/
+
+
+.button
+  @extend %button
+
+  &.compact
+    @extend %button-compact
+
+  &.large
+    @extend %button-large
+
+  &.standard
+    @extend %button-standard
+
+  &.link
+    @extend %button-link
+
+  &.outline
+    @extend %button-outline
+
+  &.cta
+    @extend %button-cta
+
+  &.feature-cta
+    @extend %button-feature-cta
+
+  &.more
+    @extend %button-more
+
+a.button
+  border: $btn_border_width solid $btn_border_color
+
+  &:hover, &.active
+    border: $btn_border_width solid $btn_hover_border_color
+    text-decoration: underline
+
+
+.control-icon
+  @extend %control-icon

@@ -1,0 +1,16 @@
+uuid: 6c8f4f7f-79c1-4895-9cbb-71c4d09d5e05
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: rpwvgyEURXLz_JjgMCrkS1rUv-0k3L79BpO-ReN7fDI
+id: node
+label: Content
+tags:
+  canonical_url: '[node:url]'
+  citation_author: '[node:lehigh_islandora_authors]'
+  citation_pdf_url: '[node:lehigh_islandora_pdf_url]'
+  citation_publication_date: '[node:lehigh_islandora_issued_ymd]'
+  citation_title: '[node:title]'
+  description: '[node:summary]'
+  title: '[node:title] | [site:name]'

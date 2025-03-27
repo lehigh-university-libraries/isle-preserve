@@ -1,0 +1,43 @@
+uuid: 23812e99-0c17-4ead-9dd4-75429a54c645
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+_core:
+  default_config_hash: _w1tI4doB71OVhr9ylF4DCZRMGXy8Mtjcuk-8iAOz7Y
+label: 'TIFF JP2 Derivatives'
+name: tiff_jp2_derivatives
+group: Derivatives
+description: 'Create JP2 for TIFFs'
+requireAllConditions: true
+disabled: true
+conditions:
+  media_has_term:
+    id: media_has_term
+    negate: false
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    uri: 'http://pcdm.org/use#OriginalFile'
+    logic: and
+  parent_node_has_term:
+    id: parent_node_has_term
+    negate: false
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    uri: 'http://purl.org/coar/resource_type/c_c513'
+    logic: and
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    uuid: 9a9cb260-9fbe-48d8-b6df-40d06c561859
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    mimetype: image/tiff
+reactions:
+  derivative:
+    id: derivative
+    saved: false
+    actions:
+      generate_a_jp2_service_file: generate_a_jp2_service_file
+weight: -3

@@ -1,0 +1,37 @@
+/**
+ *  @file _mobile_overlay_blocks.sass
+ *  @category 10_layout
+ *  @theme LOCAL
+ *  @description Defines mobile overlay blocks. */
+
+#main-nav
+  position: relative
+
+#modal-overlay
+  position: fixed
+  width: 100%
+  height: 100%
+  background: rgba(255,255,255,0.9)
+  top: $masthead_height
+  z-index: 999
+  display: none
+  .tier-container
+    display: flex
+    justify-content: space-between
+    .overlay-close
+      margin-left: rv($edge_padding_factor)
+      margin-top: rv($edge_padding_factor)
+      width: rv(-1)
+      height: rv(-1)
+      cursor: pointer
+
+
+// Logged in - overlay height//
+
+body.user-logged-in
+  #modal-overlay
+    top: calc(#{$admin_bar_height} + #{$masthead_height})
+
+body.toolbar-tray-open
+  #modal-overlay
+    top: calc(#{$admin_bar_height} + #{$admin_bar_tray} + #{$masthead_height}) !important

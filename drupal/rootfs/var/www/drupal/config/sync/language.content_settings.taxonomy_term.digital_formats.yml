@@ -1,0 +1,11 @@
+uuid: 97f91121-10c4-4fbf-9013-74fd53e2ee26
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.digital_formats
+id: taxonomy_term.digital_formats
+target_entity_type_id: taxonomy_term
+target_bundle: digital_formats
+default_langcode: site_default
+language_alterable: false

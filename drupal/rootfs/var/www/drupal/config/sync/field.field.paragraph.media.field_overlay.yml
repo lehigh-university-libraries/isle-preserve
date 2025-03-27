@@ -1,0 +1,23 @@
+uuid: ef9753bf-0e96-49f1-a9d5-08da36934edb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_overlay
+    - paragraphs.paragraphs_type.media
+id: paragraph.media.field_overlay
+field_name: field_overlay
+entity_type: paragraph
+bundle: media
+label: Overlay
+description: 'Display caption as an overlay.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

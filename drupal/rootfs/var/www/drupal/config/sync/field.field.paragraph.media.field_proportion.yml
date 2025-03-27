@@ -1,0 +1,23 @@
+uuid: 0755b3f0-5422-4bac-9539-23e30a3e39d1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_proportion
+    - paragraphs.paragraphs_type.media
+  module:
+    - options
+id: paragraph.media.field_proportion
+field_name: field_proportion
+entity_type: paragraph
+bundle: media
+label: Proportion
+description: 'Provide the aspect ratio of the media file.'
+required: false
+translatable: false
+default_value:
+  -
+    value: ntsc
+default_value_callback: ''
+settings: {  }
+field_type: list_string

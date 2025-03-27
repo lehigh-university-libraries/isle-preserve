@@ -1,0 +1,6 @@
+lehigh_site_support.settings_form:
+  title: Lehigh Site Support
+  description: Configure lehigh Site Support.
+  parent: system.admin_config_system
+  route_name: lehigh_site_support.settings_form
+  weight: 10

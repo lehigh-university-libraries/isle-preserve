@@ -1,0 +1,38 @@
+uuid: a9d8359e-da11-40a9-9fd2-bb6567e36de5
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.subject
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - lehigh
+_core:
+  default_config_hash: 8CNTurKBSOQZRTrWiaCmfAwseQyzXZOb8gJohUvIBFw
+id: lehigh_subject
+theme: lehigh
+region: quaternary_content
+weight: -8
+provider: null
+plugin: 'facet_block:subject'
+settings:
+  id: 'facet_block:subject'
+  label: Subject
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: subject
+visibility:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-solr_search_content-page_1: view-solr_search_content-page_1
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

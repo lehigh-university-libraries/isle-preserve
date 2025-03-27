@@ -1,0 +1,165 @@
+/**
+ *  @file _card.sass
+ *  @category 60_site_elements
+ *  @group content
+ *  @theme LOCAL
+ *  @description Defines a basic content card view.
+ *
+ **/
+
+.visible
+  .card
+    +fadeInUp($slow,$heartbeat * 2,$heartbeat*2)
+
+$card_footer_element_spacing: rv(-6)
+
+.card
+  background-color: transparent
+  display: flex
+  flex-direction: column
+  border-radius: 0 0 $border-radius $border-radius
+  border: 1px solid neutral(20)
+  padding: rv($mobile_edge_padding_factor)
+  font-size: clamped(-1,0)
+  max-width: 750px
+  height: 100%
+  border-top: solid 5px $clr4
+  overflow-wrap: break-word
+
+  > footer
+    margin-top: auto
+
+  > footer
+    margin-top: auto
+
+  +reversed
+    border-color: neutral(80)
+    background-color: neutral(97)
+
+
+  &:focus, &:hover
+    background-color: $white // formerly set-color-tint(8,20)
+
+    +reversed
+      background-color: transparent
+
+    figure
+      img
+        transform: scale(1.1)
+        transition: all $heartbeat ease-in-out
+
+    footer
+      border-top-color: mix(set-color-tint(2,5),neutral(5),50%)
+
+
+  +clearfix()
+
+  h3
+    padding-bottom: 0
+    margin-bottom: rv(-4)
+    margin-top: rv(-4)
+
+    a:hover
+      color: set-color(2)
+      border: 0
+
+  .content-label, .content-label-compact, .item-label
+    margin-top: rv($mobile_edge_padding_factor)
+
+    & + h3
+      margin-top: 2px
+
+  .content-label-compact, .item-label
+    display: inline-flex
+    font-size: rv(-3)
+
+  .new
+    margin-left: rv(-2)
+
+    +dark
+      color: $black
+
+  .node--content
+    padding: 0 // relies on grid spacing
+
+  .media
+    margin-bottom: rv($mobile_edge_padding_factor)
+
+    .image, .video, .remote-video
+      +proportional-height(100%,0.75)
+
+    .image
+      img
+        object-fit: cover
+        height: 100%
+        width: 100%
+        transition: all $heartbeat ease-in-out
+  .more
+    margin: rv($mobile_edge_padding_factor) 0
+    +arrow-right
+
+  footer
+    padding-top: rv($mobile_edge_padding_factor)
+    margin: 0
+    display: flex
+    flex-direction: row
+    justify-content: flex-start
+    border-top: 1px solid neutral(5)
+    box-sizing: border-box
+
+    +reversed
+      border-top-color: neutral(80)
+
+
+    > *
+      margin-right: $card_footer_element_spacing * 2
+
+      &:last-child
+        margin-right: 0
+
+    .card-footer,
+    .card-footer > div > .field-values
+      display: flex
+      flex-direction: row
+      flex-wrap: wrap
+      justify-content: flex-start
+      font-size: rv(-3)
+
+      > *
+        margin: 0 rv(-4) $card_footer_element_spacing 0
+
+    .field-value
+      @extend %value
+
+    .label
+      font-size: rv(-3)
+    .label, .value, .field-value
+      color: neutral(60)
+      text-align: left
+
+      a
+        color: inherit
+        font-weight: inherit
+        text-decoration: underline
+        &:hover
+          border-bottom: none
+
+    .lozenge
+      .field-value
+        color: $white
+
+
+.card
+  //Collections variant card
+
+  &.collection
+    border-top: solid 5px $collections_colour
+
+  // Article/Resource/Page
+  &.node--type-article, &.node--type-page
+    border-top: solid 5px set-colour(2)
+
+    h3
+      @extend %h3-display
+
+

@@ -1,0 +1,53 @@
+uuid: b0560001-52d4-492c-8c15-179370fa4030
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_content_builder
+    - node.type.article
+    - paragraphs.paragraphs_type.basic_text
+    - paragraphs.paragraphs_type.callout
+    - paragraphs.paragraphs_type.media
+  module:
+    - entity_reference_revisions
+id: node.article.field_content_builder
+field_name: field_content_builder
+entity_type: node
+bundle: article
+label: 'Content Builder'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      basic_text: basic_text
+      callout: callout
+      media: media
+    negate: 0
+    target_bundles_drag_drop:
+      basic_text:
+        weight: 8
+        enabled: true
+      button:
+        weight: 9
+        enabled: false
+      callout:
+        weight: 10
+        enabled: true
+      downloads:
+        weight: 11
+        enabled: false
+      media:
+        weight: 12
+        enabled: true
+      quotation:
+        weight: 13
+        enabled: false
+      showcase_text:
+        weight: 14
+        enabled: false
+field_type: entity_reference_revisions

@@ -1,0 +1,8 @@
+uuid: 6e7acb64-f200-45ce-be53-3bdaf53d9ee7
+langcode: en
+status: true
+dependencies: {  }
+name: 'Media types'
+vid: media_types
+description: ''
+weight: 0

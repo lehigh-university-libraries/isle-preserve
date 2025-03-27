@@ -1,0 +1,8 @@
+uuid: 17e5f03b-b0f8-4630-a7ab-a519f2f72b14
+langcode: en
+status: true
+dependencies: {  }
+id: mobile-navigation
+label: 'Mobile Navigation'
+description: 'Mobile Navigation '
+locked: false

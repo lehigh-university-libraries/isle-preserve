@@ -1,0 +1,23 @@
+uuid: fa4f7f27-8731-441f-a47c-4383f66db33c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_link
+    - node.type.page
+  module:
+    - link
+id: node.page.field_link
+field_name: field_link
+entity_type: node
+bundle: page
+label: 'Link (optional)'
+description: 'Link to an external site or alternative page. Replaces the default internal link on “Card” views such as the homepage Featured Resources section.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 1
+  link_type: 17
+field_type: link

@@ -1,0 +1,49 @@
+uuid: a1593bec-fb40-438a-a062-ab44916fec40
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.card
+    - field.field.node.test_content.body
+    - field.field.node.test_content.field_thumbnail
+    - node.type.test_content
+  module:
+    - user
+id: node.test_content.card
+targetEntityType: node
+bundle: test_content
+mode: card
+content:
+  field_thumbnail:
+    type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: thumbnail
+      link: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+  mirador_evas_entity_view_1:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  mirador_evas_entity_view_2:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  mirador_evas_entity_view_3:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+hidden:
+  body: true
+  langcode: true
+  search_api_excerpt: true

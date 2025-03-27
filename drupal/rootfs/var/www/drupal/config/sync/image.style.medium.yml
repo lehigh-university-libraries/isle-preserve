@@ -1,0 +1,17 @@
+uuid: f2a3fed4-a2bb-44aa-8732-94ca6864944a
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: Y9NmnZHQq20ASSyTNA6JnwtWrJJiSajOehGDtmUFdM0
+name: medium
+label: 'Medium (750w)'
+effects:
+  226a49f7-8984-4361-8ff7-9913a33af2ae:
+    uuid: 226a49f7-8984-4361-8ff7-9913a33af2ae
+    id: image_scale
+    weight: 2
+    data:
+      width: 750
+      height: null
+      upscale: false

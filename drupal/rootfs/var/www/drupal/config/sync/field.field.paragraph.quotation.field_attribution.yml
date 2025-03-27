@@ -1,0 +1,22 @@
+uuid: 36ff7399-1e7b-4689-9c19-4100fe48c30f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_attribution
+    - paragraphs.paragraphs_type.quotation
+  module:
+    - text
+id: paragraph.quotation.field_attribution
+field_name: field_attribution
+entity_type: paragraph
+bundle: quotation
+label: Attribution
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text

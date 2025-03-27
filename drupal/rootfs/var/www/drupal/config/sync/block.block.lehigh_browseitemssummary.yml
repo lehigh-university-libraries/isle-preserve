@@ -1,0 +1,35 @@
+uuid: 66d00c52-8315-41bb-853b-8a7ea96c2395
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets_summary.facets_summary.browse_items_summary
+  module:
+    - context
+    - facets_summary
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_browseitemssummary
+theme: lehigh
+region: content
+weight: -25
+provider: null
+plugin: 'facets_summary_block:browse_items_summary'
+settings:
+  id: 'facets_summary_block:browse_items_summary'
+  label: 'Browse Items Summary'
+  label_display: '0'
+  provider: facets_summary
+  context_mapping: {  }
+visibility:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-browse-main: view-browse-main
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

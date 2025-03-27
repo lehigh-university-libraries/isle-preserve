@@ -1,0 +1,24 @@
+uuid: d36b8192-757c-4ca9-aa06-51eb78ce19f4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_body
+    - paragraphs.paragraphs_type.showcase_text
+  module:
+    - text
+id: paragraph.showcase_text.field_body
+field_name: field_body
+entity_type: paragraph
+bundle: showcase_text
+label: 'Paragraph Body'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+  required_summary: false
+  allowed_formats: {  }
+field_type: text_with_summary

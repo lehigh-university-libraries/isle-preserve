@@ -1,0 +1,16 @@
+global-styling:
+  version: VERSION
+  js:
+    assets/js/vendor.min.js: {}
+    assets/js/core.min.js: {}
+    assets/js/default.min.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal.ajax
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+  css:
+    theme:
+      assets/css/style.min.css: {}
+      assets/css/vendor.min.css: {}

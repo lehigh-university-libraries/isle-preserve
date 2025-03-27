@@ -1,0 +1,22 @@
+view:
+  version: 1.x
+  js:
+    js/view.js: {}
+  dependencies:
+    - core/jquery
+record:
+  version: 1.x
+  js:
+    js/record.js: {}
+  dependencies:
+    - core/jquery
+map:
+  css:
+    theme:
+      https://unpkg.com/leaflet@1.9.4/dist/leaflet.css: {type: external}
+      css/map.css: {}
+  js:
+    js/map.js: {}
+    https://unpkg.com/leaflet@1.9.4/dist/leaflet.js: {type: external}
+  dependencies:
+    - core/jquery

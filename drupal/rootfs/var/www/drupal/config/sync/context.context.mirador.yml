@@ -1,0 +1,85 @@
+uuid: 99c24c13-3cfd-4183-84ea-e24d9816d2f4
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.mirador_blocks
+  module:
+    - islandora
+    - term_condition
+    - views
+_core:
+  default_config_hash: DgWVy36pOeUPJEGewH7MvBSIxl3zWgJIa3V98x2il5U
+label: Mirador
+name: mirador
+group: Display
+description: 'Context for enabling mirador viewer on select nodes'
+requireAllConditions: false
+disabled: false
+conditions:
+  node_has_term:
+    id: node_has_term
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    uri: 'https://projectmirador.org'
+    logic: or
+  term:
+    id: term
+    negate: false
+    uuid: 03496408-a326-464a-990d-3f0865bee18e
+    context_mapping:
+      node: '@node.node_route_context:node'
+    term_uuids:
+      - 3f70abd2-fa1e-4a36-81f8-65536497f2bc
+      - a3ebdf9e-eb8c-4f94-8874-58769f0cc639
+reactions:
+  blocks:
+    id: blocks
+    uuid: 815d64a4-4105-4189-a9f6-6447f66e7267
+    blocks:
+      7b9be366-689b-406f-b8fb-43988e60c205:
+        uuid: 7b9be366-689b-406f-b8fb-43988e60c205
+        id: 'views_block:mirador_blocks-service_file_block'
+        label: ''
+        provider: views
+        label_display: '0'
+        region: above_content
+        weight: '0'
+        custom_id: views_block_mirador_blocks_service_file_block
+        theme: nyhs
+        css_class: ''
+        unique: 0
+        context_id: mirador
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+      4f6b386d-99b7-44c0-931d-a8dfb1ed1373:
+        uuid: 4f6b386d-99b7-44c0-931d-a8dfb1ed1373
+        id: 'views_block:mirador_blocks-service_file_block'
+        label: ''
+        provider: views
+        label_display: '0'
+        region: above_content
+        weight: '0'
+        custom_id: views_block_mirador_blocks_service_file_block
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: mirador
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+    include_default_blocks: 1
+    saved: false
+  body_class:
+    id: body_class
+    body_class: has-mirador-viewer
+    saved: false
+weight: 0

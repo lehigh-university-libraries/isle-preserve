@@ -1,0 +1,12 @@
+diff --git a/web/contrib/modules/facets/modules/facets_searchbox_widget/js/searchbox.js b/web/contrib/modules/facets/modules/facets_searchbox_widget/js/searchbox.js
+index 2757c33..3130c40 100644
+--- a/modules/facets_searchbox_widget/js/searchbox.js
++++ b/modules/facets_searchbox_widget/js/searchbox.js
+@@ -19,7 +19,7 @@
+         let $targetList = $(this).next('.facets-widget-searchbox-list', context);
+         let targetListId = $targetList.attr('data-drupal-facet-id');
+         let $facetsSoftLimitLink = $targetList.next('.facets-soft-limit-link', context);
+-        let filter = $facetsWidgetSearchbox.val().toUpperCase();
++        let filter = $(this).val().toUpperCase();
+         let displayCount = 0;
+         let display = getDisplayBehavior.call(this);

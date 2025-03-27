@@ -1,0 +1,29 @@
+uuid: 9d9c282a-0c18-4b8b-833c-be1ad1910af6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_department_name
+    - node.type.islandora_object
+    - taxonomy.vocabulary.department
+id: node.islandora_object.field_department_name
+field_name: field_department_name
+entity_type: node
+bundle: islandora_object
+label: 'Department name'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      department: department
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

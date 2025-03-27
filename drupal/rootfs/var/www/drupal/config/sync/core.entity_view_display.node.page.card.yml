@@ -1,0 +1,71 @@
+uuid: ec41de39-e82e-41c9-8d0e-2df8741f8d29
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.card
+    - field.field.node.page.body
+    - field.field.node.page.field_deck
+    - field.field.node.page.field_link
+    - field.field.node.page.field_resource_label
+    - field.field.node.page.field_thumbnail
+    - node.type.page
+  module:
+    - text
+    - user
+_core:
+  default_config_hash: M_Y8L5tfmhx7DR143E05YyZSpvgil6VFvqcfBWykalg
+id: node.page.card
+targetEntityType: node
+bundle: page
+mode: card
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  display_media_entity_view_1:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  display_media_entity_view_2:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  display_media_service_file:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  display_media_thumbnail:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  field_resource_label:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden:
+  field_deck: true
+  field_link: true
+  field_thumbnail: true
+  langcode: true
+  mirador_evas_entity_view_1: true
+  mirador_evas_entity_view_2: true
+  mirador_evas_entity_view_3: true
+  search_api_excerpt: true

@@ -1,0 +1,11 @@
+uuid: 07ce72ad-a0b8-4325-b73c-f70d45127731
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.geographic_naf
+id: taxonomy_term.geographic_naf
+target_entity_type_id: taxonomy_term
+target_bundle: geographic_naf
+default_langcode: site_default
+language_alterable: false

@@ -1,0 +1,6 @@
+name: Lehigh Site Support
+type: module
+description: Custom module for Lehigh Digital Collections site-specific functionality.
+package: Lehigh
+core: 8.x
+core_version_requirement: ^8 || ^9 || ^10

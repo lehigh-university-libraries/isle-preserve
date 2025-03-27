@@ -1,0 +1,35 @@
+uuid: 7a8d93c3-727d-4fa4-97b1-3475f599390a
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.year_swc
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_yearswc
+theme: lehigh
+region: quaternary_content
+weight: 2
+provider: null
+plugin: 'facet_block:year_swc'
+settings:
+  id: 'facet_block:year_swc'
+  label: Year
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: yearswc
+visibility:
+  context_all:
+    id: context_all
+    negate: null
+    values: collection
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

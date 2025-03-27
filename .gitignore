@@ -1,1 +1,7 @@
 docker-compose.override.yml
+backup
+drupal/backup
+.DS_Store
+
+/.idea
+/drupal/rootfs/var/www/drupal/web/themes/custom/.DS_Store

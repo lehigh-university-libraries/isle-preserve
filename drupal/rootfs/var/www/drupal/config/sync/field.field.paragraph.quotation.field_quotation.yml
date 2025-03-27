@@ -1,0 +1,22 @@
+uuid: 32fdb728-ae55-48f3-92c4-bc96a1685514
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_quotation
+    - paragraphs.paragraphs_type.quotation
+  module:
+    - text
+id: paragraph.quotation.field_quotation
+field_name: field_quotation
+entity_type: paragraph
+bundle: quotation
+label: Quotation
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

@@ -1,0 +1,106 @@
+/**
+ * @file
+ * Layout Configuration. Set a modular scale and standardized spacing. Define breakpoints.
+ *
+ * Copy this file to your theme configuration folder of your local theme or component and adjust its _index file to import.
+ */
+
+@use 'sass:math'
+
+$rootsize: 100%    // Assigned to HTML element. 100% = 16px. Referenced as 1rem.
+$basesize: 1.5rem  // Base size unit in rem (relative to the HTML root size).
+$base_line_height: strip-unit($basesize)
+$blh: $basesize // DEPRECATED. For backwards compatibility
+$scale: 1.5 // Sets an size interval mapped over integers. See https://www.modularscale.com for a demonstration.
+
+$max_width: 1400px
+$legible_inset_width: 750px
+
+$masthead_height: 60px
+$footer_height: 100px
+$admin_bar_height: 40px
+$admin_bar_tray: 40px // Second-tier admin bar
+$masthead_clearance: rv(0)
+$masthead_clearance_mobile: rv(-1)
+$splash_height_mobile: 50vh
+$splash_height_tablet: 50vh
+$splash_height_desktop: 100vh
+
+$proportional_width_unit: math.div(100% - math.div(100,$scale),2)
+
+$standard_sidebar_width: $proportional_width_unit
+$right_sidebar_width: $standard_sidebar_width * 2
+$left_sidebar_width: $standard_sidebar_width
+
+$grid_gap_factor: 0
+
+// Block spacing is a reference variable (in relative value) that determines the spacing between items in a layout.
+// Typically used for vertical spacing (e.g. between stacked content boxes).
+
+// Edge padding is similar, defining the horizontal padding on content boxes. Used to ensure
+// that content doesn't collapse right to the edge of the viewport. Setting
+// these identically will create spacing consistency.
+
+// Mobile spacing tends to be tighter than desktop views.
+
+// Note: Functions using these values should anticipate null values to indicate “zero” (as opposed to a value
+// of “0”, which is an integer on the relative scale).
+
+$block_spacing: 2
+$mobile_block_spacing: -2
+
+$edge_padding_factor: $block_spacing
+$mobile_edge_padding_factor: $mobile_block_spacing
+
+// Standardized breakpoint for moving from desktop layouts to stacked layouts
+
+$stack_breakpoint: 'med'
+$tablet_breakpoint: 'med'
+$desktop_breakpoint: 'lrg'
+$ultrawide_breakpoint: 'xlrg'
+
+// Less wordy aliases. Keep the others for backwards compatibility.
+
+$stack: $stack_breakpoint
+$tablet: $tablet_breakpoint
+$desktop: $desktop_breakpoint
+$ultrawide: $ultrawide_breakpoint
+
+/* !BREAKPOINTS */
+
+
+/*  Values for your responsive design breakpoints. This has now been rethought
+    thanks to https://medium.freecodecamp.com/the-100-correct-way-to-do-css-breakpoints-88d6a5ba1862#.rduwqht4g
+
+  336px 	  21em       xsml
+  600px 	  37.5em     sml
+  900px 	  46.25      med
+  1200px    75em       lrg
+  1800px	  100em      xlrg   */
+
+$media_type: screen
+$feature: min-width
+
+$breakpoints: (xsml: 21em, sml: 30em, med: 46.25em, lrg: 75em, xlrg: 112.5em, xxlrg: 130em)
+
+/* Modular scale reference
+
+  double-octave    : 4
+  pi               : 3.14159265359
+  major-twelfth    : 3
+  major-eleventh   : 2.666666667
+  major-tenth      : 2.5
+  octave           : 2
+  major-seventh    : 1.875
+  minor-seventh    : 1.777777778
+  major-sixth      : 1.666666667
+  phi              : 1.618034
+  golden           : $phi
+  minor-sixth      : 1.6
+  fifth            : 1.5
+  augmented-fourth : 1.41421
+  fourth           : 1.333333333
+  major-third      : 1.25
+  minor-third      : 1.2
+  major-second     : 1.125
+  minor-second     : 1.066666667       */

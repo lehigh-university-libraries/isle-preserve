@@ -1,0 +1,20 @@
+uuid: 0880edfa-dabb-4c01-a0e8-8319a963383a
+langcode: en
+status: false
+dependencies:
+  theme:
+    - lehigh
+_core:
+  default_config_hash: Q9_2whdOj1YIomfvsIfopROW4FT_X5pY0DjdOiOaQ5U
+id: lehigh_primary_admin_actions
+theme: lehigh
+region: quaternary_content
+weight: -9
+provider: null
+plugin: local_actions_block
+settings:
+  id: local_actions_block
+  label: 'Primary admin actions'
+  label_display: '0'
+  provider: core
+visibility: {  }

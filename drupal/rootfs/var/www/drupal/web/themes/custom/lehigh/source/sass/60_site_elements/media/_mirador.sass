@@ -1,0 +1,44 @@
+/**
+ *  @file _mirador.sass
+ *  @category 60_site_elements
+ *  @group media
+ *  @theme LOCAL
+ *  @description Defines the mirador media display modes. **/
+
+
+// The Islandora Mirador block does not use the article element
+// but requires these parameters to display correctly.
+// @todo: refactor this into a common mirador definition/style to remove
+// block definition here.
+
+article.mirador, .block-mirador
+  height: $mirador_height_mobile
+
+  +bp($tablet)
+    min-height: $mirador_min_height
+    height: $mirador_height_tablet
+
+  +bp($desktop)
+    height: $mirador_height_desktop
+
+  h2
+    padding: 0 4px // realigns wioth Mirador stylesheet
+
+    &:after
+      display: none
+
+  // Oddity at mobile. Child is position absolute, causing it to be removed from the build order
+  .fullscreen
+    position: relative
+    height: inherit
+
+    +bp($tablet)
+      height: inherit
+
+    +bp($desktop)
+      height: inherit
+
+  // Mirador settings
+
+  #addBtn, .mirador-window-maximize
+    display: none

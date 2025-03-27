@@ -1,0 +1,51 @@
+/*
+ @file _media_embed.sass
+ @category 60_site_elements
+ @theme LOCAL
+ @description  Handles the media embed block with wrap around text. */
+
+
+  // Set left and right settings
+
+
+
+.paragraph--type--media
+  .field_contextual_caption
+    font-family: $headingfont
+
+  &.media-widescreen
+    article.media
+      +proportional-height(100%,0.56)
+
+.paragraph.media-right
+ @extend %media-embed-right
+
+.paragraph.media-left
+  @extend %media-embed-left
+
+
+.media-overlay-1
+    article
+     +gradient-overlay-dark()
+
+
+.paragraph--type--media.media-overlay-1
+  position: relative
+  .field_contextual_caption_container
+    @extend %media-overlay
+
+.media-left.media-overlay-1,
+.media-right.media-overlay-1
+  position: relative
+  .field_contextual_caption_container
+    @extend %media-overlay-disposition
+
+
+.img-landscape
+  +proportional_height(100%, .56)
+
+.img-square
+  +proportional_height(100%, 1)
+
+.img-portrait
+  +proportional_height(100%, 1.56)

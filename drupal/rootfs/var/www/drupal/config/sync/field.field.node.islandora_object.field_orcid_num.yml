@@ -1,0 +1,19 @@
+uuid: e8e4a3e4-14fe-4956-92f3-117d0119ba52
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_orcid_num
+    - node.type.islandora_object
+id: node.islandora_object.field_orcid_num
+field_name: field_orcid_num
+entity_type: node
+bundle: islandora_object
+label: 'ORCID number'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

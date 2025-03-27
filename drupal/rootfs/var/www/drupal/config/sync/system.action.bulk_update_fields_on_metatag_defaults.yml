@@ -1,0 +1,11 @@
+uuid: 589466c8-6038-4cd8-8645-674c8a3611d0
+langcode: en
+status: true
+dependencies:
+  module:
+    - bulk_update_fields
+id: bulk_update_fields_on_metatag_defaults
+label: 'Bulk Update Metatag defaults Fields'
+type: metatag_defaults
+plugin: bulk_update_fields_action_base
+configuration: {  }

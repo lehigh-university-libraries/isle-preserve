@@ -1,0 +1,35 @@
+uuid: 8724d7c0-d110-4562-8a5b-f811bb2af972
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.creators_and_contributors_swc
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_creatorsandcontributors_swc
+theme: lehigh
+region: quaternary_content
+weight: -12
+provider: null
+plugin: 'facet_block:creators_and_contributors_swc'
+settings:
+  id: 'facet_block:creators_and_contributors_swc'
+  label: 'Creators and Contributors'
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: creatorsandcontributors_swc
+visibility:
+  context_all:
+    id: context_all
+    negate: null
+    values: collection
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

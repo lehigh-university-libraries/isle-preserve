@@ -1,0 +1,35 @@
+uuid: ec558aef-b68e-4b5d-bf05-91a40a60e325
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.physical_form_swc
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_physicalformswc
+theme: lehigh
+region: quaternary_content
+weight: -10
+provider: null
+plugin: 'facet_block:physical_form_swc'
+settings:
+  id: 'facet_block:physical_form_swc'
+  label: 'Physical Form'
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: physicalformswc
+visibility:
+  context_all:
+    id: context_all
+    negate: null
+    values: collection
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

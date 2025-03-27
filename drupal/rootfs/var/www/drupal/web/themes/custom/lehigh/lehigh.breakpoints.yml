@@ -1,0 +1,37 @@
+themename.xsml:
+  label: X-Small
+  mediaQuery: '(min-width: 0em)'
+  weight: 0
+  multipliers:
+    - 1x
+themename.sml:
+  label: Small (mobile)
+  mediaQuery: '(min-width: 46.25em)'
+  weight: 0
+  multipliers:
+    - 1x
+themename.med:
+  label: Medium (tablet)
+  mediaQuery: 'screen and (min-width: 56.25em)'
+  weight: 0
+  multipliers:
+    - 1x
+themename.lrg:
+  label: Large (desltop)
+  mediaQuery: 'screen and (min-width: 75em)'
+  weight: 0
+  multipliers:
+    - 1x
+themename.xlrg:
+  label: X-Large (wide desktop)
+  mediaQuery: 'screen and (min-width: 112.5em)'
+  weight: 1
+  multipliers:
+    - 1x
+themename.xxlrg:
+  label: XX-Large (very wide desktop)
+  mediaQuery: 'screen and (min-width: 130em)'
+  weight: 1
+  multipliers:
+    - 1x
+

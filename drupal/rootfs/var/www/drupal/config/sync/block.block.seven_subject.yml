@@ -1,0 +1,38 @@
+uuid: 25e5193a-6d9c-451f-a6ae-8a5918f4ea3f
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.subject
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - seven
+_core:
+  default_config_hash: 8CNTurKBSOQZRTrWiaCmfAwseQyzXZOb8gJohUvIBFw
+id: seven_subject
+theme: seven
+region: header
+weight: -8
+provider: null
+plugin: 'facet_block:subject'
+settings:
+  id: 'facet_block:subject'
+  label: Subject
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: subject
+visibility:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-solr_search_content-page_1: view-solr_search_content-page_1
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

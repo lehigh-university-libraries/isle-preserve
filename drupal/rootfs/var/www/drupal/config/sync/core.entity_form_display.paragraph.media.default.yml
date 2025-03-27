@@ -1,0 +1,58 @@
+uuid: e8b42bd4-defa-49a2-812c-c64d06dfaac7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.media.field_contextual_caption
+    - field.field.paragraph.media.field_disposition
+    - field.field.paragraph.media.field_media
+    - field.field.paragraph.media.field_overlay
+    - field.field.paragraph.media.field_proportion
+    - paragraphs.paragraphs_type.media
+  module:
+    - text
+id: paragraph.media.default
+targetEntityType: paragraph
+bundle: media
+mode: default
+content:
+  field_contextual_caption:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_disposition:
+    type: options_select
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_media:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_overlay:
+    type: boolean_checkbox
+    weight: 4
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_proportion:
+    type: options_select
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

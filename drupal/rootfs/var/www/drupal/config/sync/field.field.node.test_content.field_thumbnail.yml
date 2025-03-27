@@ -1,0 +1,29 @@
+uuid: ccead3dc-6beb-4895-9ccd-2b82aeab0af6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_thumbnail
+    - media.type.image
+    - node.type.test_content
+id: node.test_content.field_thumbnail
+field_name: field_thumbnail
+entity_type: node
+bundle: test_content
+label: Image
+description: 'Appears as a thumbnail on “Card” views and as a representative image on article pages.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      image: image
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

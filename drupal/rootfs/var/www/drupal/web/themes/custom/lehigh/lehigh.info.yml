@@ -1,0 +1,41 @@
+# @file
+# Drupal information about the Agile Theme
+# Replace “themename” in property values with theme key name
+name: 'Lehigh Digital Collections Theme'
+type: theme
+description: 'Based on the Stop14 Theme Builder.'
+alt text: 'Lehigh Digital Collections'
+version: 1.0.0
+base theme: false
+core: 8.x
+core_version_requirement: ^8 || ^9 || ^10
+libraries:
+  - lehigh/global-styling
+logo: assets/img/svg/marks/logo.svg
+regions:
+  navigation: Main navigation
+  header: Site header
+  splash: Splash area
+  above_content: Above content
+  tabs: Tabs
+  wayfinding: Wayfinding
+  title: Title area
+  content: Content
+  search_dropdown: Search dropdown
+  main_sidebar: Main sidebar (right)
+  main_sidebar_left: Main sidebar (left)
+  main_alt: Main content (alternative)
+  main_alt_sidebar: Main Alt sidebar (right)
+  main_alt_sidebar_left: Main Alt sidebar (left)
+  secondary_content: Secondary content tier
+  secondary_sidebar: Secondary sidebar (right)
+  secondary_sidebar_left: Secondary sidebar (left)
+  tertiary_content: Tertiary content tier
+  tertiary_sidebar: Tertiary sidebar (right)
+  tertiary_sidebar_left: Tertiary sidebar (left)
+  quaternary_content: Quaternary Region
+  quaternary_sidebar_left: Quaternary Sidebar (left)
+  quaternary_sidebar: Quaternary Sidebar (right)
+  footer: Footer
+  overlay: Overlay
+  mobile_toolbar: Mobile Toolbar (fixed bottom)

@@ -1,0 +1,35 @@
+uuid: 59512149-a3b0-4d93-8442-5516df4623b8
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.subjects
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_subjectsswc
+theme: lehigh
+region: quaternary_content
+weight: -19
+provider: null
+plugin: 'facet_block:subjects'
+settings:
+  id: 'facet_block:subjects'
+  label: Subject
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: subjectsswc
+visibility:
+  context_all:
+    id: context_all
+    negate: null
+    values: collection
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

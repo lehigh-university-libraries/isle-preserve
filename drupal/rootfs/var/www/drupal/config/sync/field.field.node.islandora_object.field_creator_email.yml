@@ -1,0 +1,19 @@
+uuid: bc2ad6c8-0e0c-4d70-aec0-823e0f6eaa34
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_creator_email
+    - node.type.islandora_object
+id: node.islandora_object.field_creator_email
+field_name: field_creator_email
+entity_type: node
+bundle: islandora_object
+label: 'Creator email'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

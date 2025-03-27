@@ -1,0 +1,27 @@
+uuid: ecc279c6-b6ba-43d2-ab5f-b9b7ccbe557c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.basic_text.field_body
+    - paragraphs.paragraphs_type.basic_text
+  module:
+    - text
+id: paragraph.basic_text.default
+targetEntityType: paragraph
+bundle: basic_text
+mode: default
+content:
+  field_body:
+    type: text_textarea_with_summary
+    weight: 1
+    region: content
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+      show_summary: false
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

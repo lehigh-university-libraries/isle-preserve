@@ -1,0 +1,29 @@
+uuid: be067410-b352-40dd-beca-91961e761faa
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.browse
+  module:
+    - islandora
+    - views
+  theme:
+    - lehigh
+id: lehigh_exposedformbrowsemain_2
+theme: lehigh
+region: search_dropdown
+weight: 0
+provider: null
+plugin: 'views_exposed_filter_block:browse-main'
+settings:
+  id: 'views_exposed_filter_block:browse-main'
+  label: ''
+  label_display: '0'
+  provider: views
+  views_label: ''
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

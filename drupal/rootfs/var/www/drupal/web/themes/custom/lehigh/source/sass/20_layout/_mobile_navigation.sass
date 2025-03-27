@@ -1,0 +1,80 @@
+/**
+ *  @file _mobile_nav.sass
+ *  @category 10_layout
+ *  @theme LOCAL
+ *  @description Structures the mobile section <nav> menu.
+ *   For additional paragraph styling see 60_elements/paragraphs  **/
+
+
+#block-mobile-navigation
+  width: 100%
+  display: flex
+  justify-content: flex-end
+
+  +bp($desktop)
+    display: none 
+
+  .sf-menu
+    float: right
+    text-align: end
+
+  .close-btn
+    margin-left: rv(0)
+    margin-top: rv(0)
+    font-weight: $normal
+    text-transform: uppercase
+    position: relative
+    border: none
+    background-color: transparent
+    outline: none
+
+  ul.sf-menu.sf-vertical
+    width: rv(12)
+
+    
+/*    &:after
+      content: ''
+      background: no-repeat url(get_svg_url('icons/down-arrow')) 
+      background-size: contain
+      background-position: center
+      transform: rotate(180deg)
+      width: rv(-2)
+      height: rv(-2)
+      top: 2px
+      left: 60px
+      position: absolute
+      justify-content: center */
+
+ 
+
+
+/* mobile nav arrows */
+
+#block-mobile-navigation
+  .sf-menu li
+    border-right: none
+    font-size: .875rem
+
+  .sf-depth-2,
+  .sf-depth-3
+    text-align: left
+
+  ul.sf-menu .sf-with-ul /* superfish generated padding edited to match design */
+    padding-right: 0
+    padding: 1em 1.5em
+    position: relative
+          
+  .sf-depth-1 .sf-with-ul:before
+    content: ''
+    background: no-repeat url(get_svg_url('icons/arrow-left-black'))
+    background-size: contain
+    background-position: center
+    width: 10px
+    height: 10px
+    position: absolute
+    margin-bottom: auto
+    margin-top: auto
+    top: 0
+    bottom: 0
+    left: 10px
+   

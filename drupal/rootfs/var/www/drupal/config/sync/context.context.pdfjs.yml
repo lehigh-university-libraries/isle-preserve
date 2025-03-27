@@ -1,0 +1,88 @@
+uuid: 94f973a2-30e6-466a-9ade-5b07b9e79b5e
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.pdf_js_blocks
+  module:
+    - islandora
+    - term_condition
+    - views
+label: PDF.js
+name: pdfjs
+group: Display
+description: 'Displays the Service File or Original File in PDF.js view mode'
+requireAllConditions: true
+disabled: false
+conditions:
+  node_has_term:
+    id: node_has_term
+    negate: true
+    uuid: 7bbec6a5-86ff-47b4-9027-28e32a3d2947
+    context_mapping:
+      node: '@node.node_route_context:node'
+    uri: 'https://schema.org/Book'
+    logic: and
+  media_has_mimetype:
+    id: media_has_mimetype
+    negate: false
+    uuid: e8620b5c-ed6b-4684-9a3c-489c0d8b588a
+    context_mapping:
+      node: '@node.node_route_context:node'
+    mimetypes: application/pdf
+  term:
+    id: term
+    negate: false
+    uuid: 368c9971-88f0-4ea5-bc3a-47ba51744b73
+    context_mapping: {  }
+    term_uuids: {  }
+reactions:
+  blocks:
+    id: blocks
+    uuid: f1c06fa4-0800-4365-8e49-7f9f0c0305a6
+    blocks:
+      abb9e09f-c2c4-47a1-8bab-69c9e016efac:
+        uuid: abb9e09f-c2c4-47a1-8bab-69c9e016efac
+        id: 'views_block:pdf_js_blocks-original_file_block'
+        label: ''
+        provider: views
+        label_display: '0'
+        region: above_content
+        weight: '0'
+        custom_id: views_block_pdf_js_blocks_original_file_block
+        theme: nyhs
+        css_class: ''
+        unique: 0
+        context_id: pdfjs
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+      2a071347-bd04-430f-8420-01f9e4d3e2b1:
+        uuid: 2a071347-bd04-430f-8420-01f9e4d3e2b1
+        id: 'views_block:pdf_js_blocks-original_file_block'
+        label: ''
+        provider: views
+        label_display: visible
+        region: above_content
+        weight: '0'
+        custom_id: views_block_pdf_js_blocks_original_file_block
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: pdfjs
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: '1'
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+    include_default_blocks: 0
+    saved: false
+  body_class:
+    id: body_class
+    body_class: pdf-viewer
+    saved: false
+weight: -8

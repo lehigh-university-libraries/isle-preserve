@@ -1,0 +1,108 @@
+/**
+ *  @file _card.sass
+ *  @category 60_site_elements
+ *  @group content
+ *  @theme LOCAL
+ *  @description Defines a basic content card view.
+ *
+ **/
+.taxonomy--type-featured-collections
+  isolation: isolate // to prevent z-index issues w/ main nav
+
+.visible
+  .capsule
+    +fadeInUp($slow,$heartbeat * 3,$heartbeat*3)
+
+.capsule
+  background-color: transparent
+  max-width: 750px
+  padding-bottom: rv(1)
+
+  +reversed
+    &:focus, &:hover
+      background-color: transparent
+
+
+  &:focus, &:hover
+    background-color: set-color(1,3)
+
+
+    figure
+      img
+        transform: scale(1.1)
+        transition: all $heartbeat ease-in-out
+
+  .content-label-compact, .item-label
+    font-size: rv(-3)
+
+  .more
+    text-decoration: underline
+
+
+  +clearfix()
+
+  .media
+    margin-bottom: rv($mobile_edge_padding_factor)
+
+    .image, .video, .remote-video
+      +proportional-height(100%,0.5625) // 16:9
+      background-color: set-color(2)
+
+    .image
+      img
+        object-fit: cover
+        height: 100%
+        width: 100%
+        transition: all $heartbeat ease-in-out
+
+.swiper
+  width: 100%
+  height: auto
+  padding: 0 36px
+  margin-left: 0
+  margin-right: 0
+  padding-left: 0
+  padding-right: 0
+  overflow: visible
+  +bp($tablet)
+    padding: 0px
+
+.swiper-wrapper
+  z-index: 500
+  padding-left: 0
+  padding-right: 0
+  display: flex
+  position: relative
+
+.swiper-slide
+  z-index: auto
+  min-width: 200px
+  cursor: pointer
+  border: 2px solid rgba(0, 0, 0, 0)
+  border-radius: 6px
+  margin-left: 0
+  margin-right: 0
+  transition: transform .2s ease-in-out
+  position: relative
+  overflow: visible
+
+.swiper-button-next, .swiper-button-prev
+  display: none
+  right: 0
+  margin: 0
+  width: 36px
+  height: 100%
+  top: 0
+  background: rgb(0 0 0 / 0.5)
+  color: white
+  z-index: 1001
+  +bp($tablet)
+    width: 60px
+
+  &:after
+    +bp($tablet)
+      font-size: 24px
+
+.swiper-button-prev
+  left: 0
+

@@ -1,0 +1,8 @@
+name: 'Lehigh Islandora'
+type: module
+description: 'Various custom code needed for Lehigh Islandora'
+core_version_requirement: ^9.2 || ^10
+package: 'Custom'
+dependencies:
+  - token:token
+

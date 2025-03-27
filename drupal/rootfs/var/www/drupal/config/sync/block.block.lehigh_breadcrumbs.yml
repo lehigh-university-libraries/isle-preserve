@@ -1,0 +1,22 @@
+uuid: 5da220af-cb74-4246-b9a0-22b223be33ba
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - lehigh
+_core:
+  default_config_hash: VhBzWb7lMRtIOg9G7VSw_0uopi-7zXeHq4vXqqV1HFE
+id: lehigh_breadcrumbs
+theme: lehigh
+region: wayfinding
+weight: -18
+provider: null
+plugin: system_breadcrumb_block
+settings:
+  id: system_breadcrumb_block
+  label: Breadcrumbs
+  label_display: '0'
+  provider: system
+visibility: {  }

@@ -1,0 +1,31 @@
+uuid: 71a81f61-39d2-49cc-81aa-1f153a98d7ac
+langcode: en
+status: true
+dependencies:
+  content:
+    - 'block_content:basic:6a92922f-e819-4938-a654-eb8d7f47d63c'
+  module:
+    - block_content
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_upperfootersites
+theme: lehigh
+region: footer
+weight: -20
+provider: null
+plugin: 'block_content:6a92922f-e819-4938-a654-eb8d7f47d63c'
+settings:
+  id: 'block_content:6a92922f-e819-4938-a654-eb8d7f47d63c'
+  label: 'Upper Footer Sites'
+  label_display: '0'
+  provider: block_content
+  status: true
+  info: ''
+  view_mode: full
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

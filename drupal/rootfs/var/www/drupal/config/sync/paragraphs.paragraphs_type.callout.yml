@@ -1,0 +1,10 @@
+uuid: 94337410-7b82-4eff-bd86-2d09c19c4014
+langcode: en
+status: true
+dependencies: {  }
+id: callout
+label: 'Highlight or Callout'
+icon_uuid: null
+icon_default: null
+description: "Add highlighted text to a paragraph.\t\r\n"
+behavior_plugins: {  }

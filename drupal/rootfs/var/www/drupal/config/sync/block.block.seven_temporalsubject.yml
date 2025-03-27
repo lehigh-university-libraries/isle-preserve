@@ -1,0 +1,38 @@
+uuid: 21747aba-2ff8-410b-af9a-3c2b44fb04c0
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.temporal_subject
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - seven
+_core:
+  default_config_hash: 1BMA18tJL_4xlrR2wg5QSmr499p157HBiWAgv_rJmQ4
+id: seven_temporalsubject
+theme: seven
+region: header
+weight: 0
+provider: null
+plugin: 'facet_block:temporal_subject'
+settings:
+  id: 'facet_block:temporal_subject'
+  label: 'Temporal Subject'
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: temporalsubject
+visibility:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-solr_search_content-page_1: view-solr_search_content-page_1
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

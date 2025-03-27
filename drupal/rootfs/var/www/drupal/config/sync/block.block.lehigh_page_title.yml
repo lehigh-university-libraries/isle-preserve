@@ -1,0 +1,41 @@
+uuid: 57870abd-c059-4b63-b302-03bbedb4761d
+langcode: en
+status: false
+dependencies:
+  module:
+    - islandora
+    - node
+    - system
+  theme:
+    - lehigh
+_core:
+  default_config_hash: 6aOgWsNTXjqrDm98TXSAjP6qd2nCijD1xw45MrnbK-Y
+id: lehigh_page_title
+theme: lehigh
+region: title
+weight: -18
+provider: null
+plugin: page_title_block
+settings:
+  id: page_title_block
+  label: 'Page title'
+  label_display: '0'
+  provider: core
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''
+  request_path:
+    id: request_path
+    negate: true
+    pages: '<front>'
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      article: article
+      page: page

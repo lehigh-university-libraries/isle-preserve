@@ -1,0 +1,23 @@
+uuid: ed4a39f3-e795-40f7-ae36-d870182161bd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_split
+    - paragraphs.paragraphs_type.showcase_text
+  module:
+    - options
+id: paragraph.showcase_text.field_split
+field_name: field_split
+entity_type: paragraph
+bundle: showcase_text
+label: Split
+description: ''
+required: true
+translatable: false
+default_value:
+  -
+    value: half
+default_value_callback: ''
+settings: {  }
+field_type: list_string

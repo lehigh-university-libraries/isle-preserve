@@ -1,0 +1,22 @@
+uuid: 6ff1e731-2c17-4564-8e24-cd86f2961ab2
+langcode: en
+status: true
+dependencies:
+  module:
+    - system
+  theme:
+    - lehigh
+_core:
+  default_config_hash: erQSEZF2XUjNmgTl0uNRBzmg18ZGXwUcw2FhApoeuHk
+id: lehigh_content
+theme: lehigh
+region: content
+weight: -21
+provider: null
+plugin: system_main_block
+settings:
+  id: system_main_block
+  label: 'Main page content'
+  label_display: '0'
+  provider: system
+visibility: {  }

@@ -1,0 +1,124 @@
+uuid: 20f7f41f-0970-4774-8ba0-c47a9126b1c0
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.default_solr_index
+    - views.view.browse
+  module:
+    - search_api
+id: browse_items_summary
+name: 'Browse Items Summary'
+facet_source_id: 'search_api:views_page__browse__main'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '30'
+    settings:
+      link_text: 'Reset filters'
+      position: after
+  show_count:
+    processor_id: show_count
+    weights:
+      build: '5'
+    settings: {  }
+  show_text_when_empty:
+    processor_id: show_text_when_empty
+    weights:
+      build: '10'
+    settings:
+      text:
+        value: '<p>Your selection has returned no results.</p>'
+        format: basic_html
+facets:
+  member_of:
+    checked: true
+    label: Sub-Collections
+    separator: ', '
+    show_count: false
+    weight: 0
+  places:
+    checked: true
+    label: Places
+    separator: ', '
+    show_count: false
+    weight: 0
+  subject_topical_browse:
+    checked: true
+    label: Subject
+    separator: ', '
+    show_count: false
+    weight: 0
+  genre:
+    checked: true
+    label: Genre
+    separator: ', '
+    show_count: false
+    weight: 0
+  material_type:
+    checked: true
+    label: 'Material Type'
+    separator: ', '
+    show_count: false
+    weight: 0
+  name:
+    checked: true
+    label: Name
+    separator: ', '
+    show_count: false
+    weight: 0
+  media_type:
+    checked: true
+    label: 'Media type'
+    separator: ', '
+    show_count: false
+    weight: 0
+  model:
+    checked: true
+    label: Model
+    separator: ', '
+    show_count: false
+    weight: 0
+  contributor:
+    checked: true
+    label: Contributor
+    separator: ', '
+    show_count: false
+    weight: 0
+  date_created_items:
+    checked: true
+    label: 'Date Created'
+    separator: ', '
+    show_count: false
+    weight: 0
+  subject_general:
+    checked: true
+    label: 'Subject (General)'
+    separator: ', '
+    show_count: false
+    weight: 0
+  subject_geographic:
+    checked: true
+    label: 'Subject (Geographic)'
+    separator: ', '
+    show_count: false
+    weight: 0
+  subject_name:
+    checked: true
+    label: 'Subject (Name)'
+    separator: ', '
+    show_count: false
+    weight: 0
+  subject_temporal:
+    checked: true
+    label: 'Subject (Temporal)'
+    separator: ', '
+    show_count: false
+    weight: 0
+  subject_topical:
+    checked: true
+    label: 'Subject (Topical)'
+    separator: ', '
+    show_count: false
+    weight: 0

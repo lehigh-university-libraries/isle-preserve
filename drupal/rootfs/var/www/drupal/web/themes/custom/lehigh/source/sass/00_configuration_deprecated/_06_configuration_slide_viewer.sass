@@ -1,0 +1,181 @@
+/**
+ * @file
+ * Slide Viewer Configuration.
+ *
+ * Copy this file to your theme configuration folder of your local theme or component and
+ * adjust it _index file to import.
+ *
+ * Each SASS variable will be assigned to a CSS variable of a property exposed in the
+ * slide-viewer and slide-item web components.
+ *
+ * For reference, the variable is always the SASS variable with the underscores replaced by
+ * dashes, and the dollar sign replaced by the CSS variable standard double dash
+ * e.g. slide_nav_bottom is --slide-nav-bottom
+ *
+ * NOTES:
+ *
+ * - These variables define the global (:root) scope, meaning that all slide viewers
+ *   will be given these values by default.
+ * - Templates are located in a_components/60_site_elements/slide_viewer/templates. They contain a series of preset styles. Schematics of the the templates are located in the slide_viewer component in “slide_viewer_templates.ai” and “slide_viewer_templates.pdf”
+ * - To create a scoped slide viewer or slide item, scope any changed variables to a selector,
+ *   import a template, and invoke the slide viewer or item mixin, i.e.
+ *     slide-viewer.my-slide-viewer-class
+ *       $slide-viewer-padding: rv(1)
+ *       // other changed variables
+ *       @import templates/slide_viewer_template_2
+ *       +slide-viewer()
+ *     slide-item.title
+ *       // various title slide variables
+ *       @import templates/slide_item_template_3
+ *       +slide-item()
+ */
+
+
+/**
+ * DEFAULT BUTTONS
+ * Inline SVG definitions for use as next button. Must be converted to Base64 (use online converter). Note that using an image file may have unexpected effects due to path issues.
+ */
+
+$default_next_btn: "data:image/svg+xml;base64,PHN2ZyBpZD0ibmV4dC1idG4iIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgdmlld0JveD0iMCAwIDE4LjQ1IDIwIj48ZGVmcz48c3R5bGU+LmNscy0xe2ZpbGw6IzAwMTcxYTt9PC9zdHlsZT48L2RlZnM+PHBhdGggY2xhc3M9ImNscy0xIiBkPSJNMCwyMFYxNC45TDEzLjYzLDEwLDAsNS4xVjBMMTguNDUsNy4zNXY1LjNaIi8+PC9zdmc+"
+
+$default_prev_btn: "data:image/svg+xml;base64,PHN2ZyBpZD0iY2hhcmFjdGVyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOC40NSAyMCI+PGRlZnM+PHN0eWxlPi5jbHMtMXtmaWxsOiMwMDE3MWE7fTwvc3R5bGU+PC9kZWZzPjxwYXRoIGNsYXNzPSJjbHMtMSIgZD0iTTE4LjQ1LDBWNS4xTDQuODIsMTAsMTguNDUsMTQuOVYyMEwwLDEyLjY1VjcuMzVaIi8+PC9zdmc+"
+
+/**
+ * GENERAL VALUES
+ */
+
+/* Slide viewer template 1: Left/right arrows centred vertically, aligned to the left and right edges respectively. Pagination at bottom centre. Standard presentation.
+  
+  Slide viewer template 2: Left/right arrows vertically aligned to the pagination at bottom, and horizontally aligned to the left and right edges respectively. Pagination at bottom centre.
+  
+  Slide viewer template 3: All pagination and arrows aligned bottom right.  See slide_view*/
+
+$default_slide_item_template: 1
+$default_slide_viewer_template: 1
+
+$slide_viewer_padding: rv(0) // General padding for Slide Elements
+$slide_viewer_marker_size: rv(-1) // Height and width for page markers. Set values individually (below) if height and width are different.
+$slide_viewer_ui_spacing: rv(-1)  // Spacing for markers and arrows
+
+/**
+ *  SLIDE VIEWER EXPOSED STYTLES
+ *
+ */
+
+// $slide_viewer_midpoint: 50% // Only used in certain templates (e.g. Slide Template 3).
+
+$slide_viewer_background: none // Can also be set via the element style, which would allow you to source local theme images more easily
+
+$page_marker_background: neutral(40) // Can use an icon via the background: property. Note that you may need to use an inline SVG (see DEFAULT BUTTONS
+$page_marker_background_hover: neutral(60)
+$page_marker_background_active: neutral(60)
+$page_marker_border_radius: 50%  // Creates a circle marker by default. Set to 0 if an icon is used instead of a colour.
+
+$page_marker_transform_hover: none // Adds a transform property to the marker on hover
+$page_marker_transform_active: none // Adds a transform property to the marker when active (current page)
+
+
+$page_marker_width: $slide_viewer_marker_size
+$page_marker_height: $slide_viewer_marker_size
+
+
+$sequential_control_btn_height: 2rem
+$sequential_control_btn_width: 1.5rem
+
+$next_btn_background: no-repeat url(#{$default_next_btn})
+$previous_btn_background: no-repeat right url(#{$default_prev_btn})
+
+// +slide-viewer($slide_viewer_template)
+
+
+/**
+ *  SLIDE ITEM EXPOSED STYLES
+ *.
+ */
+
+$slide_content_background: none
+$slide_caption_background: none
+
+$slide_item_content_width: 100%
+$slide_item_caption_width: 100%
+
+
+// Portrait Slides – set how portrait-oriented (more tall than wide) sit in the figure container.
+
+$slide_item_portrait_object_fit: contain
+$slide_item_portrait_position: center
+$slide_item_portrait_slide_padding: 0
+
+// Landscape Slides – set how landscape-oriented (more wide than tall) sit in the figure container.
+
+$slide_item_landscape_object_fit: contain
+$slide_item_landscape_position: center
+$slide_item_landscape_slide_padding: 0
+
+// Square Slides
+
+$slide_item_square_object_fit: contain
+$slide_item_square_position: center
+$slide_item_square_slide_padding: 0
+
+
+
+/**
+ *
+ * EXTENDED STYLES
+ *
+ * Additional styles. Most should be left default.
+ *
+ * Note: These correspond to Slide Viewer Template 1 and Slide Item Template 1
+ */
+
+
+
+// Pagination slider nav
+$slide_nav_bottom: $slide_viewer_padding
+$slide_nav_top: initial
+$slide_nav_left: initial
+$slide_nav_right: initial
+$slide_nav_flex_direction: row
+$slide_nav_flex_wrap: wrap
+$slide_nav_justify_contents: center
+$slide_nav_align_items: center
+$slide_nav_height: $sequential_control_btn_height
+
+$page_marker_margin: 0 $slide_viewer_ui_spacing 0 0
+
+
+// Sequential Slider Nav (next/previous)
+
+$sequential_nav_top: 0
+$sequential_nav_bottom: 0
+$sequential_nav_left: $slide_viewer_padding
+$sequential_nav_right: $slide_viewer_padding
+$sequential_nav_justify_content: space-between
+$sequential_nav_align_items: center
+
+$sequential_control_spacing: $slide_viewer_ui_spacing
+
+// Figure container (content + caption)
+
+
+$slide_item_slide_display: flex
+$slide_item_slide_flex_direction: column
+$slide_item_slide_flex_grow: 1
+$slide_item_slide_width: 100%
+$slide_item_slide_height: 100%
+
+$slide_item_slide_padding: 0
+$slide_item_slide_margin: 0
+
+// Content container (usually contains an image)
+
+$slide_item_content_padding: $slide_viewer_padding
+
+// Caption
+
+$slide_item_caption_padding: 0 $slide_viewer_padding
+$slide_item_caption_height: auto
+$slide_item_caption_position: relative
+$slide_item_caption_bottom: auto
+

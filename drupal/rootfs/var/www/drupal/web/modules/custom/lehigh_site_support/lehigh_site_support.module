@@ -1,0 +1,253 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for lehigh Site Support module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Cache\Cache;
+use Drupal\node\NodeInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/*
+ * Implements hook_token_info()
+ */
+
+// define('ISLANDORA_COLLECTION_TID',31);
+//define('ISLANDORA_COLLECTION_FIELD','field_resource_type')
+define('ISLANDORA_COLLECTION_TID', 23);
+define('ISLANDORA_COLLECTION_FIELD','field_model');
+
+function lehigh_site_support_token_info(): array {
+  $types['lehigh_site_support_settings'] = [
+    'name' => t('Lehigh Digital Library settings'),
+    'description' => t('Lehigh site configuration tokens.')
+  ];
+
+  foreach (array_merge(lehigh_site_support_get_site_copy_keys(),lehigh_site_support_get_tokenized_text_field_keys()) as $key => $label) {
+    $tokens[$key] = [
+      'name' => t($label['title']),
+      'description' => 'Lehigh site settings key'
+    ];
+  }
+
+  return [
+    'types' => $types,
+    'tokens' => [
+      'lehigh_site_support_settings' => $tokens
+    ]
+  ];
+}
+
+/*
+* Implements hook_token()
+*/
+function lehigh_site_support_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata): array {
+  $replacements = [];
+
+  if($type == 'lehigh_site_support_settings') {
+
+    $config = \Drupal::config('lehigh_site_support.settings');
+
+    $lehighTokens = array_merge(lehigh_site_support_get_site_copy_keys(),lehigh_site_support_get_site_copy_keys(),lehigh_site_support_get_tokenized_text_field_keys());
+
+    foreach ($tokens as $name => $original) {
+      if (array_key_exists($name,$lehighTokens)) {
+        $config_value = $config->get($name);
+
+        if (is_array($config_value) && array_key_exists('value',$config_value)) { // Indicates a text format field
+          $replacements[$original] = check_markup($config_value['value'],$config_value['format']);
+        } else {
+          $replacements[$original] = $config_value;
+        }
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+function lehigh_site_support_get_site_copy_keys() {
+  return [
+    'about_text' => [
+      'title' => 'About Lehigh Digital Collections text',
+      'description' => 'Will appear on the homepage in Search our Collections block',
+      'default_value' => '<content to come>',
+      'group' => 'site_copy'
+      ],
+    'top_level_collections_description' => [
+      'title' => 'Top Level Collections Description',
+      'description' => 'Will appear on the homepage in the Top Level Collections block',
+      'default_value' => '<content to come>',
+      'group' => 'site_copy'
+    ],
+    'browse_items_deck' => [
+      'title' => 'Browse Items Deck',
+      'description' => 'Will appear beneath the title on the Browse Items page',
+      'default_value' => '<content to come>',
+      'group' => 'site_copy'
+    ],
+
+    'browse_collections_deck' => [
+      'title' => 'Browse Collections Deck',
+      'description' => 'Will appear beneath the title on the Browse Collections page',
+      'default_value' => '<content to come>',
+      'group' => 'site_copy'
+    ],
+    'general_rights_statement' => [
+      'title' => 'General rights statement',
+      'description' => 'Will be used when an item is missing its own rights statement',
+      'default_value' => '',
+      'group' => 'rights'
+
+    ],
+    'reproduction_statement' => [
+      'title' => 'Reproduction statement',
+      'description' => 'Note on how to obtain reproduction rights. Displayed on item pages.',
+      'default_value' => '',
+      'group' => 'rights'
+    ],
+  ];
+}
+
+function lehigh_site_support_get_tokenized_text_field_keys() {
+  return [
+    'reproductions_link' => [
+      'title' => 'Reproductions link',
+      'description' => 'Link for the item page reproductions button.',
+      'default_value' => '',
+      'group' => 'rights'
+    ],
+    'reproductions_button_text' => [
+      'title' => 'Reproductions button text',
+      'description' => 'Text to display on reproduction buttons.',
+      'default_value' => 'Order a reproduction',
+      'group' => 'rights'
+    ],
+    'content_statement_link' => [
+      'title' => 'Content Statement Link',
+      'description' => 'Link to Lehigh content statement.',
+      'default_value' => '#',
+      'group' => 'site_copy'
+    ],
+
+  ];
+}
+
+function lehigh_site_support_preprocess_block(&$vars) {
+  $vars['block_type'] = 'standard_block_type';
+
+  if (array_key_exists('derivative_plugin_id',$vars) && !empty($vars['derivative_plugin_id'])) {
+    $block = \Drupal::service('entity.repository')
+      ->loadEntityByUuid('block_content', $vars['derivative_plugin_id']);
+
+    if ($block) {
+      $vars['block_type'] = $block->bundle();
+    }
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function lehigh_site_support_theme($existing, $type, $theme, $path) {
+  return [
+    'lehigh_site_cta_block' => [
+      'template' => 'lehigh_site_cta_block',
+      'variables' => [
+        'search_form' => null,
+        'browse_form' => null,
+        'suggestions' => [],
+        'about_text' => ''
+      ]
+    ],
+    'facets_result_item__summary__keywords' => [
+      'template' => 'facets_result_item__summary__keywords',
+      'label' => 'Keyword(s)',
+      'base hook' => 'facets_result_item',
+    ],
+
+  ];
+
+}
+
+/**
+ * Implements hook_preprocess_html()
+ */
+
+function lehigh_site_support_preprocess_html(&$vars) {
+  $node = \Drupal::routeMatch()->getParameter('node');
+
+  if ($node && is_object($node) && $node->bundle() === 'islandora_object') {
+    if (lehigh_site_support_identify_collection($node) === true) {
+      $vars['attributes']['class'][] = 'collection';
+    }
+  }
+
+}
+
+/**
+ * Implements hook_preprocess_node()
+ */
+function lehigh_site_support_preprocess_node(&$vars) {
+  /** @var \Drupal\node\NodeInterface $node */
+  $node = $vars['elements']['#node'];
+  $vars['is_collection'] = FALSE;
+  $vars['reference_count'] = 0;
+
+  if ($node->bundle() === 'islandora_object') {
+    $cid = 'item-data-' . $node->id();
+    $vars['is_collection'] = lehigh_site_support_identify_collection($node);
+    if ($cache = \Drupal::cache()->get($cid)) {
+      $data = $cache->data;
+      $vars['reference_count'] = $data['reference_count'];
+    }
+    else {
+      $query = \Drupal::entityQuery('node')
+        ->condition('field_member_of', $node->id())
+        ->accessCheck(TRUE);
+      $vars['reference_count']  = $query->count()->execute();
+
+      \Drupal::cache()
+        ->set($cid, ['reference_count' => $vars['reference_count']], Cache::PERMANENT, $node->getCacheTags());
+    }
+  }
+
+}
+
+function lehigh_site_support_identify_collection(NodeInterface $node) {
+  $is_collection = FALSE;
+  if ($node->bundle() === 'islandora_object') {
+    if (!$node->field_model->isEmpty()
+      && !$node->field_model->entity->field_external_uri->isEmpty()
+      && $node->field_model->entity->field_external_uri->uri === 'http://purl.org/dc/dcmitype/Collection') {
+        $is_collection = TRUE;
+    }
+  }
+
+  return $is_collection;
+}
+
+function lehigh_site_support_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id === 'views_exposed_form' && array_key_exists('actions',$form)) {
+
+   // Submit and reset come before the sort mechanism on browser exposed filters
+   // This is because the sorting form submits automatically
+   $form['sort_bef_combine']['#weight'] = 11;
+   $form['actions']['#weight'] = 10;
+  }
+
+}
+
+
+/**
+* @description Allows us to modify JS attachments. Can be used to pass settings to scripts via the Drupal object.
+* @return void
+*/
+/*
+function lehigh_site_support_page_attachments_alter(&$page) {
+  $config = \Drupal::config('lehigh_site_support.settings');
+  $page['#attached']['drupalSettings']['lehigh_site_support']['responses_in_memoriam_no_interaction'] = $config->get('responses_in_memoriam_no_interaction');
+}
+*/

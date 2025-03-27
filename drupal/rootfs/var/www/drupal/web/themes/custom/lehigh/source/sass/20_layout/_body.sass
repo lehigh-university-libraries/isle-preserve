@@ -1,0 +1,46 @@
+/**
+ *  @file _general.sass
+ *  @category 10_layout
+ *  @theme LOCAL
+ *  @description Additional general layout styles. **/
+
+
+body
+  overflow-x: hidden
+
+body > section#main-nav
+  overflow: initial
+
+#title +
+  #primary-content, #secondary-content, #tertiary-content, #quaternary-content
+    padding-top: 0
+
+
+body
+  height: 100%
+  overflow: visible
+
+
+
+// Logged in- height of navigation//
+
+body.user-logged-in
+  padding-top: $admin_bar_height !important
+
+body.toolbar-tray-open
+  padding-top: calc(#{$admin_bar_height} + #{$admin_bar_tray}) !important
+
+
+// Drupal Toolbar height//
+
+#toolbar-bar
+  height: $admin_bar_height!important
+  button
+    height: $admin_bar_height!important
+/*  .toolbar-menu
+    height: $admin_bar_height
+
+  .toolbar-toggle-orientation
+    button
+      margin: 0
+      padding: 0 */

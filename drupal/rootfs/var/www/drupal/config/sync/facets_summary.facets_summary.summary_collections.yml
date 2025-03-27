@@ -1,0 +1,75 @@
+uuid: 3e6365ce-fcce-471c-a1ff-ab47cd56f086
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.default_solr_index
+    - views.view.browse_collections
+  module:
+    - search_api
+id: summary_collections
+name: 'Browse Collections Summary'
+facet_source_id: 'search_api:views_page__browse_collections__main'
+processor_configs:
+  reset_facets:
+    processor_id: reset_facets
+    weights:
+      build: '-8'
+    settings:
+      link_text: 'Reset facets'
+      position: after
+  show_count:
+    processor_id: show_count
+    weights:
+      build: '-10'
+    settings: {  }
+  show_search_query:
+    processor_id: show_search_query
+    weights:
+      build: '40'
+    settings: {  }
+  show_text_when_empty:
+    processor_id: show_text_when_empty
+    weights:
+      build: '-9'
+    settings:
+      text:
+        value: '<h2>No results.</h2>'
+        format: basic_html
+facets:
+  places_collections:
+    checked: true
+    label: Places
+    separator: ', '
+    show_count: false
+    weight: 0
+  subject_collections:
+    checked: true
+    label: Subject
+    separator: ', '
+    show_count: false
+    weight: 0
+  genre_collections:
+    checked: true
+    label: Genre
+    separator: ', '
+    show_count: false
+    weight: 0
+  material_type_collections:
+    checked: true
+    label: 'Material Type'
+    separator: ', '
+    show_count: false
+    weight: 0
+  name_collections:
+    checked: true
+    label: Name
+    separator: ', '
+    show_count: false
+    weight: 0
+  date_created_collections:
+    checked: true
+    label: 'Date Created'
+    separator: ', '
+    show_count: false
+    weight: 0

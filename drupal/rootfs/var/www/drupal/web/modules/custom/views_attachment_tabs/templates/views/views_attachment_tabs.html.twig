@@ -1,0 +1,8 @@
+<div class="views-attachment-tabs">
+  <label>Display options</label>
+  <ul>
+   {% for tab in tabs %}
+     <li><a data-target='{{ tab.target }}' class="vat-tab {{ tab.id }}{% if tab.default %} active {% endif %}"><span>{{ tab.label }}</span></a></li>
+   {% endfor %}
+  </ul>
+</div>

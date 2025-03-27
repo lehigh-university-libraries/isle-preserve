@@ -1,0 +1,11 @@
+uuid: 9f834eae-cac9-45c5-a63b-95eb38e9c5ba
+langcode: en
+status: true
+dependencies:
+  module:
+    - bulk_update_fields
+id: bulk_update_fields_on_key_config_override
+label: 'Bulk Update Key Configuration Override Fields'
+type: key_config_override
+plugin: bulk_update_fields_action_base
+configuration: {  }

@@ -1,0 +1,23 @@
+uuid: 674e1639-34a0-4b36-851a-9f787fa6427c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_disposition
+    - paragraphs.paragraphs_type.callout
+  module:
+    - options
+id: paragraph.callout.field_disposition
+field_name: field_disposition
+entity_type: paragraph
+bundle: callout
+label: Disposition
+description: 'Placement of the callout text.'
+required: false
+translatable: true
+default_value:
+  -
+    value: left
+default_value_callback: ''
+settings: {  }
+field_type: list_string

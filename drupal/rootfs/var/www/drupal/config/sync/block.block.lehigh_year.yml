@@ -1,0 +1,36 @@
+uuid: 969a6e89-71f5-4e17-9a8a-4aecfca7a2a4
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.year
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_year
+theme: lehigh
+region: quaternary_content
+weight: 1
+provider: null
+plugin: 'facet_block:year'
+settings:
+  id: 'facet_block:year'
+  label: Year
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: year
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-solr_search_content-page_1: view-solr_search_content-page_1

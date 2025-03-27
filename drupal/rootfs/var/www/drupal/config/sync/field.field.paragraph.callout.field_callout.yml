@@ -1,0 +1,22 @@
+uuid: eca111cb-b063-486a-a045-e645f6e45989
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_callout
+    - paragraphs.paragraphs_type.callout
+  module:
+    - text
+id: paragraph.callout.field_callout
+field_name: field_callout
+entity_type: paragraph
+bundle: callout
+label: 'Callout Text'
+description: 'Callout text should be short and have minimal styling. Callout content is typically drawn from the accompanying paragraph. Lengthy callouts and brief paragraphs may have unexpected effects.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

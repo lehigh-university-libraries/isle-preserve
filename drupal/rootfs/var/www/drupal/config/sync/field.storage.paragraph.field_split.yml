@@ -1,0 +1,27 @@
+uuid: 924ae7ba-24f1-4757-a51a-8a37b4e60c74
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - paragraphs
+id: paragraph.field_split
+field_name: field_split
+entity_type: paragraph
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: half
+      label: 'Half (50-50)'
+    -
+      value: golden
+      label: 'Golden (62-38)'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

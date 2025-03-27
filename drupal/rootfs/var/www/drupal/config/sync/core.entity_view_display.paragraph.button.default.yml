@@ -1,0 +1,34 @@
+uuid: 05a85375-8aa2-4dfb-8d61-8eeeed71160c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.button.field_button_overlay
+    - field.field.paragraph.button.field_button_size
+    - field.field.paragraph.button.field_button_type
+    - field.field.paragraph.button.field_link
+    - paragraphs.paragraphs_type.button
+  module:
+    - link
+id: paragraph.button.default
+targetEntityType: paragraph
+bundle: button
+mode: default
+content:
+  field_link:
+    type: link
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  field_button_overlay: true
+  field_button_size: true
+  field_button_type: true
+  search_api_excerpt: true

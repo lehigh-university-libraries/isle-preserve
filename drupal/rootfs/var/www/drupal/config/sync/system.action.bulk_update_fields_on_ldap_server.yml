@@ -1,0 +1,11 @@
+uuid: 73e1f5fe-202c-459d-ab54-9e6d3f310ccb
+langcode: en
+status: true
+dependencies:
+  module:
+    - bulk_update_fields
+id: bulk_update_fields_on_ldap_server
+label: 'Bulk Update LDAP Server Fields'
+type: ldap_server
+plugin: bulk_update_fields_action_base
+configuration: {  }

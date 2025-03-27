@@ -1,0 +1,29 @@
+uuid: d2a28c06-3265-4cd6-8078-4582f7faa047
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_degree_level
+    - node.type.islandora_object
+    - taxonomy.vocabulary.degree_level
+id: node.islandora_object.field_degree_level
+field_name: field_degree_level
+entity_type: node
+bundle: islandora_object
+label: 'Degree level'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      degree_level: degree_level
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

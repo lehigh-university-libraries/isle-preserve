@@ -1,0 +1,26 @@
+/**
+ *  @file _capsules.sass
+ *  @category 60_site_elements
+ *  @group media
+ *  @theme LOCAL
+ *  @description Defines the capsule media display modes. **/
+
+
+.capsule_wide, .capsule_wide_autoplay
+  background-color: $black
+  border-radius: $border-radius
+  overflow: hidden
+  +safari-transition-fix-container
+
+  // Need to test this more to see if it distorts at 16:9 or 4:3
+
+  video
+    width: 100% !important
+    height: 100% !important
+    object-fit: cover
+
+.capsule_small
+  background-color: $black
+  border-radius: $border-radius
+  overflow: hidden
+  +safari-transition-fix-container

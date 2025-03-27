@@ -1,0 +1,35 @@
+uuid: 7c01133c-ecf9-4f92-b226-a81b3f10b584
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets_summary.facets_summary.summary_collections
+  module:
+    - context
+    - facets_summary
+    - islandora
+  theme:
+    - lehigh
+id: lehigh_browsecollectionssummary
+theme: lehigh
+region: content
+weight: -24
+provider: null
+plugin: 'facets_summary_block:summary_collections'
+settings:
+  id: 'facets_summary_block:summary_collections'
+  label: 'Browse Collections Summary'
+  label_display: '0'
+  provider: facets_summary
+  context_mapping: {  }
+visibility:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-browse_collections-main: view-browse_collections-main
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

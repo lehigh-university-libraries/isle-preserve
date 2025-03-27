@@ -1,0 +1,8 @@
+uuid: ec36a668-e1e8-423c-a57d-3c7484d7c78a
+langcode: en
+status: true
+dependencies: {  }
+name: 'Degree name'
+vid: degree_name
+description: ''
+weight: 0

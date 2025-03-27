@@ -1,0 +1,24 @@
+_core:
+  default_config_hash: 9DgabkLztscclWQDjei_mAOpxP6xdbp_Iu5L5z6Nsbg
+langcode: en
+sids:
+  nis_cc_lehigh_edu: nis_cc_lehigh_edu
+authenticationMode: mixed
+loginUIUsernameTxt: ''
+loginUIPasswordTxt: ''
+ldapUserHelpLinkUrl: ''
+ldapUserHelpLinkText: ''
+emailOption: disable
+emailUpdate: update_notify
+emailTemplateHandling: none
+emailTemplate: '@username@example.com'
+emailTemplateUsageResolveConflict: false
+emailTemplateUsageNeverUpdate: false
+emailTemplateUsagePromptUser: false
+emailTemplateUsageRedirectOnLogin: false
+emailTemplateUsagePromptRegex: '.*@example\\.com'
+passwordOption: hide
+allowOnlyIfTextInDn: {  }
+excludeIfTextInDn: {  }
+excludeIfNoAuthorizations: false
+skipAdministrators: false

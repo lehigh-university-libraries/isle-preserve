@@ -1,0 +1,86 @@
+uuid: 31e85750-c113-4611-8ea4-15eff69736a9
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.default_solr_index
+    - views.view.browse_collections
+  module:
+    - search_api
+id: date_created_collections
+name: 'Date Created'
+weight: 0
+min_count: 1
+missing: false
+missing_label: others
+url_alias: date_created_items
+facet_source_id: 'search_api:views_page__browse_collections__main'
+field_identifier: edtf_year
+query_operator: or
+hard_limit: 0
+exclude: false
+use_hierarchy: false
+keep_hierarchy_parents_active: false
+hierarchy:
+  type: taxonomy
+  config: {  }
+expand_hierarchy: false
+enable_parent_when_child_gets_disabled: true
+widget:
+  type: range_slider
+  config:
+    show_numbers: false
+    prefix: ''
+    suffix: ''
+    min_type: search_result
+    min_value: 0.0
+    max_type: search_result
+    max_value: 10.0
+    step: 1.0
+empty_behavior:
+  behavior: none
+only_visible_when_facet_source_is_visible: true
+show_only_one_result: true
+show_title: false
+processor_configs:
+  active_widget_order:
+    processor_id: active_widget_order
+    weights:
+      sort: 20
+    settings:
+      sort: DESC
+  count_widget_order:
+    processor_id: count_widget_order
+    weights:
+      sort: 30
+    settings:
+      sort: DESC
+  display_value_widget_order:
+    processor_id: display_value_widget_order
+    weights:
+      sort: 40
+    settings:
+      sort: ASC
+  hierarchy_processor:
+    processor_id: hierarchy_processor
+    weights:
+      build: 100
+    settings: {  }
+  range_slider:
+    processor_id: range_slider
+    weights:
+      pre_query: 60
+      post_query: 60
+      build: 20
+    settings: {  }
+  slider:
+    processor_id: slider
+    weights:
+      post_query: 60
+    settings: {  }
+  url_processor_handler:
+    processor_id: url_processor_handler
+    weights:
+      pre_query: 50
+      build: 15
+    settings: {  }

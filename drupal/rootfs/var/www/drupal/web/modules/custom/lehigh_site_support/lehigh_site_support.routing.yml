@@ -1,0 +1,7 @@
+lehigh_site_support.settings_form:
+  path: '/admin/config/system/lehigh-site-support'
+  defaults:
+    _title: 'Lehigh Site Support settings'
+    _form: 'Drupal\lehigh_site_support\Form\SettingsForm'
+  requirements:
+    _permission: 'administer lehigh_site_support configuration'

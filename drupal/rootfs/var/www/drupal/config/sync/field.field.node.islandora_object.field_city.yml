@@ -1,0 +1,19 @@
+uuid: 9d2bc1b4-2654-4883-8066-75dd7ce7e721
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_city
+    - node.type.islandora_object
+id: node.islandora_object.field_city
+field_name: field_city
+entity_type: node
+bundle: islandora_object
+label: City
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

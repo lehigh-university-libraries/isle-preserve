@@ -1,0 +1,11 @@
+uuid: 42e469eb-3b1d-422e-bf73-8ab7adbac3fa
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.lcsh_topic
+id: taxonomy_term.lcsh_topic
+target_entity_type_id: taxonomy_term
+target_bundle: lcsh_topic
+default_langcode: site_default
+language_alterable: false

@@ -80,6 +80,8 @@ $settings['flysystem']['fedora']['config']['root'] = file_get_contents($path . '
 $settings['php_storage']['twig']['directory'] = $settings['file_private_path'] . '/php';
 $settings['php_storage']['twig']['secret'] = $settings['hash_salt'];
 
+$settings['file_temp_path'] = '/tmp';
+
 /**
  *  End Section.
  */

@@ -1,0 +1,11 @@
+uuid: 28626d2f-0222-4c82-a037-2b6ee9eeb247
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.geographic_local
+id: taxonomy_term.geographic_local
+target_entity_type_id: taxonomy_term
+target_bundle: geographic_local
+default_langcode: site_default
+language_alterable: false

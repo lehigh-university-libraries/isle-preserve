@@ -1,0 +1,25 @@
+/**
+ *  @file _article_grids.sass
+ *  @category 60_site_elements
+ *  @theme LOCAL
+ *  @description Covers recent posts and news page. */
+
+
+#block-views-block-recent-articles-front, #block-views-block-recent-articles-main
+  .recent-articles
+    +views-browser-grid
+
+    .views-exposed-form 
+      display: flex
+      justify-content: right
+      flex-direction: column
+      +bp($tablet)
+        flex-direction: row
+        
+      .form-item
+        padding-left: rv(0)
+        
+      .select2-container
+        width: rv(6)!important
+        .select2-selection
+          height: rv(1)

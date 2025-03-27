@@ -1,0 +1,73 @@
+/**
+ *  @file _tabs.sass
+ *  @category 40_ui
+ *  @theme LOCAL
+ *  @description Local task tabs. */
+
+
+.block-local-tasks-block
+
+  margin: rv($mobile_edge_padding_factor) rv($mobile_edge_padding_factor) rv($mobile_block_spacing) rv($mobile_edge_padding_factor)
+
+  +bp($tablet)
+    margin: rv($edge_padding_factor) rv($edge_padding_factor) rv($block_spacing) rv($edge_padding_factor)
+
+  > ul
+    display: flex
+    list-style: none
+    justify-content: flex-end
+    line-height: rv(0)
+    flex-wrap: wrap
+
+    +bp($tablet)
+      flex-wrap: no-wrap
+
+    li
+      margin-bottom: rv(0)
+      padding-right: rv(-1)
+
+      +bp($tablet)
+        margin-bottom: rv(-2)
+
+      &:last-child
+        +bp($tablet)
+          padding-right: 0
+
+    li a
+      font-size: font-value(0)
+      font-weight: $normal
+      border-bottom: none
+      text-transform: uppercase
+      position: relative
+      display: block
+      color: neutral(60)
+
+      &::after
+        position: absolute
+        content: ''
+/*      background: no-repeat url(get_svg_url('icons/down-arrow')) */
+        background-size: contain
+        background-position: center
+        width: 100%
+        height: rv(-4)
+        top: rv(-3)
+        left: 0
+        display: flex
+        margin-top: rv(0)
+        justify-content: center
+        transition: opacity 0.3s
+        opacity: 0
+
+        +bp($desktop)
+          top: rv(-2)
+
+      &.active,
+      &.is-active,
+      &:hover,
+      &:focus
+        border-bottom: none
+        text-decoration: none
+        color: $black
+
+        &::after
+          +fadeInDown($very_slow,0s)

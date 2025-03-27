@@ -1,0 +1,98 @@
+/**
+ *  @file _block.sass
+ *  @category 60_site_elements
+ *  @theme LOCAL
+ *  @description General styles for landing features
+ *  **/
+
+$landing_width: 100vw
+$landing_height: 720px
+$mobile_landing_height: 30vh
+$tablet_landing_height: 600px
+
+#block-lehigh-views-block-landing-features-block-1,
+#block-lehigh-views-block-landing-features-block-2,
+#block-lehigh-views-block-landing-features-block-3
+  overflow: hidden
+
+  > .container
+    width: $landing_width
+    position: relative
+
+    +bp($tablet)
+      height: $tablet_landing_height
+
+    +bp($ultrawide)
+      height: unset
+      +proportional-height(100vw, 0.38)
+
+  .landing-features
+    display: flex
+    flex-direction: column-reverse
+
+    +bp($tablet)
+      display: block
+
+    > header
+      +standard_edge_padding()
+
+      +bp($tablet)
+        position: absolute
+        z-index: 5 // Clear gradient
+        top: 0
+        left: 0
+        right: 0
+        margin-top: rv($edge_padding_factor)
+
+      h1
+        +bp($tablet)
+          color: $white
+
+        &:after
+          background: set-colour(2)
+
+      p
+        font-size: clamped(0, 1, 'sml', 'xlrg')
+
+        +bp($tablet)
+          color: $white
+
+    article.media
+      +gradient-overlay-dark-horizontal()
+
+
+    .field_media_image_container
+      width: $landing_width
+        height: $mobile_landing_height
+
+      +bp($tablet)
+        height: $tablet_landing_height
+
+      +bp($ultrawide)
+        height: unset
+        +proportional-height(100vw, 0.38)
+
+      *
+        height: 100%
+        width: 100%
+        display: block
+
+      img
+        object-fit: cover
+
+  // Homepage
+
+  .block-lehigh-site-cta-block
+    +bp($desktop)
+      margin-top: rv($edge_padding_factor) * 2
+      width: calc(60% - 2 * #{rv($edge_padding_factor)})
+
+      +bp($ultrawide)
+        width: calc(50% - 2 * #{rv($edge_padding_factor)})
+
+
+    #lehigh-welcome-block
+      .lehigh--identity
+        p
+          color: $black
+          font-size: unset

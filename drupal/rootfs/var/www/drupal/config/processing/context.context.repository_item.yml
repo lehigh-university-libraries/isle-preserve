@@ -1,0 +1,140 @@
+uuid: e0e243bc-edcd-4a1f-a857-d27cb552500f
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.downloads
+    - views.view.in_collections
+    - views.view.item_title
+    - views.view.related_items
+    - views.view.rights_and_reproductions
+  module:
+    - islandora
+    - node
+    - views
+label: 'Repository Item'
+name: repository_item
+group: Display
+description: 'Manage displays for non-Collection items'
+requireAllConditions: true
+disabled: false
+conditions:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    uuid: 1569b066-6b92-4cb6-bb2d-136009b56fde
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      islandora_object: islandora_object
+  node_has_term:
+    id: node_has_term
+    negate: true
+    uuid: abf2bbab-a66f-4c8c-9f7c-27ccdb09a733
+    context_mapping:
+      node: '@node.node_route_context:node'
+    uri: 'http://purl.org/dc/dcmitype/Collection'
+    logic: and
+reactions:
+  blocks:
+    id: blocks
+    uuid: e24a363d-e041-4b89-8d7e-181c4bcfca24
+    blocks:
+      5b71aeb4-68f9-4cf9-8e32-b6b07e92025b:
+        uuid: 5b71aeb4-68f9-4cf9-8e32-b6b07e92025b
+        id: 'views_block:item_title-title_area'
+        label: ''
+        provider: views
+        label_display: '0'
+        region: above_content
+        weight: '0'
+        custom_id: views_block_item_title_title_area
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: repository_item
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+      55841244-9891-4678-93a3-953d3dd41d8b:
+        uuid: 55841244-9891-4678-93a3-953d3dd41d8b
+        id: 'views_block:rights_and_reproductions-rights_block'
+        label: ''
+        provider: views
+        label_display: visible
+        region: main_sidebar
+        weight: '-1'
+        custom_id: views_block_rights_and_reproductions_rights_block
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: repository_item
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+      41b4b044-a0c2-4b34-bce2-a8d49a508c5f:
+        uuid: 41b4b044-a0c2-4b34-bce2-a8d49a508c5f
+        id: 'views_block:downloads-block_1'
+        label: ''
+        provider: views
+        label_display: visible
+        region: main_sidebar
+        weight: '0'
+        custom_id: views_block_downloads_block_1
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: repository_item
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+      50510948-b14d-472b-bd44-af6a39536fb6:
+        uuid: 50510948-b14d-472b-bd44-af6a39536fb6
+        id: 'views_block:related_items-block_1'
+        label: ''
+        provider: views
+        label_display: visible
+        region: secondary_content
+        weight: '0'
+        custom_id: views_block_related_items_block_1
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: repository_item
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+      187a91a3-5c1e-4091-aec2-0af2a0a3bf3e:
+        uuid: 187a91a3-5c1e-4091-aec2-0af2a0a3bf3e
+        id: 'views_block:in_collections-capsule_block'
+        label: ''
+        provider: views
+        label_display: visible
+        region: content
+        weight: '0'
+        custom_id: views_block_in_collections_capsule_block
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: repository_item
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+    include_default_blocks: 0
+    saved: false
+weight: 0

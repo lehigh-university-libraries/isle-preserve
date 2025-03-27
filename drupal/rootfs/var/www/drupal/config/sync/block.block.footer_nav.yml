@@ -1,0 +1,31 @@
+uuid: 7ee498a0-d9ce-474a-87bd-963777c44e28
+langcode: en
+status: true
+dependencies:
+  config:
+    - system.menu.footer-nav
+  module:
+    - islandora
+    - system
+  theme:
+    - lehigh
+id: footer_nav
+theme: lehigh
+region: footer
+weight: -16
+provider: null
+plugin: 'system_menu_block:footer-nav'
+settings:
+  id: 'system_menu_block:footer-nav'
+  label: 'Footer Navigation'
+  label_display: '0'
+  provider: system
+  level: 1
+  depth: 0
+  expand_all_items: false
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

@@ -1,0 +1,29 @@
+uuid: 2c44cb68-f3ea-4416-b70e-38a95b67f9ff
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_physical_location
+    - node.type.islandora_object
+    - taxonomy.vocabulary.geo_location
+id: node.islandora_object.field_physical_location
+field_name: field_physical_location
+entity_type: node
+bundle: islandora_object
+label: 'Physical location'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      geo_location: geo_location
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

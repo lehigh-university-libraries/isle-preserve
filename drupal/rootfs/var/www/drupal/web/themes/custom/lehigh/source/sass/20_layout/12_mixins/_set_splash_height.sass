@@ -1,0 +1,29 @@
+/**
+ *  @file _set_splash_height.sass
+ *  @category 10_layout/12_mixins
+ *  @theme LOCAL
+ *  @description Sets the splash height to 100vh minus the margins.
+ *
+ **/
+
+@mixin set-splash-height($container-selector-str: '')
+  #{$container-selector-str}
+    height: calc(100vh - #{$masthead_height} - (#{rv($mobile_edge_padding_factor)} * 2))
+    margin: rv($mobile_edge_padding_factor)
+
+    +bp($desktop)
+      margin: rv($edge_padding_factor)
+      height: calc(100vh - #{$masthead_height} - (#{rv($edge_padding_factor)} * 2))
+
+  .user-logged-in #{$container-selector-str}
+    margin: rv($mobile_edge_padding_factor)
+    height: calc(100vh - #{$masthead_height} - #{$admin_bar_height} - (#{rv($mobile_edge_padding_factor)} * 2))
+
+    +bp($desktop)
+      margin: rv($edge_padding_factor)
+      height: calc(100vh - #{$masthead_height} - #{$admin_bar_height} - (#{rv($edge_padding_factor)} * 2))
+
+  .user-logged-in.toolbar-tray-open #{$container-selector-str}
+    +bp($desktop)
+      margin: rv($edge_padding_factor)
+      height: calc(100vh - #{$masthead_height} - #{$admin_bar_height} - #{$admin_bar_tray} - (#{rv($edge_padding_factor)} * 2))

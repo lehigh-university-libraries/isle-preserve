@@ -1,0 +1,11 @@
+uuid: e7c174b1-2564-4eb4-af30-7705b5fa77da
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.digital_origin
+id: taxonomy_term.digital_origin
+target_entity_type_id: taxonomy_term
+target_bundle: digital_origin
+default_langcode: site_default
+language_alterable: false

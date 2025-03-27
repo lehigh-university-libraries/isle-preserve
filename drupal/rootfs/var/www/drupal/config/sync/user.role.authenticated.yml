@@ -1,0 +1,38 @@
+uuid: f5555792-2d53-441a-b8ce-0d027735281b
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.basic_html
+    - filter.format.webform_default
+    - media.type.image
+  module:
+    - comment
+    - contact
+    - file
+    - filter
+    - matomo
+    - media
+    - shortcut
+    - system
+_core:
+  default_config_hash: I44QAB4es39lNzMQWiJLq2dfjX7VRSOzT_5KzAcUq_M
+id: authenticated
+label: 'Authenticated user'
+weight: 1
+is_admin: false
+permissions:
+  - 'access comments'
+  - 'access content'
+  - 'access shortcuts'
+  - 'access site-wide contact form'
+  - 'create image media'
+  - 'delete own files'
+  - 'opt-in or out of matomo tracking'
+  - 'post comments'
+  - 'skip comment approval'
+  - 'update any media'
+  - 'update media'
+  - 'use text format basic_html'
+  - 'use text format webform_default'
+  - 'view media'

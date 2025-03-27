@@ -1,0 +1,8 @@
+uuid: ac4b4313-975b-4d54-a755-e68a5ab9190a
+langcode: en
+status: true
+dependencies: {  }
+name: 'Digital Formats'
+vid: digital_formats
+description: 'Format of Original File'
+weight: 0

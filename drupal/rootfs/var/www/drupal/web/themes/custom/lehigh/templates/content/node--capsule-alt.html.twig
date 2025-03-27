@@ -1,0 +1,57 @@
+{#
+/**
+ * @file
+ * Identical to node--capsule.html.twig but used for situations where
+ * an h4 is required instead of an h3 for proper document structure.
+ *
+#}
+{%
+  set classes = [
+    'node',
+    'node--type-' ~ node.bundle|clean_class,
+    node.isPromoted() ? 'node--promoted',
+    node.isSticky() ? 'node--sticky',
+    not node.isPublished() ? 'node--unpublished',
+    view_mode ? 'node--view-mode-' ~ view_mode|clean_class,
+    'capsule'
+  ]
+%}
+{{ attach_library('classy/node') }}
+<article{{ attributes.addClass(classes) }}>
+  <a href="{{ url }}">
+  {{ title_prefix }}
+    <header>
+      {% if content.field_thumbnail %}
+        {{ content.field_thumbnail }}
+      {% endif %}
+      {% if content.field_representative_media %}
+        {{ content.field_representative_media|strip_anchors }}
+      {% endif %}
+      {% if content.media_evas_thumbnail %}
+        {{ content.media_evas_thumbnail|strip_anchors }}
+      {% endif %}
+    </header>
+    <div{{ content_attributes.addClass('node--content') }}>
+      <div class="label-container">
+        <div class='content-label-compact'>
+          {% if is_collection == true %}
+            Collection
+          {% elseif node.hasField('field_resource_type') %}
+            {{ node.field_resource_type.entity.label }}
+          {% elseif node.hasField('field_type') %}
+            {{ node.field_type.entity.label }}
+          {% else %}
+            {{ node.type.entity.label }}
+          {% endif %}
+        </div>
+        {% if reference_count > 0 %}
+          <div class="item-label"> {{ reference_count }} Items </div>
+        {% endif %}
+      </div>
+    <h4{{ title_attributes.addClass('display') }}>{{ label }}</h4>
+    {{ title_suffix }}
+      {{ content|without('field_thumbnail', 'media_evas_thumbnail', 'field_representative_media', 'field_type','group_card_footer')|strip_anchors }}
+      <div class="more">More</div>
+    </div>
+  </a>
+</article>

@@ -1,0 +1,22 @@
+uuid: d674865a-17d5-455b-8ff5-42bb5bbe95e0
+langcode: en
+status: true
+dependencies:
+  theme:
+    - lehigh
+_core:
+  default_config_hash: ydSxdq7R66I8UMC460rOzlfzvlUL4VRbdwc6z9DWaUI
+id: lehigh_secondary_local_tasks
+theme: lehigh
+region: tabs
+weight: -18
+provider: null
+plugin: local_tasks_block
+settings:
+  id: local_tasks_block
+  label: 'Secondary tabs'
+  label_display: '0'
+  provider: core
+  primary: false
+  secondary: true
+visibility: {  }

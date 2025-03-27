@@ -1,0 +1,103 @@
+/**
+ * @file
+ * Typography Configuration. Used to define a standard proportion across the site as per the modularscale library.
+ *
+ * Copy this file to your theme configuration folder of your local theme or component and adjust it _index file to import.
+ */
+
+@use 'sass:math'
+
+
+$basetypesize: 1rem // Body font size relative to rootsize above. Establishes core unit for other font sizes (rem, em, px, etc.).
+
+// NOTE baseline height ($blh) is defined in the 10_layout core, tying leading together with general spacing.
+
+// Set breakpoints to clamp fluid type. Type will be set to its minimum value at the
+// $default-min-bp, and its maximum value at the $default-max-bp
+// The type will be fluid proportional to the viewport in between these two values
+
+$default-min-bp: sml
+$default-max-bp: xlrg
+
+// Preferred size, as per standard typography
+
+$min_sizefactors: (base: -1, h1: 3, h2: 2, h3: 1, h4: 0, h5: -1, h6: -1)
+$sizefactors: (base: 0, h1: 4, h2: 3, h3: 2, h4: 1, h5: 0, h6: 0)
+
+// $line_height_factors replace $blh. Note that line-height is an intrinsically proportional value when used without a unit.
+
+$line_heights: (base: $base_line_height, h1: 1, h2: 1.2, h3: 1.2, h4: 1.2, h5: 1.2, h6: 1.2)
+
+// Multiplier for each typescale. IMPORTANT: This is not an rv() value. It is applied to the layout’s $rootsize to determine
+// a the root value (e.g. $rootsize * map-get($typescale,'base'). Default should be 1.
+// For instance, set $rootsize to 100% and xsml and sml to 0.75 to have 75% text on mobile.
+
+$typescale: (base: 1, xsml: 1, sml: 1, med:1, lrg: 1, xlrg: 1, xxlrg: 1)
+
+// Sets the bottom margin of paragraph and paragraph-level block elements. Looks at the median fluid type factor and
+// adjusts for line-height. The divides to a quarter for a readable space. Needs more thinking, to be honest.
+
+$paragraph_spacing: math.div(map-get($line_heights,'base') * rv(math.round((map-get($min_sizefactors,'base') + map-get($sizefactors,'base')) * 0.5)),4)
+
+// Type faces are defined in 00_configuration folders, which get loaded before all other styles.
+
+
+$font_path: '../fonts'
+
+// Example:
+
+// +load_font('IBMPlexMono','ibmplexmono',($normal,$bold),(normal,italic))
+// +load_font('Proximanova','proximanova',($light,$normal,$bold, $heavy),(normal,italic))
+
+// Default fonts. Use the font loader to load fonts.
+
+$basefont: Georgia, serif
+$headingfont: "Helvetica Neue", Helvetica, Tahoma, Arial, sans-serif
+$altfont: Georgia, serif
+$codefont: "Andale Mono", Monaco, Courier New, monospace
+
+
+// available base (b), heading (h) and alt (a) sizes listed
+
+
+$extralight: 100
+$thin: 200
+$light: 300       // b, h
+$normal: 400      // b, h, a
+$medium: 500
+$semibold: 600    // a
+$bold: 700        // b, a
+$extrabold: 800   // h
+$heavy: 900
+
+
+// legacy
+
+$extralightfw: $extralight
+$thinfw: $thin
+$lightfw: $light       // b, h
+$normalfw: $normal      // b, h, a
+$mediumfw: $medium
+$semiboldfw: 600    // a
+$boldfw: $bold        // b, a
+$extraboldfw: $extrabold   // h
+$blackfw: $heavy
+
+// Headers
+
+$headingfw: $bold
+
+// Tables
+
+$row_header_bg: neutral(10)
+$row_border_color: neutral(10)
+$row_zebra_stripe_color: neutral(3)
+
+// Aliases
+
+$h1fontsize: map-get($sizefactors,'h1')
+$h2fontsize: map-get($sizefactors,'h2')
+$h3fontsize: map-get($sizefactors,'h3')
+$h4fontsize: map-get($sizefactors,'h4')
+$h5fontsize: map-get($sizefactors,'h5')
+$h6fontsize: map-get($sizefactors,'h6')

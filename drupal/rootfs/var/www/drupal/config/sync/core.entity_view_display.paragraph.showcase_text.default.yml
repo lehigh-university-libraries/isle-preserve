@@ -1,0 +1,33 @@
+uuid: 764b68b6-f861-4232-9d62-f59132adfdd5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.showcase_text.field_body
+    - field.field.paragraph.showcase_text.field_cta
+    - field.field.paragraph.showcase_text.field_disposition
+    - field.field.paragraph.showcase_text.field_media
+    - field.field.paragraph.showcase_text.field_split
+    - field.field.paragraph.showcase_text.field_title
+    - paragraphs.paragraphs_type.showcase_text
+  module:
+    - text
+id: paragraph.showcase_text.default
+targetEntityType: paragraph
+bundle: showcase_text
+mode: default
+content:
+  field_body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  field_cta: true
+  field_disposition: true
+  field_media: true
+  field_split: true
+  field_title: true
+  search_api_excerpt: true

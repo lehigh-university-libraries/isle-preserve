@@ -1,0 +1,24 @@
+uuid: e1949249-08ae-4cc3-8c6f-1167ee4f3e8a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_body
+    - paragraphs.paragraphs_type.callout
+  module:
+    - text
+id: paragraph.callout.field_body
+field_name: field_body
+entity_type: paragraph
+bundle: callout
+label: 'Paragraph Body'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+  required_summary: false
+  allowed_formats: {  }
+field_type: text_with_summary

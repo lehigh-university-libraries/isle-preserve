@@ -1,0 +1,21 @@
+uuid: a0702cfe-9dc4-4dd7-b0b7-b08ae95b52f5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_disposition
+    - paragraphs.paragraphs_type.media
+  module:
+    - options
+id: paragraph.media.field_disposition
+field_name: field_disposition
+entity_type: paragraph
+bundle: media
+label: Disposition
+description: 'Text will flow around or right disposed media.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

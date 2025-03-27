@@ -1,0 +1,44 @@
+uuid: 1dfd81ab-d1c2-4162-9166-1a8697344d85
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.media.mirador
+    - field.field.media.file.field_file_size
+    - field.field.media.file.field_hocr_extracted_text
+    - field.field.media.file.field_media_file
+    - field.field.media.file.field_media_of
+    - field.field.media.file.field_media_use
+    - field.field.media.file.field_mime_type
+    - field.field.media.file.field_original_name
+    - media.type.file
+  module:
+    - islandora_mirador
+_core:
+  default_config_hash: xvDrCk0MLOxsyqOt9bqbAvT-qq1yONc-knLG55Rf9Aw
+id: media.file.mirador
+targetEntityType: media
+bundle: file
+mode: mirador
+content:
+  field_media_file:
+    type: mirador_image
+    label: visually_hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  created: true
+  field_file_size: true
+  field_gemini_uri: true
+  field_hocr_extracted_text: true
+  field_media_of: true
+  field_media_use: true
+  field_mime_type: true
+  field_original_name: true
+  langcode: true
+  name: true
+  search_api_excerpt: true
+  thumbnail: true
+  uid: true

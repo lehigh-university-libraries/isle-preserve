@@ -1,0 +1,10 @@
+uuid: cb143c03-3f91-453b-a7a7-0018ec689084
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.list
+label: List
+targetEntityType: node
+cache: true

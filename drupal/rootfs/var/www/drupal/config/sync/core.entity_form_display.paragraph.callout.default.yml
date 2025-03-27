@@ -1,0 +1,43 @@
+uuid: 54e83c7f-1c4a-4f58-a203-9bce727b6606
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.callout.field_body
+    - field.field.paragraph.callout.field_callout
+    - field.field.paragraph.callout.field_disposition
+    - paragraphs.paragraphs_type.callout
+  module:
+    - text
+id: paragraph.callout.default
+targetEntityType: paragraph
+bundle: callout
+mode: default
+content:
+  field_body:
+    type: text_textarea_with_summary
+    weight: 2
+    region: content
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+      show_summary: false
+    third_party_settings: {  }
+  field_callout:
+    type: text_textarea
+    weight: 0
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_disposition:
+    type: options_select
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

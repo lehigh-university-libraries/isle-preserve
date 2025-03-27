@@ -1,0 +1,120 @@
+/**
+ *  @file _general.sass
+ *  @category 30_typography
+ *  @theme LOCAL
+ *  @description Defines various type classes
+ *
+ **/
+
+html
+  font-weight: $normal
+
+.reversed, .reverse
+  *
+    color: $white
+
+.deck, .field_deck
+  @extend %deck
+
+.content-label
+  font-family: $basefont
+  +font-size(0)
+  text-transform: uppercase
+  color: set-color(6)
+  font-weight: $bold
+
+  a
+    color: inherit
+
+  &.emphasis
+    color: $impact
+
+    &.show-link
+      a
+        border-bottom: 1px solid $impact
+
+        &:hover
+          color: $black
+          border-color: $black
+
+
+  &.show-link
+    a
+      border-bottom: 1px solid $black
+
+  +reversed
+    color: $white
+
+  + h1, + h2
+    margin-top: rv(-4)
+
+.content-label-compact
+  @extend .content-label
+  +font-size(0)
+
+
+.submission-info
+  +font-size(0)
+  color: neutral(90)
+  font-family: $headingfont
+  font-weight: $light
+
+.label
+  @extend %value-label
+
+.value
+  @extend %value
+
+.label:not(.visually-hidden) + .field-values
+  @extend %value
+
+  *
+    color: inherit
+    font-size: inherit
+
+.new
+  color: $black
+  font-weight: $semibold
+  text-transform: uppercase
+  background-color: set-colour(2)
+  display: inline-flex
+  justify-content: center
+  align-items: center
+  padding: 0 rv(-5)
+
+  +reversed
+    background-color: $white
+    color: $black
+
+$highlight_spread: 3px
+
+.highlight
+  position: relative
+  isolation: isolate // creates a new stacking context to ensure :before element z-index applies only to this elements
+  &:before
+    position: absolute
+    content: ''
+    z-index: -1
+    top: 0
+    left: $highlight_spread * 2 // Not a sensible multiplier. Intended to reduce spread to neighbouring elements.
+    right: $highlight_spread * 2
+    bottom: 0
+    background: $impact
+    border-radius: $ui_border_radius
+
+.highlight-alt
+  @extend .highlight
+  &:before
+    background: set-color(2)
+
+.details-grid
+  @extend %details-grid
+
+  +reversed
+    color: $white
+
+  a
+    border-bottom: 1px solid $black
+
+    &:hover, &:active
+      border-color: $impact

@@ -1,0 +1,31 @@
+uuid: c3212ba4-77aa-4d04-9b2d-380fefedc890
+langcode: en
+status: false
+dependencies:
+  module:
+    - islandora
+    - lehigh_site_support
+    - system
+  theme:
+    - lehigh
+id: lehigh_lehighsitectablock
+theme: lehigh
+region: title
+weight: 0
+provider: null
+plugin: lehigh_site_cta_block
+settings:
+  id: lehigh_site_cta_block
+  label: 'lehigh Site CTA Block'
+  label_display: '0'
+  provider: lehigh_site_support
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''
+  request_path:
+    id: request_path
+    negate: false
+    pages: '<front>'

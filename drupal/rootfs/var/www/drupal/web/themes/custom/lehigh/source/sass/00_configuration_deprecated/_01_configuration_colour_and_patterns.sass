@@ -1,0 +1,64 @@
+/**
+ * @file
+ * Colour System Configuration. A standardized approach to defining and modulating colour.
+ *
+ * Copy this file to your theme configuration folder of your local theme or component and adjust it _index file to import.
+ */
+
+ /* !COLOUR GRID
+    Define your design’s palette by choosing the main colours */
+
+$clr1: #ABABAB
+$clr2: #EFEFEF
+$clr3: #333333
+$clr4: #222222
+$clr5: #111111
+$clr6: #000000
+$clr7: #000000
+$clr8: #000000
+$clr9: #000000
+
+// Define alternative blackpoint, whitepoint and neutrals.
+
+$black: black
+$white: white
+$true_black: #000000
+
+
+// Color map examples
+
+$clr1_map: (shade: mix($black,$clr1,20%), primary: $clr1, tint: mix($white,$clr1,10%), fade: mix($white,$clr1,50%), watermark: mix($white,$clr1,80%))
+$clr2_map: (shade: mix($black,$clr2,20%), primary: $clr2, tint: mix($white,$clr2,10%), fade: mix($white,$clr2,50%), watermark: mix($white,$clr2,80%))
+$clr3_map: (shade: mix($black,$clr3,20%), primary: $clr3, tint: mix($white,$clr3,10%), fade: mix($white,$clr3,50%), watermark: mix($white,$clr3,80%))
+$clr4_map: (shade: mix($black,$clr4,20%), primary: $clr4, tint: mix($white,$clr4,10%), fade: mix($white,$clr4,50%), watermark: mix($white,$clr4,80%))
+$clr5_map: (shade: mix($black,$clr5,20%), primary: $clr5, tint: mix($white,$clr5,10%), fade: mix($white,$clr5,50%), watermark: mix($white,$clr5,80%))
+$clr6_map: (shade: mix($black,$clr6,20%), primary: $clr6, tint: mix($white,$clr6,10%), fade: mix($white,$clr6,50%), watermark: mix($white,$clr6,80%))
+$clr7_map: (shade: mix($black,$clr7,20%), primary: $clr7, tint: mix($white,$clr7,10%), fade: mix($white,$clr7,50%), watermark: mix($white,$clr7,80%))
+$clr8_map: (shade: mix($black,$clr8,20%), primary: $clr8, tint: mix($white,$clr8,10%), fade: mix($white,$clr8,50%), watermark: mix($white,$clr8,80%))
+$clr9_map: (shade: mix($black,$clr9,20%), primary: $clr9, tint: mix($white,$clr9,10%), fade: mix($white,$clr9,50%), watermark: mix($white,$clr9,80%))
+
+
+// Neutrals
+// neutral() function mixes blackpoint and whitepoint.
+
+$lightest_neutral: neutral(5)
+$lighter_neutral: neutral(30)
+$light_neutral: neutral(40)
+$neutral: neutral()
+$mid_neutral: neutral(60)
+$dark_neutral: neutral(70)
+$darker_neutral: neutral(80)
+$darkest_neutral: neutral(90)
+
+// Background
+
+$bgcolor: $white
+$footer_bg: $black
+
+//Aliases
+
+$impact: red
+$cta: blue
+$de_emphasized: $light_neutral
+$de_activated: $lighter_neutral
+$link_colour: $cta

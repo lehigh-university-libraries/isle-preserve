@@ -1,0 +1,26 @@
+<div id="lehigh-welcome-block">
+  <div class="lehigh--identity">
+    <div class="lehigh--identity--title">
+      <h2>Search our Collections</h2>
+    </div>
+    {{ about_text }}
+  </div>
+  <div class="lehigh--search">
+    <div class="lehigh--search--forms">
+      {{ search_form }}
+      <span>or</span>
+      {{ browse_form }}
+    </div>
+
+    <div class="lehigh--suggested-terms">
+      <label>Suggested terms: </label>
+      <span>
+        {% for suggestion in suggestions %}
+          <a href="{{ suggestion.href }}">{{ suggestion.label }}</a>
+        {% endfor %}
+      </span>
+    </div>
+    <a href="/search">Advanced search</a>
+  </div>
+</div>
+

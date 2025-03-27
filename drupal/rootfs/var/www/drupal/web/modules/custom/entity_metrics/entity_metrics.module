@@ -1,0 +1,100 @@
+<?php
+
+/**
+ * @file
+ * Contains entity_metrics.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use GuzzleHttp\Client;
+
+/**
+ * Implements hook_help().
+ */
+function entity_metrics_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the entity_metrics module.
+    case 'help.page.entity_metrics':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('My Awesome Module') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for node templates.
+ */
+function entity_metrics_preprocess_node(&$variables) {
+  // Check if the current page is a node view.
+  if (\Drupal::routeMatch()->getRouteName() === 'entity.node.canonical') {
+    $variables['#attached']['library'][] = 'entity_metrics/record';
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function entity_metrics_cron($limit = 500) {
+  if (!is_integer($limit) || $limit < 1) {
+    $limit = 500;
+  }
+
+  $visits = \Drupal::database()->query("SELECT ip_address
+    FROM {entity_metrics_data}
+    WHERE ip_address IS NOT NULL
+    GROUP BY ip_address
+    LIMIT $limit");
+  foreach ($visits as $visit) {
+    try {
+      $client = new Client();
+      $json = $client->request('GET', 'https://api.ip2location.io/', [
+        'query' => [
+          'key' => Drupal::service('key.repository')->getKey('ip2location')->getKeyValue(),
+          'ip' => $visit->ip_address,
+        ],
+      ])->getBody()->getContents();
+      $location = json_decode($json, true);
+      $data = [
+        'country' => $location['country_code'],
+        'region' => $location['region_name'],
+        'city' => $location['city_name'],
+        'latitude' => $location['latitude'],
+        'longitude' => $location['longitude'],
+      ];
+    }
+    catch (Exception $e) {
+      $data = [
+        'country' => '',
+        'region' => '',
+        'city' => '',
+        'latitude' => 0,
+        'longitude' => 0,
+      ];
+    }
+
+    // Perform the merge query.
+    $merge = \Drupal::database()->merge('entity_metrics_regions')
+      ->key($data)
+      ->fields($data)
+      ->execute();
+
+    $d_args = [];
+    foreach ($data as $key => $value) {
+      $key = ':' . $key;
+      $d_args[$key] = $value;
+    }
+    $id = \Drupal::database()->query('SELECT id FROM {entity_metrics_regions}
+      WHERE country = :country
+        AND region = :region
+        AND city = :city
+        AND latitude = :latitude
+        AND longitude = :longitude', $d_args)->fetchField();
+    \Drupal::database()->query('UPDATE {entity_metrics_data} SET region_id = :id, ip_address = NULL WHERE ip_address = :ip', [
+      ':id' => $id,
+      ':ip' => $visit->ip_address,
+    ]);
+  }
+}

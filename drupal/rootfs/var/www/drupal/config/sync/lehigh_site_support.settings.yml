@@ -1,0 +1,28 @@
+about_text:
+  value: '<p>This copy can be changed on the Lehigh Settings page. Lorem ipsum dolor sit amet.</p>'
+  format: basic_html
+featured_collections_description:
+  value: ''
+  format: basic_html
+browse_items_deck:
+  value: ''
+  format: basic_html
+browse_collections_deck:
+  value: ''
+  format: basic_html
+general_rights_statement:
+  value: ''
+  format: basic_html
+reproduction_statement:
+  value: '<p>Lorem ipsum dolor sit amet.</p>'
+  format: basic_html
+reproductions_link: '#'
+reproductions_button_text: 'Make an access request'
+content_statement_link: '#'
+collections_vocabulary: corporate_body
+collection_searchfield_placeholder: 'Search for keywords, names, and locations'
+collections_route_path: collections
+default_collection: ''
+top_level_collections_description:
+  value: '<p>This is top-level collections text. It can be changed at Admin &gt; Configuration &gt; System &gt; Lehigh Site Support Settings. Lorem ipsum dolor sit amet nonummy est.</p>'
+  format: basic_html

@@ -1,0 +1,29 @@
+uuid: 1314e326-2c4d-4498-a7f3-4630a41d54b2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_site_disposition
+    - node.type.islandora_object
+    - taxonomy.vocabulary.site_disposition
+id: node.islandora_object.field_site_disposition
+field_name: field_site_disposition
+entity_type: node
+bundle: islandora_object
+label: 'Site Disposition'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      site_disposition: site_disposition
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

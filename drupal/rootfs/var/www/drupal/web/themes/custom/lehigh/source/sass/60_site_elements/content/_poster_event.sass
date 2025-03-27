@@ -1,0 +1,28 @@
+
+
+article.node--type-event.poster
+  h2
+    @extend %ribbon-black
+    +font-size(2)
+    margin: 0 auto
+    padding-bottom: rv(0)
+
+  .field_date_container
+    @extend %ribbon-red
+    margin: 0 auto
+    transform: translateY(#{(rv(0) * -1) + rv(-3) }) rotate(1deg)
+
+  .field_attachment
+    @extend %ribbon-black
+    margin: 0 auto
+    font-weight: $normal
+
+    a
+      color: white
+      text-decoration: underline
+
+  .field_location
+    margin-top: rv($block_spacing)
+
+  video, img
+    max-width: 100%

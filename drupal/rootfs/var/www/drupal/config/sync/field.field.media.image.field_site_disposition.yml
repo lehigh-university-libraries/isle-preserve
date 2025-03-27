@@ -1,0 +1,29 @@
+uuid: 73b20ddb-d8b7-4c85-9372-bf885ffd52d1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_site_disposition
+    - media.type.image
+    - taxonomy.vocabulary.site_disposition
+id: media.image.field_site_disposition
+field_name: field_site_disposition
+entity_type: media
+bundle: image
+label: 'Site Disposition'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      site_disposition: site_disposition
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

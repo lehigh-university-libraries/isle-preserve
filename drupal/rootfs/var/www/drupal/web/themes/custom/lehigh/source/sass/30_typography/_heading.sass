@@ -1,0 +1,37 @@
+/**
+ *  @file _heading.sass
+ *  @category 30_typography
+ *  @theme LOCAL
+ *  @description Define headings H1-H6, plus any subclasses.
+ *
+ **/
+
+
+h1, h2, h3, h4, h5, h6
+  font-weight: $semibold
+
+  +reversed
+    color: $white
+
+h1, h2
+  +heading-ornament()
+  margin-top: 0
+  margin-bottom: rv($edge_padding_factor)
+
+  &.display
+    @extend %h2-display
+
+h2.alt
+  @extend %h2-alt
+
+h3
+  font-family: $headingfont
+  margin-bottom: rv(-3)
+
+  &.alt
+    @extend %h3-alt
+
+
+
+h4
+  font-family: $basefont

@@ -1,0 +1,18 @@
+_core:
+  default_config_hash: xGaDFlyXTmhzluhiRhEx58v_3Fu-nMhCzEBF8K4eqHU
+drupalAcctProvisionServer: nis_cc_lehigh_edu
+ldapEntryProvisionServer: null
+drupalAcctProvisionTriggers:
+  - drupal_on_login
+ldapEntryProvisionTriggers: {  }
+orphanedDrupalAcctBehavior: ldap_user_orphan_email
+orphanedDrupalAcctReportingInbox: ''
+orphanedCheckQty: 100
+orphanedAccountCheckInterval: weekly
+userConflictResolve: resolve
+manualAccountConflict: conflict_associate
+acctCreation: ldap_behaviour
+disableAdminPasswordField: true
+userUpdateCronQuery: none
+userUpdateCronInterval: daily
+ldapUserSyncMappings: {  }

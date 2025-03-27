@@ -1,0 +1,8 @@
+uuid: 0feaf218-90d5-48d4-8168-7058334ed5cb
+langcode: en
+status: true
+dependencies: {  }
+name: Collection
+vid: collection
+description: ''
+weight: 0

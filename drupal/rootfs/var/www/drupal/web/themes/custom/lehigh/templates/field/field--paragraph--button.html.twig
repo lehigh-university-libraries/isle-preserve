@@ -1,0 +1,40 @@
+{%
+  set classes = [
+  'button',
+  paragraph.field_button_type.value ? paragraph.field_button_type.value,
+  paragraph.field_button_overlay.value ? paragraph.field_button_overlay.value,
+  paragraph.field_button_size.value ? paragraph.field_button_size.value,
+]
+%}
+
+
+{% if label_hidden %}
+  {# {% if multiple %} #}
+  <div{{ attributes.addClass('field-values').addClass(field_name ~ '_container') }}>
+    {% for item in items %}
+      <div{{ item.attributes.addClass(field_name).addClass(field_type).addClass('field-value')  }}>
+        {{ item.content|add_attr('link_attributes', {class: classes|join(' ')}, false)  }}
+      </div>
+    {% endfor %}
+  </div>
+  {# {% else %}
+    {% for item in items %}
+      <div{{ attributes.addClass(field_name).addClass(field_type) }}>{{ item.content }}</div>
+    {% endfor %}
+  {% endif %} #}
+{% else %}
+  <div{{ attributes.addClass(field_name ~ '_container') }}>
+    <div{{ title_attributes.addClass(title_classes).addClass('label') }}>{{ label }}</div>
+    {# {% if multiple %} #}
+    <div class='field-values'>
+      {# {% endif %} #}
+      {% for item in items %}
+        <div{{ item.attributes.addClass(field_name).addClass(field_type).addClass('field-value')  }}>
+          {{ item.content|add_attr('link_attributes', {class: classes|join(', ')}, false)  }}
+        </div>
+      {% endfor %}
+      {# {% if multiple %} #}
+    </div>
+    {# {% endif %} #}
+  </div>
+{% endif %}

@@ -1,0 +1,23 @@
+{%
+  set classes = [
+    'paragraph',
+    'paragraph--type--' ~ paragraph.bundle|clean_class,
+    view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+    not paragraph.isPublished() ? 'paragraph--unpublished',
+    'callout--container',
+    paragraph.field_position.value, 
+
+  ]
+%}
+
+
+{% block paragraph %}
+
+  <div{{ attributes.addClass(classes).setAttribute('id','p-' ~ paragraph.id()) }}>
+    {% block content %}
+      {{ content|without('field_position') }}
+{% endblock %}   
+  </div>
+
+
+{% endblock paragraph %}

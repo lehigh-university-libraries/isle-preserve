@@ -1,0 +1,8 @@
+uuid: 2611d1c0-074a-4200-bbff-90c1d5c03b07
+langcode: en
+status: true
+dependencies: {  }
+name: 'Resource Label'
+vid: resource_label
+description: 'Used to label content in the homepage’s “Resources” section.'
+weight: 0

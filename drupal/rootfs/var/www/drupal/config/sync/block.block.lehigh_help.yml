@@ -1,0 +1,22 @@
+uuid: 82a0434e-325f-4443-b566-4c38ee03eeec
+langcode: en
+status: false
+dependencies:
+  module:
+    - help
+  theme:
+    - lehigh
+_core:
+  default_config_hash: VfPFqqxfkomud5CO8DUijw85QIl9GIxh_nIxLOYESxg
+id: lehigh_help
+theme: lehigh
+region: quaternary_content
+weight: -7
+provider: null
+plugin: help_block
+settings:
+  id: help_block
+  label: Help
+  label_display: '0'
+  provider: help
+visibility: {  }

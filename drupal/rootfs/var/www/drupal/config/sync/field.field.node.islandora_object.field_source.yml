@@ -1,0 +1,19 @@
+uuid: ecedfbe4-8c5c-4d22-a9ac-1710b0f4bf78
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_source
+    - node.type.islandora_object
+id: node.islandora_object.field_source
+field_name: field_source
+entity_type: node
+bundle: islandora_object
+label: Source
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

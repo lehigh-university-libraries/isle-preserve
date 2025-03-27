@@ -1,0 +1,27 @@
+/**
+ *  @file _contact_form_block.sass
+ *  @category 60_site_elements
+ *  @theme LOCAL
+ *  @description Styles the contact form block. */
+
+#block-contactform
+  #edit-main-form
+    display: block
+    +bp($desktop)
+      display: flex
+
+    #edit-column-1,
+    #edit-column-2
+      padding-right: rv(2)
+      padding-left: rv(2)
+
+      +bp($desktop)
+        width: 50%
+
+      textarea#edit-message
+        width: 100%
+        height: rv(10)
+        border-radius: $ui_border_radius
+        border: solid 1px neutral(80)
+        padding-left: $ui_padding
+        font-family: $basefont

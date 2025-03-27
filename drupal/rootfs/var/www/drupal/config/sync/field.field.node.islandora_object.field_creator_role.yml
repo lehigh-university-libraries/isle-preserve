@@ -1,0 +1,29 @@
+uuid: 6e663d11-76a8-42f8-8124-4751b1bfc658
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_creator_role
+    - node.type.islandora_object
+    - taxonomy.vocabulary.creatorn_roles
+id: node.islandora_object.field_creator_role
+field_name: field_creator_role
+entity_type: node
+bundle: islandora_object
+label: 'Creator role'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      creatorn_roles: creatorn_roles
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

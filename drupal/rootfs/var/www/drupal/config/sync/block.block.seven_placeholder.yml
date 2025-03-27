@@ -1,0 +1,31 @@
+uuid: 24281cb8-2504-41cd-acf5-86c27499f5bc
+langcode: en
+status: false
+dependencies:
+  content:
+    - 'block_content:basic:32ebedf0-9269-4e00-9b9c-25f26ff3ec69'
+  module:
+    - block_content
+    - islandora
+  theme:
+    - seven
+id: seven_placeholder
+theme: seven
+region: header
+weight: 0
+provider: null
+plugin: 'block_content:32ebedf0-9269-4e00-9b9c-25f26ff3ec69'
+settings:
+  id: 'block_content:32ebedf0-9269-4e00-9b9c-25f26ff3ec69'
+  label: placeholder
+  label_display: '0'
+  provider: block_content
+  status: true
+  info: ''
+  view_mode: full
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

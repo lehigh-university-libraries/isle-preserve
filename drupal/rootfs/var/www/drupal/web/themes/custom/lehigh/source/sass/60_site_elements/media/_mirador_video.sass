@@ -1,0 +1,29 @@
+/**
+ *  @file _mirador.sass
+ *  @category 60_site_elements
+ *  @group media
+ *  @theme LOCAL
+ *  @description Additional support for the mirador Video display mode. **/
+
+
+// Note that the current implementation uses the “Mirador” view mode but displayes regular video
+
+.mirador
+  .field_media_video_file_container
+    background: set-color(8,30)
+    +standard-edge-padding
+
+    .field-values
+      display: flex
+      justify-content: center
+      align-items: center
+
+
+    video
+      background: $black
+
+body.mirador-video
+  article.mirador
+    width: 100% !important
+    min-height: 150px
+    height: auto

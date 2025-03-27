@@ -1,0 +1,16 @@
+$heading_ornament_offset: rv($edge_padding_factor)
+$heading_ornament_height: 2px
+
+
+=heading-ornament($colour: set-color(1))
+  position: relative
+  padding-bottom: $heading_ornament_offset // Clearance for ornament
+
+  &:after
+    content: ''
+    position: absolute
+    height: $heading_ornament_height
+    width: 80px
+    bottom: $heading_ornament_height * 0.5
+    left: 0
+    background-color: $colour

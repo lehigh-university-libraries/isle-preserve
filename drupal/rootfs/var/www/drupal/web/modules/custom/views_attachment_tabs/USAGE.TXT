@@ -1,0 +1,40 @@
+USAGE NOTES
+
+This module is designed to allow you to use views attachments to create multiple displays for a single configuration. For instance it could be used to create a browse interface that allows user to select between “Grid” and “List” views.
+
+Steps:
+
+- Create and configure a view. We'll call this the Main view.
+- Create an attachment view.
+- Change the Format of your attachment to create your alternative display.  IMPORTANT: Make sure to apply the format change to this attachment view only.
+- Under “Attachment Settings” attach the view to your Main view.
+- Ensure that inherit contextual filters and inherit exposed filters are set to “Yes”
+- Set attachment position to "after" (though "before" should work).
+- Add additional attachment displays as required
+- On the Main view set the Format to “Attachment Parent”. Note that the attachment parent is a pseudo-display which defers the actual presentation to your attachments (see below)
+- Under Format settings, select your default attachment view. This is how you determine your initial presentation for this view.
+- If you want to create a UI for users to select a display, change the  Advanced > Use Attachment Tabs setting to “Yes”
+
+Optional configuration:
+
+- Works with AJAX views (Advanced > Use Ajax : Yes), which will add a responsiveness to your browser
+- Not tested with caching (yet)
+- Also works with the Better Exposed Filters, Exposed Filter Blocks, and the Facet module for exposed facets (see below)
+
+
+NOTE ON SEARCH API / FACET MODULE INTEGRATION
+
+Additional implementation notes for those integrating your view with the Search API / Facet / SOLR modules.
+
+There is a known issue that prevents Search parameters from being applied to views attachments, which breaks the core functionality of this module. The development communities have been working to resolve this issue.
+
+A resolution has been posted to this thread, though it requires additional patches and configs: https://www.drupal.org/project/facets/issues/3116236
+
+Steps:
+
+- Apply this patch. https://www.drupal.org/files/issues/2022-12-12/facets-attachments-3116236-16.patch
+  - Note that the above patch should also work for Facets 2, though it's targeting Facets 3
+  - Additional note: This patch may not be required in future versions of Facets
+- Under Admin > Views > Settings > Advanced select “Facets display extender” (and “Attachment tab display extender”)
+- Configure your main view as normal, filtering by your content datasource and exposing any required filters
+- Under each attachment source, look for “Facet Settings” and assign each to the same content datasource as your Main view

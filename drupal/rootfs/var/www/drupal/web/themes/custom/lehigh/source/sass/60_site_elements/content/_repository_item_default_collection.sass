@@ -1,0 +1,88 @@
+/**
+ * @file _repository_item_default_collection.sass
+ * @description Styles specific to collections.
+ * @see_also _repository_item_default
+ */
+
+
+/** Identifying class set in nyhs_site_support.module **/
+
+body.page-node-type-islandora-object.collection
+
+  .region-title
+    position: relative
+    overflow: hidden
+
+    &:before
+      content: ''
+      position: absolute
+      background: $black
+      mix-blend-mode: multiply
+      top: 0
+      left: 0
+      right: 0
+      bottom: 0
+      z-index: -3
+
+  #title
+    #block-views-block-media-evas-full-width-block
+      position: absolute
+      top: 0
+      left: 0
+      z-index: -1
+
+
+    #block-views-block-item-title-collection
+      +gradient-overlay-dark-horizontal
+      color: $white
+
+      &:before
+        z-index: 0
+
+      *
+        color: inherit
+
+      h1:after
+        background-color: $collections_colour
+
+      .container
+        +full-width()
+
+        +bp($tablet)
+          min-height: 350px
+
+        +bp($desktop)
+          height: 100%
+          padding-right: rv($edge_padding_factor)
+
+        .item-title
+          +standard-edge-padding
+
+          +bp($desktop)
+            height: 100%
+            display: flex
+            flex-direction: column
+            justify-content: flex-start
+
+        .details-grid
+          margin-top: rv($mobile_edge_padding_factor)
+          padding-top: rv($mobile_edge_padding_factor)
+
+          +bp($tablet)
+            margin-top: rv($edge_padding_factor)
+            padding-top: rv($edge_padding_factor)
+
+        footer
+          margin-top: auto
+
+    .internal-links
+      padding-top: rv($edge_padding_factor)
+
+    .views-field-field-description
+      margin-bottom: rv($edge_padding_factor)
+
+  article.node--view-mode-full
+    max-width: $max-width !important
+
+    .field_description
+      max-width: $legible_inset_width

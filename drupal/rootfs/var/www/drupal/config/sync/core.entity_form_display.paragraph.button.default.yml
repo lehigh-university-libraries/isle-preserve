@@ -1,0 +1,65 @@
+uuid: 0878f19a-4efb-49b4-8166-7fe621c79265
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.button.field_button_overlay
+    - field.field.paragraph.button.field_button_size
+    - field.field.paragraph.button.field_button_type
+    - field.field.paragraph.button.field_link
+    - paragraphs.paragraphs_type.button
+  module:
+    - field_group
+    - link
+third_party_settings:
+  field_group:
+    group_button_options:
+      children:
+        - field_button_size
+        - field_button_overlay
+      label: 'Button options'
+      region: content
+      parent_name: ''
+      weight: 2
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: false
+        description: 'Additional settings for buttons'
+        required_fields: true
+id: paragraph.button.default
+targetEntityType: paragraph
+bundle: button
+mode: default
+content:
+  field_button_overlay:
+    type: options_select
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_button_size:
+    type: options_select
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_button_type:
+    type: options_select
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_link:
+    type: link_default
+    weight: 0
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

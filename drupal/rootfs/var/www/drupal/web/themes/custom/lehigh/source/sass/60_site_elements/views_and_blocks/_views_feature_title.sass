@@ -1,0 +1,48 @@
+/**
+ *  @file _views_feature_title.sass
+ *  @category 60_site_elements
+ *  @theme LOCAL
+ *  @description Creates the splash title presentation. Note: also repurposed for project page titles. */
+
+
+#block-views-block-feature-title-default-block
+  +standard_edge_padding_horizontal()
+  height: 100%
+  position: relative
+  
+  .views-row
+    position: relative
+  .title-group
+    +splash-feature-inset() // see 60_site_elements/12_mixins/splash_feature
+    +inset-text()
+    text-align: left
+    +standard_edge_padding
+    
+  .cta-link, .cta-area
+    display: none
+    
+    +bp($desktop)
+      display: block
+
+  h1
+    width: 100%
+    padding-bottom: 0
+    margin-top: 0
+    margin-bottom: rv(-1)
+
+    +bp($tablet)
+      border-bottom: 1px solid $white
+      padding-bottom: rv(0)
+      margin-bottom: rv(0)
+
+    +bp($desktop)
+      padding-bottom: rv(1)
+      margin-bottom: rv(1)
+
+  figure
+    +splash-image-support()
+    +gradient-overlay-dark()
+    
+  .deck
+    width: 100%
+

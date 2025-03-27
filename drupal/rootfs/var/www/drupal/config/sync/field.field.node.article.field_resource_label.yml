@@ -1,0 +1,33 @@
+uuid: 1a2983ab-66f7-4498-8355-2f85e931173f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_resource_label
+    - node.type.article
+    - taxonomy.vocabulary.resource_label
+  content:
+    - 'taxonomy_term:resource_label:bebb7523-2e7b-4c3c-ac6d-fb9717d5f653'
+id: node.article.field_resource_label
+field_name: field_resource_label
+entity_type: node
+bundle: article
+label: 'Resource Label'
+description: 'Identify the type of article.'
+required: true
+translatable: false
+default_value:
+  -
+    target_uuid: bebb7523-2e7b-4c3c-ac6d-fb9717d5f653
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      resource_label: resource_label
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

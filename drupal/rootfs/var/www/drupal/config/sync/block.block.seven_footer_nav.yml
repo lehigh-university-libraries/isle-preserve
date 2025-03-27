@@ -1,0 +1,31 @@
+uuid: c98bdf1e-e0fe-4e9c-96c4-3e65b7753fb9
+langcode: en
+status: false
+dependencies:
+  config:
+    - system.menu.footer-nav
+  module:
+    - islandora
+    - system
+  theme:
+    - seven
+id: seven_footer_nav
+theme: seven
+region: header
+weight: 0
+provider: null
+plugin: 'system_menu_block:footer-nav'
+settings:
+  id: 'system_menu_block:footer-nav'
+  label: 'Footer Navigation'
+  label_display: '0'
+  provider: system
+  level: 1
+  depth: 0
+  expand_all_items: false
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

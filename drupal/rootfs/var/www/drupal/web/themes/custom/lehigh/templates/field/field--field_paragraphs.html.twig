@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Paragraph field override
+ *
+ * Removes all wrapping field information from paragraphs by default.
+ * This allows each paragraph container to act a its own field wrapper,
+ * making it easier to style in the content stack.
+ *
+ */
+#}
+
+{% for item in items %}
+  {{ item.content }}
+{% endfor %}

@@ -1,0 +1,35 @@
+uuid: 10425048-a43b-4639-95bd-2d68fc9fe5d7
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.subjects
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - olivero
+id: subjectsswc
+theme: olivero
+region: sidebar
+weight: -5
+provider: null
+plugin: 'facet_block:subjects'
+settings:
+  id: 'facet_block:subjects'
+  label: Subject
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: subjectsswc
+visibility:
+  context_all:
+    id: context_all
+    negate: null
+    values: collection
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

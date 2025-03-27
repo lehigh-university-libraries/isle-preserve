@@ -1,0 +1,133 @@
+/**
+ *  @file _main_navigation.sass
+ *  @category 10_layout
+ *  @theme LOCAL
+ *  @description Structures the section <nav> menu.
+ *   For additional paragraph styling see 60_elements/paragraphs  **/
+
+#main-nav
+  display: flex
+  justify-content: space-between
+  align-items: center
+  padding-left: rv($mobile_edge_padding_factor)
+  height: $masthead_height
+  width: 100%
+
+  +bp($tablet)
+    padding-left: rv($edge_padding_factor)
+
+  +bp($desktop)
+    padding: 0 rv($edge_padding_factor)
+
+  a
+    &:hover
+      border-bottom: 0
+
+  .block-system-branding-block, .logo-div
+    flex-grow: 1 // This will force the element to the full width of the container if there are no other header elements.
+    display: flex
+    justify-content: flex-start
+    align-items: center
+    height: 100%
+    max-width: 60%
+
+    +bp($desktop)
+      max-width: none
+
+    > a
+      display: flex
+      height: $logo_height
+      width: fit-content
+      align-items: center
+      font-weight: $bold
+
+
+    img
+      display: block
+      height: 100%
+      width: auto
+      object-fit: contain
+
+  .views-exposed-form //NAVIGATION SEARCH BAR
+    display: none
+    +bp($desktop)
+      display: block
+
+    .js-form-type-select
+      display: none
+
+    .js-form-item
+      padding: 0
+      margin: 0
+      min-width: rv(10)
+
+      input[type=text]
+        height: 30px
+
+    .form-actions
+      padding: 0px
+
+      input[value="Reset"]
+        display: none
+
+      input
+        height: 30px
+        width: 30px
+        padding: 15px
+        background-size: 70%
+        margin-right: 15px
+
+    #edit-reset--9,
+    #edit-reset--2
+      display: none
+
+  nav
+    *
+      color: inherit
+
+    > ul
+      +horizontal-list(0)
+
+      li
+        line-height: 1
+        text-align: center
+
+      a
+        display: inline-flex
+        flex-direction: row
+        align-items: center
+        padding: 0 rv(-2)
+
+        &:hover
+          background-color: neutral(50)
+          border: 0
+
+
+
+
+
+
+// MOBILE NAV///
+
+.mobile-options
+  display: flex
+  height: 100%
+  +bp($desktop)
+    display: none
+
+  img
+    display: block
+    width: rv(1)
+    cursor: pointer
+
+  .mobile-search
+    margin-right: rv(0)
+
+  .mobile-menu
+    height: 100%
+    min-width: 60px //height of nav
+    display: flex
+    justify-content: center
+    align-items: center
+    background: $clr6
+

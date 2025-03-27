@@ -1,0 +1,57 @@
+/**
+ *  @file _general_title_area.sass
+ *  @description  Manages the title area of pages and articles
+ *
+ **/
+
+#block-lehigh-views-block-general-title-area-main
+  +proportional_height(100%,0.33)
+
+  h1:after
+    background: set-color(2)
+
+  .container
+    height: 100%
+    width: 100%
+
+  .general-title-area
+    position: relative
+    height: 100%
+    isolation: isolate
+
+    &:before
+      content: ''
+      position: absolute
+      left: 0
+      right: 0
+      bottom: 0
+      top: 0
+      background: $black
+      pointer-events: none
+      z-index: -2
+
+    .rows
+      +standard_edge_padding()
+      display: flex
+      flex-direction: column
+      height: 100%
+
+
+      +bp($desktop)
+        width: 50%
+
+    footer
+      +gradient-overlay-dark-horizontal
+      position: absolute
+      height: 100%
+      width: 100%
+      top: 0
+      left: 0
+      z-index: -1
+
+      *
+        height: 100%
+        width: 100%
+
+      img
+        object-fit: cover

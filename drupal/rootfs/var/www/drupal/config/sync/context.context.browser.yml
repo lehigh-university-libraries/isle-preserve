@@ -1,0 +1,63 @@
+uuid: 7b9314be-791d-4cd7-9185-ef4954d918b8
+langcode: en
+status: true
+dependencies:
+  module:
+    - stop14_tools
+label: 'Browser (General)'
+name: browser
+group: Display
+description: 'Common blocks for all browsers (item, collections, objects)'
+requireAllConditions: false
+disabled: false
+conditions:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    uuid: 8e966095-b428-4ca7-85a8-409e7573f2ca
+    context_mapping: {  }
+    view_inclusion:
+      view-browse-main: view-browse-main
+      view-browse_collections-main: view-browse_collections-main
+reactions:
+  blocks:
+    id: blocks
+    uuid: 8857ce84-8251-4555-bbd3-9e12b3e3a503
+    blocks:
+      a2dd3177-5992-420e-aa2b-40ddc0f6a317:
+        uuid: a2dd3177-5992-420e-aa2b-40ddc0f6a317
+        id: stop14_tools_browser_toolbar
+        label: 'Stop14 Browser Toolbar'
+        provider: stop14_tools
+        label_display: '0'
+        region: mobile_toolbar
+        weight: '0'
+        custom_id: stop14_tools_browser_toolbar
+        theme: nyhs
+        css_class: ''
+        unique: 0
+        context_id: browser
+        context_mapping: {  }
+        third_party_settings: {  }
+      42182ff7-53f6-4596-a3cb-b25ed63fa098:
+        uuid: 42182ff7-53f6-4596-a3cb-b25ed63fa098
+        id: stop14_tools_browser_toolbar
+        label: 'Stop14 Browser Toolbar'
+        provider: stop14_tools
+        label_display: '0'
+        region: mobile_toolbar
+        weight: '0'
+        custom_id: stop14_tools_browser_toolbar
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browser
+        context_mapping: {  }
+        third_party_settings: {  }
+    include_default_blocks: 1
+    saved: false
+  body_class:
+    id: body_class
+    body_class: object-browser
+    saved: false
+weight: -6

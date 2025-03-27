@@ -1,0 +1,47 @@
+uuid: a3e5955b-a0c2-45cd-919b-d2d1308138cf
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.test_content.body
+    - field.field.node.test_content.field_thumbnail
+    - node.type.test_content
+  module:
+    - text
+    - user
+id: node.test_content.default
+targetEntityType: node
+bundle: test_content
+mode: default
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+  mirador_evas_entity_view_1:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  mirador_evas_entity_view_2:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+  mirador_evas_entity_view_3:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
+    region: content
+hidden:
+  field_thumbnail: true
+  langcode: true
+  search_api_excerpt: true

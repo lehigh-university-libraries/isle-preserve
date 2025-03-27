@@ -1,0 +1,29 @@
+uuid: 51af7220-a8e1-4f94-b069-6d52fb36c796
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_affiliated_institution
+    - node.type.islandora_object
+    - taxonomy.vocabulary.corporate_body
+id: node.islandora_object.field_affiliated_institution
+field_name: field_affiliated_institution
+entity_type: node
+bundle: islandora_object
+label: 'Affiliated Institution'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      corporate_body: corporate_body
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

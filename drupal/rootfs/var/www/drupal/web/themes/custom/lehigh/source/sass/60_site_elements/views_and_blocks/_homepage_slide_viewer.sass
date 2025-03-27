@@ -1,0 +1,22 @@
+/**
+ *  @file _homepage_slide_viewer.sass
+ *  @category 60_site_elements
+ *  @group views_and_blocks
+ *  @theme LOCAL
+ *  @description Defines the views-generated Slide Viewer block.
+ *    Also see 60_site_elements/content/_slide.sass for general slide styles.
+ **/
+
+
+#block-lehigh-views-block-homepage-slide-viewer-block-1
+  position: relative
+
+  h2
+    color: $white
+
+  .views-element-container
+    +proportional-height(100%,0.5625) // 16:9
+    +splash-drupal-views-support // Adds height: 100% to a number of subelements for structure
+
+  slide-item
+    --slide-item-content-padding: 0 // Section already has padding

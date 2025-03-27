@@ -1,0 +1,12 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display source summary block total count.
+ *
+ * Available variables:
+ * - count: The total number of records retrieved.
+ */
+#}
+<h2 class="source-summary-count">
+  Viewing {% trans %}1 Result{% plural count %}{{ count }} Results{% endtrans %}
+</h2>

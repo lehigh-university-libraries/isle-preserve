@@ -1,0 +1,29 @@
+/**
+ *  @file _section_navigation.sass
+ *  @category 10_layout
+ *  @theme LOCAL
+ *  @description Structures the section <nav> menu.
+ *    For additional paragraph styling see 60_elements/paragraphs  **/
+
+
+.section-nav
+  nav
+    margin: rv(1) 0
+
+    > ul
+      +horizontal-list(2)
+      flex-wrap: wrap
+
+      li
+        text-transform: uppercase
+        font-weight: $bold
+        +font-size(0)
+
+        a
+          color: set-colour(4)
+          text-decoration: underline
+          border: 0
+
+          &:hover, &:focus, &.is-active
+            color: $link_colour
+            border: 0

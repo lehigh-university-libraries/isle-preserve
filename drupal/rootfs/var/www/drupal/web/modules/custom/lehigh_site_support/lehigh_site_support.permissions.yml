@@ -1,0 +1,4 @@
+administer lehigh_site_support configuration:
+  title: 'Administer lehigh_site_support configuration'
+  description: 'Optional description.'
+  restrict access: true

@@ -1,0 +1,22 @@
+uuid: 0e5e0624-30ec-4300-95b2-0209fae8e53d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_contextual_caption
+    - paragraphs.paragraphs_type.media
+  module:
+    - text
+id: paragraph.media.field_contextual_caption
+field_name: field_contextual_caption
+entity_type: paragraph
+bundle: media
+label: Caption
+description: 'Provide a caption for this placement context. If no caption is given the caption attached to the media object will be used (if it exists).'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

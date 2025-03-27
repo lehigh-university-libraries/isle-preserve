@@ -1,0 +1,35 @@
+uuid: 91e54c03-e4c5-4ef5-b061-54bc17215e91
+langcode: en
+status: false
+dependencies:
+  config:
+    - facets.facet.member_of_swc
+  module:
+    - context
+    - facets
+    - islandora
+  theme:
+    - seven
+id: seven_memberofswc
+theme: seven
+region: header
+weight: -15
+provider: null
+plugin: 'facet_block:member_of_swc'
+settings:
+  id: 'facet_block:member_of_swc'
+  label: 'Member Of'
+  label_display: visible
+  provider: facets
+  context_mapping: {  }
+  block_id: memberofswc
+visibility:
+  context_all:
+    id: context_all
+    negate: null
+    values: collection
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

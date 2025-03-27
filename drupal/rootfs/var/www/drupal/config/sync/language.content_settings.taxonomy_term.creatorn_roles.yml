@@ -1,0 +1,11 @@
+uuid: 12ff8c8f-f02c-4afe-aa9f-41d75d2d1eab
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.creatorn_roles
+id: taxonomy_term.creatorn_roles
+target_entity_type_id: taxonomy_term
+target_bundle: creatorn_roles
+default_langcode: site_default
+language_alterable: false

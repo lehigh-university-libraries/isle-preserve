@@ -1,0 +1,311 @@
+{#
+/**
+ * @file
+ * Theme override to display a single page.
+ *
+ * The doctype, html, head and body tags are not in this template. Instead they
+ * can be found in the html.html.twig template in this directory.
+ *
+ * Available variables:
+ *
+ * General utility variables:
+ * - base_path: The base URL path of the Drupal installation. Will usually be
+ *   "/" unless you have installed Drupal in a sub-directory.
+ * - is_front: A flag indicating if the current page is the front page.
+ * - logged_in: A flag indicating if the user is registered and signed in.
+ * - is_admin: A flag indicating if the user has permission to access
+ *   administration pages.
+ *
+ * Site identity:
+ * - front_page: The URL of the front page. Use this instead of base_path when
+ *   linking to the front page. This includes the language domain or prefix.
+ * - logo: The url of the logo image, as defined in theme settings.
+ * - site_name: The name of the site. This is empty when displaying the site
+ *   name has been disabled in the theme settings.
+ * - site_slogan: The slogan of the site. This is empty when displaying the site
+ *   slogan has been disabled in theme settings.
+ *
+ * Page content (in order of occurrence in the default page.html.twig):
+ * - node: Fully loaded node, if there is an automatically-loaded node
+ *   associated with the page and the node ID is the second argument in the
+ *   page's path (e.g. node/12345 and node/12345/revisions, but not
+ *   comment/reply/12345).
+ *
+ * Regions:
+* navigation: Navigation
+* menus: Second-level Menus
+* splash: Splash area
+* tabs: Tabs
+* wayfinding: Wayfinding
+* title: Title area
+* content: Content
+* search_dropdown: Search dropdown
+* main_sidebar: Main sidebar
+* secondary_content: Secondary content tier
+* secondary_sidebar: Secondary sidebar
+* tertiary_content: Tertiary content tier
+* tertiary_sidebar: Tertiary sidebar
+* quaternary_content: Quaternary content
+* quaternary_sidebar: Quaternary sidebar
+* footer: Footer
+ *
+ * @see template_preprocess_page()
+ * @see html.html.twig
+ */
+#}
+
+
+<header>
+  <section id="main-nav" class='full'>
+    <div class="logo-div">
+      <a class="nav-logo" title="Home" href="{{ url('<front>') }}"> <img class="lehigh-logo" alt="Lehigh University" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/marks/lehigh-mark-dark.svg"></a>
+    </div>
+    {{ page.navigation }}
+    <div class="mobile-options">
+      <img class="mobile-search" alt="Search" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/search-icon.svg">
+      <div class="mobile-menu">
+        <img class="menu-icon" alt="Menu" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/menu-icon.svg">
+      </div>
+    </div>
+
+  </section>
+
+</header>
+
+
+
+{% if page.splash  %}
+  <section id="splash" class='full' role="region">
+    {{ page.splash }}
+  </section>
+{% endif %}
+{% if page.title or page.wayfinding|render|length %}
+  <section id="title">
+    {% if page.wayfinding|render|length  %}
+      <div id="wayfinding"{% if logged_in  %} class='compact' {% endif %} role="navigation">
+        {{ page.wayfinding }}
+      </div>
+    {% endif %}
+    {% if page.title %}
+      {{ page.title }}
+    {% endif %}
+    </div>
+  </section>
+{% endif %}
+{% if page.tabs  %}
+    <section  class='full' id='in-page-navigation'>
+        <div id="tabs" role="navigation">
+            {{ page.tabs }}
+        </div>
+    </section>
+{% endif %}
+{% set above_content_render = page.above_content|render %}
+{% if above_content_render|length > 0 %}
+  <section id="above-content" class='region full' role="region">
+    <div class='no-sidebar'>
+      <div class='tier-container'>
+        {{ above_content_render }}
+      </div>
+    </div>
+  </section>
+{% endif %}
+
+{% if page.content or page.messages or page.help or page.main_sidebar or page.page.main_sidebar_left %}
+  <section id='primary-content' class='region' role="region">
+    <div class='{% if not page.main_sidebar is empty or not page.main_sidebar_left is empty %}with-sidebar{% else %}no-sidebar{% endif %}'>
+      {% if not page.main_sidebar_left is empty %}
+        <aside role="complementary" class="left">
+          {{ page.main_sidebar_left }}
+        </aside>
+      {% endif %}
+      <main id='main-content'>
+        {{ page.help }}
+        {{ page.messages }}
+        {{ page.content }}
+      </main>
+      {% if not page.main_sidebar is empty %}
+        <aside role="complementary" class="right">
+          {{ page.main_sidebar }}
+        </aside>
+        {% endif %}
+      {# /.primary-content #}
+    </div>
+  </section>
+{% endif %}
+
+{% if page.search_dropdown or page.search_dropdown %}
+<section id="search-dropdown" class='full' role="region">
+  {{ page.search_dropdown }}
+</section>
+{% endif %}
+
+
+
+
+{% if page.main_alt or page.main_alt_sidebar or page.main_alt_sidebar_left%}
+  <section id="main-alt" class='region'>
+    <div class='{% if not page.main_alt_sidebar is empty or not page.main_alt_sidebar_left is empty %} with-sidebar {% else %} no-sidebar {% endif %}'>
+
+
+      {% if not page.main_alt_sidebar_left is empty %}
+        <aside role="complementary" class="left">
+          {{ page.main_alt_sidebar_left }}
+        </aside>
+      {% endif %}
+      <div class='tier-container'>
+        {{ page.main_alt }}
+      </div>
+      {% if not page.main_alt_sidebar is empty %}
+        <aside role="complementary" class="right">
+          {{ page.main_alt_sidebar }}
+        </aside>
+      {% endif %}
+      {# /.main-alt #}
+    </div>
+  </section>
+{% endif %}
+
+{% if page.secondary_content or page.secondary_sidebar or page.secondary_sidebar_left%}
+  <section id="secondary-content" class='full {% if not page.secondary_sidebar is empty or not page.secondary_sidebar_left is empty %}sidebars{% endif %}'>
+  <div class='{% if not page.secondary_sidebar is empty or not page.secondary_sidebar_left is empty %}with-sidebar{% else %}no-sidebar{% endif %}'>
+
+    {% if not page.secondary_sidebar_left is empty %}
+      <aside role="complementary" class="left">
+        {{ page.secondary_sidebar_left }}
+      </aside>
+    {% endif %}
+    <div class='tier-container'>
+      {{ page.secondary_content }}
+    </div>
+    {% if not page.secondary_sidebar is empty %}
+      <aside role="complementary" class="right">
+        {{ page.secondary_sidebar }}
+      </aside>
+      {% endif %}
+    {# /.secondary-content #}
+  </div>
+  </section>
+{% endif %}
+
+{% if page.tertiary_content or page.tertiary_sidebar %}
+  <section id="tertiary-content" class='full {% if not page.tertiary_sidebar is empty or not page.tertiary_sidebar_left is empty %}sidebars{% endif %}' role="region">
+  <div class='{% if not page.tertiary_sidebar is empty or not page.tertiary_sidebar_left is empty %}with-sidebar{% else %}no-sidebar{% endif %}'>
+      {% if not page.tertiary_sidebar_left is empty %}
+      <aside role="complementary" class="left">
+        {{ page.tertiary_sidebar_left }}
+      </aside>
+    {% endif %}
+    <div class='tier-container'>
+      {{ page.tertiary_content }}
+    </div>
+    {% if not page.tertiary_sidebar is empty %}
+      <aside role="complementary" class="right">
+        {{ page.tertiary_sidebar }}
+      </aside>
+      {% endif %}
+    {# /.tertiary-content #}
+  </div>
+  </section>
+{% endif %}
+
+{% if page.quaternary_content or page.quaternary_sidebar %}
+  <section id="quaternary-content" class='full {% if not page.quaternary_sidebar is empty or not page.quaternary_sidebar_left is empty %}sidebars{% endif %}' role="region">
+    <div class='{% if not page.quaternary_sidebar is empty or not page.quaternary_sidebar_left is empty %}with-sidebar{% else %}no-sidebar{% endif %}'>
+      {% if not page.quaternary_sidebar_left is empty %}
+        <aside role="complementary" class="left">
+          <button class="filter-btn results-btn" title="Go back to results" type="button">View results</button>
+          {{ page.quaternary_sidebar_left }}
+        </aside>
+      {% endif %}
+      <div class='tier-container'>
+        {% if not page.quaternary_sidebar_left is empty %}
+          <button class="filter-btn facets-btn" title="Open filter menu" type="button">Filter results</button>
+        {% endif %}
+        {{ page.quaternary_content }}
+      </div>
+      {% if not page.quaternary_sidebar is empty %}
+        <aside role="complementary" class="right">
+          {{ page.quaternary_sidebar }}
+        </aside>
+      {% endif %}
+      {# /.quaternary-content #}
+    </div>
+  </section>
+{% endif %}
+
+{% if page.overlay or page.overlay %}
+<section id="modal-overlay" class='full' role="region">
+
+  <div class='tier-container'>
+    <img class="overlay-close" alt="Close Menu" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/close.svg">
+
+    {{ page.overlay }}
+  </div>
+
+</section>
+{% endif %}
+
+<footer id='page-footer' class='full' role="contentinfo">
+  <div class="upper-footer">
+    <h2>The Preserve: Lehigh Library Digital Collections</h2>
+    <div class="upper-footer-content">
+      <div class="upper-footer-item">
+        {{ page.footer.lehigh_upperfootercontent}}
+      </div>
+      <div class="upper-footer-item">
+        {{ page.footer.lehigh_upperfooterlinks }}
+      </div>
+      <div class="upper-footer-item">
+        {{ page.footer.lehigh_upperfootersites }}
+      </div>
+      <div class="upper-footer-item">
+        {{ page.footer.lehigh_upperfooterlegend }}
+      </div>
+    </div>
+  </div>
+  <div class="bottom-footer">
+    <div class="footer-content">
+      <div class="footer-item footer-social">
+        <a href="{{ url('<front>') }}"><img class="lehigh-logo" alt="Lehigh University" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/marks/lehigh-mark-light.svg"></a>
+        <div class="social-media">
+          <p class="footer-title"> Follow LTS on Social </p>
+          <div class="social-media-icons">
+            <a href="https://www.facebook.com/lehighu/"><img class="social-icon" alt="Facebook" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/fb-icon.svg"></a>
+            <a href="https://twitter.com/LehighU"><img class="social-icon" alt="Twitter" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/twitter-icon.svg"></a>
+            <a href="https://www.instagram.com/lehighu/"><img class="social-icon" alt="Instagram" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/insta-icon.svg"></a>
+            <a href="https://www.youtube.com/user/lehighuofficial"><img class="social-icon" alt="YouTube" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/yb-icon.svg"></a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-item">
+        {{ page.footer.footer_info }}
+      </div>
+      <div class="footer-item">
+        {{ page.footer.footer_contact }}
+      </div>
+    </div>
+    <div class="footer-nav">
+      {{ page.footer.footer_nav}}
+    </div>
+    <div class="copyright">
+      <div class="left-items">
+        <p>©{{ 'now' | date('Y') }}  Lehigh University</p>
+        <p>All Rights Reserved</p>
+      </div>
+      <div class="right-items">
+      <a href="https://accessibility.lehigh.edu/">Web Accessibility</a>
+      <a href="https://www.lehigh.edu/terms">Terms</a>
+      <a href="https://www.lehigh.edu/privacy">Privacy</a>
+      <a href="/user">Website Editor Login</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+{% if page.mobile_toolbar %}
+  <section id="mobile-toolbar" class='full' role="navigation">
+    <div class="tier-container">
+      {{ page.mobile_toolbar }}
+    </div>
+  </section>
+{% endif %}

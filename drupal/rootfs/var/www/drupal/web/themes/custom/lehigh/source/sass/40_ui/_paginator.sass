@@ -1,0 +1,73 @@
+.pager__items //UL
+  background-color: set-color(1,10)
+  height: 50px
+  display: flex
+  flex-direction: row
+  align-items: center
+  justify-content: flex-end 
+  list-style: none
+  font-family: $basefont
+  font-weight: $semibold
+  position: relative
+  padding: rv(-2)
+
+  .pager__controls
+    display: flex
+    position: absolute
+    left: 0
+    padding-left: rv(-2)
+    li
+      margin-right: 5px
+ 
+  .pager__item //LI
+    margin-right: rv(-2)
+    margin-bottom: 0
+    +bp($desktop)
+      margin-right: rv(0)
+
+  .pager__number.is-active
+    font-weight: $bold
+    background-color: $clr4
+    a
+      color: $white
+
+  .pager__number
+    display: flex
+    justify-content: center
+    align-items: center
+    width: 25px
+    height: 25px
+    border-radius: 50%
+    text-decoration: none
+    background-color: $white
+    a
+      &:hover
+        border-bottom: none
+
+.pager__item--first,
+.pager__item--last
+  display: none
+
+
+//ICONS
+
+.pager__item--previous,
+.pager__item--next
+  margin-right: 0
+  a
+    display: flex
+    justify-content: center
+    align-items: center
+    height: 30px
+    width: 30px
+    background: $white
+    border-radius: $border-radius
+    img
+      height: 15px
+      width: 15px
+
+
+//Collection page scoping
+.collection-browser
+  .pager__number.is-active
+    background-color: $collections_colour

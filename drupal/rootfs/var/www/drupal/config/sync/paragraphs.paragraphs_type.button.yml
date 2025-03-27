@@ -1,0 +1,10 @@
+uuid: 906be527-2064-4363-abb2-6963ed2c7b25
+langcode: en
+status: true
+dependencies: {  }
+id: button
+label: Button
+icon_uuid: null
+icon_default: null
+description: 'A set of links or buttons to add in the flow of text. Use for Calls to Action, highlighted links, etc.'
+behavior_plugins: {  }

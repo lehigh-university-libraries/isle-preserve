@@ -1,0 +1,21 @@
+uuid: cf416e24-0c7e-4983-9ab7-f77d2116c55a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_button_overlay
+    - paragraphs.paragraphs_type.button
+  module:
+    - options
+id: paragraph.button.field_button_overlay
+field_name: field_button_overlay
+entity_type: paragraph
+bundle: button
+label: 'Button Overlay'
+description: 'Choose an optional overlay. Used when a button needs to sit on top of a complex background.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

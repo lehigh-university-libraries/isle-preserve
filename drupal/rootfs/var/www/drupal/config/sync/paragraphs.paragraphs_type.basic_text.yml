@@ -1,0 +1,10 @@
+uuid: f3dff802-0152-4a48-b49d-21dd5b8c3521
+langcode: en
+status: true
+dependencies: {  }
+id: basic_text
+label: 'Basic Text'
+icon_uuid: null
+icon_default: null
+description: 'Formatted text. An alternative to the “body” section that can be interspersed with other paragraph types.'
+behavior_plugins: {  }

@@ -1,0 +1,10 @@
+uuid: d5dd6a99-f8e7-4b71-a015-4f5c0267d6c3
+langcode: en
+status: true
+dependencies: {  }
+id: showcase_text
+label: 'Showcase Text'
+icon_uuid: null
+icon_default: null
+description: 'A showcase treatment of text and images.'
+behavior_plugins: {  }

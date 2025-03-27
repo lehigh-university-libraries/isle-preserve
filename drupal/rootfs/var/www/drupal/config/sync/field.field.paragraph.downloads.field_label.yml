@@ -1,0 +1,22 @@
+uuid: 363aa892-94d6-45c4-8f09-d04516cd9cfa
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_label
+    - paragraphs.paragraphs_type.downloads
+  module:
+    - text
+id: paragraph.downloads.field_label
+field_name: field_label
+entity_type: paragraph
+bundle: downloads
+label: Label
+description: "A short label. If the label isn't provided the default label will be “Download [Document Name]”"
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text

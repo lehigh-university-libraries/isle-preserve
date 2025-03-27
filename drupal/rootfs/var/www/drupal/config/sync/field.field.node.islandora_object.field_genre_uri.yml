@@ -1,0 +1,23 @@
+uuid: 198595d4-b0cd-46fa-afb6-c7a329447e37
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_genre_uri
+    - node.type.islandora_object
+  module:
+    - link
+id: node.islandora_object.field_genre_uri
+field_name: field_genre_uri
+entity_type: node
+bundle: islandora_object
+label: 'Genre URI'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 1
+  link_type: 17
+field_type: link

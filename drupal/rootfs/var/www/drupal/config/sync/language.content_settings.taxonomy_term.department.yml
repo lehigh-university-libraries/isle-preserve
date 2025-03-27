@@ -1,0 +1,11 @@
+uuid: d366b413-e4cd-4714-ab62-480d67f02a4c
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.department
+id: taxonomy_term.department
+target_entity_type_id: taxonomy_term
+target_bundle: department
+default_langcode: site_default
+language_alterable: false

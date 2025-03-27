@@ -1,0 +1,12 @@
+# Custom module library for general purposes.
+views_attachment_tabs.main:
+  js:
+    assets/js/viewsAttachmentTabs.js: {}
+  css:
+    component:
+      assets/css/viewsAttachmentTabs.css: {}
+  dependencies:
+    - core/drupalSettings
+    - core/jquery
+    - core/once
+    - core/jquery.once.bc

@@ -1,0 +1,87 @@
+uuid: 26802788-9f33-4feb-901b-a4d14f01c3c0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.showcase_text.field_body
+    - field.field.paragraph.showcase_text.field_cta
+    - field.field.paragraph.showcase_text.field_disposition
+    - field.field.paragraph.showcase_text.field_media
+    - field.field.paragraph.showcase_text.field_split
+    - field.field.paragraph.showcase_text.field_title
+    - paragraphs.paragraphs_type.showcase_text
+  module:
+    - field_group
+    - link
+    - media_library
+    - text
+third_party_settings:
+  field_group:
+    group_composition:
+      children:
+        - field_disposition
+        - field_split
+      label: Composition
+      region: content
+      parent_name: ''
+      weight: 4
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        description: ''
+        required_fields: true
+id: paragraph.showcase_text.default
+targetEntityType: paragraph
+bundle: showcase_text
+mode: default
+content:
+  field_body:
+    type: text_textarea_with_summary
+    weight: 6
+    region: content
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+      show_summary: false
+    third_party_settings: {  }
+  field_cta:
+    type: link_default
+    weight: 2
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_disposition:
+    type: options_select
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_media:
+    type: media_library_widget
+    weight: 3
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  field_split:
+    type: options_select
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

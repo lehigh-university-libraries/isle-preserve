@@ -1,0 +1,4 @@
+# Custom module library for general purposes.
+site_cta:
+  js:
+    assets/js/siteCTA.js: {}

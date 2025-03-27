@@ -1,0 +1,23 @@
+uuid: 65ec7c0d-19fe-4b94-9773-b13fa2eaf71c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_button_type
+    - paragraphs.paragraphs_type.button
+  module:
+    - options
+id: paragraph.button.field_button_type
+field_name: field_button_type
+entity_type: paragraph
+bundle: button
+label: 'Button Type'
+description: 'Choose a type of button. Link buttons are recommended for most cases. Call to action and ghost options are used for prominence.'
+required: true
+translatable: false
+default_value:
+  -
+    value: link
+default_value_callback: ''
+settings: {  }
+field_type: list_string

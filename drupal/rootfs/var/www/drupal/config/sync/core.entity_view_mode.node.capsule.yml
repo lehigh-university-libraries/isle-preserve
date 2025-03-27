@@ -1,0 +1,10 @@
+uuid: 2130133d-6813-431a-8877-b3f2c7c6ecaa
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.capsule
+label: Capsule
+targetEntityType: node
+cache: true
