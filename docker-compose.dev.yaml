@@ -35,9 +35,9 @@ services:
     volumes:
       - fcrepo-data:/data:Z,rw
   transformer:
-    image: ghcr.io/lehigh-university-libraries/sentence-transformer:main
+    image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:acf79219765935da8d836947e3fc0122f1ee06cd0c4e0e6c2cac91ac928f1603
   mariadb:
-    image: mariadb:11.7.2-noble
+    image: mariadb:11.7.2-noble@sha256:310d29fbb58169dcddb384b0ff138edb081e2773d6e2eceb976b3668089f2f84
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
@@ -53,78 +53,78 @@ services:
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
-    image: lehighlts/scyllaridae-fits:main
+    image: lehighlts/scyllaridae-fits:main@sha256:963e6d28626c428a870a460f790643f92e6682ff0aa33cf38a89bb37baf18ca1
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/crayfits:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
-    image: lehighlts/scyllaridae-hls:main
+    image: lehighlts/scyllaridae-hls:main@sha256:542d219efe298447d351ad45351e79a9d755d7b2d99c3a6d9415b5696ad139d2
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   homarus:
-    image: lehighlts/scyllaridae-ffmpeg:main
+    image: lehighlts/scyllaridae-ffmpeg:main@sha256:4705374d22da9e566baed3e7eb53d48ade105978410a3fcaad4688c66fa39c14
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: lehighlts/scyllaridae-imagemagick:main
+    image: lehighlts/scyllaridae-imagemagick:main@sha256:ea88146452f43d1217b61ec8597957f8ec3da71f8abf1b6b027d91ce92e2cbca
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: lehighlts/scyllaridae-tesseract:main
+    image: lehighlts/scyllaridae-tesseract:main@sha256:41e6978353a4275fa60089d3c6e5c0cc6a7ca8d3cdfaddb2886812eae2385efd
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: lehighlts/scyllaridae-ocrpdf:main
+    image: lehighlts/scyllaridae-ocrpdf:main@sha256:5ac583a8227ae22d316d17c283282c753ef2631e7acbd3ea741f70c18fb3ada6
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
-    image: lehighlts/scyllaridae-libreoffice:main
+    image: lehighlts/scyllaridae-libreoffice:main@sha256:70c78b32889d40470a7c6b4c1b1c5b65d5e03f168df35b5544ee71a3299a4e11
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   coverpage:
-    image: lehighlts/scyllaridae-coverpage:main
+    image: lehighlts/scyllaridae-coverpage:main@sha256:2242c40424a91f8c66464015d734e11cac3e80c75014e39db38c238befbc926f
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   cache-warmer:
-    image: lehighlts/scyllaridae-cache-warmer:main
+    image: lehighlts/scyllaridae-cache-warmer:main@sha256:93e557619d3eb2f683bdaab9e9cb5ab133cbbcdd49530f08bfa15e94b6ebf7ac
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       DRUPAL_URL: "https://${DOMAIN}"
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: lehighlts/scyllaridae-mergepdf:main
+    image: lehighlts/scyllaridae-mergepdf:main@sha256:a89e2370ff1ad68d9c3a1ff6c135ebfd3951f9015f4a8491a3441d3505a4e79f
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   xhgui-mongodb:
-    image: percona/percona-server-mongodb:3.6
+    image: percona/percona-server-mongodb:3.6@sha256:364ac99e61ec8d15a7ca89dfbf809156d6fbab51e45cb4f2540daeaaf7b8e7e7
     command: --storageEngine=wiredTiger
     environment:
       - MONGO_INITDB_DATABASE=xhprof
     volumes:
       - xhgui-data:/data/db
   xhgui:
-    image: xhgui/xhgui
+    image: xhgui/xhgui@sha256:9efd44df4eb3b1ef080ad64ec59b293b0bf52f737dad035aa95ee41f31f34fdd
     volumes:
       - ./conf/xhgui/config:/var/www/xhgui/config
       - ./conf/xhgui/nginx.conf:/etc/nginx/http.d/default.conf:ro

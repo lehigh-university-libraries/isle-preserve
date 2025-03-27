@@ -91,7 +91,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: us-docker.pkg.dev/lehigh-lts-images/public/fabricator:main
+    image: us-docker.pkg.dev/lehigh-lts-images/public/fabricator:main@sha256:d684793e76c9be992fdec01a7d5647581622006b8b67409352d70a6aea3a7505
     entrypoint:
       - /app/fabricator
       - --server
@@ -121,7 +121,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   parry:
-    image: lehighlts/scyllaridae-parry:main
+    image: lehighlts/scyllaridae-parry:main@sha256:99feb59b3fb16795fa0342dbb39ca610513d14db3935eb42c15f642b8f90313a
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
       - ./conf/parry/scyllaridae.yml:/app/scyllaridae.yml:r
@@ -176,7 +176,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - ./tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.29
+    image: memcached:1.6.29@sha256:56a39bd5c2d5c0a656d0aca25ad5b0d8cd40b7050d2805b58a04194a16d3953b
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -382,7 +382,7 @@ services:
       GIT_BRANCH: staging
       ROLLOUT_LOCK_FILE: /opt/islandora/d10_lehigh_agile/rollout.lock
   traefik:
-    image: traefik:v3.3.3
+    image: traefik:v3.3.3@sha256:19884a9d0b922b321c9cff54cbfe43f3169893041b8dd4ea6100677afaddce46
     command: >-
       --api.insecure=true
       --api.dashboard=true
