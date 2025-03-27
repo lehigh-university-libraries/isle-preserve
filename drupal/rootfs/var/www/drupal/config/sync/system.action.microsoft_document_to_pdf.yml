@@ -1,0 +1,20 @@
+uuid: cdedc47b-550a-4796-816c-1390f2a3d256
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_fits
+id: microsoft_document_to_pdf
+label: 'File - Convert Excel/PowerPoint/Word Document to PDF'
+type: node
+plugin: generate_fits_derivative
+configuration:
+  queue: islandora-connector-libreoffice
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#PreservationMasterFile'
+  derivative_term_uri: 'http://pcdm.org/use#OriginalFile'
+  mimetype: application/xml
+  args: null
+  destination_media_type: document
+  scheme: private
+  path: 'derivatives/microsoft/[node:nid].pdf'

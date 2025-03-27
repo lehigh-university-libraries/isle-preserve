@@ -11,7 +11,7 @@ dependencies:
 id: lehigh_lehighsitectablock
 theme: lehigh
 region: title
-weight: 0
+weight: -15
 provider: null
 plugin: lehigh_site_cta_block
 settings:

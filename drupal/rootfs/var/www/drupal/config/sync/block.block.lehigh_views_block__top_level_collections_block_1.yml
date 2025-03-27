@@ -13,7 +13,7 @@ dependencies:
 id: lehigh_views_block__top_level_collections_block_1
 theme: lehigh
 region: content
-weight: -22
+weight: -21
 provider: null
 plugin: 'views_block:top_level_collections-block_1'
 settings:

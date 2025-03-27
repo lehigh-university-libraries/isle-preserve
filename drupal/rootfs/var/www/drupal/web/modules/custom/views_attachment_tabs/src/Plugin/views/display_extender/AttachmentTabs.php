@@ -1,14 +1,9 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\views_attachment_tabs\Plugin\views\display_extender\AttachmentTabs.
- */
-
 namespace Drupal\views_attachment_tabs\Plugin\views\display_extender;
 
-use Drupal\views\Plugin\views\display_extender\DisplayExtenderPluginBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\Plugin\views\display_extender\DisplayExtenderPluginBase;
 
 /**
  * Attachment tab display extender plugin.
@@ -24,13 +19,14 @@ use Drupal\Core\Form\FormStateInterface;
  */
 class AttachmentTabs extends DisplayExtenderPluginBase {
 
-
+  /**
+   * {@inheritdoc}
+   */
   protected function defineOptions() {
     $options = parent::defineOptions();
     $options['attachment_tabs_enabled'] = ['default' => FALSE];
     return $options;
   }
-
 
   /**
    * Provide the default summary for options and category in the views UI.
@@ -48,17 +44,17 @@ class AttachmentTabs extends DisplayExtenderPluginBase {
    * Provide a form to edit options for this plugin.
    */
   public function buildOptionsForm(&$form, FormStateInterface $form_state) {
-      if ($form_state->get('section') != 'attachment_tabs') {
-        return;
-      }
+    if ($form_state->get('section') != 'attachment_tabs') {
+      return;
+    }
 
     $form['#title'] .= $this->t('Attachment tabs');
 
     $form['attachment_tabs_enabled'] = [
-        '#type' => 'checkbox',
-        '#title' => $this->t('Use attachment tabs'),
-        '#default_value' => $this->options['attachment_tabs_enabled'],
-        '#description' => $this->t('Create a set of tabs that will allow users to switch between a view and its attached views.'),
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use attachment tabs'),
+      '#default_value' => $this->options['attachment_tabs_enabled'],
+      '#description' => $this->t('Create a set of tabs that will allow users to switch between a view and its attached views.'),
     ];
 
     $form['attachment_tabs_default_container_class'] = [
@@ -68,13 +64,12 @@ class AttachmentTabs extends DisplayExtenderPluginBase {
       '#description' => $this->t('DEPRECATED. NO LONGER NEEDED. Set default attachment class in Attachment Parent display format settings. A class to identify the main view’s row container. This class must be on the view row container element of the main/default view for this functionality to work. The class must be assigned in the template or already present.<br />This is a temporary measure until a better method of identifying the default container is found.'),
     ];
 
-
   }
 
   /**
    * Validate the options form.
    */
-  public function validateOptionsForm(&$form, FormStateInterface $form_state) { }
+  public function validateOptionsForm(&$form, FormStateInterface $form_state) {}
 
   /**
    * Handle any special handling on the validate form.
@@ -94,18 +89,16 @@ class AttachmentTabs extends DisplayExtenderPluginBase {
   /**
    * Set up any variables on the view prior to execution.
    */
-  public function preExecute() { }
+  public function preExecute() {}
 
   /**
    * Inject anything into the query that the attachment_tabs handler needs.
    */
-  public function query() { }
+  public function query() {}
 
   /**
-   * Static member function to list which sections are defaultable
-   * and what items each section contains.
+   * Which sections are defaultable and what items each section contains.
    */
-  public function defaultableSections(&$sections, $section = NULL) { }
-}
+  public function defaultableSections(&$sections, $section = NULL) {}
 
-?>
+}

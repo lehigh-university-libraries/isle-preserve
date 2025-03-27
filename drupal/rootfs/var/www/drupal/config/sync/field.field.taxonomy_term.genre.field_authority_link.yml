@@ -21,6 +21,7 @@ default_value: {  }
 default_value_callback: ''
 settings:
   authority_sources:
+    aat: 'Getty Art & Architecture Thesaurus'
     lcgft: 'Library of Congress Genre/Form Terms'
     tgm: 'Thesaurus for Graphic Materials (TGM)'
     mgt: 'MARC Genre/Terms Scheme'

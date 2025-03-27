@@ -260,17 +260,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -279,7 +268,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - user
         - user.permissions
       tags: {  }
   block_2:
@@ -374,20 +362,9 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: false
-          content: "<h1>Browse All Digital Items</h1>\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sed mi facilisis enim elementum congue quis ac sapien. Ut consectetur egestas sapien, eget fermentum sapien sollicitudin id. Nulla ut scelerisque nisl. Morbi semper eget nibh id convallis. Cras felis purus, euismod eget mollis ac, sollicitudin sed turpis. </p>"
+          content: "<h1>Browse All Digital Items</h1>\r\n<p>Explore individual items across all collections and sub-collections. Use the facets on the left to narrow down your browsing to more specific materials.</p>"
           tokenize: false
       display_extenders:
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
     cache_metadata:
@@ -395,7 +372,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - user
         - user.permissions
       tags: {  }
   block_3:
@@ -490,20 +466,9 @@ display:
           admin_label: ''
           plugin_id: text_custom
           empty: false
-          content: "<h1>Browse Collections</h1>\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce sed mi facilisis enim elementum congue quis ac sapien. Ut consectetur egestas sapien, eget fermentum sapien sollicitudin id. Nulla ut scelerisque nisl. Morbi semper eget nibh id convallis. Cras felis purus, euismod eget mollis ac, sollicitudin sed turpis. </p>"
+          content: "<h1>Browse Collections</h1>\r\n<p>Explore curated collections of digitized and born-digital material.<br>All sub-collections from Library Special Collections and Lehigh Scholarship are listed below.</p>"
           tokenize: false
       display_extenders:
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
     cache_metadata:
@@ -511,6 +476,5 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - user
         - user.permissions
       tags: {  }

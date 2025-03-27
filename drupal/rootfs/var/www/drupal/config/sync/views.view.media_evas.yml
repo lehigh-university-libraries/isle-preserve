@@ -131,7 +131,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: numeric
+          plugin_id: entity_target_id
           default_action: default
           exception:
             value: all
@@ -139,9 +139,10 @@ display:
             title: All
           title_enable: false
           title: ''
-          default_argument_type: node
-          default_argument_options: {  }
-          default_argument_skip_url: false
+          default_argument_type: raw
+          default_argument_options:
+            index: 1
+            use_alias: false
           summary_options:
             base_path: ''
             count: true
@@ -158,6 +159,7 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
+          target_entity_type_id: node
       filters:
         status:
           id: status
@@ -361,17 +363,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -471,17 +462,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -499,18 +479,7 @@ display:
     display_plugin: entity_view
     position: 3
     display_options:
-      empty:
-        view:
-          id: view
-          table: views
-          field: view
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: view
-          empty: true
-          view_to_insert: 'thumbnail_of_first_child:block_1'
-          inherit_arguments: true
+      empty: {  }
       style:
         type: default
         options: {  }
@@ -527,17 +496,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: 0
         ajax_history: {  }
@@ -558,18 +516,8 @@ display:
     display_plugin: entity_view
     position: 3
     display_options:
-      empty:
-        view:
-          id: view
-          table: views
-          field: view
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: view
-          empty: true
-          view_to_insert: 'media_evas:service_thumbnail'
-          inherit_arguments: true
+      enabled: false
+      empty: {  }
       filters:
         status:
           id: status
@@ -645,17 +593,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: 0
         ajax_history: {  }

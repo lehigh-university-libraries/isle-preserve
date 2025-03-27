@@ -1,0 +1,5 @@
+task: update
+host: https://islandora.dev
+username: 'jjc223'
+input_dir: /Users/jjc223/lehigh/i2/codebase/scripts/migration/workbench/input_data
+input_csv: 'titles.csv'

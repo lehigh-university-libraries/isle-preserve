@@ -14,7 +14,7 @@ dependencies:
 id: lehigh_views_block__general_title_area_main
 theme: lehigh
 region: title
-weight: 0
+weight: -24
 provider: null
 plugin: 'views_block:general_title_area-main'
 settings:

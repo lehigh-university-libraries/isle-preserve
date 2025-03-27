@@ -1,0 +1,11 @@
+#collapsible-row .col-3 {
+  display: none;
+}
+
+#collapsible-row .col-3:nth-child(-n+4) {
+  display: block;
+}
+
+.field_abstract_container {
+  margin-bottom: 1rem;
+}

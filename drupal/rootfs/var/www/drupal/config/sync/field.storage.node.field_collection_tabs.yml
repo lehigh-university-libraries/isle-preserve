@@ -1,0 +1,19 @@
+uuid: db6c2318-8eaa-4d6b-b259-427bbb599552
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_collection_tabs
+    - node
+id: node.field_collection_tabs
+field_name: field_collection_tabs
+entity_type: node
+type: islandora_collection_tabs
+settings: {  }
+module: islandora_collection_tabs
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

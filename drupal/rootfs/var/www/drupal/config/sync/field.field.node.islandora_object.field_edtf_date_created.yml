@@ -14,7 +14,7 @@ field_name: field_edtf_date_created
 entity_type: node
 bundle: islandora_object
 label: 'Date Created'
-description: 'Date of creation of the resource'
+description: ''
 required: false
 translatable: false
 default_value: {  }

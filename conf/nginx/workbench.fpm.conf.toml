@@ -1,0 +1,7 @@
+[template]
+src = "workbench.fpm.conf.tmpl"
+dest = "/etc/nginx/shared/workbench.fpm.conf"
+uid = 0
+gid = 0
+mode = "0644"
+keys = [ "/" ]

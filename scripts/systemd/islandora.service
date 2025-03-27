@@ -1,0 +1,23 @@
+[Unit]
+Description=Islandora
+BindsTo=docker.service
+After=docker.service rbdmap.service
+StartLimitIntervalSec=120
+StartLimitBurst=3
+Requires=rbdmap.service
+
+[Service]
+User=root
+Group=root
+Type=oneshot
+EnvironmentFile=/home/rollout/.env
+WorkingDirectory=/opt/islandora/d10_lehigh_agile
+ExecStartPre=touch /opt/islandora/d10_lehigh_agile/rollout.lock
+ExecStart=/usr/bin/docker compose -f docker-compose.yaml -f docker-compose.$HOST.yaml up -d
+ExecStartPost=rm /opt/islandora/d10_lehigh_agile/rollout.lock
+Restart=on-failure
+RestartSec=15s
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

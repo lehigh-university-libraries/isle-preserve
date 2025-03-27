@@ -1,0 +1,29 @@
+uuid: 9720bf94-9641-4511-bb64-37da4c646602
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_thumbnail
+    - media.type.image
+    - node.type.islandora_object
+id: node.islandora_object.field_thumbnail
+field_name: field_thumbnail
+entity_type: node
+bundle: islandora_object
+label: Thumbnail
+description: 'Appears as a thumbnail on “Card” views and as a representative image on article pages. This field is automatically populated by the thumbnail created on the node. But if you want to reference a thumbnail from another node, you can reference it here.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      image: image
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

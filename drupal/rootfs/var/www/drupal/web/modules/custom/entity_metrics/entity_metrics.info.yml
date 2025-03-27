@@ -1,7 +1,0 @@
-name: 'Entity Metrics'
-type: module
-description: 'My Awesome Module'
-core_version_requirement: ^9.5 || ^10
-package: 'Statistics'
-dependencies:
-  - key:key

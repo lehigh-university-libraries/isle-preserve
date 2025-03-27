@@ -1,0 +1,5 @@
+name: 'islandora collection tabs'
+type: module
+description: 'Display tabs on collection homepages'
+package: Islandora
+core_version_requirement: ^10 || ^11

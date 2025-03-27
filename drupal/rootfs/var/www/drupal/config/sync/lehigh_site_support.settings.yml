@@ -1,5 +1,5 @@
 about_text:
-  value: '<p>This copy can be changed on the Lehigh Settings page. Lorem ipsum dolor sit amet.</p>'
+  value: '<p><span>Find digital books, photographs, scholarship, and other materials</span></p>'
   format: basic_html
 featured_collections_description:
   value: ''
@@ -24,5 +24,5 @@ collection_searchfield_placeholder: 'Search for keywords, names, and locations'
 collections_route_path: collections
 default_collection: ''
 top_level_collections_description:
-  value: '<p>This is top-level collections text. It can be changed at Admin &gt; Configuration &gt; System &gt; Lehigh Site Support Settings. Lorem ipsum dolor sit amet nonummy est.</p>'
+  value: '<p>These broad collections contain all of the digital material in the Repository. Click on one of these featured collections to begin browsing the sub-collections and their materials. For a more in-depth description of what each featured collection contains, <a href="/node/303463">see the "About Collections" page</a>.</p>'
   format: basic_html

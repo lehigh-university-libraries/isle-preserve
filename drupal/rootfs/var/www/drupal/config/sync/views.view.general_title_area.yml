@@ -195,7 +195,7 @@ display:
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
-          empty: ''
+          empty: '149240'
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
@@ -272,7 +272,6 @@ display:
           title: ''
           default_argument_type: node
           default_argument_options: {  }
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -351,17 +350,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }

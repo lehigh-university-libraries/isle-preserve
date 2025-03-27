@@ -7,9 +7,16 @@ if (PHP_SAPI === 'cli') {
   ini_set('memory_limit', '-1');
 }
 
+$settings['state_cache'] = TRUE;
+
 // Required when running Drupal behind a reverse proxy.
 $settings['reverse_proxy'] = TRUE;
-$settings['reverse_proxy_addresses'] = array($_SERVER['REMOTE_ADDR']);
+$settings['reverse_proxy_addresses'] = [
+  '128.180.1.79/32',
+  '128.180.1.80/32',
+  '172.0.0.0/8'
+];
+
 $settings['reverse_proxy_trusted_headers'] = \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR | 
 \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO | \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT;
 
@@ -27,6 +34,7 @@ $settings['reverse_proxy_trusted_headers'] = \Symfony\Component\HttpFoundation\R
  * about securing private files.
  */
 $settings['file_private_path'] = '/var/www/drupal/private/';
+$settings['file_assets_path'] = 'sites/default/files';
 
 // Shared configuration, config_split is used for any site specific differences.
 $settings['config_sync_directory'] = '/var/www/drupal/config/sync';
@@ -35,37 +43,38 @@ $settings['config_sync_directory'] = '/var/www/drupal/config/sync';
 global $content_directories;
 $content_directories['sync'] = '/var/www/drupal/content/sync';
 
-// Container environment variable path.
-$path = "/var/run/s6/container_environment/";
-
 // Some configurations are derived from environment variables.
-$config['islandora.settings']['broker_url'] = file_get_contents($path . 'DRUPAL_DEFAULT_BROKER_URL');
-$config['islandora.settings']['broker_user'] = file_exists($path . 'DRUPAL_DEFAULT_BROKER_USER') ? file_get_contents($path . 'DRUPAL_DEFAULT_BROKER_USER') : NULL;
-$config['islandora.settings']['broker_password'] = file_exists($path . 'DRUPAL_DEFAULT_BROKER_PASSWORD') ? file_get_contents($path . 'DRUPAL_DEFAULT_BROKER_PASSWORD') : NULL;
-$config['islandora_iiif.settings']['iiif_server'] = file_get_contents($path . 'DRUPAL_DEFAULT_CANTALOUPE_URL');
-$config['matomo.settings']['url_http'] = file_get_contents($path . 'DRUPAL_DEFAULT_MATOMO_URL');
-$config['matomo.settings']['url_https'] = file_get_contents($path . 'DRUPAL_DEFAULT_MATOMO_URL');
-$config['openseadragon.settings']['iiif_server'] = file_get_contents($path . 'DRUPAL_DEFAULT_CANTALOUPE_URL');
-$config['search_api.server.default_solr_server']['backend_config']['connector_config']['host'] = file_get_contents($path . 'DRUPAL_DEFAULT_SOLR_HOST');
-$config['search_api.server.default_solr_server']['backend_config']['connector_config']['port'] = file_get_contents($path . 'DRUPAL_DEFAULT_SOLR_PORT');
-$config['search_api.server.default_solr_server']['backend_config']['connector_config']['core'] = file_get_contents($path . 'DRUPAL_DEFAULT_SOLR_CORE');
+$config['islandora.settings']['broker_url'] = getenv('DRUPAL_DEFAULT_BROKER_URL');
+$config['islandora.settings']['broker_user'] = NULL;
+$config['islandora.settings']['broker_password'] = NULL;
+$config['islandora_iiif.settings']['iiif_server'] = getenv('DRUPAL_DEFAULT_CANTALOUPE_URL');
+$config['openseadragon.settings']['iiif_server'] = getenv('DRUPAL_DEFAULT_CANTALOUPE_URL');
+$config['search_api.server.default_solr_server']['backend_config']['connector_config']['host'] = getenv('DRUPAL_DEFAULT_SOLR_HOST');
+$config['search_api.server.default_solr_server']['backend_config']['connector_config']['port'] = getenv('DRUPAL_DEFAULT_SOLR_PORT');
+$config['search_api.server.default_solr_server']['backend_config']['connector_config']['core'] = getenv('DRUPAL_DEFAULT_SOLR_CORE');
+$config['islandora_repository_reports_activemq.settings']['islandora_repository_reports_activemq_admin_password'] = getenv('ACTIVEMQ_WEB_ADMIN_PASSWORD');
+
+$config['turnstile.settings']['site_key'] = getenv("TURNSTILE_SITE_KEY");
+$config['turnstile.settings']['secret_key'] = getenv("TURNSTILE_SECRET_KEY");
 
 // Others are hardcoded.
 $config['key.key.islandora_rsa_key']['key_provider_settings']['file_location'] = '/opt/keys/jwt/private.key';
-
 // Some settings are derived from environment variables.
-$settings['hash_salt'] = file_get_contents($path . 'DRUPAL_DEFAULT_SALT');
+$settings['hash_salt'] = getenv('DRUPAL_DEFAULT_SALT');
 $settings['trusted_host_patterns'] = [
-  0 => file_get_contents($path . 'DRUPAL_DEFAULT_SITE_URL'),
+  0 => getenv('DRUPAL_DEFAULT_SITE_URL'),
+  'drupal',
+  'islandora-prod.lib.lehigh.edu',
+  'islandora-test.lib.lehigh.edu',
 ];
 
 // Database settings are also derived from environment variables.
 $databases['default']['default'] = [
-  'database' => file_get_contents($path . 'DRUPAL_DEFAULT_DB_NAME'),
-  'username' => file_get_contents($path . 'DRUPAL_DEFAULT_DB_USER'),
-  'password' => file_get_contents($path . 'DRUPAL_DEFAULT_DB_PASSWORD'),
-  'host' => file_get_contents($path . 'DB_MYSQL_HOST'),
-  'port' => file_get_contents($path . 'DB_MYSQL_PORT'),
+  'database' => getenv('DRUPAL_DEFAULT_DB_NAME'),
+  'username' => getenv('DRUPAL_DEFAULT_DB_USER'),
+  'password' => getenv('DRUPAL_DEFAULT_DB_PASSWORD'),
+  'host' => getenv('DB_MYSQL_HOST'),
+  'port' => getenv('DB_MYSQL_PORT'),
   'prefix' => '',
   'driver' => 'mysql',
   'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
@@ -73,7 +82,19 @@ $databases['default']['default'] = [
 
 // Flysystem
 $settings['flysystem']['fedora']['driver'] = 'fedora';
-$settings['flysystem']['fedora']['config']['root'] = file_get_contents($path . 'DRUPAL_DEFAULT_FCREPO_URL');
+$settings['flysystem']['fedora']['config']['root'] = getenv('DRUPAL_DEFAULT_FCREPO_URL');
+
+$envs = ['production'];
+foreach ($envs as $env) {
+  $uri = 'gs-' . $env;
+  $settings['flysystem'][$uri] = [
+    'driver' => 'gcs',
+    'config' => [
+      'bucket' => 'lehigh-preserve-isle-' . $env . '-uploads',
+      'projectId' => 'lehigh-preserve-isle',
+    ]
+  ];
+}
 
 // Change the php_storage settings in your setting.php. It is recommend that
 // this directory be outside out of the docroot.
@@ -81,6 +102,62 @@ $settings['php_storage']['twig']['directory'] = $settings['file_private_path'] .
 $settings['php_storage']['twig']['secret'] = $settings['hash_salt'];
 
 $settings['file_temp_path'] = '/tmp';
+
+$memcache_exists = class_exists('Memcache', FALSE);
+if ($memcache_exists) {
+  $settings['memcache']['servers'] = ['memcached:11211' => 'default'];
+  $settings['memcache']['bins'] = ['default' => 'default'];
+  $settings['memcache']['key_prefix'] = '';
+  $settings['cache']['default'] = 'cache.backend.memcache';
+
+  $class_loader->addPsr4('Drupal\\memcache\\', 'modules/contrib/memcache/src');
+
+  // Define custom bootstrap container definition to use Memcache for cache.container.
+  $settings['bootstrap_container_definition'] = [
+    'parameters' => [],
+    'services' => [
+      # Dependencies.
+      'settings' => [
+        'class' => 'Drupal\Core\Site\Settings',
+        'factory' => 'Drupal\Core\Site\Settings::getInstance',
+      ],
+      'memcache.settings' => [
+        'class' => 'Drupal\memcache\MemcacheSettings',
+        'arguments' => ['@settings'],
+      ],
+      'memcache.factory' => [
+        'class' => 'Drupal\memcache\Driver\MemcacheDriverFactory',
+        'arguments' => ['@memcache.settings'],
+      ],
+      'memcache.timestamp.invalidator.bin' => [
+        'class' => 'Drupal\memcache\Invalidator\MemcacheTimestampInvalidator',
+        # Adjust tolerance factor as appropriate when not running memcache on localhost.
+        'arguments' => ['@memcache.factory', 'memcache_bin_timestamps', 0.001],
+      ],
+      'memcache.timestamp.invalidator.tag' => [
+        'class' => 'Drupal\memcache\Invalidator\MemcacheTimestampInvalidator',
+        # Remember to update your main service definition in sync with this!
+        # Adjust tolerance factor as appropriate when not running memcache on localhost.
+        'arguments' => ['@memcache.factory', 'memcache_tag_timestamps', 0.001],
+      ],
+      'memcache.backend.cache.container' => [
+        'class' => 'Drupal\memcache\DrupalMemcacheInterface',
+        'factory' => ['@memcache.factory', 'get'],
+        # Actual cache bin to use for the container cache.
+        'arguments' => ['container'],
+      ],
+      # Define a custom cache tags invalidator for the bootstrap container.
+      'cache_tags_provider.container' => [
+        'class' => 'Drupal\memcache\Cache\TimestampCacheTagsChecksum',
+        'arguments' => ['@memcache.timestamp.invalidator.tag'],
+      ],
+      'cache.container' => [
+        'class' => 'Drupal\memcache\MemcacheBackend',
+        'arguments' => ['container', '@memcache.backend.cache.container', '@cache_tags_provider.container', '@memcache.timestamp.invalidator.bin'],
+      ],
+    ],
+  ];
+}
 
 /**
  *  End Section.

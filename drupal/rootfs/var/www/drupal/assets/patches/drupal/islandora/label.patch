@@ -1,0 +1,22 @@
+diff --git a/modules/islandora_iiif/src/Plugin/views/style/IIIFManifest.php b/modules/islandora_iiif/src/Plugin/views/style/IIIFManifest.php
+index 6afae249..e25aa1d9 100644
+--- a/modules/islandora_iiif/src/Plugin/views/style/IIIFManifest.php
++++ b/modules/islandora_iiif/src/Plugin/views/style/IIIFManifest.php
+@@ -310,12 +310,15 @@ class IIIFManifest extends StylePluginBase {
+           if ($width == 0) {
+             continue;
+           }
+-
++          $label = $image->entity->label();
++          if ($entity->hasField('field_media_of') && !$entity->field_media_of->isEmpty() && !is_null($entity->field_media_of->entity)) {
++            $label = $entity->field_media_of->entity->label();
++          }
+           $tmp_canvas = [
+             // @see https://iiif.io/api/presentation/2.1/#canvas
+             '@id' => $canvas_id,
+             '@type' => 'sc:Canvas',
+-            'label' => $image->entity->label(),
++            'label' => $label,
+             'height' => $height,
+             'width' => $width,
+             // @see https://iiif.io/api/presentation/2.1/#image-resources

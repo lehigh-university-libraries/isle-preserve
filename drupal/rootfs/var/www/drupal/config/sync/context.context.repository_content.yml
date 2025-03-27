@@ -11,7 +11,7 @@ name: repository_content
 group: Indexing
 description: 'Index all Islandora nodes in Fedora and Blazegraph.'
 requireAllConditions: false
-disabled: false
+disabled: true
 conditions:
   node_is_islandora_object:
     id: node_is_islandora_object
@@ -25,13 +25,11 @@ reactions:
     saved: false
     actions:
       index_node_in_fedora: index_node_in_fedora
-      index_node_in_triplestore: index_node_in_triplestore
   delete:
     id: delete
     saved: false
     actions:
       delete_node_from_fedora: delete_node_from_fedora
-      delete_node_from_triplestore: delete_node_from_triplestore
   islandora_map_uri_predicate:
     id: islandora_map_uri_predicate
     saved: false

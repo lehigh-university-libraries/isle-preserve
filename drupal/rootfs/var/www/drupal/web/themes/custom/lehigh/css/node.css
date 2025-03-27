@@ -1,0 +1,47 @@
+.mirador-companion-windows button {
+  min-width: 0px;
+  width: 30px;
+  padding: 0;
+  background: none;
+  background-color: #9ac0db;
+}
+
+.textarea_attr label {
+  padding-top: 0;
+}
+
+.node--view-mode-full  #block-lehigh-content a {
+  width: fit-content;
+}
+
+
+.cue.highlight:before {
+  content: none !important;
+}
+
+.highlight {
+  background-color: #e9ecef;
+}
+
+.default_islandora_display audio,
+.default_islandora_display .card {
+  width: 100% !important;
+}
+
+@media only screen and (min-width: 1200px) {
+  .default_islandora_display audio,
+  .default_islandora_display .card {
+    width: 50% !important;
+  }
+}
+
+.cue a {
+  color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1)) !important;
+}
+
+.feed-icons .csv-feed .feed-icon {
+  display: block;
+  height: 16px;
+  width: 36px;
+  background-image: url(/modules/contrib/views_data_export/images/csv.png);
+}

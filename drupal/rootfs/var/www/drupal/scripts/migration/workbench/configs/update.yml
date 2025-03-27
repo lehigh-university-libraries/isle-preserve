@@ -1,0 +1,7 @@
+task: update
+host: https://islandora-prod.lib.lehigh.edu
+allow_adding_terms: true
+username: 'jjc223'
+input_dir: /Users/jjc223/lehigh/i2/codebase/scripts/migration/workbench/input_data
+input_csv: update.csv
+log_json: true

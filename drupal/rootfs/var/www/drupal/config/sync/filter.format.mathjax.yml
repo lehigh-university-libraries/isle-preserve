@@ -1,0 +1,24 @@
+uuid: 9c7d35a5-133a-4a29-b770-6f6e6610f50f
+langcode: en
+status: true
+dependencies:
+  module:
+    - mathjax
+    - token_filter
+name: mathjax
+format: mathjax
+weight: 0
+filters:
+  filter_mathjax:
+    id: filter_mathjax
+    provider: mathjax
+    status: true
+    weight: 50
+    settings: {  }
+  token_filter:
+    id: token_filter
+    provider: token_filter
+    status: false
+    weight: 0
+    settings:
+      replace_empty: '0'

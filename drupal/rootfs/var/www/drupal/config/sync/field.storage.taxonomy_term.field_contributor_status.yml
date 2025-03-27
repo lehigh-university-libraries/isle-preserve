@@ -1,0 +1,33 @@
+uuid: e77641c6-f8cd-4a5f-83df-846cd17aa689
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - taxonomy
+id: taxonomy_term.field_contributor_status
+field_name: field_contributor_status
+entity_type: taxonomy_term
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: Faculty
+      label: Faculty
+    -
+      value: Staff
+      label: Staff
+    -
+      value: 'Undergraduate Student'
+      label: 'Undergraduate Student'
+    -
+      value: 'Graduate Student'
+      label: 'Graduate Student'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

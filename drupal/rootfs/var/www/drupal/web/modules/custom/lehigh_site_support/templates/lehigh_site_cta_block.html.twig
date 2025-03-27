@@ -1,26 +1,41 @@
-<div id="lehigh-welcome-block">
-  <div class="lehigh--identity">
-    <div class="lehigh--identity--title">
-      <h2>Search our Collections</h2>
+<div class="text-bg-white">
+  <div class="container">
+    <div class="row p-4 pb-2">
+      <h2 class="pb-3">
+        Search our Collections
+      </h2>
+      <p class="text-black">{{ about_text }}</p>
     </div>
-    {{ about_text }}
   </div>
-  <div class="lehigh--search">
-    <div class="lehigh--search--forms">
-      {{ search_form }}
-      <span>or</span>
-      {{ browse_form }}
-    </div>
-
-    <div class="lehigh--suggested-terms">
-      <label>Suggested terms: </label>
-      <span>
-        {% for suggestion in suggestions %}
-          <a href="{{ suggestion.href }}">{{ suggestion.label }}</a>
-        {% endfor %}
-      </span>
-    </div>
-    <a href="/search">Advanced search</a>
+  <div class="container mb-5">
+    <form action="/browse" method="GET" class="row g-2 p-4 pt-2 pb-2">
+      <div class="col-sm-12 col-md-8">
+        <div class="input-group">
+          <input type="text" autofocus="autofocus" autocomplete="off" class="form-control" placeholder="Search for keywords, names, and locations" name="search_api_fulltext">
+          <span class="input-group-text ps-0 pe-0" id="homepage-search">
+            <button class="trigger btn">
+              <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg" alt="Location" width="24" height="24" />
+            </button>
+          </span>
+        </div>
+      </div>
+      <div class="col-sm-12 col-md-4">
+        <div class="row g-2 align-items-center">
+          <div class="sm-col-12 col-1">
+            <span>OR</span>
+          </div>
+          <div class="sm-col-12 col-11">
+            <div class="input-group input-group-lg">
+              <button class="btn trigger btn-outline-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Browse
+              </button>
+              <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="/browse">Browse All Digital Items</a></li>
+                <li><a class="dropdown-item" href="/collections">Browse Digital Collections</a></li>
+              </ul>
+            </div>
+          </div>
+      </div>
+    </form>
   </div>
 </div>
-

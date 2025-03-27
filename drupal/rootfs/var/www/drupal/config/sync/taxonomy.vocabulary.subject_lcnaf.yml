@@ -1,0 +1,9 @@
+uuid: 8d03fa07-32a2-4880-8d87-955131dd6920
+langcode: en
+status: true
+dependencies: {  }
+name: 'Subject (LCNAF)'
+vid: subject_lcnaf
+description: null
+weight: 0
+new_revision: false

@@ -4,5 +4,6 @@ status: true
 dependencies: {  }
 name: 'Digital Origin'
 vid: digital_origin
-description: ''
+description: null
 weight: 0
+new_revision: false

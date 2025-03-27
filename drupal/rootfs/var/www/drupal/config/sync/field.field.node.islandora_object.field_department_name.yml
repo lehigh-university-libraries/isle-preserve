@@ -11,13 +11,13 @@ field_name: field_department_name
 entity_type: node
 bundle: islandora_object
 label: 'Department name'
-description: ''
+description: 'Search for the Lehigh department that you are associated with. This may also be a college or academic program. If your department is not listed then click on the popup to add a new term.'
 required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:taxonomy_term'
+  handler: 'default:filter_existing_terms'
   handler_settings:
     target_bundles:
       department: department

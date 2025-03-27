@@ -1,4 +1,4 @@
-uuid: 23294f2f-2e15-4883-9ec0-f7e18ef18e1d
+uuid: 382afdc9-fb57-48a4-a2aa-9d735629dae5
 langcode: en
 status: true
 dependencies:
@@ -6,9 +6,7 @@ dependencies:
     - field.storage.node.field_note
     - node.type.islandora_object
   module:
-    - text
-_core:
-  default_config_hash: Aebshr3yHubH5IfL7kRp29DHbcOkh2yXDOouyvJWSSo
+    - lehigh_islandora
 id: node.islandora_object.field_note
 field_name: field_note
 entity_type: node
@@ -16,8 +14,128 @@ bundle: islandora_object
 label: Note
 description: ''
 required: false
-translatable: true
+translatable: false
 default_value: {  }
 default_value_callback: ''
-settings: {  }
-field_type: text_long
+settings:
+  attr0_values:
+    activity: activity
+    awards: awards
+    beyond-steel-category: beyond-steel-category
+    box: box
+    capture-device: capture-device
+    category: category
+    coach: coach
+    codes: codes
+    comments: comments
+    digital-publisher: digital-publisher
+    folder: folder
+    gender: gender
+    hierarchy: hierarchy
+    note: note
+    ppi: ppi
+    preferred-citation: preferred-citation
+    program: program
+    series: series
+    staff: staff
+    subfolder: subfolder
+    subject-type: subject-type
+    abstract: '0'
+    accompanying-material: '0'
+    annotation: '0'
+    audio-file: '0'
+    barcode: '0'
+    bepress-identifier: '0'
+    call-number: '0'
+    caption: '0'
+    code: '0'
+    date: '0'
+    description: '0'
+    doi: '0'
+    email: '0'
+    file-name: '0'
+    illustration: '0'
+    institution: '0'
+    islandora: '0'
+    item-number: '0'
+    l-issn: '0'
+    local: '0'
+    musical-works: '0'
+    oclc: '0'
+    orcid: '0'
+    original-coloration-size-support: '0'
+    performance-date: '0'
+    permission-type: '0'
+    printed: '0'
+    project-source: '0'
+    reference: '0'
+    report-number: '0'
+    season: '0'
+    table: '0'
+    text: '0'
+    transcription-file: '0'
+    uri: '0'
+    use-and-reproduction: '0'
+    year: '0'
+  attr1_values:
+    abstract: '0'
+    accompanying-material: '0'
+    activity: '0'
+    annotation: '0'
+    audio-file: '0'
+    awards: '0'
+    barcode: '0'
+    bepress-identifier: '0'
+    beyond-steel-category: '0'
+    box: '0'
+    call-number: '0'
+    caption: '0'
+    capture-device: '0'
+    category: '0'
+    coach: '0'
+    code: '0'
+    codes: '0'
+    comments: '0'
+    date: '0'
+    description: '0'
+    digital-publisher: '0'
+    doi: '0'
+    email: '0'
+    file-name: '0'
+    folder: '0'
+    gender: '0'
+    hierarchy: '0'
+    illustration: '0'
+    institution: '0'
+    islandora: '0'
+    item-number: '0'
+    l-issn: '0'
+    local: '0'
+    musical-works: '0'
+    note: '0'
+    oclc: '0'
+    orcid: '0'
+    original-coloration-size-support: '0'
+    performance-date: '0'
+    permission-type: '0'
+    ppi: '0'
+    preferred-citation: '0'
+    printed: '0'
+    program: '0'
+    project-source: '0'
+    reference: '0'
+    report-number: '0'
+    season: '0'
+    series: '0'
+    staff: '0'
+    subfolder: '0'
+    subject-type: '0'
+    table: '0'
+    text: '0'
+    transcription-file: '0'
+    uri: '0'
+    use-and-reproduction: '0'
+    year: '0'
+  attr0_name: type
+  attr1_name: ''
+field_type: textarea_attr

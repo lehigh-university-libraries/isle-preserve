@@ -16,11 +16,24 @@
         {
             "type": "package",
             "package": {
+                "name": "bqworks/slider-pro",
+                "version": "1.0.0",
+                "type": "drupal-library",
+                "source": {
+                    "url": "https://github.com/bqworks/slider-pro.git",
+                    "type": "git",
+                    "reference": "cfd5aeb28061470926007e31e13e2fb55c0883a2"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
                 "name": "library/pdf.js",
-                "version": "2.16.105",
+                "version": "4.10.38",
                 "type": "drupal-library",
                 "dist": {
-                    "url": "https://github.com/mozilla/pdf.js/releases/download/v2.16.105/pdfjs-2.16.105-dist.zip",
+                    "url": "https://github.com/mozilla/pdf.js/releases/download/v4.10.38/pdfjs-4.10.38-dist.zip",
                     "type": "zip"
                 }
             }
@@ -87,45 +100,63 @@
         }
     ],
     "require": {
-        "php": "^7.4 || ^8",
+        "php": "^8",
+        "behat/mink-selenium2-driver": "^1.7",
+        "born-digital/islandora_iiif_hocr": "^2",
+        "bqworks/slider-pro": "^1.0",
+        "codementality/flysystem-stream-wrapper": "^1.1",
         "composer/installers": "^1.9",
         "cweagans/composer-patches": "^1.7",
+        "discoverygarden/islandora_hocr": "^1.3",
         "drupal/admin_toolbar": "^3.1",
         "drupal/advanced_search": "^2.0.0@beta",
+        "drupal/antibot": "^2.0",
+        "drupal/autocomplete_deluxe": "^2.1",
         "drupal/better_exposed_filters": "^6.0",
-        "drupal/bibcite": "^2.0@beta",
         "drupal/bulk_update_fields": "^2.0@alpha",
-        "drupal/citation_select": "^1.0@beta",
         "drupal/colorbox": "^2.0",
         "drupal/config_update": "^2.0@alpha",
         "drupal/context": "^5@RC",
-        "drupal/controlled_access_terms": "^2",
+        "drupal/controlled_access_terms": "2.x-dev",
         "drupal/core-composer-scaffold": "^10.1",
         "drupal/core-recommended": "^10.1",
+        "drupal/csp": "^1.30",
         "drupal/csv_serialization": "^4.0",
+        "drupal/diff": "^1.1",
+        "drupal/drupal_slider": "^2.1",
         "drupal/entity": "^1.4",
         "drupal/entity_browser": "^2.9",
+        "drupal/entity_metrics": "^1.0@beta",
         "drupal/entity_reference_facet_link": "^2.0",
         "drupal/entity_reference_revisions": "^1.10",
         "drupal/facets": "^2",
-        "drupal/field_delimiter": "^2.0",
         "drupal/field_group": "^3.4",
         "drupal/field_permissions": "^1",
         "drupal/field_report": "^2.1",
         "drupal/file_download_link": "^2.0",
         "drupal/file_download_link_media": "^2.0",
-        "drupal/flysystem": "^2.0@alpha",
+        "drupal/flysystem": "^2.2.0@alpha",
+        "drupal/flysystem_gcs_cors": "^1.0@alpha",
+        "drupal/focal_point": "^2.0",
+        "drupal/form_mode_control": "^2.4",
         "drupal/geolocation": "^3.12",
+        "drupal/google_tag": "^2.0",
         "drupal/hal": "^2.0",
+        "drupal/honeypot": "^2.2",
         "drupal/image_effects": "^3.4",
         "drupal/inline_entity_form": "^2.0@RC",
-        "drupal/islandora": "^2.8.1",
+        "drupal/islandora": "^2.11",
+        "drupal/islandora_csl": "^1.0@alpha",
+        "drupal/islandora_jwks": "^1.0@beta",
         "drupal/islandora_mirador": "^2.3",
+        "drupal/islandora_vtt": "^1.0@alpha",
+        "drupal/jsonld": "^3.0",
         "drupal/ldap": "^4.6",
         "drupal/libraries": "^4.0",
         "drupal/masonry": "^4.0",
         "drupal/masonry_views": "^4.0",
-        "drupal/matomo": "^1.23",
+        "drupal/mathjax": "^4.0",
+        "drupal/memcache": "^2.6",
         "drupal/metatag": "^2.0",
         "drupal/metatag_google_scholar": "^1.1",
         "drupal/migrate_tools": "^6.0",
@@ -133,13 +164,17 @@
         "drupal/paragraphs": "^1.16",
         "drupal/pathauto": "^1.12",
         "drupal/pdf": "^1.1",
+        "drupal/php_profiler": "^1.0",
         "drupal/rabbit_hole": "^1.0@beta",
+        "drupal/redirect": "^1.9",
+        "drupal/replaywebpage": "^1.0@beta",
         "drupal/rest_oai_pmh": "^2.0@beta",
         "drupal/search_api": "^1.31",
         "drupal/search_api_solr": "^4.3",
+        "drupal/search_api_solr_nlp": "^1.1",
         "drupal/seven": "^1.0",
+        "drupal/smtp": "^1.3",
         "drupal/structure_sync": "^2.0",
-        "drupal/superfish": "^1.7",
         "drupal/svg_image": "^3.0",
         "drupal/svg_image_responsive": "^3.0",
         "drupal/taxonomy_manager": "^2.0",
@@ -148,25 +183,28 @@
         "drupal/token": "^1.13",
         "drupal/token_filter": "^2.0",
         "drupal/transliterate_filenames": "^2.0",
+        "drupal/turnstile": "^1.1",
         "drupal/twig_attributes": "^2.0",
         "drupal/twig_tweak": "^3.2",
         "drupal/verf": "^2.0",
+        "drupal/videojs": "^3.0",
         "drupal/views_ajax_history": "^1.7",
         "drupal/views_bulk_operations": "^4.2",
         "drupal/views_data_export": "^1.4",
         "drupal/views_field_view": "^1.0@beta",
         "drupal/views_infinite_scroll": "^2.0",
         "drupal/views_tokenized": "^1.0@RC",
-        "drush/drush": "^12",
+        "drupal/xhprof": "dev-1.x",
+        "drupal/xmlsitemap": "^1.5",
+        "drush/drush": "^13",
         "imagesloaded/imagesloaded": "^4.1",
         "islandora-rdm/islandora_fits": "dev-8.x-1.x as 1.x-dev",
-        "islandora/islandora": "2.9.0",
-        "islandora/islandora_mirador": "^2",
         "islandora/views_nested_details": "^1.0",
-        "library/pdf.js": "^2.4",
+        "lehigh-university-libraries/islandora_rights_statements": "1.x-dev",
+        "library/pdf.js": "^4",
         "masonry/masonry": "^4.2",
+        "mjordan/islandora_repository_reports": "dev-main",
         "mjordan/islandora_workbench_integration": "dev-main",
-        "stop14/agile_slide_viewer": "^1.0",
         "stop14/stop14_tools": "^1.2"
     },
     "conflict": {
@@ -181,12 +219,18 @@
             "composer/installers": true,
             "cweagans/composer-patches": true,
             "drupal/core-composer-scaffold": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "phpstan/extension-installer": true,
+            "php-http/discovery": true,
+            "tbachert/spi": false
         },
         "sort-packages": true
     },
     "extra": {
         "drupal-scaffold": {
+            "allowed-packages": [
+                "weitzman/drupal-test-traits"
+            ],
             "locations": {
                 "web-root": "web/"
             },
@@ -195,7 +239,8 @@
                     "mode": "append",
                     "default": "web/core/assets/scaffold/files/default.settings.php",
                     "append": "assets/patches/default_settings.txt"
-                }
+                },
+                "[web-root]/robots.txt": false
             }
         },
         "installer-types": ["npm-asset", "bower-asset"],
@@ -234,27 +279,53 @@
             ]
         },
         "patches": {
+            "discoverygarden/islandora_hocr": {
+                "Only read hocr file when indexing": "assets/patches/discoverygarden/islandora_hocr/index-only.patch"
+            },
             "drupal/facets": {
                 "Allow exposed filters to work with AJAX Facets": "https://www.drupal.org/files/issues/2021-12-05/3168241-8.patch",
                 "Allow views attachments to reflect search parameters (still not working)": "https://www.drupal.org/files/issues/2022-12-12/facets-attachments-3116236-16.patch",
-                "Allows for multiple facet searchboxes on same page": "https://www.drupal.org/files/issues/2022-08-03/facets-3300204-3.patch"
+                "Show label on summary": "assets/patches/drupal/facets/summary-label.patch"
+            },
+            "drupal/drupal_slider": {
+                "jquery once": "https://www.drupal.org/files/issues/2024-02-16/jquery_once_fix_0.patch",
+                "Issues 3209755": "assets/patches/drupal/drupal_slider/3209755.patch"
+            },
+            "drupal/islandora": {
+                "node label": "assets/patches/drupal/islandora/label.patch",
+                "override domain": "assets/patches/drupal/islandora/event-overwrite.patch"
+            },
+            "islandora-rdm/islandora_fits": {
+                "Remove deprecated function call": "https://github.com/roblib/islandora_fits/pull/18.patch"
+            },
+            "twistor/flysystem-stream-wrapper": {
+                "Fix php82 warning": "https://github.com/twistor/flysystem-stream-wrapper/pull/28.patch"
+            },
+            "drupal/core": {
+                "Fix php warning for stripos": "assets/patches/drupal/core/stripos.patch"
+            },
+            "drupal/context": {
+                "Fix str_replace warning": "assets/patches/drupal/context/str_replace.patch"
             }
         },
-	    "merge-plugin": {
+        "merge-plugin": {
             "include": [
                 "web/modules/contrib/masonry/composer.libraries.json"
             ]
         }
     },
     "scripts": {
-        "post-root-package-install": ["Islandora\\StarterSite::rootPackageInstall"],
-        "post-install-cmd": ["cp -rf assets/libraries/jquery-ui-slider-pips web/libraries"],
-        "post-update-cmd": ["cp -rf assets/libraries/jquery-ui-slider-pips web/libraries"]
+        "post-root-package-install": ["Islandora\\StarterSite::rootPackageInstall"]
     },
     "require-dev": {
+        "chi-teck/drupal-code-generator": "^3.3",
         "drupal/config_inspector": "^2.1",
+        "drupal/core-dev": "^10.1",
         "drupal/devel": "^5.0",
-        "drupal/restui": "^1.21"
+        "drupal/restui": "^1.21",
+        "palantirnet/drupal-rector": "^0.20.3",
+        "phpspec/prophecy-phpunit": "^2.1",
+        "weitzman/drupal-test-traits": "^2.5"
     },
     "autoload": {
         "classmap": [

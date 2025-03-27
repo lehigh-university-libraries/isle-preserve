@@ -4,22 +4,27 @@ status: true
 dependencies:
   config:
     - block.block.lehigh_exposedformbrowsemain
-    - field.storage.node.field_description
+    - field.storage.node.field_edtf_date_embargo
+    - field.storage.node.field_genre
+    - field.storage.node.field_linked_agent
+    - field.storage.node.field_model
     - field.storage.node.field_resource_type
     - search_api.index.default_solr_index
-    - taxonomy.vocabulary.islandora_models
-  content:
-    - 'taxonomy_term:islandora_models:1cdee681-4b98-4740-828d-84168d7d7d48'
-    - 'taxonomy_term:islandora_models:4eb0c136-8f1b-4f4e-a34c-ee6381697d3a'
-    - 'taxonomy_term:islandora_models:9848c6b7-cd3c-4c9d-b256-8040df72b2c4'
+    - user.role.administrator
+    - user.role.content_editor
   module:
     - better_exposed_filters
+    - controlled_access_terms
+    - csv_serialization
+    - entity_reference_facet_link
     - masonry_views
+    - rest
     - search_api
+    - serialization
     - stop14_tools
-    - text
+    - user
     - views_attachment_tabs
-    - views_field_view
+    - views_data_export
     - views_infinite_scroll
 _core:
   default_config_hash: d-DwLzBXnDh7as84BBK0Pxv16Ypczqg_TF9tjAyNgjU
@@ -39,14 +44,14 @@ display:
     display_options:
       title: 'Browse Items'
       fields:
-        title:
-          id: title
+        card:
+          id: card
           table: search_api_index_default_solr_index
-          field: title
+          field: card
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: search_api_field
+          plugin_id: search_api
           label: ''
           exclude: false
           alter:
@@ -81,34 +86,440 @@ display:
           element_label_type: ''
           element_label_class: ''
           element_label_colon: false
-          element_wrapper_type: h3
+          element_wrapper_type: '0'
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: false
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
+          link_to_item: false
+          use_highlighting: false
           multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          field_rendering: false
-          fallback_handler: search_api
-          fallback_options:
-            link_to_item: true
-            use_highlighting: true
-            multi_type: separator
-            multi_separator: ', '
+          multi_separator: ', '
+      pager:
+        type: full
+        options:
+          offset: 0
+          pagination_heading_level: h4
+          items_per_page: 24
+          total_pages: null
+          id: 0
+          tags:
+            next: 'Next ›'
+            previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: true
+            items_per_page_label: '&nbsp;'
+            items_per_page_options: '24, 48, 96, 240'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Search
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: '&nbsp;'
+          expose_sort_order: true
+          sort_asc_label: 'ascending order'
+          sort_desc_label: 'descending order'
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
+          bef:
+            general:
+              autosubmit: true
+              autosubmit_exclude_textfield: true
+              autosubmit_textfield_delay: 500
+              autosubmit_hide: false
+              input_required: false
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+              secondary_open: false
+              reset_button_always_show: false
+            sort:
+              plugin_id: default
+              advanced:
+                combine: true
+                combine_rewrite: ''
+                reset: false
+                reset_label: ''
+                collapsible: false
+                collapsible_label: 'Sort options'
+                is_secondary: false
+            pager:
+              plugin_id: default
+              advanced:
+                is_secondary: false
+            filter:
+              search_api_fulltext:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  rewrite:
+                    filter_rewrite_values: ''
+                    filter_rewrite_values_key: false
+                  collapsible: false
+                  collapsible_disable_automatic_open: false
+                  is_secondary: false
+      access:
+        type: none
+        options: {  }
+      cache:
+        type: search_api_none
+        options: {  }
+      empty: {  }
+      sorts:
+        search_api_relevance:
+          id: search_api_relevance
+          table: search_api_index_default_solr_index
+          field: search_api_relevance
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api
+          order: DESC
+          expose:
+            label: 'Sort by Relevance,'
+            field_identifier: search_api_relevance
+          exposed: true
+        title:
+          id: title
+          table: search_api_index_default_solr_index
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api
+          order: ASC
+          expose:
+            label: 'Sort by Title,'
+            field_identifier: title
+          exposed: true
+        field_edtf_date_issued:
+          id: field_edtf_date_issued
+          table: search_api_index_default_solr_index
+          field: field_edtf_date_issued
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api
+          order: ASC
+          expose:
+            label: 'Sort by Date,'
+            field_identifier: field_edtf_date_issued
+          exposed: true
+        field_weight:
+          id: field_weight
+          table: search_api_index_default_solr_index
+          field: field_weight
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api
+          order: ASC
+          expose:
+            label: ''
+            field_identifier: ''
+          exposed: false
+      arguments:
+        'null':
+          id: 'null'
+          table: views
+          field: 'null'
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: 'null'
+          default_action: default
+          exception:
+            value: all
+            title_enable: false
+            title: All
+          title_enable: false
+          title: ''
+          default_argument_type: node
+          default_argument_options: {  }
+          summary_options:
+            base_path: ''
+            count: true
+            override: false
+            items_per_page: 25
+          summary:
+            sort_order: asc
+            number_of_records: 0
+            format: default_summary
+          specify_validation: false
+          validate:
+            type: none
+            fail: 'not found'
+          validate_options: {  }
+          must_not_be: false
+      filters:
+        type:
+          id: type
+          table: search_api_index_default_solr_index
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api_options
+          operator: or
+          value:
+            islandora_object: islandora_object
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+        search_api_fulltext:
+          id: search_api_fulltext
+          table: search_api_index_default_solr_index
+          field: search_api_fulltext
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api_fulltext
+          operator: and
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: search_api_fulltext_op
+            label: Search
+            description: ''
+            use_operator: false
+            operator: search_api_fulltext_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: search_api_fulltext
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+              fedoraadmin: '0'
+              ga_no_tracking: '0'
+            expose_fields: false
+            placeholder: 'Search items'
+            searched_fields_id: search_api_fulltext_searched_fields
+            value_maxlength: 128
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          parse_mode: direct
+          min_length: null
+          fields:
+            - abstract_description_fulltext
+            - field_description
+            - field_full_title
+            - field_note
+            - linked_agent_name_fulltext
+            - ocr_text
+            - rendered_item
+            - subject_aggregated_fulltext
+            - title
+            - title_aggregated_fulltext
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      style:
+        type: attachment_parent
+        options:
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+          default_attachment_display: ''
+      row:
+        type: search_api
+        options:
+          view_modes:
+            'entity:node':
+              article: default
+              islandora_object: card
+              page: default
+      query:
+        type: search_api_query
+        options:
+          bypass_access: false
+          skip_access: false
+          preserve_facet_query_args: true
+          query_tags: {  }
+      relationships: {  }
+      css_class: main
+      use_ajax: false
+      link_display: main
+      link_url: ''
+      header:
+        entity_block:
+          id: entity_block
+          table: views
+          field: entity_block
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: entity
+          empty: false
+          target: lehigh_exposedformbrowsemain
+          view_mode: default
+          tokenize: true
+          bypass_access: true
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: "<div class='result-summary'>Viewing items <strong>@start</strong> - <strong>@end</strong> of <strong>@total</strong></a>"
+      footer: {  }
+      display_extenders: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
+        - 'user.node_grants:view'
+      tags:
+        - 'config:search_api.index.default_solr_index'
+        - 'search_api_list:default_solr_index'
+      cacheable: false
+  card_view:
+    id: card_view
+    display_title: 'Browse Items (Card)'
+    display_plugin: attachment
+    position: 4
+    display_options:
+      title: 'Card View'
+      pager:
+        type: full
+        options:
+          offset: 0
+          pagination_heading_level: h4
+          items_per_page: 24
+          total_pages: null
+          id: 0
+          tags:
+            next: 'Next ›'
+            previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+      style:
+        type: themed_grid
+        options:
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+          breakpoints:
+            sml: '1'
+            med: '2'
+            lrg: '3'
+            xlrg: '3'
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: false
+      defaults:
+        title: false
+        style: false
+        row: false
+        filters: true
+        filter_groups: true
+        header: false
+      display_description: ''
+      header: {  }
+      display_extenders:
+        facets_display_extender:
+          facet_settings:
+            'search_api:views_page__browse__main': 'search_api:views_page__browse__main'
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
+      displays:
+        main: main
+      attachment_position: after
+      inherit_exposed_filters: true
+      inherit_pager: true
+      render_pager: true
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
+        - 'user.node_grants:view'
+      tags:
+        - 'config:search_api.index.default_solr_index'
+        - 'search_api_list:default_solr_index'
+  data_export:
+    id: data_export
+    display_title: 'CSV Export'
+    display_plugin: data_export
+    position: 6
+    display_options:
+      fields:
         nid:
           id: nid
           table: search_api_index_default_solr_index
@@ -117,8 +528,8 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: search_api_field
-          label: ''
-          exclude: true
+          label: 'Node ID'
+          exclude: false
           alter:
             alter_text: false
             text: ''
@@ -189,15 +600,15 @@ display:
             format_plural_values:
               - '1'
               - '@count'
-        view:
-          id: view
-          table: views
-          field: view
+        title:
+          id: title
+          table: search_api_index_default_solr_index
+          field: title
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: view
-          label: ''
+          plugin_id: search_api_field
+          label: Title
           exclude: false
           alter:
             alter_text: false
@@ -227,20 +638,38 @@ display:
             preserve_tags: ''
             html: false
           element_type: ''
-          element_class: align-right
+          element_class: ''
           element_label_type: ''
           element_label_class: ''
           element_label_colon: false
-          element_wrapper_type: ''
+          element_wrapper_type: h3
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          view: thumbnail
-          display: block_2
-          arguments: '{{ raw_fields.nid }}'
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: false
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          field_rendering: false
+          fallback_handler: search_api
+          fallback_options:
+            link_to_item: true
+            use_highlighting: true
+            multi_type: separator
+            multi_separator: ', '
         field_resource_type:
           id: field_resource_type
           table: search_api_index_default_solr_index
@@ -249,7 +678,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: search_api_field
-          label: Type
+          label: 'Resource Type'
           exclude: false
           alter:
             alter_text: false
@@ -290,10 +719,225 @@ display:
           hide_empty: true
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
-          type: string
+          click_sort_column: target_id
+          type: entity_reference_facet_link
           settings:
-            link_to_entity: false
+            facet: ''
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ' ; '
+          field_api_classes: false
+          field_rendering: false
+          fallback_handler: search_api
+          fallback_options:
+            link_to_item: false
+            use_highlighting: false
+            multi_type: separator
+            multi_separator: ', '
+            display_methods:
+              corporate_body:
+                display_method: label
+                view_mode: default
+              country:
+                display_method: label
+                view_mode: default
+              creatorn_roles:
+                display_method: label
+              degree_level:
+                display_method: label
+              degree_name:
+                display_method: label
+              department:
+                display_method: label
+              digital_formats:
+                display_method: label
+              digital_origin:
+                display_method: label
+              family:
+                display_method: label
+                view_mode: default
+              frequencies:
+                display_method: label
+                view_mode: default
+              genre:
+                display_method: label
+                view_mode: default
+              geographic_local:
+                display_method: label
+              geographic_naf:
+                display_method: label
+              geo_location:
+                display_method: label
+                view_mode: default
+              institution:
+                display_method: label
+              islandora_display:
+                display_method: label
+              islandora_media_use:
+                display_method: label
+                view_mode: default
+              islandora_models:
+                display_method: label
+                view_mode: default
+              issuance_modes:
+                display_method: label
+                view_mode: default
+              keywords:
+                display_method: label
+              language:
+                display_method: label
+                view_mode: default
+              lcsh_topic:
+                display_method: label
+              media_types:
+                display_method: label
+              person:
+                display_method: label
+                view_mode: default
+              physical_form:
+                display_method: label
+                view_mode: default
+              resource_label:
+                display_method: label
+              resource_types:
+                display_method: label
+                view_mode: default
+              season:
+                display_method: label
+              site_disposition:
+                display_method: label
+              subject:
+                display_method: label
+                view_mode: default
+              subject_lcnaf:
+                display_method: label
+              subject_lcsh:
+                display_method: label
+              tags:
+                display_method: label
+              temporal_subjects:
+                display_method: label
+                view_mode: default
+        field_edtf_date_embargo:
+          id: field_edtf_date_embargo
+          table: search_api_datasource_default_solr_index_entity_node
+          field: field_edtf_date_embargo
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: search_api_field
+          label: 'Embargo Until Date'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: edtf_default
+          settings:
+            date_separator: dash
+            date_order: big_endian
+            month_format: mm
+            day_format: dd
+            year_format: 'y'
+            relationship: none
+            field_rendering: 1
+            fieldsets:
+              - more
+              - admin_label
+            custom_label: 1
+            label: 'Embargo Date'
+            element_label_colon: 1
+            exclude: 0
+            element_type_enable: 0
+            element_type: ''
+            element_class_enable: 0
+            element_class: ''
+            element_label_type_enable: 0
+            element_label_type: ''
+            element_label_class_enable: 0
+            element_label_class: ''
+            element_wrapper_type_enable: 0
+            element_wrapper_type: ''
+            element_wrapper_class_enable: 0
+            element_wrapper_class: ''
+            element_default_classes: 1
+            alter:
+              alter_text: 0
+              text: ''
+              make_link: 0
+              path: ''
+              absolute: 0
+              replace_spaces: 0
+              external: 0
+              path_case: none
+              link_class: ''
+              alt: ''
+              rel: ''
+              prefix: ''
+              suffix: ''
+              target: ''
+              trim: 0
+              max_length: '0'
+              word_boundary: 1
+              ellipsis: 1
+              more_link: 0
+              more_link_text: ''
+              more_link_path: ''
+              html: 0
+              strip_tags: 0
+              preserve_tags: ''
+              trim_whitespace: 0
+              nl2br: 0
+            empty: ''
+            empty_zero: 0
+            hide_empty: 0
+            hide_alter_empty: 1
+            click_sort_column: value
+            type: edtf_default
+            field_api_classes: 0
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -311,15 +955,16 @@ display:
             use_highlighting: false
             multi_type: separator
             multi_separator: ', '
-        edtf_year:
-          id: edtf_year
-          table: search_api_index_default_solr_index
-          field: edtf_year
+        field_genre:
+          id: field_genre
+          table: search_api_datasource_default_solr_index_entity_node
+          field: field_genre
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: search_api_numeric
-          label: Year
+          entity_type: node
+          plugin_id: search_api_field
+          label: 'Genre (Getty AAT)'
           exclude: false
           alter:
             alter_text: false
@@ -349,39 +994,132 @@ display:
             preserve_tags: ''
             html: false
           element_type: ''
-          element_class: field__item
+          element_class: ''
           element_label_type: ''
-          element_label_class: field__label
+          element_label_class: ''
           element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: true
+          hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary Aw==
-          prefix: ''
-          suffix: ''
-          link_to_item: false
-          use_highlighting: false
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: true
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
           multi_type: separator
-          multi_separator: ', '
-          format_plural_values: {  }
-        member_of_title:
-          id: member_of_title
-          table: search_api_index_default_solr_index
-          field: member_of_title
+          separator: ' ; '
+          field_api_classes: false
+          field_rendering: false
+          fallback_handler: search_api_entity
+          fallback_options:
+            link_to_item: false
+            use_highlighting: false
+            multi_type: separator
+            multi_separator: ', '
+            display_methods:
+              corporate_body:
+                display_method: label
+                view_mode: default
+              country:
+                display_method: label
+                view_mode: default
+              creatorn_roles:
+                display_method: label
+              degree_level:
+                display_method: label
+              degree_name:
+                display_method: label
+              department:
+                display_method: label
+              digital_formats:
+                display_method: label
+              digital_origin:
+                display_method: label
+              family:
+                display_method: label
+                view_mode: default
+              frequencies:
+                display_method: label
+                view_mode: default
+              genre:
+                display_method: label
+                view_mode: default
+              geo_location:
+                display_method: label
+                view_mode: default
+              geographic_local:
+                display_method: label
+              geographic_naf:
+                display_method: label
+              institution:
+                display_method: label
+              islandora_display:
+                display_method: label
+              islandora_media_use:
+                display_method: label
+                view_mode: default
+              islandora_models:
+                display_method: label
+                view_mode: default
+              issuance_modes:
+                display_method: label
+                view_mode: default
+              keywords:
+                display_method: label
+              language:
+                display_method: label
+                view_mode: default
+              lcsh_topic:
+                display_method: label
+              media_types:
+                display_method: label
+              person:
+                display_method: label
+                view_mode: default
+              physical_form:
+                display_method: label
+                view_mode: default
+              resource_label:
+                display_method: label
+              resource_types:
+                display_method: label
+                view_mode: default
+              season:
+                display_method: label
+              site_disposition:
+                display_method: label
+              subject:
+                display_method: label
+                view_mode: default
+              subject_lcnaf:
+                display_method: label
+              subject_lcsh:
+                display_method: label
+              tags:
+                display_method: label
+              temporal_subjects:
+                display_method: label
+                view_mode: default
+        field_model:
+          id: field_model
+          table: search_api_datasource_default_solr_index_entity_node
+          field: field_model
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
           plugin_id: search_api_field
-          label: 'Member of'
+          label: 'Object Model'
           exclude: false
           alter:
             alter_text: false
@@ -411,21 +1149,178 @@ display:
             preserve_tags: ''
             html: false
           element_type: ''
-          element_class: field__item
+          element_class: ''
           element_label_type: ''
-          element_label_class: field__label
+          element_label_class: ''
           element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: true
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: true
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          field_rendering: false
+          fallback_handler: search_api_entity
+          fallback_options:
+            link_to_item: false
+            use_highlighting: false
+            multi_type: separator
+            multi_separator: ', '
+            display_methods:
+              corporate_body:
+                display_method: label
+                view_mode: default
+              country:
+                display_method: label
+                view_mode: default
+              creatorn_roles:
+                display_method: label
+              degree_level:
+                display_method: label
+              degree_name:
+                display_method: label
+              department:
+                display_method: label
+              digital_formats:
+                display_method: label
+              digital_origin:
+                display_method: label
+              family:
+                display_method: label
+                view_mode: default
+              frequencies:
+                display_method: label
+                view_mode: default
+              genre:
+                display_method: label
+                view_mode: default
+              geo_location:
+                display_method: label
+                view_mode: default
+              geographic_local:
+                display_method: label
+              geographic_naf:
+                display_method: label
+              institution:
+                display_method: label
+              islandora_display:
+                display_method: label
+              islandora_media_use:
+                display_method: label
+                view_mode: default
+              islandora_models:
+                display_method: label
+                view_mode: default
+              issuance_modes:
+                display_method: label
+                view_mode: default
+              keywords:
+                display_method: label
+              language:
+                display_method: label
+                view_mode: default
+              lcsh_topic:
+                display_method: label
+              media_types:
+                display_method: label
+              person:
+                display_method: label
+                view_mode: default
+              physical_form:
+                display_method: label
+                view_mode: default
+              resource_label:
+                display_method: label
+              resource_types:
+                display_method: label
+                view_mode: default
+              season:
+                display_method: label
+              site_disposition:
+                display_method: label
+              subject:
+                display_method: label
+                view_mode: default
+              subject_lcnaf:
+                display_method: label
+              subject_lcsh:
+                display_method: label
+              tags:
+                display_method: label
+              temporal_subjects:
+                display_method: label
+                view_mode: default
+        status:
+          id: status
+          table: search_api_datasource_default_solr_index_entity_node
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          plugin_id: search_api_field
+          label: 'Make Public (Y/N)'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: string
+          type: boolean
           settings:
-            link_to_entity: false
+            format: default
+            format_custom_false: ''
+            format_custom_true: ''
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -437,21 +1332,25 @@ display:
           separator: ', '
           field_api_classes: false
           field_rendering: false
-          fallback_handler: search_api
+          fallback_handler: search_api_boolean
           fallback_options:
+            type: yes-no
+            type_custom_true: ''
+            type_custom_false: ''
+            not: false
             link_to_item: false
             use_highlighting: false
             multi_type: separator
             multi_separator: ', '
-        field_linked_agent_name:
-          id: field_linked_agent_name
+        contributor:
+          id: contributor
           table: search_api_index_default_solr_index
-          field: field_linked_agent_name
+          field: contributor
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: search_api_field
-          label: Names
+          label: Contributor
           exclude: false
           alter:
             alter_text: false
@@ -481,22 +1380,22 @@ display:
             preserve_tags: ''
             html: false
           element_type: ''
-          element_class: field__item
+          element_class: ''
           element_label_type: ''
-          element_label_class: field__label
+          element_label_class: ''
           element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: true
+          hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
-          type: string
+          click_sort_column: target_id
+          type: typed_relation_default
           settings:
-            link_to_entity: false
-          group_column: value
+            link: false
+          group_column: ''
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -504,76 +1403,7 @@ display:
           delta_reversed: false
           delta_first_last: false
           multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          field_rendering: false
-          fallback_handler: search_api
-          fallback_options:
-            link_to_item: false
-            use_highlighting: false
-            multi_type: separator
-            multi_separator: ', '
-        field_description:
-          id: field_description
-          table: search_api_index_default_solr_index
-          field: field_description
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api_field
-          label: Description
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 400
-            word_boundary: true
-            ellipsis: true
-            more_link: true
-            more_link_text: more
-            more_link_path: 'node/{{ nid }}'
-            strip_tags: false
-            trim: true
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: field__item
-          element_label_type: ''
-          element_label_class: field__label
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: true
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: basic_string
-          settings: {  }
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
+          separator: ' ; '
           field_api_classes: false
           field_rendering: true
           fallback_handler: search_api
@@ -582,484 +1412,69 @@ display:
             use_highlighting: false
             multi_type: separator
             multi_separator: ', '
-        processed:
-          id: processed
-          table: search_api_index_default_solr_index
-          field: processed
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api
-          label: Abstract
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: true
-            max_length: 400
-            word_boundary: true
-            ellipsis: true
-            more_link: true
-            more_link_text: more
-            more_link_path: 'node/{{ nid }}'
-            strip_tags: false
-            trim: true
-            preserve_tags: ''
-            html: true
-          element_type: ''
-          element_class: field__item
-          element_label_type: ''
-          element_label_class: field__label
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: true
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-      pager:
-        type: full
-        options:
-          offset: 0
-          items_per_page: 24
-          total_pages: 9
-          id: 0
-          tags:
-            next: 'Next ›'
-            previous: '‹ Previous'
-            first: '« First'
-            last: 'Last »'
-          expose:
-            items_per_page: true
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '24, 48, 96, 240'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          quantity: 9
-      exposed_form:
-        type: bef
-        options:
-          submit_button: Search
-          reset_button: true
-          reset_button_label: Reset
-          exposed_sorts_label: '&nbsp;'
-          expose_sort_order: true
-          sort_asc_label: 'ascending order'
-          sort_desc_label: 'descending order'
-          text_input_required: 'Select any filter and click on Apply to see results'
-          text_input_required_format: basic_html
-          bef:
-            general:
-              autosubmit: true
-              autosubmit_exclude_textfield: true
-              autosubmit_textfield_delay: 500
-              autosubmit_hide: false
-              input_required: false
-              allow_secondary: false
-              secondary_label: 'Advanced options'
-              secondary_open: false
-              reset_button_always_show: true
-            sort:
-              plugin_id: default
-              advanced:
-                combine: true
-                combine_rewrite: ''
-                reset: false
-                reset_label: ''
-                collapsible: false
-                collapsible_label: 'Sort options'
-                is_secondary: false
-            pager:
-              plugin_id: default
-              advanced:
-                is_secondary: false
-            filter:
-              search_api_fulltext:
-                plugin_id: default
-                advanced:
-                  placeholder_text: ''
-                  rewrite:
-                    filter_rewrite_values: ''
-                  collapsible: false
-                  is_secondary: false
       access:
-        type: none
-        options: {  }
-      cache:
-        type: none
-        options: {  }
-      empty: {  }
-      sorts:
-        title:
-          id: title
-          table: search_api_index_default_solr_index
-          field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api
-          order: ASC
-          expose:
-            label: 'Sort by Title,'
-            field_identifier: title
-          exposed: true
-        search_api_relevance:
-          id: search_api_relevance
-          table: search_api_index_default_solr_index
-          field: search_api_relevance
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api
-          order: DESC
-          expose:
-            label: 'Sort by Relevance,'
-            field_identifier: search_api_relevance
-          exposed: true
-        edtf_year:
-          id: edtf_year
-          table: search_api_index_default_solr_index
-          field: edtf_year
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api
-          order: DESC
-          expose:
-            label: 'Sort by Year,'
-            field_identifier: edtf_year
-          exposed: true
-      arguments: {  }
-      filters:
-        type:
-          id: type
-          table: search_api_index_default_solr_index
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api_options
-          operator: or
-          value:
-            islandora_object: islandora_object
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-        field_model:
-          id: field_model
-          table: search_api_index_default_solr_index
-          field: field_model
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api_term
-          operator: not
-          value:
-            23: 23
-            30: 30
-            28: 28
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          vid: islandora_models
-          type: select
-          hierarchy: false
-          limit: true
-          error_message: true
-        search_api_fulltext:
-          id: search_api_fulltext
-          table: search_api_index_default_solr_index
-          field: search_api_fulltext
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api_fulltext
-          operator: and
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: search_api_fulltext_op
-            label: Search
-            description: ''
-            use_operator: false
-            operator: search_api_fulltext_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: search_api_fulltext
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              content_editor: '0'
-              administrator: '0'
-              fedoraadmin: '0'
-            expose_fields: false
-            placeholder: 'Search items'
-            searched_fields_id: search_api_fulltext_searched_fields
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          parse_mode: terms
-          min_length: null
-          fields:
-            - abstract_description_fulltext
-            - field_description
-            - field_full_title
-            - rendered_item
-            - subject_aggregated_fulltext
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
+        type: role
+        options:
+          role:
+            content_editor: content_editor
+            administrator: administrator
       style:
-        type: attachment_parent
+        type: data_export
         options:
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-          default_attachment_display: ''
-      row:
-        type: search_api
-        options:
-          view_modes:
-            'entity:node':
-              article: default
-              islandora_object: card
-              page: default
-      query:
-        type: search_api_query
-        options:
-          bypass_access: false
-          skip_access: false
-          preserve_facet_query_args: true
-          query_tags: {  }
-      relationships: {  }
-      css_class: main
-      use_ajax: false
-      link_display: main
-      link_url: ''
-      header:
-        entity_block:
-          id: entity_block
-          table: views
-          field: entity_block
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: entity
-          empty: false
-          target: lehigh_exposedformbrowsemain
-          view_mode: default
-          tokenize: true
-          bypass_access: true
-        result:
-          id: result
-          table: views
-          field: result
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: result
-          empty: false
-          content: "<div class='result-summary'>Viewing items <strong>@start</strong> - <strong>@end</strong> of <strong>@total</strong></a>"
-      footer: {  }
-      display_extenders: {  }
-    cache_metadata:
-      max-age: -1
-      contexts:
-        - 'languages:language_content'
-        - 'languages:language_interface'
-        - url
-        - url.query_args
-        - 'url.query_args:sort_by'
-        - 'url.query_args:sort_order'
-        - user
-        - 'user.node_grants:view'
-      tags:
-        - 'config:field.storage.node.field_description'
-        - 'config:field.storage.node.field_resource_type'
-        - 'config:search_api.index.default_solr_index'
-        - 'search_api_list:default_solr_index'
-      cacheable: false
-  card_view:
-    id: card_view
-    display_title: 'Browse Items (Card)'
-    display_plugin: attachment
-    position: 4
-    display_options:
-      title: 'Card View'
-      pager:
-        type: full
-        options:
-          offset: 0
-          items_per_page: 24
-          total_pages: null
-          id: 0
-          tags:
-            next: 'Next ›'
-            previous: '‹ Previous'
-            first: '« First'
-            last: 'Last »'
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          quantity: 9
-      style:
-        type: themed_grid
-        options:
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-          breakpoints:
-            sml: '1'
-            med: '2'
-            lrg: '3'
-            xlrg: '3'
-      row:
-        type: search_api
-        options:
-          view_modes:
-            'entity:node':
-              article: default
-              islandora_object: card
-              page: default
+          formats:
+            csv: csv
+          csv_settings:
+            delimiter: ','
+            enclosure: '"'
+            escape_char: \
+            strip_tags: true
+            trim: true
+            encoding: utf8
+            utf8_bom: '0'
+            use_serializer_encode_only: false
       defaults:
-        title: false
-        style: false
-        row: false
-        filters: true
-        filter_groups: true
-        header: false
+        access: false
+        fields: false
       display_description: ''
-      header: {  }
       display_extenders:
         facets_display_extender:
-          facet_settings:
-            'search_api:views_page__browse__main': 'search_api:views_page__browse__main'
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
+          facet_settings: 'search_api:views_page__browse__main'
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
+      path: browse-items/%node
+      auth:
+        - basic_auth
+        - cookie
       displays:
+        default: default
         main: main
-      attachment_position: after
-      inherit_exposed_filters: true
-      inherit_pager: true
-      render_pager: true
+      filename: export.csv
+      automatic_download: true
+      redirect_path: '/browse?cache-warmer=1'
+      export_method: batch
+      export_batch_size: 100
+      facet_settings: 'search_api:views_page__browse__main'
+      store_in_public_file_directory: false
+      custom_redirect_path: true
+      redirect_to_display: none
+      include_query_params: false
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
+        - request_format
         - url
-        - url.query_args
         - 'url.query_args:sort_by'
         - 'url.query_args:sort_order'
-        - user
         - 'user.node_grants:view'
+        - user.roles
       tags:
-        - 'config:field.storage.node.field_description'
+        - 'config:field.storage.node.field_edtf_date_embargo'
+        - 'config:field.storage.node.field_genre'
+        - 'config:field.storage.node.field_linked_agent'
+        - 'config:field.storage.node.field_model'
         - 'config:field.storage.node.field_resource_type'
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'
@@ -1069,11 +1484,13 @@ display:
     display_plugin: attachment
     position: 2
     display_options:
+      enabled: false
       title: 'List View'
       pager:
         type: full
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 24
           total_pages: null
           id: 0
@@ -1128,17 +1545,6 @@ display:
         facets_display_extender:
           facet_settings:
             'search_api:views_page__browse__main': 'search_api:views_page__browse__main'
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -1151,17 +1557,13 @@ display:
     cache_metadata:
       max-age: -1
       contexts:
-        - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
         - 'url.query_args:sort_by'
         - 'url.query_args:sort_order'
-        - user
         - 'user.node_grants:view'
       tags:
-        - 'config:field.storage.node.field_description'
-        - 'config:field.storage.node.field_resource_type'
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'
   main:
@@ -1171,7 +1573,7 @@ display:
     position: 1
     display_options:
       cache:
-        type: none
+        type: search_api_none
       empty:
         area:
           id: area
@@ -1194,13 +1596,12 @@ display:
           uses_fields: false
           default_attachment_display: card_view
       row:
-        type: search_api
+        type: fields
         options:
-          view_modes:
-            'entity:node':
-              article: default
-              islandora_object: card
-              page: default
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: false
       defaults:
         empty: false
         cache: false
@@ -1214,37 +1615,22 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: 1
           enabled: 1
           attachment_tabs_default_container_class: rows
         ajax_history: {  }
-      path: browse
+      path: browse-items/%node
     cache_metadata:
       max-age: -1
       contexts:
-        - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
         - 'url.query_args:sort_by'
         - 'url.query_args:sort_order'
-        - user
         - 'user.node_grants:view'
       tags:
-        - 'config:field.storage.node.field_description'
-        - 'config:field.storage.node.field_resource_type'
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'
       cacheable: false
@@ -1254,6 +1640,7 @@ display:
     display_plugin: attachment
     position: 2
     display_options:
+      enabled: false
       title: 'Masonry View'
       pager:
         type: infinite_scroll
@@ -1315,17 +1702,6 @@ display:
         facets_display_extender:
           facet_settings:
             'search_api:views_page__browse__main': 'search_api:views_page__browse__main'
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
           enabled: 0
@@ -1339,16 +1715,12 @@ display:
     cache_metadata:
       max-age: -1
       contexts:
-        - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
         - 'url.query_args:sort_by'
         - 'url.query_args:sort_order'
-        - user
         - 'user.node_grants:view'
       tags:
-        - 'config:field.storage.node.field_description'
-        - 'config:field.storage.node.field_resource_type'
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'

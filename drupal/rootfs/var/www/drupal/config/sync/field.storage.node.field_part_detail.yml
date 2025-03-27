@@ -1,0 +1,19 @@
+uuid: 764decfd-0faf-4050-885a-0e59028f71b3
+langcode: en
+status: true
+dependencies:
+  module:
+    - lehigh_islandora
+    - node
+id: node.field_part_detail
+field_name: field_part_detail
+entity_type: node
+type: part_detail
+settings: {  }
+module: lehigh_islandora
+locked: false
+cardinality: 4
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

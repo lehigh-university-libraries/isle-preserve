@@ -5,14 +5,16 @@ ldapEntryProvisionServer: null
 drupalAcctProvisionTriggers:
   - drupal_on_login
 ldapEntryProvisionTriggers: {  }
+orphanedIncludeDisabledUsers: false
 orphanedDrupalAcctBehavior: ldap_user_orphan_email
 orphanedDrupalAcctReportingInbox: ''
 orphanedCheckQty: 100
 orphanedAccountCheckInterval: weekly
 userConflictResolve: resolve
 manualAccountConflict: conflict_associate
-acctCreation: ldap_behaviour
+acctCreation: ldap_behavior
 disableAdminPasswordField: true
 userUpdateCronQuery: none
 userUpdateCronInterval: daily
+userUpdateOnly: false
 ldapUserSyncMappings: {  }

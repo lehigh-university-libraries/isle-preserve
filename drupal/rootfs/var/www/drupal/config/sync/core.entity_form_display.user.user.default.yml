@@ -24,8 +24,9 @@ content:
   language:
     weight: 0
     region: content
-  matomo:
-    weight: 3
+  path:
+    type: path
+    weight: 30
     region: content
     settings: {  }
     third_party_settings: {  }

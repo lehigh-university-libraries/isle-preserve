@@ -3,7 +3,7 @@ _core:
 langcode: en
 uuid: 86955ff9-1be3-40ad-84ae-414c65ae901c
 name: 'Lehigh Preserve'
-mail: admin@example.com
+mail: preserve@lehigh.edu
 slogan: ''
 page:
   403: ''
@@ -12,3 +12,4 @@ page:
 admin_compact_mode: false
 weight_select_max: 100
 default_langcode: en
+mail_notification: ''

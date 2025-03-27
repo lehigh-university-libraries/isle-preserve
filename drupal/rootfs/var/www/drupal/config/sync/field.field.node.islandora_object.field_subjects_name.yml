@@ -5,9 +5,7 @@ dependencies:
   config:
     - field.storage.node.field_subjects_name
     - node.type.islandora_object
-    - taxonomy.vocabulary.corporate_body
-    - taxonomy.vocabulary.family
-    - taxonomy.vocabulary.person
+    - taxonomy.vocabulary.subject_lcnaf
 _core:
   default_config_hash: V-roMos0KYV0TJvFANJVrUxMdBjRJPVtnUUAXZySZ5U
 id: node.islandora_object.field_subjects_name
@@ -21,12 +19,10 @@ translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:taxonomy_term'
+  handler: 'default:filter_existing_terms'
   handler_settings:
     target_bundles:
-      corporate_body: corporate_body
-      family: family
-      person: person
+      subject_lcnaf: subject_lcnaf
     sort:
       field: name
       direction: asc

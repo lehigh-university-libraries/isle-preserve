@@ -6,5 +6,6 @@ dependencies:
     - media
 id: media.mirador
 label: Mirador
+description: ''
 targetEntityType: media
 cache: true

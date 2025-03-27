@@ -1,0 +1,14 @@
+uuid: 4aa310dc-6839-41de-8389-f42c43587554
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.ga_no_tracking
+  module:
+    - user
+id: user_add_role_action.ga_no_tracking
+label: 'Add the GA - no tracking role to the selected user(s)'
+type: user
+plugin: user_add_role_action
+configuration:
+  rid: ga_no_tracking

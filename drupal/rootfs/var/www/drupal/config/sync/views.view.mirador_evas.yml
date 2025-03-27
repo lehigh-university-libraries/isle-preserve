@@ -6,10 +6,7 @@ dependencies:
     - core.entity_view_mode.media.mirador
     - taxonomy.vocabulary.islandora_media_use
   content:
-    - 'taxonomy_term:islandora_media_use:03d45720-59d4-405d-93f1-ae79dcb6973d'
-    - 'taxonomy_term:islandora_media_use:48ede016-baa7-4445-bbbe-2ba7547bcf80'
-    - 'taxonomy_term:islandora_media_use:a844b8d5-6a74-4b15-b632-3762ba784f02'
-    - 'taxonomy_term:resource_types:2fc23593-d19d-4501-81ba-f2953cf7897b'
+    - 'taxonomy_term:islandora_media_use:e775ec1f-7ea2-4980-9537-aff5769c22c9'
   module:
     - eva
     - media
@@ -97,6 +94,7 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
+          pagination_heading_level: h4
       exposed_form:
         type: basic
         options:
@@ -124,7 +122,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: numeric
+          plugin_id: entity_target_id
           default_action: default
           exception:
             value: all
@@ -134,7 +132,6 @@ display:
           title: ''
           default_argument_type: node
           default_argument_options: {  }
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -151,6 +148,7 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
+          target_entity_type_id: node
       filters:
         status:
           id: status
@@ -254,7 +252,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - user.permissions
       tags: {  }
   entity_view_1:
@@ -328,7 +325,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - user.permissions
       tags: {  }
   entity_view_2:
@@ -402,7 +398,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - user.permissions
       tags: {  }
   entity_view_3:
@@ -476,6 +471,5 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - user.permissions
       tags: {  }

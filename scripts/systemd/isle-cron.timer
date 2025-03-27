@@ -1,0 +1,8 @@
+[Unit]
+Description=ISLE cron timer
+
+[Timer]
+OnCalendar=*-*-* *:20:00
+
+[Install]
+WantedBy=timers.target

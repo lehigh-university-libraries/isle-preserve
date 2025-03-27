@@ -7,26 +7,205 @@
  */
 
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Template\Attribute;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Symfony\Component\HttpFoundation\Request;
+use Seboettg\CiteProc\StyleSheet;
+use Seboettg\CiteProc\CiteProc;
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lehigh_form_user_login_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $form['#prefix'] = '<h2 class="mt-5 heading bar">Log in</h2><section class="bg-light p-4 my-2 my-md-5 form-login user rounded col-lg-9">
+  ';
+  $form['#suffix'] = '</section>';
+  $form['#attributes']['class'][] = 'mb-lg-5';
+
+  $form['name']['#title'] = 'Lehigh user name';
+  $form['name']['#attributes']['class'][] = 'mb-3';
+
+  $form['pass']['#attributes']['class'][] = 'form-control form-control-lg mb-3';
+  $form['pass']['#title'] = 'Lehigh password';
+
+  $form['actions']['submit']['#attributes']['class'][] = 'btn btn-primary';
+}
+
+function lehigh_preprocess_input__textfield(&$vars) {
+  $vars['attributes']['class'][] = 'form-control form-control-lg';
+}
+
+function lehigh_preprocess_field(&$vars) {
+  if (isset($vars['element']['#view_mode'])) {
+    $view_mode = $vars['element']['#view_mode'];
+    if (!in_array($vars['field_name'], ['body', 'field_abstract', 'field_thumbnail']) &&
+      ($view_mode == 'card' || $view_mode == 'full')) {
+      $vars['attributes']['class'][] = $view_mode == 'card' ? 'col-4' : 'col-3';
+    }
+  }
+}
+
+function lehigh_preprocess_field_group_html_element(&$vars) {
+   $vars['attributes']['class'] = ['row g-3 w-100'];
+}
 
 function lehigh_preprocess_html(&$vars) {
-  $node = \Drupal::routeMatch()->getParameter('node');
+  $config = \Drupal::config('system.site');
 
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (is_numeric($node)) {
+    if ($node == 0) {
+      $vars['head_title'] = [
+        'Browse Collections',
+        $config->get('name'),
+      ];
+      $vars['attributes']['class'][] = 'collections';
+      return;
+    }
+    $node = Node::load($node);
+  }
   if ($node && is_object($node)) {
-    $title = $node->getTitle();
-    $vars['attributes']['class'][] = 'page-'. str_replace(' ','-',strtolower($title));
+    if (lehigh_site_support_identify_collection($node)) {
+      $vars['attributes']['class'][] = 'collection-page';
+      $vars['attributes']['class'][] = 'collection';
+      $vars['attributes']['class'][] = 'page-node-type-islandora-object';
+      $vars['head_title'] = [
+        $node->label(),
+        $config->get('name')
+      ];
+    }
   }
 }
 
 function lehigh_preprocess_page(&$vars) {
   $config = \Drupal::config('system.site');
   $vars['site']['name'] = $config->get('name');
+
+  if (!empty($vars['is_front'])) {
+    $vars['#attached']['library'][] = 'lehigh/front';
+  }
+  // Load the main menu.
+  $menu_name = 'main';
+  $menu_tree = \Drupal::menuTree();
+  $parameters = $menu_tree->getCurrentRouteMenuTreeParameters($menu_name);
+
+  // Only show two levels of the menu.
+  $parameters->setMaxDepth(2);
+
+  // Build the tree.
+  $tree = $menu_tree->load($menu_name, $parameters);
+
+  // Transform the tree using the default menu link tree manipulators.
+  $manipulators = [
+    ['callable' => 'menu.default_tree_manipulators:checkAccess'],
+    ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+  ];
+  $tree = $menu_tree->transform($tree, $manipulators);
+
+  // Render the tree.
+  $menu = $menu_tree->build($tree);
+
+  // Pass the menu to the template.
+  $vars['main_menu'] = $menu;
+  $vars['main_menu_items'] = $menu['#items'];
+}
+
+/**
+ * Implements hook_preprocess_facets_summary_count().
+ */
+function lehigh_preprocess_facets_summary_count(array &$variables) {
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (is_numeric($node) && $node > 0) {
+    $node = Node::load($node);
+    $model = strtolower($node->field_model->entity->label());
+    if ($model == 'compound object') {
+      $model = 'group';
+    }
+    $variables['label'] = "Items in this $model";
+  }
+  else {
+    if ($variables['count'] == 1) {
+      $variables['label'] = 'Viewing 1 result';
+    }
+    else {
+      $variables['label'] = 'Viewing ' . number_format($variables['count']);
+      if ($node === "0") {
+        $variables['label'] .= ' sub-collections';
+      }
+      else {
+        $variables['label'] .= ' results';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_facets_summary_item_list().
+ */
+function lehigh_preprocess_facets_summary_item_list(array &$variables) {
+  // IS-66 - date facets weren't getting added to the pill list
+  // so just add them manually
+  $request = \Drupal::request();
+  $facets = $request->query->all('f');
+  foreach ($facets as $index => $facet) {
+    $components = explode(':', $facet);
+    if (count($components) > 2) {
+      if ($components[0] == 'date_created_items' || $components[0] == 'date_issued_items') {
+        $items = $variables['items'];
+        $reset = array_pop($items);
+        $pattern = '/min:(\d+),max:(\d+)/';
+        if (preg_match_all($pattern, $facet, $matches)) {
+          // Extract the minimum and maximum values
+          $minValue = $matches[1][0];
+          $maxValue = $matches[2][0];
+          unset($facets[$index]);
+          $newRequest = Request::create(
+            $request->getUri(),
+            $request->getMethod(),
+            ["f" => array_values($facets)]
+          );
+          $current_url = $newRequest->getUri();
+          $items[] = [
+            'attributes' => $reset['attributes'],
+            'value' => ['#markup' => '
+              <a href="'.$current_url.'">Date ('.$minValue.' - '.$maxValue.')
+              <span class="fa fa-remove"></span></a>']
+          ];
+          $items[] = $reset;
+          $variables['items'] = $items;
+          break;
+        }
+      }
+    }
+  }
+}
+
+function lehigh_preprocess_breadcrumb(&$variables) {
+  if (count($variables['breadcrumb']) == 1) {
+    $request = \Drupal::request();
+    $route_match = \Drupal::routeMatch();
+    $title = \Drupal::service('title_resolver')->getTitle($request, $route_match->getRouteObject(), $route_match->getParameters());
+
+    $variables['breadcrumb'][] = [
+      'text' => $title,
+      'link' => ''
+    ];
+  }
 }
 
 function lehigh_preprocess_block(&$vars) {
   lehigh_add_path_variables($vars);
+  if (!empty($vars['plugin_id']) && $vars['plugin_id'] == 'views_block:downloads-block_1') {
+    $route_match = \Drupal::routeMatch();
+    $node = $route_match->getParameter('node');
+    if (lehigh_islandora_node_is_embargoed($node)) {
+      $vars['content'] = [];
+      $vars['label'] = '';
+      return;
+    }
+  }
 }
 
 function lehigh_preprocess_region(&$vars) {
@@ -39,6 +218,18 @@ function lehigh_preprocess_pager(&$vars) {
 
 
 function lehigh_preprocess_node(&$vars) {
+  $vars['#attached']['library'][] = 'lehigh/node';
+
+  // Get the collection alias if one exists.
+  $node = $vars['node'];
+
+  if (!empty($vars['is_collection']) && $vars['url'] === '/node/' . $node->id()) {
+    $alias = \Drupal::database()->query("select `alias` from path_alias
+      WHERE path = :path", [':path' => '/browse-items/' . $node->id()])->fetchField();
+    if ($alias) {
+      $vars['url'] = $alias;
+    }
+  }
   if ($vars['view_mode'] == 'downloads') {
     $vars['downloads'] = false;
     foreach ($vars['content'] as $item) {
@@ -49,36 +240,115 @@ function lehigh_preprocess_node(&$vars) {
       }
     }
   }
+  elseif ($vars['view_mode'] == 'full' && $node->bundle() == 'islandora_object') {
+    if (lehigh_site_support_identify_collection($node, TRUE)) {
+      if (!$node->field_model->isEmpty()
+        && !$node->field_model->entity->field_external_uri->isEmpty()
+        && $node->field_model->entity->field_external_uri->uri == 'http://vocab.getty.edu/aat/300242735') {
+          $vars['#attached']['library'][] = 'lehigh/list-display';
+      }
+    }
+    else {
+      $entity_array = $node->toArray();
+      $encoder = \Drupal::service('islandora_csl.encoder');
+      $csl_str = $encoder->encode($entity_array);
+      $csl = [json_decode($csl_str)];
+
+      $style = StyleSheet::loadStyleSheet("apa");
+      $citeProc = new CiteProc($style);
+      $apa = $citeProc->render($csl, "bibliography");
+
+      $style = StyleSheet::loadStyleSheet("turabian-author-date");
+      $citeProc = new CiteProc($style);
+      $chicago = $citeProc->render($csl, "bibliography");
+
+      $style = StyleSheet::loadStyleSheet("modern-language-association");
+      $citeProc = new CiteProc($style);
+      $mla = $citeProc->render($csl, "bibliography");
+      $vars['content']['field_islandora_csl'] = [
+        '#type' => 'inline_template',
+        '#weight' => 100,
+        '#template' => <<< EOT
+    <ul class="nav nav-tabs mb-0" id="citation-tabs" role="tablist" style="border-bottom: none">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active text-decoration-none text-dark" id="apa-tab" data-bs-toggle="tab" data-bs-target="#apa" role="tab" aria-controls="apa" aria-selected="true">APA</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link text-decoration-none text-dark" id="chicago-tab" data-bs-toggle="tab" data-bs-target="#chicago" role="tab" aria-controls="chicago" aria-selected="false">Chicago/Turabian</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link text-decoration-none text-dark" id="mla-tab" data-bs-toggle="tab" data-bs-target="#mla" role="tab" aria-controls="mla" aria-selected="false">MLA</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="citation-tabs-content">
+      <div class="tab-pane fade show active" id="apa" role="tabpanel" aria-labelledby="apa-tab" tabindex="0">
+        $apa
+      </div>
+      <div class="tab-pane fade" id="chicago" role="tabpanel" aria-labelledby="chicago-tab" tabindex="0">
+        $chicago
+      </div>
+      <div class="tab-pane fade" id="mla" role="tabpanel" aria-labelledby="mla-tab" tabindex="0">
+        $mla
+      </div>
+    </div>
+EOT
+    ];
+  }
 }
 
-
-/**
- * Implements hook_views_pre_render().
- */
-function lehigh_views_pre_render(\Drupal\views\ViewExecutable $view) {
-  if ($view->id() == 'browse_collection_objects') {
-    $route_match = \Drupal::routeMatch();
-    $node = $route_match->getParameter('node');
-    if ($node
-      && $node->hasField('field_model')
-      && !$node->field_model->isEmpty()
-      && !$node->field_model->entity->field_external_uri->isEmpty()
-      && $node->field_model->entity->field_external_uri->uri === 'http://purl.org/dc/dcmitype/Collection') {
-
-      $custom_title = 'Items in this ' . strtolower($node->field_model->entity->label());
-      $view->setTitle($custom_title);
-    }
-  }
 }
 
 /**
  * Implements hook_preprocess_views_view().
  */
-function lehigh_preprocess_views_view(&$vars) {
-  $vars['#cache']['contexts'][] = 'route';
-  if ($vars['view_array']['#name'] == 'exhibit_slide_header') {
-    $vars['#attached']['library'][] = 'agile_slide_viewer/agile.viewer';
+function lehigh_preprocess_views_view_field(&$variables) {
+  if ($variables['view']->id() !== 'browse') {
+    return;
   }
+  $card = $variables['row']->_item->getField('card');
+  if (is_null($card)) {
+    return;
+  }
+  $card = $card->getValues();
+  if (is_null($card) || count($card) == 0) {
+    return;
+  }
+
+  $variables['output'] = [
+    '#type' => 'inline_template',
+    '#template' => $card[0],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_views_view().
+ */
+function lehigh_preprocess_views_view(&$variables) {
+  $view = $variables['view'];
+  if ($view->id() !== 'browse' || $view->current_display !== 'main') {
+    return;
+  }
+  $variables['#attached']['library'][] = 'lehigh/node';
+
+  if (!\Drupal::currentUser()->isAuthenticated()) {
+    return;
+  }
+  $params = \Drupal::request()->query->all();
+  $params['page'] = NULL;
+  $params['_format'] = 'csv';
+  unset($params['cache-warmer']);
+  $url = Url::fromRoute('<current>', [], ['query' => $params])->toString();
+  
+  $variables['attachment_after'][] = [
+    '#type' => "inline_template",
+    '#template' => <<< EOT
+    <div class="feed-icons">
+      <div class="csv-feed views-data-export-feed">
+        <a href="$url" class="feed-icon">&nbsp;</a>
+      </div>
+    </div>
+EOT
+  ];
 }
 
 function lehigh_preprocess_taxonomy_term(&$vars) {
@@ -135,4 +405,179 @@ function lehigh_add_path_variables(&$vars) {
   $vars['basepath'] = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
   $vars['base_path'] = $vars['basepath']; // Alias
   $vars['themepath'] = $vars['basepath'] . \Drupal::theme()->getActiveTheme()->getPath();
+}
+
+/**
+ * Implements hook_preprocess_media().
+ */
+function lehigh_preprocess_media(&$vars) {
+  if ($vars['view_mode'] !== 'default_islandora_display') {
+    return;
+  }
+  $media = $vars['media'];
+  // always use mirador for images
+  $mirador = $media->bundle() == 'image';
+
+  // decide if we use a single manifest or book manifest based on model
+  $node = $media->get('field_media_of')->entity;
+
+  if ($d = lehigh_islandora_node_is_embargoed($node)) {
+    $date = is_null($d) ? '2999-12-31' : $d->format('Y-m-d');
+    $embargo_suffix = 'until ' . $date;
+    if ($date == '2999-12-31') {
+      $embargo_suffix = 'indefinitely';
+    }
+    $vars['content'] = [
+      '#markup' => '<div class="alert alert-warning" role="alert">
+        This file is embargoed '
+        . $embargo_suffix
+        . '</div>',
+    ];
+    return;
+  }
+
+  $model = !is_null($node->field_model->entity) ? $node->field_model->entity->label() : '';
+  $iiif_url = "[node:url:unaliased:absolute]/manifest";
+  if (in_array($model, ['Publication Issue', 'Paged Content'])) {
+    $mirador = TRUE;
+    $iiif_url = "[node:url:unaliased:absolute]/book-manifest";
+  }
+
+  // override file's that are TIFF/JP2 and images to use mirador
+  if ($media->bundle() == 'file') {
+    $filename = !is_null($media->field_media_file->entity) ? $media->field_media_file->entity->filename->value : '';
+    $components = explode('.', $filename);
+    $extension = array_pop($components);
+    if (in_array($extension, ['tif', 'tiff', 'jp2'])) {
+      $mirador = TRUE;
+    }
+  }
+
+  if ($mirador) {
+    $id = 'mirador_' . $node->id();
+    $manifest_url = \Drupal::service('token')->replace($iiif_url, ['node' => $node]);
+
+    $vars['content'] = [
+      'mirador' => [
+        '#theme' => 'mirador',
+        '#mirador_view_id' => $id,
+        '#iiif_manifest_url' => $manifest_url,
+        '#settings' => [],
+      ],
+    ];
+  }
+  elseif ($media->bundle() == 'video') {
+    if (!is_null($media->field_media_video_file->entity) && substr($media->field_media_video_file->entity->uri->value, -4) == 'm3u8') {
+      $vars['content']['video'] = [
+        '#type' => 'inline_template',
+        '#template' => '<video id="video" controls class="w-100"></video>'
+      ];
+      $vars['#attached']['drupalSettings']['videoUrl'] = $media->field_media_video_file->entity->createFileUrl();;
+      $vars['#attached']['library'][] = 'lehigh/hls';
+    }
+  }
+  elseif ($media->bundle() == 'audio') {
+    if (!is_null($media->field_media_audio_file->entity) && substr($media->field_media_audio_file->entity->uri->value, -4) == 'm3u8') {
+      $vars['content']['audio'] = [
+        '#type' => 'inline_template',
+        '#template' => '<audio id="audio" controls class="w-50"></audio>'
+      ];
+      $vars['#attached']['drupalSettings']['audioUrl'] = $media->field_media_audio_file->entity->createFileUrl();;
+      $vars['#attached']['library'][] = 'lehigh/hls';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_mirador().
+ */
+function lehigh_preprocess_mirador(&$variables) {
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (!$node) {
+    return;
+  }
+  $variables['#cache']['contexts'][] = 'url.query_args';
+
+  // add some default overrides for Lehigh's Mirador viewer
+  $id = '#' . $variables['mirador_view_id'];
+  $viewer = &$variables['#attached']['drupalSettings']['mirador']['viewers'][$id];
+  // remove the far left sidebar for workspace options
+  $viewer['workspaceControlPanel']['enabled'] = FALSE;
+  // since full screen was in that workspace we just hid, add it to the top
+  $viewer['windows'][0]['allowFullscreen'] = TRUE;
+  // remove the close button since that just leaves a blank viewer
+  $viewer['windows'][0]['allowClose'] = FALSE;
+  $viewer['windows'][0]['thumbnailNavigationPosition'] = 'far-right';
+
+  $viewer['workspace']['showZoomControls'] = TRUE;
+  // allow skipping to a default page
+  if (isset($_GET['pageNumber']) && is_numeric($_GET['pageNumber'])) {
+    $viewer['windows'][0]['canvasIndex'] = $_GET['pageNumber'] - 1;
+  }
+
+  // add a download option
+  $viewer['miradorDownloadPlugin']['restrictDownloadOnSizeDefinition'] = TRUE;
+
+  // see if we should hide the hOCR for this mirador view
+  $hide_hocr = lehigh_islandora_hide_hocr($node);
+  if ($hide_hocr) {
+    foreach ($variables['#attached']['drupalSettings']['mirador']['viewers'] as &$viewer) {
+      $viewer['window']['textOverlay']['enabled'] = FALSE;
+      $viewer['window']['textOverlay']['selectable'] = FALSE;
+    }
+  }
+
+  if (!empty($_GET['search_api_fulltext'])) {
+    $model = !is_null($node->field_model->entity) ? $node->field_model->entity->label() : '';
+    $route = 'annotation';
+    if (in_array($model, ['Publication Issue', 'Paged Content'])) {
+      $route .= 's';
+    }
+    $url = 'http://drupal/' . $route . '/' . $node->id() . '?q=' . $_GET['search_api_fulltext'];
+    $response = file_get_contents($url);
+    if ($response === false) {
+      \Drupal::logger('lehigh')->error('Unable to load @url', ['@url' => $url]);
+      return;
+    }
+    $data = json_decode($response, true);
+    if (!empty($data['within']['total'])) {
+      $viewer['windows'][0]['defaultSearchQuery'] = Xss::filter($_GET['search_api_fulltext']);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lehigh_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (isset($form['#action']) && strpos($form['#action'], '/browse-items') !== FALSE) {
+    $current_path = \Drupal::service('path.current')->getPath();
+    $form['#action'] = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+  }
+  if (array_key_exists('items_per_page', $form)) {
+    foreach ($form['items_per_page']['#options'] as $key => $label) {
+      $form['items_per_page']['#options'][$key] .= ' items per page';
+    }
+  }
+  if (array_key_exists('sort_bef_combine', $form) && !isset($_GET['sort_bef_combine'])) {
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if (is_numeric($node)) {
+      $sort = '';
+      if ($node == 0) {
+        $sort = 'title_ASC';
+      }
+      else {
+        $node = Node::load($node);
+        if ($node && !$node->field_sort_by->isEmpty()) {
+          $components = explode('_', $node->field_sort_by->value);
+          $direction = array_pop($components);
+          $components[] = strtoupper($direction);
+          $sort = implode('_', $components);
+        }
+      }
+      if (isset($form['sort_bef_combine']['#options'][$sort])) {
+        $form['sort_bef_combine']['#default_value'] = $sort;
+      }
+    }
+  }
 }

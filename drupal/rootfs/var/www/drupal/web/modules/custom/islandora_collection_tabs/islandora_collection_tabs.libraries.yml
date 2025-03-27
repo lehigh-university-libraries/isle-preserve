@@ -1,0 +1,11 @@
+tabs:
+  css:
+    component:
+      css/tabs.css: {}
+  js:
+    js/tabs.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once

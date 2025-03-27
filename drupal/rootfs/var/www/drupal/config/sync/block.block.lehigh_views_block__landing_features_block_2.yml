@@ -13,7 +13,7 @@ dependencies:
 id: lehigh_views_block__landing_features_block_2
 theme: lehigh
 region: title
-weight: 0
+weight: -22
 provider: null
 plugin: 'views_block:landing_features-block_2'
 settings:
@@ -33,4 +33,4 @@ visibility:
   request_path:
     id: request_path
     negate: false
-    pages: /browse
+    pages: /browse-items/-1

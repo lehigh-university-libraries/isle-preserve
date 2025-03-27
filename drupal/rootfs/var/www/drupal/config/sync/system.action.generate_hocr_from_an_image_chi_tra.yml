@@ -1,0 +1,20 @@
+uuid: 7b9a92b5-022d-453a-8714-6e20150188ee
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_hocr
+id: generate_hocr_from_an_image_chi_tra
+label: 'Generate hOCR from an image (Traditional Chinese)'
+type: node
+plugin: generate_hocr_derivative
+configuration:
+  queue: islandora-connector-ocr
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#OriginalFile'
+  derivative_term_uri: 'https://discoverygarden.ca/use#hocr'
+  mimetype: text/vnd.hocr+html
+  args: '-c tessedit_create_hocr=1  -l chi_tra'
+  destination_media_type: file
+  scheme: private
+  path: 'derivatives/hocr/[node:nid]/[node:nid].hocr'

@@ -1,0 +1,29 @@
+uuid: b16ce20b-f753-4ddc-9b5b-2accdb05b7cb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_institution
+    - taxonomy.vocabulary.institution
+    - taxonomy.vocabulary.person
+id: taxonomy_term.person.field_institution
+field_name: field_institution
+entity_type: taxonomy_term
+bundle: person
+label: Institution
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:filter_existing_terms'
+  handler_settings:
+    target_bundles:
+      institution: institution
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

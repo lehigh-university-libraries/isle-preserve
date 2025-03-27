@@ -1,0 +1,11 @@
+uuid: 02f827d1-db4e-4ea4-910c-102a42386c34
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.season
+id: taxonomy_term.season
+target_entity_type_id: taxonomy_term
+target_bundle: season
+default_langcode: site_default
+language_alterable: false

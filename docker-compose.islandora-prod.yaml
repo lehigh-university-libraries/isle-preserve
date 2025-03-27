@@ -1,0 +1,4 @@
+services:
+  drupal:
+    volumes:
+      - ./drupal/rootfs/var/www/drupal/config:/var/www/drupal/config:z,rw,${CONSISTENCY}

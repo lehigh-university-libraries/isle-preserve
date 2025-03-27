@@ -1,0 +1,20 @@
+uuid: 89e1a2d7-9496-4080-baf7-e23d7bdc6281
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_text_extraction
+id: digital_document_add_coverpage
+label: 'Digital Document - add PDF Coverpage'
+type: node
+plugin: generate_ocr_derivative
+configuration:
+  queue: islandora-pdf-coverpage
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#OriginalFile'
+  derivative_term_uri: 'http://pcdm.org/use#ServiceFile'
+  mimetype: application/pdf
+  args: ''
+  destination_media_type: document
+  scheme: private
+  path: 'derivatives/coverpage/[node:nid].pdf'

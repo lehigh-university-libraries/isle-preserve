@@ -11,7 +11,7 @@ id: node.islandora_object.field_edtf_date_captured
 field_name: field_edtf_date_captured
 entity_type: node
 bundle: islandora_object
-label: 'EDTF date captured'
+label: 'Date Captured'
 description: ''
 required: false
 translatable: false

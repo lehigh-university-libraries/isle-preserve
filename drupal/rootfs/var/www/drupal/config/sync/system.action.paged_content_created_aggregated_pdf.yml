@@ -1,0 +1,13 @@
+uuid: 42688d6e-4dcc-400a-abf1-44c200d52604
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+id: paged_content_created_aggregated_pdf
+label: 'Paged Content - Created Aggregated PDF'
+type: node
+plugin: emit_node_event
+configuration:
+  queue: islandora-merge-pdf
+  event: 'Generate Derivative'

@@ -1,0 +1,121 @@
+uuid: 6f84f00a-ad9f-476f-b15c-d62e4d61b2d5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_member_of
+    - field.storage.node.field_weight
+    - search_api.server.default_solr_server
+  module:
+    - islandora_hocr
+    - lehigh_site_support
+    - node
+    - search_api_solr
+third_party_settings:
+  search_api_solr:
+    finalize: false
+    commit_before_finalize: false
+    commit_after_finalize: false
+    debug_finalize: false
+    highlighter:
+      maxAnalyzedChars: 51200
+      fragmenter: gap
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
+      regex:
+        slop: 0.5
+        pattern: blank
+        maxAnalyzedChars: 10000
+      highlight:
+        mergeContiguous: false
+        requireFieldMatch: false
+        snippets: 3
+        fragsize: 0
+    mlt:
+      mintf: 1
+      mindf: 1
+      maxdf: 0
+      maxdfpct: 0
+      minwl: 0
+      maxwl: 0
+      maxqt: 100
+      maxntp: 2000
+      boost: false
+      interestingTerms: none
+    term_modifiers:
+      slop: 3
+      fuzzy: 1
+      fuzzy_analyzer: true
+    advanced:
+      index_prefix: ''
+      collection: ''
+      timezone: ''
+    multilingual:
+      limit_to_content_language: false
+      include_language_independent: true
+      use_language_undefined_as_fallback_language: false
+      specific_languages:
+        en: '0'
+      use_universal_collation: false
+id: hocr
+name: hOCR
+description: ''
+read_only: false
+field_settings:
+  content:
+    label: 'HOCR Field » HOCR Content Field'
+    datasource_id: 'entity:node'
+    property_path: 'islandora_hocr_field:content'
+    type: 'solr_text_custom:islandora_hocr'
+  field_member_of:
+    label: 'Member of'
+    datasource_id: 'entity:node'
+    property_path: field_member_of
+    type: integer
+    dependencies:
+      config:
+        - field.storage.node.field_member_of
+  field_weight:
+    label: 'Custom Sort Value'
+    datasource_id: 'entity:node'
+    property_path: field_weight
+    type: integer
+    dependencies:
+      config:
+        - field.storage.node.field_weight
+  nid:
+    label: ID
+    datasource_id: 'entity:node'
+    property_path: nid
+    type: integer
+    dependencies:
+      module:
+        - node
+datasource_settings:
+  'entity:node':
+    bundles:
+      default: false
+      selected:
+        - islandora_object
+    languages:
+      default: true
+      selected: {  }
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  auto_aggregated_fulltext_field: {  }
+  custom_value: {  }
+  entity_type: {  }
+  islandora_hocr_field: {  }
+  language_with_fallback: {  }
+  rendered_item: {  }
+  solr_date_range: {  }
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  cron_limit: 50
+  index_directly: true
+  track_changes_in_references: true
+server: default_solr_server

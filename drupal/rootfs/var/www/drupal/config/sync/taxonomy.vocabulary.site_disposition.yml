@@ -6,3 +6,4 @@ name: 'Site Disposition'
 vid: site_disposition
 description: 'Used to identify items to place in features across the site.'
 weight: 0
+new_revision: false

@@ -1,0 +1,9 @@
+uuid: f85cb17f-cbce-4a85-a449-ba41c0ff9fe2
+langcode: en
+status: true
+dependencies: {  }
+name: 'Subject (LCSH)'
+vid: subject_lcsh
+description: null
+weight: 0
+new_revision: false

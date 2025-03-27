@@ -1,6 +1,6 @@
 uuid: 5e4a79f6-af46-4208-a716-bb37cd6f479d
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - search_api.index.default_solr_index
@@ -83,6 +83,7 @@ display:
         type: full
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 30
           total_pages: null
           id: 0
@@ -114,7 +115,7 @@ display:
         type: none
         options: {  }
       cache:
-        type: none
+        type: search_api_none
         options: {  }
       empty: {  }
       sorts: {  }
@@ -306,7 +307,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
       tags:
         - 'config:search_api.index.default_solr_index'
@@ -317,20 +317,10 @@ display:
     display_plugin: page
     position: 1
     display_options:
+      enabled: false
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -341,7 +331,6 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
       tags:
         - 'config:search_api.index.default_solr_index'

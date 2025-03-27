@@ -1,3 +1,15 @@
+location ^~ /sites/default/files/styles/islandora_imagecache_image_style {
+    return 404;
+}
+location ^~ /sites/preserve/files/styles/islandora_imagecache_image_style {
+    return 404;
+}
+
+# block bad bots
+if ($http_user_agent ~ (Scrapy|ImagesiftBot|YandexBot|Bytespider|Sogou|SemrushBot|AcademicBotRTU|PetalBot|GPTBot|DataForSeoBot|test-bot) ) {
+  return 403;
+}
+
 # In Drupal 8, we must also match new paths where the '.php' appears in
 # the middle, such as update.php/selection. The rule we use is strict,
 # and only allows this pattern with the update.php front controller.
@@ -27,8 +39,12 @@ location ~ '\.php$|^/update.php' {
     fastcgi_param HTTP_SCHEME https;
     {{ end }}
     fastcgi_intercept_errors on;
-proxy_http_version 1.1;
-proxy_request_buffering off;
+
+    # increase buffer size to avoid 502's from large HTTP header responses
+    fastcgi_buffers 16 32k;
+    fastcgi_buffer_size 64k;
+    fastcgi_busy_buffers_size 64k;
+
     # PHP 8 socket location.
-    fastcgi_pass unix:/var/run/php-fpm81/php-fpm81.sock;
+    fastcgi_pass unix:/var/run/php-fpm83/php-fpm83.sock;
 }

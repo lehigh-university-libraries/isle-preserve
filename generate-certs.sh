@@ -34,14 +34,10 @@ if [ ! -f "${PROGDIR}/certs/rootCA.pem" ]; then
 fi
 
 "${MKCERT}" -cert-file certs/cert.pem -key-file certs/privkey.pem \
-  "*.islandora.dev" \
-  "islandora.dev" \
-  "*.islandora.io" \
-  "islandora.io" \
-  "*.islandora.info" \
-  "islandora.info" \
-  "localhost" \
-  "127.0.0.1" \
-  "::1"
+  "*.lib.lehigh.edu" \
+  "preserve.lehigh.edu" \
+  "preserve-new.lehigh.edu" \
+  "drupal" \
+  "localhost"
 
 printf '%s' "$(id -u)" > ./certs/UID

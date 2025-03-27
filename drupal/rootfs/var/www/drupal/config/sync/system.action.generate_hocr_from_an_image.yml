@@ -1,0 +1,20 @@
+uuid: 8c2231f8-82f3-4e71-82c4-ac795333bc9b
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_hocr
+id: generate_hocr_from_an_image
+label: 'Generate hOCR using tesseract'
+type: node
+plugin: generate_hocr_derivative
+configuration:
+  queue: islandora-connector-ocr
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#OriginalFile'
+  derivative_term_uri: 'https://discoverygarden.ca/use#hocr'
+  mimetype: text/vnd.hocr+html
+  args: '-c tessedit_create_hocr=1'
+  destination_media_type: file
+  scheme: private
+  path: 'derivatives/hocr/[node:nid]/[node:nid].hocr'

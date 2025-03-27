@@ -1,0 +1,21 @@
+uuid: eea6d3b1-042f-4542-9c74-75457950f5e1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_contributor_status
+    - taxonomy.vocabulary.person
+  module:
+    - options
+id: taxonomy_term.person.field_contributor_status
+field_name: field_contributor_status
+entity_type: taxonomy_term
+bundle: person
+label: 'Contributor Status'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

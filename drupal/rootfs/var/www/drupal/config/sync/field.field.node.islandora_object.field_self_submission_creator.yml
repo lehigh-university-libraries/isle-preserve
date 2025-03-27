@@ -1,0 +1,29 @@
+uuid: 15402dcd-e28e-4f68-8eb0-0fa8dbf5c301
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_self_submission_creator
+    - node.type.islandora_object
+    - taxonomy.vocabulary.person
+id: node.islandora_object.field_self_submission_creator
+field_name: field_self_submission_creator
+entity_type: node
+bundle: islandora_object
+label: Creator(s)
+description: "Provide the name of the person(s) responsible for the creation of this item. This could be an author, translator, illustrator,  or other associated role.\r\nYou can also add an academic or corporate institution with which a person is affiliated as well as their ORCiD identifier."
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:filter_existing_terms'
+  handler_settings:
+    target_bundles:
+      person: person
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

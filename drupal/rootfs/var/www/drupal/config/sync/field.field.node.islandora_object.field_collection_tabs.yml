@@ -1,0 +1,21 @@
+uuid: a261a25d-b84f-49aa-ab2a-4ef8a8ace9b6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_collection_tabs
+    - node.type.islandora_object
+  module:
+    - islandora_collection_tabs
+id: node.islandora_object.field_collection_tabs
+field_name: field_collection_tabs
+entity_type: node
+bundle: islandora_object
+label: 'Collection Tabs'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: islandora_collection_tabs

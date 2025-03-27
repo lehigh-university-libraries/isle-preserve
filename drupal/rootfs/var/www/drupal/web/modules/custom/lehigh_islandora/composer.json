@@ -1,0 +1,20 @@
+{
+  "name": "lehigh-university-libraries/lehigh_islandora",
+  "description": "Suite of modules for Lehigh Preserve",
+  "type": "drupal-module",
+  "keywords": ["Drupal", "Islandora", "Lehigh University"],
+  "homepage": "https://github.com/lehigh-university-libraries/lehigh_islandora",
+  "support": {
+    "issues": "https://github.com/lehigh-university-libraries/lehigh_islandora/issues"
+  },
+  "require": {
+    "drupal/token" : "^1.13"
+  },
+  "authors": [
+    {
+      "name": "Joe Corall",
+      "email": "jjc223@lehigh.edu",
+      "role": "Maintainer"
+    }
+  ]
+}

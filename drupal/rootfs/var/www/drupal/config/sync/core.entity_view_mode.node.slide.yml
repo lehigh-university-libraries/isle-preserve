@@ -6,5 +6,6 @@ dependencies:
     - node
 id: node.slide
 label: Slide
+description: ''
 targetEntityType: node
 cache: true

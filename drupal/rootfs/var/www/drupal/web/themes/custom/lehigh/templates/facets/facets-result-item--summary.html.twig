@@ -1,0 +1,26 @@
+{#
+/**
+ * @file
+ * Default theme implementation of a facet result item.
+ *
+ * Available variables:
+ * - value: The item value.
+ * - raw_value: The raw item value.
+ * - show_count: If this facet provides count.
+ * - count: The amount of results.
+ * - is_active: The item is active.
+ * - facet: The facet for this result item.
+ *   - id: the machine name for the facet.
+ *   - label: The facet label.
+ *
+ * @ingroup themeable
+ */
+#}
+{% if show_label %}
+<span class="summary facet-item__label"><strong>{{ label }}</strong>: </span>
+{% endif %}
+<span class="facet-item__value">{{ value }}</span>
+<span class="fa fa-remove"></span>
+{% if show_count %}
+  <span class="facet-item__count">({{ count | number_format }})</span>
+{% endif %}

@@ -1,0 +1,20 @@
+uuid: 50536276-3952-4861-86f0-551b8ee9c143
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_text_extraction
+id: digital_document_clean_pdf
+label: 'Digital Document - Clean PDF'
+type: node
+plugin: generate_ocr_derivative
+configuration:
+  queue: islandora-clean-pdf
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#OriginalFile'
+  derivative_term_uri: 'http://pcdm.org/use#ServiceFile'
+  mimetype: application/pdf
+  args: ''
+  destination_media_type: document
+  scheme: private
+  path: 'derivatives/clean/[node:nid].pdf'

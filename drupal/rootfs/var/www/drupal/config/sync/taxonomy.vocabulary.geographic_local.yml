@@ -4,5 +4,6 @@ status: true
 dependencies: {  }
 name: 'Geographic local'
 vid: geographic_local
-description: ''
+description: null
 weight: 0
+new_revision: false

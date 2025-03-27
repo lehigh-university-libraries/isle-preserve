@@ -1,0 +1,7 @@
+uuid: 31e9392d-27a3-4f6c-9a14-be715d152f0e
+langcode: en
+status: true
+dependencies: {  }
+formId: contact_message_access_request_form
+captchaType: turnstile/Turnstile
+label: contact_message_access_request_form

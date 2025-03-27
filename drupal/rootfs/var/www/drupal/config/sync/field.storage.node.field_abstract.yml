@@ -1,19 +1,18 @@
-uuid: e767fd03-691b-4a98-8d8e-7e70df454143
+uuid: 5e744494-ba98-402d-bf2e-2859b11e0383
 langcode: en
 status: true
 dependencies:
   module:
+    - lehigh_islandora
     - node
-_core:
-  default_config_hash: WuV2X-5c4wKQsu1THdMCZZvsf6XlShOOtgfAno5lyFc
 id: node.field_abstract
 field_name: field_abstract
 entity_type: node
-type: text_long
+type: textarea_attr
 settings: {  }
-module: core
+module: lehigh_islandora
 locked: false
-cardinality: 1
+cardinality: -1
 translatable: true
 indexes: {  }
 persist_with_no_fields: false

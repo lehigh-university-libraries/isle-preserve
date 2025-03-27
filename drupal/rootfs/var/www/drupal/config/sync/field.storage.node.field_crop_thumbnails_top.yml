@@ -1,0 +1,22 @@
+uuid: 430d31be-504a-4d73-aa36-15a30e39d841
+langcode: en
+status: true
+dependencies:
+  module:
+    - field_permissions
+    - node
+third_party_settings:
+  field_permissions:
+    permission_type: custom
+id: node.field_crop_thumbnails_top
+field_name: field_crop_thumbnails_top
+entity_type: node
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

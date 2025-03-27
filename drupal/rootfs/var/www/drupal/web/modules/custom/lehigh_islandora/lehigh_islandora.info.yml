@@ -1,8 +1,10 @@
 name: 'Lehigh Islandora'
 type: module
-description: 'Various custom code needed for Lehigh Islandora'
-core_version_requirement: ^9.2 || ^10
+description: 'Various custom code needed for Lehigh Preserve'
+core_version_requirement: ^10
 package: 'Custom'
 dependencies:
+  - islandora:islandora
   - token:token
-
+  - redirect:redirect
+  - lehigh_site_support:lehigh_site_support

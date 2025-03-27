@@ -1,0 +1,38 @@
+{# templates/menu/menu--main-menu.html.twig #}
+{% macro render_menu(items, attributes, menu_level) %}
+  {% import _self as menus %}
+  {% if menu_level == 1 %}
+    <ul{{ attributes.addClass('d-flex', 'justify-content-between') }}>
+  {% else %}
+        <ul class="dropdown-menu">
+  {% endif %}
+      {% for item in items %}
+        <li{{ item.attributes.addClass(item.is_expanded ? 'dropdown' : '', item.in_active_trail ? 'active' : '') }}>
+          {% if item.is_expanded %}
+            <a class="dropdown-toggle" href="#" id="{{ item.url }}" role="button" aria-expanded="false" data-bs-toggle="dropdown">
+              <span>{{ item.title }}</span>
+            </a>
+            {{ menus.render_menu(item.below, attributes, menu_level + 1) }}
+          {% else %}
+            <a href="{{ item.url }}" class="{{ menu_level == 1 ? '' : 'dropdown-item' }}">
+              {{ item.title }}
+            </a>
+          {% endif %}
+        </li>
+      {% endfor %}
+  {% if menu_level == 1 %}
+      <li>
+        <a id="toggle-main-nav-search" class="text-decoration-none p-0" data-bs-toggle="collapse"
+          href="#collapseSearch" role="button" aria-expanded="false" aria-controls="collapseSearch"
+          style="min-width: 24px">
+          <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"
+            alt="Location" width="24" height="24" />
+        </a>
+      </li>
+    </ul>
+  {% else %}
+        </ul>
+  {% endif %}
+{% endmacro %}
+
+{{ _self.render_menu(items, attributes, 1) }}

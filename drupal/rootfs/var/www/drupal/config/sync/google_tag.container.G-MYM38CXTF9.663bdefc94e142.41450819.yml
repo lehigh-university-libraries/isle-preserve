@@ -1,0 +1,32 @@
+uuid: 2791379c-d87b-4d26-b523-dfd570ea2969
+langcode: en
+status: true
+dependencies:
+  module:
+    - context
+    - user
+id: G-MYM38CXTF9.663bdefc94e142.41450819
+label: G-MYM38CXTF9
+weight: 0
+tag_container_ids:
+  - G-MYM38CXTF9
+advanced_settings:
+  consent_mode: false
+dimensions_metrics: {  }
+conditions:
+  user_role:
+    id: user_role
+    negate: true
+    context_mapping:
+      user: '@user.current_user_context:current_user'
+    roles:
+      ga_no_tracking: ga_no_tracking
+  request_domain:
+    id: request_domain
+    negate: false
+    domains: "islandora-prod.lib.lehigh.edu\r\npreserve.lehigh.edu"
+events:
+  custom: {  }
+  login:
+    method: CMS
+  search: {  }

@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.storage.media.field_media_use
     - media.type.fits_technical_metadata
+    - taxonomy.vocabulary.islandora_media_use
 _core:
   default_config_hash: EnP_zEWaW9ftTG-UqJU-BoWJ0c9vejH_tnGShd7r3Ug
 id: media.fits_technical_metadata.field_media_use
@@ -19,5 +20,12 @@ default_value: {  }
 default_value_callback: ''
 settings:
   handler: 'default:taxonomy_term'
-  handler_settings: {  }
+  handler_settings:
+    target_bundles:
+      islandora_media_use: islandora_media_use
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
 field_type: entity_reference

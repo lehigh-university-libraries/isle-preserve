@@ -1,0 +1,59 @@
+_core:
+  default_config_hash: yOPH6uEZYRHbg2OFP-bze0jGr06fI-Gr_66W-vA8Faw
+report-only:
+  enable: true
+  directives:
+    default-src:
+      base: self
+    child-src:
+      base: self
+    connect-src:
+      base: self
+      sources:
+        - 'https://*.google-analytics.com'
+        - 'https://*.analytics.google.com'
+        - 'https://*.googletagmanager.com'
+    font-src:
+      base: self
+      sources:
+        - fonts.gstatic.com
+    img-src:
+      base: self
+      sources:
+        - 'data:'
+        - 'https://*.google-analytics.com'
+        - 'https://*.googletagmanager.com'
+        - 'https://www.lehigh.edu'
+    object-src:
+      base: none
+    script-src:
+      base: self
+      sources:
+        - 'https://*.google-analytics.com/analytics.js'
+        - 'https://*.googletagmanager.com'
+        - 'https://www.lehigh.edu'
+        - 'https://challenges.cloudflare.com'
+    style-src:
+      base: self
+      flags:
+        - unsafe-inline
+      sources:
+        - fonts.googleapis.com
+        - 'https://www.lehigh.edu'
+    base-uri:
+      base: self
+    frame-ancestors:
+      base: self
+  reporting:
+    plugin: uriports-com
+    options:
+      subdomain: ccssq3ur
+enforce:
+  enable: false
+  directives:
+    object-src:
+      base: none
+    frame-ancestors:
+      base: self
+  reporting:
+    plugin: none

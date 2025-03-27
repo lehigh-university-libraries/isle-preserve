@@ -13,7 +13,7 @@ _core:
 id: lehigh_page_title
 theme: lehigh
 region: title
-weight: -18
+weight: -16
 provider: null
 plugin: page_title_block
 settings:

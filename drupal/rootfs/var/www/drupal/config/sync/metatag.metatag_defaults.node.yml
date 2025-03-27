@@ -9,8 +9,11 @@ label: Content
 tags:
   canonical_url: '[node:url]'
   citation_author: '[node:lehigh_islandora_authors]'
-  citation_pdf_url: '[node:lehigh_islandora_pdf_url]'
+  citation_dissertation_institution: '[node:lehigh_dissertation_institution]'
+  citation_pdf_url: '[node:lehigh_pdf_url]'
   citation_publication_date: '[node:lehigh_islandora_issued_ymd]'
+  citation_technical_report_institution: '[node:lehigh_technical_report_institution]'
+  citation_technical_report_number: '[node:lehigh_technical_report_number]'
   citation_title: '[node:title]'
   description: '[node:summary]'
   title: '[node:title] | [site:name]'

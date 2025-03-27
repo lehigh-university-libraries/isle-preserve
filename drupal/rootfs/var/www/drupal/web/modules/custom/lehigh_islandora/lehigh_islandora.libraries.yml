@@ -1,0 +1,47 @@
+attr:
+  css:
+    component:
+      css/attr-widget.css: {}
+
+related_item:
+  css:
+    component:
+      css/related-item-widget.css: {}
+
+hierarchical_geographic:
+  css:
+    component:
+      css/hierarchical-geographic-widget.css: {}
+
+part_detail:
+  css:
+    component:
+      css/part-detail-widget.css: {}
+
+node-form:
+  css:
+    component:
+      css/node-form.css: {}
+  js:
+    js/node-form.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+
+altmetrics:
+  version: 1.0
+  js:
+    https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js: { external: true }
+
+node:
+  css:
+    component:
+      css/node.css: {}
+  js:
+    js/node.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once

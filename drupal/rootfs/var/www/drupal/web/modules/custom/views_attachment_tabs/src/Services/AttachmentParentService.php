@@ -1,23 +1,15 @@
 <?php
 
-/**
- * @file
- * Attachment Parent service file.
- *
- */
-
 namespace Drupal\views_attachment_tabs\Services;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\views\ViewExecutable;
-use Drupal\views\Views;
+
 /**
  * Wrapper methods for the Views Attachment Tabs API.
- *
  *
  * @ingroup views
  */
@@ -38,14 +30,14 @@ class AttachmentParentService {
   protected $themeManager;
 
   /**
-   * The language manager service
+   * The language manager service.
    *
    * @var \Drupal\Core\Language\LanguageManagerInterface
    */
   protected $languageManager;
 
   /**
-   * The config factory service
+   * The config factory service.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
@@ -77,7 +69,7 @@ class AttachmentParentService {
    *   An associative array of default options for the Attachment Parent view
    *   display.
    */
-  public function getAttachmentParentDefaultOptions(ViewExecutable $view = null): array {
+  public function getAttachmentParentDefaultOptions(?ViewExecutable $view = NULL): array {
 
     $options = [];
     $attachments = [];
@@ -87,8 +79,7 @@ class AttachmentParentService {
       // Copied code from $view->attachDisplays();
       // Attachments haven't been attached at this stage in the build order.
       // We can't call attachDisplays here without duplicating attachments.
-
-      foreach($view->display_handler->getAttachedDisplays() as $id) {
+      foreach ($view->display_handler->getAttachedDisplays() as $id) {
         $display_handler = $view->displayHandlers->get($id);
         if ($display_handler->isEnabled() && $display_handler->access()) {
           $attachments[$id] = $display_handler->getOption('title');
@@ -114,13 +105,13 @@ class AttachmentParentService {
    * @param array $options
    *   An associative array of Attachment Parent options.
    * @param string[] $viewer_ids
+   *   The viewer IDs to attach.
    */
   public function applyAttachmentParentDisplay(&$form, $container, $item_selector, $options = [], $viewer_ids = ['attachment_parent_default']) {
     if (!empty($container)) {
       // For any options not specified, use default options.
       // In this case if options are not specified they should be empty.
       // $options += $this->getAttachmentParentDefaultOptions();
-
       if (!isset($item_selector)) {
         $item_selector = '';
       }
@@ -142,27 +133,21 @@ class AttachmentParentService {
       ];
       $this->moduleHandler->alter('attachment_parent_component', $attachment_parent, $context);
       $this->themeManager->alter('attachment_parent_component', $attachment_parent, $context);
-
-      /* $form['#attached']['library'][] = 'views_attachment_tabs/views_attachment_tabs.attachment_parent';
-      if (isset($form['#attached']['drupalSettings'])) {
-        $form['#attached']['drupalSettings'] += $attachment_parent;
-      }
-      else {
-        $form['#attached']['drupalSettings'] = $attachment_parent;
-      }*/
     }
   }
 
   /**
    * Build the settings configuration form.
    *
-   * @param array (optional)
-   *   The default values for the form.
+   * @param array $default_values
+   *   (optional) The default values for the form.
+   * @param Drupal\views\ViewExecutable $view
+   *   (optional) The view.
    *
    * @return array
    *   The form
    */
-  public function buildSettingsForm($default_values, ViewExecutable $view = null) {
+  public function buildSettingsForm($default_values, ?ViewExecutable $view = NULL) {
     // Load module default values if empty.
     if (empty($default_values)) {
       $default_values = [];
@@ -173,9 +158,8 @@ class AttachmentParentService {
       '#title' => t('Default Attachment View'),
       '#description' => t("Select a view to be displayed in place of this view will be displayed in place of this one."),
       '#options' => $this->getAttachmentParentDefaultOptions($view)['default_attachment_display_options'],
-      '#default_value' => array_key_exists('default_attachment_display',$default_values) ? $default_values['default_attachment_display'] : null,
+      '#default_value' => array_key_exists('default_attachment_display', $default_values) ? $default_values['default_attachment_display'] : NULL,
     ];
-
 
     // Allow other modules and themes to alter the form.
     $this->moduleHandler->alter('attachment_parent_options_form', $form, $default_values);
@@ -184,12 +168,11 @@ class AttachmentParentService {
     return $form;
   }
 
-  /*
+  /**
    * Check that prerequisites are installed.
    *
-   * STUB FUNCTION
+   * STUB FUNCTION.
    */
-
   public function flightCheck(): bool {
     return TRUE;
   }

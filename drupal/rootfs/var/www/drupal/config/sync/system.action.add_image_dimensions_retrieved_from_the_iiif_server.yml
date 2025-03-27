@@ -1,0 +1,14 @@
+uuid: 60313327-34d9-4489-87d2-7ae844b1d34b
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_iiif
+id: add_image_dimensions_retrieved_from_the_iiif_server
+label: 'Add image dimensions retrieved from the IIIF server'
+type: node
+plugin: media_attributes_from_iiif_action
+configuration:
+  source_term_uri: 'http://pcdm.org/use#ServiceFile'
+  width_field: media.file.field_width
+  height_field: media.file.field_height

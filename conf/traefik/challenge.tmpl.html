@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr"
+  prefix="wgs84_pos: http://www.w3.org/2003/01/geo/wgs84_pos#  org: https://www.w3.org/TR/vocab-org/#org:  xs: http://www.w3.org/2001/XMLSchema#  ldp: http://www.w3.org/ns/ldp#  dc11: http://purl.org/dc/elements/1.1/  dcterms: http://purl.org/dc/terms/  nfo: http://www.semanticdesktop.org/ontologies/2007/03/22/nfo/v1.1/  ebucore: http://www.ebu.ch/metadata/ontologies/ebucore/ebucore#  fedora: http://fedora.info/definitions/v4/repository#  owl: http://www.w3.org/2002/07/owl#  ore: http://www.openarchives.org/ore/terms/  rdf: http://www.w3.org/1999/02/22-rdf-syntax-ns#  rdau: http://rdaregistry.info/Elements/u/  islandora: http://islandora.ca/  pcdm: http://pcdm.org/models#  use: http://pcdm.org/use#  iana: http://www.iana.org/assignments/relation/  premis: http://www.loc.gov/premis/rdf/v1#  premis3: http://www.loc.gov/premis/rdf/v3/  co: http://purl.org/co/  relators: http://id.loc.gov/vocabulary/relators/  content: http://purl.org/rss/1.0/modules/content/  dc: http://purl.org/dc/terms/  foaf: http://xmlns.com/foaf/0.1/  og: http://ogp.me/ns#  rdfs: http://www.w3.org/2000/01/rdf-schema#  schema: http://schema.org/  sioc: http://rdfs.org/sioc/ns#  sioct: http://rdfs.org/sioc/types#  skos: http://www.w3.org/2004/02/skos/core#  xsd: http://www.w3.org/2001/XMLSchema# ">
+
+<head>
+  <meta charset="utf-8" />
+  <noscript>
+    <style>
+      form.antibot * :not(.antibot-message) {
+        display: none !important;
+      }
+    </style>
+  </noscript>
+  <link rel="canonical" href="https://preserve.lehigh.edu/challenge" />
+  <meta name="Generator" content="Drupal 10 (https://www.drupal.org)" />
+  <meta name="MobileOptimized" content="width" />
+  <meta name="HandheldFriendly" content="true" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="{{ .FrontendJS }}" async defer referrerpolicy="no-referrer"></script>
+  <link rel="icon" href="/themes/custom/lehigh/favicon.ico" type="image/vnd.microsoft.icon" />
+
+  <title>Verifying connection | Lehigh Preserve</title>
+
+  <link rel="apple-touch-icon" sizes="76x76" href="/themes/custom/lehigh/assets/img/favicon76.png" />
+  <link rel="apple-touch-icon" sizes="120x120" href="/themes/custom/lehigh/assets/img/favicon120.png" />
+  <link rel="apple-touch-icon" sizes="144x144" href="/themes/custom/lehigh/assets/img/favicon144.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/themes/custom/lehigh/assets/img/favicon152.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/themes/custom/lehigh/assets/img/favicon180.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" media="all" href="//fonts.googleapis.com/icon?family=Material+Icons+Outlined" />
+  <link rel="stylesheet" media="all"
+    href="//fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@400,0" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,700;1,400;1,700&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" media="all" href="/core/misc/components/progress.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/misc/components/ajax-progress.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/align.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/fieldgroup.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/container-inline.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/clearfix.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/details.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/hidden.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/item-list.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/js.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/nowrap.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/position-container.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/reset-appearance.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/resize.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/system-status-counter.css?srvg4d" />
+  <link rel="stylesheet" media="all"
+    href="/core/modules/system/css/components/system-status-report-counters.css?srvg4d" />
+  <link rel="stylesheet" media="all"
+    href="/core/modules/system/css/components/system-status-report-general-info.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/core/modules/system/css/components/tablesort.module.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/modules/contrib/captcha/css/captcha.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/modules/contrib/field_report/css/field_report.admin.css?srvg4d" />
+  <link rel="stylesheet" media="all"
+    href="/modules/contrib/islandora_repository_reports/css/islandora_repository_reports.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    crossorigin="anonymous" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" />
+  <link rel="stylesheet" media="all" href="/themes/custom/lehigh/assets/css/style.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/themes/custom/lehigh/assets/css/vendor.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="/themes/custom/lehigh/css/global.css?srvg4d" />
+  <link rel="stylesheet" media="all" href="https://www.lehigh.edu/~inltswms/include/ltstemplate/css/header.min.css" />
+  <link rel="stylesheet" media="all" href="https://www.lehigh.edu/~inltswms/include/ltstemplate/css/footer.min.css" />
+
+  <script src="/core/misc/drupalSettingsLoader.js?v=10.4.2"></script>
+  <script src="/modules/contrib/google_tag/js/gtag.js?srvg4d"></script>
+
+</head>
+
+<body class="path-challenge">
+  <a href="#main-content" class="visually-hidden focusable skip-link">
+    Skip to main content
+  </a>
+
+  <!--<div class="dialog-off-canvas-main-canvas" data-off-canvas-main-canvas>-->
+  <header class="lehigh-header">
+    <nav class="lehigh-nav lehigh-header-nav lehigh-navbar utility-nav container-fluid">
+      <div class="lehigh-branding">
+        <div class="container-fluid">
+          <div class="row align-items-center">
+            <div class="utility-nav--start lehigh-navbar-brand col-md-3">
+              <a href="https://lts.lehigh.edu">
+                <img src="https://www.lehigh.edu/~inltswms/images/logos/lehighuniversity-lts-wordmark.svg" width="300px"
+                  height="43" alt="" />
+              </a>
+            </div><!-- utility-nav--start -->
+            <div class="utility-nav--mid col-md-9 d-none d-lg-block">
+              <div class="lehigh-navbarSupportedContent">
+
+                <ul class="d-flex justify-content-between">
+                  <li>
+                    <a href="/" class="">
+                      Preserve Home
+                    </a>
+                  </li>
+                  <li>
+                    <a href="/browse" class="">
+                      Browse All Digital Items
+                    </a>
+                  </li>
+                  <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" id="/collections" role="button" aria-expanded="false"
+                      data-bs-toggle="dropdown">
+                      <span>Browse Digital Collections</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <a href="/collections" class="dropdown-item">
+                          Browse All Collections
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/digital-special-collections" class="dropdown-item">
+                          Digital Special Collections
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/lehigh-scholarship" class="dropdown-item">
+                          Lehigh Scholarship
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/lehigh-scholarship/research-datasets" class="dropdown-item">
+                          Research Datasets
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/lehigh-scholarship/graduate-publications-theses-dissertations/theses-dissertations"
+                          class="dropdown-item">
+                          Theses and Dissertations
+                        </a>
+                      </li>
+                    </ul>
+
+                  </li>
+                  <li class="dropdown">
+                    <a class="dropdown-toggle" href="#" id="/contact-support" role="button" aria-expanded="false"
+                      data-bs-toggle="dropdown">
+                      <span>Contact and Support</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                      <li>
+                        <a href="/contact-support" class="dropdown-item">
+                          Contact
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/about-collections" class="dropdown-item">
+                          About Collections
+                        </a>
+                      </li>
+                      <li>
+                        <a href="/help" class="dropdown-item">
+                          Help
+                        </a>
+                      </li>
+                    </ul>
+
+                  </li>
+                  <li>
+                    <a id="toggle-main-nav-search" class="text-decoration-none p-0" data-bs-toggle="collapse"
+                      href="#collapseSearch" role="button" aria-expanded="false" aria-controls="collapseSearch"
+                      style="min-width: 24px">
+                      <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"
+                        alt="Location" width="24" height="24" />
+                    </a>
+                  </li>
+                </ul>
+
+
+              </div>
+            </div>
+            <div class="row collapse" id="collapseSearch">
+              <form id="main-nav-search" action="/browse" method="GET" class="row g-2 p-4 pt-2 pb-2">
+                <div class="input-group">
+                  <input id="main-nav-search-text" type="text" autocomplete="off" class="form-control"
+                    placeholder="Search for keywords, names, and locations" name="search_api_fulltext">
+                  <span class="input-group-text ps-0 pe-0" id="homepage-search">
+                    <button class="trigger btn">
+                      <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"
+                        alt="Location" width="24" height="24" />
+                    </button>
+                  </span>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+        <div class="lehigh-main-nav">
+          <div class="container-fluid">
+            <button class="trigger p-4" id="lehigh-navbar-toggler" type="button"
+              aria-controls="lehigh-navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon">
+                <img class="icon icon-close open" src="https://www.lehigh.edu/~inltswms/images/icons/menu.svg" alt="">
+                <img class="icon close" src="https://www.lehigh.edu/~inltswms/images/icons/close.svg" alt="">
+              </span>
+            </button>
+            <div id="lehigh-navbarSupportedContent" class=" collapse nav-wrapper lehigh-max-width lehigh-mx-auto">
+              <div class="lehigh-row">
+
+                <ul class="lehigh-navlist lehigh-justify-content-between lehigh-align-items-center">
+
+                  <li class="">
+                    <a href="/" class="">
+                      Preserve Home
+                    </a>
+                  </li>
+                  <li class="">
+                    <a href="/browse" class="">
+                      Browse All Digital Items
+                    </a>
+                  </li>
+                  <li class="lehigh-dropdown">
+                    <a class="lehigh-dropdown-toggle" href="#" id="mobile-dropdown-41646616" role="button"
+                      aria-expanded="false">
+                      Browse Digital Collections
+                      <img class="icon" src="https://www.lehigh.edu/~inltswms/images/icons/expand_more.svg"
+                        alt="Location" width="24" height="24">
+                    </a>
+                    <div class="lehigh-dropdown-menu" aria-labelledby="mobile-dropdown-41646616">
+                      <div class="nav-section">
+                        <ul>
+
+                          <li class="">
+                            <a href="/collections" class="">
+                              Browse All Collections
+                            </a>
+                          </li>
+                          <li class="">
+                            <a href="/digital-special-collections" class="">
+                              Digital Special Collections
+                            </a>
+                          </li>
+                          <li class="">
+                            <a href="/lehigh-scholarship" class="">
+                              Lehigh Scholarship
+                            </a>
+                          </li>
+                          <li class="">
+                            <a href="/lehigh-scholarship/research-datasets" class="">
+                              Research Datasets
+                            </a>
+                          </li>
+                          <li class="">
+                            <a href="/lehigh-scholarship/graduate-publications-theses-dissertations/theses-dissertations"
+                              class="">
+                              Theses and Dissertations
+                            </a>
+                          </li>
+                        </ul>
+
+                      </div>
+                    </div>
+                  </li>
+                  <li class="lehigh-dropdown">
+                    <a class="lehigh-dropdown-toggle" href="#" id="mobile-dropdown-1738328438" role="button"
+                      aria-expanded="false">
+                      Contact and Support
+                      <img class="icon" src="https://www.lehigh.edu/~inltswms/images/icons/expand_more.svg"
+                        alt="Location" width="24" height="24">
+                    </a>
+                    <div class="lehigh-dropdown-menu" aria-labelledby="mobile-dropdown-1738328438">
+                      <div class="nav-section">
+                        <ul>
+
+                          <li class="">
+                            <a href="/contact-support" class="">
+                              Contact
+                            </a>
+                          </li>
+                          <li class="">
+                            <a href="/about-collections" class="">
+                              About Collections
+                            </a>
+                          </li>
+                          <li class="">
+                            <a href="/help" class="">
+                              Help
+                            </a>
+                          </li>
+                        </ul>
+
+                      </div>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+              <div class="row" id="MobileSearch">
+                <form id="mobile-nav-search" action="/browse" method="GET" class="row g-2 p-4 pt-2 pb-2">
+                  <div class="input-group">
+                    <input id="mobile-nav-search-text" type="text" autocomplete="off" class="form-control"
+                      placeholder="Search for keywords, names, and locations" name="search_api_fulltext">
+                    <span class="input-group-text ps-0 pe-0" id="homepage-search">
+                      <button class="trigger btn">
+                        <img class="leh-search--icon icon"
+                          src="https://www.lehigh.edu/~inltswms/images/icons/search.svg" alt="Location" width="24"
+                          height="24" />
+                      </button>
+                    </span>
+                  </div>
+                </form>
+              </div>
+
+            </div><!-- end nav-wrapper -->
+          </div><!-- end container fluid -->
+        </div><!-- end main-nav -->
+      </div>
+    </nav>
+  </header>
+  <section id="title">
+    <div id="wayfinding" role="navigation">
+      <div class="region-content region-wayfinding">
+        <div id="block-lehigh-breadcrumbs" class="block block-system block-system-breadcrumb-block">
+          <nav class="breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">
+            <h2 id="system-breadcrumb" class="visually-hidden">Breadcrumb</h2>
+            <ol>
+              <li>
+                <a class="wayfinding-icon" href="/" title="Go to home page"></a>
+              </li>
+            </ol>
+          </nav>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+  <section class='full' id='in-page-navigation'>
+    <div id="tabs" role="navigation">
+    </div>
+  </section>
+  <section id='primary-content' class='region' role="region">
+    <div class='no-sidebar'>
+      <main id='main-content'>
+        <div>
+          <div data-drupal-messages-fallback class="hidden"></div>
+          <div id="block-lehigh-content" class="block block-system block-system-main-block mt-5">
+            <h2>Verifying connection</h2>
+            <p>One moment while we verify your network connection.</p>
+            <form action="{{ .ChallengeURL }}" method="post" id="captcha-form" accept-charset="UTF-8">
+              <div data-callback="captchaCallback" class="{{ .FrontendKey }}" data-sitekey="{{ .SiteKey }}"
+                data-theme="auto" data-size="normal" data-language="auto" data-retry="auto" interval="8000"
+                data-appearance="always">
+              </div>
+              <input type="hidden" name="destination" value="{{ .Destination }}">
+            </form>
+            <script type="text/javascript">
+              function captchaCallback(token) {
+                setTimeout(function () {
+                  document.getElementById("captcha-form").submit();
+                }, 1000);
+              }
+            </script>
+          </div>
+        </div>
+      </main>
+    </div>
+  </section>
+  <footer class="lehigh-footer" role="contentinfo">
+    <div class="footer">
+      <div class="container-fluid">
+        <div class="footer--start row">
+          <div class="footer--left col-md-4">
+            <div class="footer--logo">
+              <span class="leh-logo logo_rev">
+                <img src="https://www.lehigh.edu/~inltswms/images/logos/lts-logo.png" height="56" width="392" alt="">
+              </span>
+            </div>
+            <div class="footer--social">
+              <div class="footer--heading social">
+                <h3>Follow LTS on Social</h3>
+              </div>
+              <div class="footer--social-icon">
+                <ul class="social-icons">
+                  <li id="footer-social-fb">
+                    <a href="https://www.facebook.com/LehighLTS/" aria-label="Facebook">
+                      <span class="title sr-only">Facebook</span>
+                      <span class="primary social-icon"><img
+                          src="https://www.lehigh.edu/~inltswms/images/icons/facebook.svg" alt=""></span>
+                    </a>
+                  </li>
+                  <li id="footer-social-x">
+                    <a href="https://twitter.com/LehighLTS" aria-label="Twitter">
+                      <span class="title sr-only">Twitter</span>
+                      <span class="primary social-icon"><img
+                          src="https://www.lehigh.edu/~inltswms/images/icons/twitter.svg" alt=""></span>
+                    </a>
+                  </li>
+                  <li id="footer-social-ig">
+                    <a href="https://www.instagram.com/lehighlts/" aria-label="Instagram">
+                      <span class="title sr-only">Instagram</span>
+                      <span class="primary social-icon"><img
+                          src="https://www.lehigh.edu/~inltswms/images/icons/instagram.svg" alt=""></span>
+                    </a>
+                  </li>
+                  <li id="footer-social-yt">
+                    <a href="https://www.youtube.com/@ltslehigh" aria-label="YouTube">
+                      <span class="title sr-only">YouTube</span>
+                      <span class="primary social-icon"><img
+                          src="https://www.lehigh.edu/~inltswms/images/icons/youtube.svg" alt=""></span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+
+          </div>
+          <div class="footer--center col-md-8">
+            <div class="row">
+              <div class="footer--center col-md-7">
+                <div class="footer--heading">
+                  <h3>Library and Technology Services</h3>
+                </div>
+                <div class="footer--address">
+                  <address class="footer--location">
+                    <img src="https://www.lehigh.edu/~inltswms/images/icons/location.svg" alt="Location" width="24"
+                      height="24" />
+                    <div class="address--text">
+                      <span>EWFM Library</span>
+                      <span>8A East Packer Ave.</span>
+                      <span>Lehigh University, Bethlehem, PA 18015</span>
+                    </div>
+                  </address>
+                  <div class="footer--phone">
+                    <img src="https://www.lehigh.edu/~inltswms/images/icons/phone.svg" alt="Phone" width="24"
+                      height="24" />
+                    <div class="address--text">610-758-4357</div>
+                  </div>
+                </div>
+              </div>
+              <div class="footer--right col-md-5">
+                <div class="footer--connect">
+                  <div class="footer--heading">
+                    <h3>Connect with Us</h3>
+                  </div>
+                  <div class="footer--connect-cta btn-group">
+                    <a href="https://help.lehigh.edu/" class="btn btn-tertiary" aria-label="Get Help" role="button">Get
+                      Help</a>
+                    <a href="https://lts.lehigh.edu/spaces/hours-directions" class="btn btn-tertiary"
+                      aria-label="LTS Hours" role="button">LTS
+                      Hours</a>
+                  </div>
+                </div>
+                <div class="footer--gift">
+                  <div class="footer--heading">
+                    <h3><img src="https://www.lehigh.edu/~inltswms/images/icons/gift-icon.svg" alt="">
+                      Make a Gift</h3>
+                  </div>
+                  <a href="https://lts.lehigh.edu/about/giving-lts" class="btn btn-primary btn-gift"
+                    aria-label="Give Now" role="button">Give Now</a>
+                </div>
+              </div>
+            </div>
+          </div><!--end footer center-->
+        </div>
+        <div class="footer--mid" id="lfd"><!-- _PLEASE_ LEAVE THIS ID AS #lfd -- we add dynamic footer here -->
+        </div>
+        <div class="footer--end row">
+          <div class="footer--copyright col-md-6">
+            <p>&copy; <span id="copyright-year">2025</span> Lehigh University <a class="lehigh-copyright"
+                href="https://lehigh.edu/copyright">All
+                Rights Reserved</a></p>
+          </div>
+          <div class="footer--accessibility col-md-6">
+            <ul>
+              <li><a href="https://accessibility.lehigh.edu/">Web Accessibility</a></li>
+              <li><a href="https://www.lehigh.edu/terms">Terms</a></li>
+              <li><a href="https://www.lehigh.edu/privacy">Privacy</a></li>
+              <li>
+                <a class="d-block px-sm-3 py-1 py-sm-2 py-lg-0" href="/user/login">Website Editor Login</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!--</div>-->
+
+
+  <script src="/core/assets/vendor/jquery/jquery.min.js?v=3.7.1"></script>
+  <script src="/core/assets/vendor/once/once.min.js?v=1.0.1"></script>
+  <script src="/core/misc/drupal.js?v=10.4.2"></script>
+  <script src="/core/misc/drupal.init.js?v=10.4.2"></script>
+  <script src="/core/assets/vendor/tabbable/index.umd.min.js?v=6.2.0"></script>
+  <script src="/core/misc/progress.js?v=10.4.2"></script>
+  <script src="/core/assets/vendor/loadjs/loadjs.min.js?v=4.3.0"></script>
+  <script src="/core/misc/debounce.js?v=10.4.2"></script>
+  <script src="/core/misc/announce.js?v=10.4.2"></script>
+  <script src="/core/misc/message.js?v=10.4.2"></script>
+  <script src="/core/misc/ajax.js?v=10.4.2"></script>
+  <script src="/modules/contrib/google_tag/js/gtag.ajax.js?srvg4d"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <script src="https://www.lehigh.edu/~inltswms/include/ltstemplate/js/scripts.js"></script>
+  <script src="/themes/custom/lehigh/assets/js/vendor.js?v=10.4.2"></script>
+  <script src="/themes/custom/lehigh/assets/js/core.js?v=10.4.2"></script>
+  <script src="/themes/custom/lehigh/assets/js/default.js?v=10.4.2"></script>
+  <script src="/themes/custom/lehigh/js/global.js?v=10.4.2"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+uuid: 806bfc6c-8e01-4f04-9d45-1a99e389dcf5
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.media.mirador
+    - field.field.media.document.field_file_size
+    - field.field.media.document.field_media_document
+    - field.field.media.document.field_media_of
+    - field.field.media.document.field_media_use
+    - field.field.media.document.field_mime_type
+    - field.field.media.document.field_original_name
+    - media.type.document
+  module:
+    - pdf
+_core:
+  default_config_hash: 4yXGTC9oOSH5Olk67Ro48R69mP2Ya6EKedPLK10f-nM
+id: media.document.mirador
+targetEntityType: media
+bundle: document
+mode: mirador
+content:
+  field_gemini_uri:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+  field_media_document:
+    type: pdf_default
+    label: visually_hidden
+    settings:
+      keep_pdfjs: true
+      width: 100%
+      height: ''
+      page: null
+      zoom: null
+      custom_zoom: null
+      pagemode: null
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  created: true
+  field_file_size: true
+  field_media_of: true
+  field_media_use: true
+  field_mime_type: true
+  field_original_name: true
+  langcode: true
+  name: true
+  search_api_excerpt: true
+  thumbnail: true
+  uid: true

@@ -1,0 +1,21 @@
+uuid: d2b54480-f370-4294-a2c8-99334ae1248c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_edtf_date_embargo
+    - node.type.islandora_object
+  module:
+    - controlled_access_terms
+id: node.islandora_object.field_edtf_date_embargo
+field_name: field_edtf_date_embargo
+entity_type: node
+bundle: islandora_object
+label: 'Embargo Date'
+description: 'A date before which your item will not be accessible. The metadata record for your submission will still be visible, but the item will be hidden until the date chosen. This is commonly used for open access restrictions in publication agreements.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: edtf

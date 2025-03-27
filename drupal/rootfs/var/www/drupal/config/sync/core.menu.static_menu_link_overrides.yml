@@ -7,3 +7,51 @@ definitions:
     parent: ''
     expanded: false
     enabled: false
+  system__admin_content:
+    weight: -99
+    menu_name: admin
+    parent: system.admin
+    enabled: true
+    expanded: false
+  system__admin_structure:
+    weight: -98
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: true
+  system__themes_page:
+    weight: -97
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: true
+  system__modules_list:
+    weight: -96
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: true
+  system__admin_config:
+    weight: -95
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: true
+  entity__user__collection:
+    weight: -94
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: true
+  system__admin_reports:
+    weight: -93
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: true
+  help__main:
+    weight: -92
+    menu_name: admin
+    parent: system.admin
+    expanded: false
+    enabled: true

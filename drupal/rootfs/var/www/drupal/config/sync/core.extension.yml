@@ -4,20 +4,17 @@ module:
   action: 0
   admin_toolbar: 0
   admin_toolbar_tools: 0
-  advanced_search: 0
-  agile_slide_viewer: 0
+  antibot: 0
+  autocomplete_deluxe: 0
   automated_cron: 0
   basic_auth: 0
   better_exposed_filters: 0
-  bibcite: 0
-  big_pipe: 0
   block: 0
   block_content: 0
   breakpoint: 0
   bulk_update_fields: 0
-  citation_select: 0
+  captcha: 0
   ckeditor5: 0
-  comment: 0
   config: 0
   config_update: 0
   contact: 0
@@ -26,17 +23,22 @@ module:
   contextual: 0
   controlled_access_terms: 0
   controlled_access_terms_defaults: 0
+  crop: 0
+  csp: 0
   csv_serialization: 0
   ctools: 0
   ctools_block: 0
   ctools_views: 0
   datetime: 0
   dblog: 0
-  devel: 0
+  diff: 0
+  drupal_slider: 0
   dynamic_page_cache: 0
   editor: 0
   entity: 0
   entity_browser: 0
+  entity_browser_entity_form: 0
+  entity_metrics: 0
   entity_reference_facet_link: 0
   entity_reference_revisions: 0
   eva: 0
@@ -44,10 +46,7 @@ module:
   facets_range_widget: 0
   facets_searchbox_widget: 0
   facets_summary: 0
-  features: 0
-  features_ui: 0
   field: 0
-  field_delimiter: 0
   field_group: 0
   field_group_migrate: 0
   field_permissions: 0
@@ -60,22 +59,38 @@ module:
   filehash: 0
   filter: 0
   flysystem: 0
+  flysystem_gcs: 0
+  flysystem_gcs_cors: 0
+  focal_point: 0
+  form_mode_control: 0
   geolocation: 0
+  google_tag: 0
   hal: 0
   help: 0
-  history: 0
+  honeypot: 0
   image: 0
+  inline_entity_form: 0
   islandora: 0
   islandora_audio: 0
   islandora_breadcrumbs: 0
+  islandora_collection_tabs: 0
   islandora_core_feature: 0
+  islandora_csl: 0
   islandora_fits: 0
+  islandora_hocr: 0
   islandora_iiif: 0
+  islandora_iiif_hocr: 0
   islandora_image: 0
+  islandora_jwks: 0
   islandora_mirador: 0
+  islandora_repository_reports: 0
+  islandora_repository_reports_activemq: 0
+  islandora_repository_reports_vocab: 0
+  islandora_rights_statements: 0
   islandora_text_extraction: 0
   islandora_text_extraction_defaults: 0
   islandora_video: 0
+  islandora_vtt: 0
   islandora_workbench_integration: 0
   jquery_ui: 0
   jquery_ui_autocomplete: 0
@@ -95,9 +110,10 @@ module:
   libraries: 0
   link: 0
   masonry: 0
-  matomo: 0
+  mathjax: 0
   media: 0
   media_library: 0
+  memcache: 0
   menu_link_content: 0
   menu_ui: 0
   metatag: 0
@@ -108,30 +124,28 @@ module:
   migrate_tools: 0
   mysql: 0
   node: 0
-  openseadragon: 0
   options: 0
-  page_cache: 0
   path: 0
   path_alias: 0
   pdf: 0
-  pgsql: 0
   phpass: 0
   prepopulate: 0
   rdf: 0
+  redirect: 0
   responsive_image: 0
   rest: 0
+  rest_oai_pmh: 0
   restui: 0
   search_api: 0
   search_api_solr: 0
   serialization: 0
   shortcut: 0
+  smtp: 0
   sqlite: 0
   stop14_tools: 0
   structure_sync: 0
-  superfish: 0
   svg_image: 0
   svg_image_responsive: 0
-  syslog: 0
   system: 0
   taxonomy: 0
   taxonomy_manager: 0
@@ -142,8 +156,7 @@ module:
   token: 0
   token_filter: 0
   toolbar: 0
-  tour: 0
-  transliterate_filenames: 0
+  turnstile: 0
   twig_attributes: 0
   twig_tweak: 0
   update: 0
@@ -156,15 +169,10 @@ module:
   views_infinite_scroll: 0
   views_nested_details: 0
   views_ui: 0
-  webform: 0
-  webform_access: 0
-  webform_attachment: 0
-  webform_node: 0
-  webform_submission_export_import: 0
-  webform_submission_log: 0
-  webform_ui: 0
+  xmlsitemap_custom: 0
   lehigh_site_support: 1
   pathauto: 1
+  xmlsitemap: 1
   masonry_views: 2
   content_translation: 10
   externalauth: 10

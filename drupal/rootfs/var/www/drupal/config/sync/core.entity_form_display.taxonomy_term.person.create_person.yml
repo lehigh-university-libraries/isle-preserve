@@ -1,0 +1,70 @@
+uuid: 722f625b-6855-44b4-bb66-bb7b33e7226d
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.taxonomy_term.create_person
+    - field.field.taxonomy_term.person.field_alternate_name
+    - field.field.taxonomy_term.person.field_authority_link
+    - field.field.taxonomy_term.person.field_cat_date_begin
+    - field.field.taxonomy_term.person.field_cat_date_end
+    - field.field.taxonomy_term.person.field_contributor_status
+    - field.field.taxonomy_term.person.field_email
+    - field.field.taxonomy_term.person.field_identifier
+    - field.field.taxonomy_term.person.field_institution
+    - field.field.taxonomy_term.person.field_relationships
+    - taxonomy.vocabulary.person
+  module:
+    - autocomplete_deluxe
+    - lehigh_islandora
+_core:
+  default_config_hash: lJpvaB2FNcQ3KUo85b0QbrBtpeX38YpRlPXskVn8p5k
+id: taxonomy_term.person.create_person
+targetEntityType: taxonomy_term
+bundle: person
+mode: create_person
+content:
+  field_identifier:
+    type: attr_default
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_institution:
+    type: autocomplete_deluxe
+    weight: 1
+    region: content
+    settings:
+      match_operator: CONTAINS
+      autocomplete_route_name: autocomplete_deluxe.autocomplete
+      size: 60
+      selection_handler: default
+      match_limit: 10
+      min_length: 0
+      delimiter: ''
+      not_found_message_allow: false
+      not_found_message: "The term '@term' will be added"
+      new_terms: true
+      no_empty_message: 'No terms could be found. Please type in order to add a new term.'
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  description: true
+  field_alternate_name: true
+  field_authority_link: true
+  field_cat_date_begin: true
+  field_cat_date_end: true
+  field_contributor_status: true
+  field_email: true
+  field_relationships: true
+  langcode: true
+  path: true
+  status: true
+  translation: true

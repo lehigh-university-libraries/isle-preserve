@@ -1,0 +1,35 @@
+diff --git a/core/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php b/core/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
+index 28ad2c0445..3a95f44b92 100644
+--- a/core/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
++++ b/core/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
+@@ -82,7 +82,8 @@ public function onResponse(ResponseEvent $event) {
+     $response = $event->getResponse();
+ 
+     // Only care about HTML responses.
+-    if (stripos($response->headers->get('Content-Type', ''), 'text/html') === FALSE) {
++    $content_type = $response->headers->get('Content-Type');
++    if (empty($content_type) || !(str_starts_with($content_type, 'text/html'))) {
+       return;
+     }
+ 
+diff --git a/core/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php b/core/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
+index fa6c09c7a7..ff93971f37 100644
+--- a/core/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
++++ b/core/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
+@@ -20,12 +20,14 @@ class RssResponseRelativeUrlFilter implements EventSubscriberInterface {
+    *   The response event.
+    */
+   public function onResponse(ResponseEvent $event) {
++    $response = $event->getResponse();
++
+     // Only care about RSS responses.
+-    if (stripos($event->getResponse()->headers->get('Content-Type', ''), 'application/rss+xml') === FALSE) {
++    $content_type = $response->headers->get('Content-Type');
++    if (empty($content_type) || !(str_starts_with($content_type, 'application/rss+xml'))) {
+       return;
+     }
+ 
+-    $response = $event->getResponse();
+     $response->setContent($this->transformRootRelativeUrlsToAbsolute($response->getContent(), $event->getRequest()));
+   }
+ 

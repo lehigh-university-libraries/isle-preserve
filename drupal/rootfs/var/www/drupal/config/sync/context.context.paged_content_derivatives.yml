@@ -1,0 +1,38 @@
+uuid: 0a63cc11-aa69-476b-8475-996121c6b027
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+_core:
+  default_config_hash: c7_MtAQ35bFVk9PanoKR52wijgATcHFDBpFQ7MB7NPQ
+label: 'Paged Content Derivatives'
+name: paged_content_derivatives
+group: Derivatives
+description: 'Derivatives for Paged Content'
+requireAllConditions: true
+disabled: false
+conditions:
+  media_has_term:
+    id: media_has_term
+    negate: false
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    uri: 'http://pcdm.org/use#OriginalFile'
+    logic: and
+  parent_node_has_term:
+    id: parent_node_has_term
+    negate: false
+    uuid: a93d4e3e-9466-43bb-8582-ceabca9eb320
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    uri: 'https://schema.org/Book'
+    logic: and
+reactions:
+  derivative:
+    id: derivative
+    saved: false
+    actions:
+      digital_document_generate_a_thumbnail_from_an_original_file: digital_document_generate_a_thumbnail_from_an_original_file
+      get_ocr_from_image: get_ocr_from_image
+weight: -6

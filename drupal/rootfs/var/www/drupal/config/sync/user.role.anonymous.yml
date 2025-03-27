@@ -4,11 +4,12 @@ status: true
 dependencies:
   config:
     - filter.format.restricted_html
+    - rest.resource.oai_pmh
   module:
-    - comment
     - contact
     - filter
     - media
+    - rest
     - system
 _core:
   default_config_hash: 6WavjUYXIegP9AAg2zXGx54MWIVoomC3SZhNiqe-Dyk
@@ -17,8 +18,8 @@ label: 'Anonymous user'
 weight: 0
 is_admin: false
 permissions:
-  - 'access comments'
   - 'access content'
   - 'access site-wide contact form'
+  - 'restful get oai_pmh'
   - 'use text format restricted_html'
   - 'view media'

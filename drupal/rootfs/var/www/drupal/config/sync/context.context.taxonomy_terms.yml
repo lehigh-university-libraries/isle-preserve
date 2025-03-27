@@ -11,7 +11,7 @@ name: taxonomy_terms
 group: Indexing
 description: 'Index all taxonomy terms in Fedora and Blazegraph'
 requireAllConditions: false
-disabled: false
+disabled: true
 conditions:
   content_entity_type:
     id: content_entity_type
@@ -26,11 +26,9 @@ reactions:
     saved: false
     actions:
       index_taxonomy_term_in_fedora: index_taxonomy_term_in_fedora
-      index_taxonomy_term_in_the_triplestore: index_taxonomy_term_in_the_triplestore
   delete:
     id: delete
     saved: false
     actions:
       delete_taxonomy_term_in_fedora: delete_taxonomy_term_in_fedora
-      delete_taxonomy_term_in_triplestore: delete_taxonomy_term_in_triplestore
 weight: -4

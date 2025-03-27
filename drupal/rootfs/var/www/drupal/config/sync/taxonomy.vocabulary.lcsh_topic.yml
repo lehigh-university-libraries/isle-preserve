@@ -4,5 +4,6 @@ status: true
 dependencies: {  }
 name: 'LCSH Topic'
 vid: lcsh_topic
-description: ''
+description: null
 weight: 0
+new_revision: false

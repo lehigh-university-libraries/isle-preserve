@@ -5,60 +5,89 @@
  * Primary module hooks for lehigh Site Support module.
  */
 
-use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Cache\Cache;
-use Drupal\node\NodeInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
+use Drupal\file\FileInterface;
+use Drupal\media\Plugin\media\Source\File;
+use Drupal\node\NodeInterface;
+use Drupal\node\Entity\Node;
 
-/*
- * Implements hook_token_info()
+/**
+ * Implements hook_file_download().
  */
+function lehigh_site_support_file_download($uri) {
+  // Make sure OCR is viewable for published node/media.
+  $scheme = StreamWrapperManager::getScheme($uri);
+  if ($scheme == 'private') {
+    $mid = \Drupal::database()->query('SELECT mf.entity_id from file_managed f
+      INNER JOIN media__field_media_file mf ON field_media_file_target_id = f.fid
+      INNER JOIN media__field_media_use mu ON mu.entity_id = mf.entity_id
+      INNER JOIN media__field_media_of mo ON mo.entity_id = mf.entity_id
+      INNER JOIN media_field_data m ON m.mid = mf.entity_id
+      INNER JOIN node_field_data n ON n.nid = field_media_of_target_id
+      WHERE m.status = 1
+        AND n.status = 1
+        AND field_media_use_target_id = 14
+        AND uri = :uri', [
+          ':uri' => $uri,
+        ])->fetchField();
+    if ($mid) {
+      return [
+        'Content-Type' => 'text/plain',
+      ];
+    }
+  }
 
-// define('ISLANDORA_COLLECTION_TID',31);
-//define('ISLANDORA_COLLECTION_FIELD','field_resource_type')
-define('ISLANDORA_COLLECTION_TID', 23);
-define('ISLANDORA_COLLECTION_FIELD','field_model');
+  return NULL;
+}
 
+/**
+ * Implements hook_token_info().
+ */
 function lehigh_site_support_token_info(): array {
   $types['lehigh_site_support_settings'] = [
     'name' => t('Lehigh Digital Library settings'),
-    'description' => t('Lehigh site configuration tokens.')
+    'description' => t('Lehigh site configuration tokens.'),
   ];
 
-  foreach (array_merge(lehigh_site_support_get_site_copy_keys(),lehigh_site_support_get_tokenized_text_field_keys()) as $key => $label) {
+  foreach (array_merge(lehigh_site_support_get_site_copy_keys(), lehigh_site_support_get_tokenized_text_field_keys()) as $key => $label) {
     $tokens[$key] = [
-      'name' => t($label['title']),
-      'description' => 'Lehigh site settings key'
+      'name' => $label['title'],
+      'description' => 'Lehigh site settings key',
     ];
   }
 
   return [
     'types' => $types,
     'tokens' => [
-      'lehigh_site_support_settings' => $tokens
-    ]
+      'lehigh_site_support_settings' => $tokens,
+    ],
   ];
 }
 
-/*
-* Implements hook_token()
-*/
+/**
+ * Implements hook_token().
+ */
 function lehigh_site_support_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata): array {
   $replacements = [];
 
-  if($type == 'lehigh_site_support_settings') {
+  if ($type == 'lehigh_site_support_settings') {
 
     $config = \Drupal::config('lehigh_site_support.settings');
 
-    $lehighTokens = array_merge(lehigh_site_support_get_site_copy_keys(),lehigh_site_support_get_site_copy_keys(),lehigh_site_support_get_tokenized_text_field_keys());
+    $lehighTokens = array_merge(lehigh_site_support_get_site_copy_keys(), lehigh_site_support_get_site_copy_keys(), lehigh_site_support_get_tokenized_text_field_keys());
 
     foreach ($tokens as $name => $original) {
-      if (array_key_exists($name,$lehighTokens)) {
+      if (array_key_exists($name, $lehighTokens)) {
         $config_value = $config->get($name);
 
-        if (is_array($config_value) && array_key_exists('value',$config_value)) { // Indicates a text format field
-          $replacements[$original] = check_markup($config_value['value'],$config_value['format']);
-        } else {
+        // Indicates a text format field.
+        if (is_array($config_value) && array_key_exists('value', $config_value)) {
+          $replacements[$original] = check_markup($config_value['value'], $config_value['format']);
+        }
+        else {
           $replacements[$original] = $config_value;
         }
       }
@@ -68,77 +97,86 @@ function lehigh_site_support_tokens($type, $tokens, array $data, array $options,
   return $replacements;
 }
 
+/**
+ * Get site support defaults.
+ */
 function lehigh_site_support_get_site_copy_keys() {
   return [
     'about_text' => [
       'title' => 'About Lehigh Digital Collections text',
       'description' => 'Will appear on the homepage in Search our Collections block',
       'default_value' => '<content to come>',
-      'group' => 'site_copy'
-      ],
+      'group' => 'site_copy',
+    ],
     'top_level_collections_description' => [
       'title' => 'Top Level Collections Description',
       'description' => 'Will appear on the homepage in the Top Level Collections block',
       'default_value' => '<content to come>',
-      'group' => 'site_copy'
+      'group' => 'site_copy',
     ],
     'browse_items_deck' => [
       'title' => 'Browse Items Deck',
       'description' => 'Will appear beneath the title on the Browse Items page',
       'default_value' => '<content to come>',
-      'group' => 'site_copy'
+      'group' => 'site_copy',
     ],
 
     'browse_collections_deck' => [
       'title' => 'Browse Collections Deck',
       'description' => 'Will appear beneath the title on the Browse Collections page',
       'default_value' => '<content to come>',
-      'group' => 'site_copy'
+      'group' => 'site_copy',
     ],
     'general_rights_statement' => [
       'title' => 'General rights statement',
       'description' => 'Will be used when an item is missing its own rights statement',
       'default_value' => '',
-      'group' => 'rights'
+      'group' => 'rights',
 
     ],
     'reproduction_statement' => [
       'title' => 'Reproduction statement',
       'description' => 'Note on how to obtain reproduction rights. Displayed on item pages.',
       'default_value' => '',
-      'group' => 'rights'
+      'group' => 'rights',
     ],
   ];
 }
 
+/**
+ * Get text field defaults.
+ */
 function lehigh_site_support_get_tokenized_text_field_keys() {
   return [
     'reproductions_link' => [
       'title' => 'Reproductions link',
       'description' => 'Link for the item page reproductions button.',
       'default_value' => '',
-      'group' => 'rights'
+      'group' => 'rights',
     ],
     'reproductions_button_text' => [
       'title' => 'Reproductions button text',
       'description' => 'Text to display on reproduction buttons.',
       'default_value' => 'Order a reproduction',
-      'group' => 'rights'
+      'group' => 'rights',
     ],
     'content_statement_link' => [
       'title' => 'Content Statement Link',
       'description' => 'Link to Lehigh content statement.',
       'default_value' => '#',
-      'group' => 'site_copy'
+      'group' => 'site_copy',
     ],
 
   ];
 }
 
+/**
+ * Implements hook_preprocess_block().
+ */
 function lehigh_site_support_preprocess_block(&$vars) {
   $vars['block_type'] = 'standard_block_type';
 
-  if (array_key_exists('derivative_plugin_id',$vars) && !empty($vars['derivative_plugin_id'])) {
+  if (array_key_exists('derivative_plugin_id', $vars) && !empty($vars['derivative_plugin_id'])) {
     $block = \Drupal::service('entity.repository')
       ->loadEntityByUuid('block_content', $vars['derivative_plugin_id']);
 
@@ -156,11 +194,11 @@ function lehigh_site_support_theme($existing, $type, $theme, $path) {
     'lehigh_site_cta_block' => [
       'template' => 'lehigh_site_cta_block',
       'variables' => [
-        'search_form' => null,
-        'browse_form' => null,
+        'search_form' => NULL,
+        'browse_form' => NULL,
         'suggestions' => [],
-        'about_text' => ''
-      ]
+        'about_text' => '',
+      ],
     ],
     'facets_result_item__summary__keywords' => [
       'template' => 'facets_result_item__summary__keywords',
@@ -173,14 +211,13 @@ function lehigh_site_support_theme($existing, $type, $theme, $path) {
 }
 
 /**
- * Implements hook_preprocess_html()
+ * Implements hook_preprocess_html().
  */
-
 function lehigh_site_support_preprocess_html(&$vars) {
   $node = \Drupal::routeMatch()->getParameter('node');
 
   if ($node && is_object($node) && $node->bundle() === 'islandora_object') {
-    if (lehigh_site_support_identify_collection($node) === true) {
+    if (lehigh_site_support_identify_collection($node) === TRUE) {
       $vars['attributes']['class'][] = 'collection';
     }
   }
@@ -188,7 +225,7 @@ function lehigh_site_support_preprocess_html(&$vars) {
 }
 
 /**
- * Implements hook_preprocess_node()
+ * Implements hook_preprocess_node().
  */
 function lehigh_site_support_preprocess_node(&$vars) {
   /** @var \Drupal\node\NodeInterface $node */
@@ -199,6 +236,7 @@ function lehigh_site_support_preprocess_node(&$vars) {
   if ($node->bundle() === 'islandora_object') {
     $cid = 'item-data-' . $node->id();
     $vars['is_collection'] = lehigh_site_support_identify_collection($node);
+    $vars['is_sub_collection'] = $vars['is_collection'] && $node->field_model->entity->id() != 27821;
     if ($cache = \Drupal::cache()->get($cid)) {
       $data = $cache->data;
       $vars['reference_count'] = $data['reference_count'];
@@ -207,7 +245,7 @@ function lehigh_site_support_preprocess_node(&$vars) {
       $query = \Drupal::entityQuery('node')
         ->condition('field_member_of', $node->id())
         ->accessCheck(TRUE);
-      $vars['reference_count']  = $query->count()->execute();
+      $vars['reference_count'] = $query->count()->execute();
 
       \Drupal::cache()
         ->set($cid, ['reference_count' => $vars['reference_count']], Cache::PERMANENT, $node->getCacheTags());
@@ -216,38 +254,126 @@ function lehigh_site_support_preprocess_node(&$vars) {
 
 }
 
-function lehigh_site_support_identify_collection(NodeInterface $node) {
+/**
+ * Helper function to detect collections.
+ */
+function lehigh_site_support_identify_collection(NodeInterface $node, $includeCompoundObjects = FALSE) {
   $is_collection = FALSE;
   if ($node->bundle() === 'islandora_object') {
+    $collection_uris = [
+      'http://purl.org/dc/dcmitype/Collection',
+    ];
+    if ($includeCompoundObjects) {
+      $collection_uris[] = 'http://vocab.getty.edu/aat/300242735';
+    }
     if (!$node->field_model->isEmpty()
       && !$node->field_model->entity->field_external_uri->isEmpty()
-      && $node->field_model->entity->field_external_uri->uri === 'http://purl.org/dc/dcmitype/Collection') {
-        $is_collection = TRUE;
+      && in_array($node->field_model->entity->field_external_uri->uri, $collection_uris)) {
+      $is_collection = TRUE;
     }
   }
 
   return $is_collection;
 }
 
-function lehigh_site_support_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if ($form_id === 'views_exposed_form' && array_key_exists('actions',$form)) {
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lehigh_site_support_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (array_key_exists('actions', $form)) {
 
-   // Submit and reset come before the sort mechanism on browser exposed filters
-   // This is because the sorting form submits automatically
-   $form['sort_bef_combine']['#weight'] = 11;
-   $form['actions']['#weight'] = 10;
+    // Submit and reset come before the sort mechanism on bef.
+    $form['sort_bef_combine']['#weight'] = 11;
+    unset($form['sort_bef_combine']['#options']['search_api_relevance_ASC']);
+    $form['actions']['#weight'] = 10;
   }
 
 }
 
+/**
+ * Get the original file for a node.
+ */
+function lehigh_site_support_get_node_file(NodeInterface $node, string $media_use_uri) : ?FileInterface {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $mediaStorage = $entityTypeManager->getStorage('media');
+  $query = $mediaStorage->getQuery();
+
+  $query->condition('field_media_of', $node->id());
+  $query->condition('field_media_use.entity:taxonomy_term.field_external_uri.uri', $media_use_uri);
+  $query->accessCheck(FALSE);
+  $mids = $query->execute();
+
+  foreach ($mids as $mid) {
+    /** @var \Drupal\media\MediaInterface $entity */
+    $entity = $mediaStorage->load($mid);
+    if (!$entity) {
+      continue;
+    }
+
+    $source = $entity->getSource();
+
+    if ($source instanceof File) {
+      $fid = $source->getSourceFieldValue($entity);
+      return $entityTypeManager->getStorage('file')->load($fid);
+    }
+  }
+  return NULL;
+}
 
 /**
-* @description Allows us to modify JS attachments. Can be used to pass settings to scripts via the Drupal object.
-* @return void
-*/
-/*
-function lehigh_site_support_page_attachments_alter(&$page) {
-  $config = \Drupal::config('lehigh_site_support.settings');
-  $page['#attached']['drupalSettings']['lehigh_site_support']['responses_in_memoriam_no_interaction'] = $config->get('responses_in_memoriam_no_interaction');
+ * Implements hook_preprocess_views_view().
+ */
+function lehigh_site_support_preprocess_views_view(&$variables) {
+  $view = $variables['view'];
+  if ($view->id() !== 'browse') {
+    return;
+  }
+  if (empty($view->args) || !isset($view->args[0]) || $view->args[0] < 1) {
+    return;
+  }
+
+  $node = $view->args[0];
+  if (is_numeric($node)) {
+    $node = Node::load($node);
+  }
+  lehigh_site_support_add_css($variables, $node);
 }
-*/
+
+/**
+ * Add the special thumbnail CSS to a given node from a preprocess function.
+ */
+function lehigh_site_support_add_css(&$variables, $node) {
+  if (!lehigh_site_support_identify_collection($node)) {
+    return;
+  }
+
+  if (!lehigh_site_support_set_thumbnail($node, $node->id())) {
+    return;
+  }
+
+  $variables['#attached']['library'][] = 'lehigh_site_support/thumbnails';
+}
+
+/**
+ * Check if the special thumbnail CSS should be added for a given node.
+ */
+function lehigh_site_support_set_thumbnail($node, $original_nid) {
+  if ($node && $node->hasField('field_crop_thumbnails_top') &&
+    !$node->field_crop_thumbnails_top->isEmpty() &&
+    $node->field_crop_thumbnails_top->value) {
+    return TRUE;
+  }
+
+  // Avoid infinite loops.
+  if ($node->id() !== $original_nid) {
+    return FALSE;
+  }
+
+  foreach ($node->field_member_of as $parent) {
+    if (lehigh_site_support_set_thumbnail($parent->entity, $original_nid)) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}

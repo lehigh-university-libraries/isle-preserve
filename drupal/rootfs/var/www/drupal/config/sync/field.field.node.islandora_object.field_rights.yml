@@ -12,7 +12,7 @@ field_name: field_rights
 entity_type: node
 bundle: islandora_object
 label: Rights
-description: ''
+description: 'Select the rights statement that best matches your work. A work is automatically in copyright if it has been published. Only the copyright holder (author or publisher) can determine a different copyright status.'
 required: false
 translatable: true
 default_value: {  }

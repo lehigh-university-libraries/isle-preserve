@@ -11,8 +11,8 @@ id: node.islandora_object.field_edition
 field_name: field_edition
 entity_type: node
 bundle: islandora_object
-label: 'Edition Statement'
-description: ''
+label: 'Publication edition (pre-print, post-print, published)'
+description: "If your publication agreement does not allow open access publication of your work then a pre-print or post-print version may be allowable. See the definitions of each edition option below, sourced from <a href=\"https://www.publisso.de/en/advice/publishing-advice-faqs/preprint-and-postprint/\"> ZB MED PUBLISSO</a>:<br>\r\n<ul>\r\n<li>Pre-print: This term encompasses all versions that have not yet undergone peer review. Once a preprint has been submitted to a journal, it is often referred to as the submitted version or the author’s original manuscript (AOM).</li>\r\n<li>Post-print: This is the final draft authors send to the journal or publisher after peer review but before publication. It is commonly referred to as the author manuscript, author version, author accepted version, final author version, or author accepted manuscript (AAM).</li>\r\n<li>Published: Also known as the final version or version of record, this is the typeset and formatted version that appears in the journal or is released by the publisher. In the context of electronic journals, it is sometimes simply referred to as the publisher’s PDF.</li>\r\n</ul>"
 required: false
 translatable: true
 default_value: {  }

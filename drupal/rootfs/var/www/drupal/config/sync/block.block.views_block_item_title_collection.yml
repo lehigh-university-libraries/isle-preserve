@@ -1,0 +1,43 @@
+uuid: e8ad5c0f-2dfb-4dea-a926-617d6f039f25
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.item_title
+  module:
+    - context
+    - islandora
+    - system
+    - views
+  theme:
+    - lehigh
+id: views_block_item_title_collection
+theme: lehigh
+region: title
+weight: -21
+provider: null
+plugin: 'views_block:item_title-collection'
+settings:
+  id: 'views_block:item_title-collection'
+  label: ''
+  label_display: '0'
+  provider: views
+  context_mapping: {  }
+  views_label: ''
+  items_per_page: none
+  exposed: {  }
+visibility:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-browse-main: view-browse-main
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''
+  request_path:
+    id: request_path
+    negate: true
+    pages: "/browse-items/-1\r\n/browse-items/0"

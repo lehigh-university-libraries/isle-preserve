@@ -1,0 +1,39 @@
+uuid: 2d7884c7-330c-468c-b04f-4de60db13e1e
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+    - lehigh_islandora
+    - node
+    - system
+  theme:
+    - lehigh
+id: lehigh_altmetrics
+theme: lehigh
+region: main_sidebar
+weight: 25
+provider: null
+plugin: altmetrics
+settings:
+  id: altmetrics
+  label: Altmetrics
+  label_display: '0'
+  provider: lehigh_islandora
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''
+  request_path:
+    id: request_path
+    negate: false
+    pages: '/node/*'
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      islandora_object: islandora_object

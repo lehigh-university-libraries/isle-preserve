@@ -1,0 +1,6 @@
+[Unit]
+Description=Run hourly cron jobs for Islandora
+
+[Service]
+Type=oneshot
+ExecStart=docker exec lehigh-d10-drupal-prod-1 scripts/cron.hourly/run.sh

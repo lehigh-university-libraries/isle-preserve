@@ -1,0 +1,109 @@
+<?php
+
+use Drupal\node\Entity\Node;
+use Drupal\redirect\Entity\Redirect;
+use Drupal\Component\Utility\UrlHelper;
+
+/**
+ * Move publisher linked agents to field_publisher.
+ */
+function lehigh_islandora_update_100101() {
+  $terms = \Drupal::database()->query("SELECT t.tid, t.name FROM {node__field_linked_agent}
+    INNER JOIN {taxonomy_term_field_data} t ON t.tid = field_linked_agent_target_id
+    WHERE field_linked_agent_rel_type = 'relators:pbl'
+    GROUP BY t.tid")->fetchAllKeyed();
+  
+  $nids = \Drupal::database()->query("SELECT entity_id FROM node__field_linked_agent
+    WHERE field_linked_agent_rel_type = 'relators:pbl'")->fetchCol();
+  foreach ($nids as $nid) {
+    $node = Node::load($nid);
+    $linked_agents = [];
+    $publishers = [];
+    foreach ($node->field_linked_agent as $agent) {
+      if ($agent->rel_type ==  'relators:pbl') {
+        $publishers[] = $terms[$agent->target_id];
+      }
+      else {
+        $linked_agents[] = [
+          'target_id' => $agent->target_id,
+          'rel_type' => $agent->rel_type,
+        ];
+      }
+    }
+    $node->set('field_linked_agent', $linked_agents);
+    $node->set('field_publisher', $publishers);
+    $node->setNewRevision(TRUE);
+    $node->setRevisionCreationTime(\Drupal::time()->getCurrentTime());
+    $node->setRevisionLogMessage('Moving publisher from field_linked_agent to field_publisher');
+    $node->setRevisionUserId(1);
+    $node->save();
+  }
+}
+
+
+/**
+ * Carry forward bepress and contentdm redirects from i7.
+ */
+function lehigh_islandora_update_100102() {
+  $bepress_uris = \Drupal::database()->query("SELECT bepress_url AS source, CONCAT('internal:/node/', p.entity_id) AS target
+    FROM _i7_redirects
+    INNER JOIN node__field_pid p ON field_pid_value = REPLACE(SUBSTRING_INDEX(islandora_url, '/', -1), '%3A', ':')");
+  foreach ($bepress_uris as $uri) {
+    // just make the old redirects we had a relative path
+    $uri->source = str_replace('https:', 'http:', $uri->source);
+    $uri->source = str_replace('http://preserve.lehigh.edu/', '', $uri->source);
+    // fix bepress cgi URLs
+    $uri->source = str_replace('&amp;', '&', $uri->source);
+
+    // add the redirect so we can delete them easily if/when we need to
+    $url = UrlHelper::parse($uri->source);
+    $source = [
+      'path' => trim($url['path']),
+      'query' => $url['query'] ?? [],
+    ];
+    $redirect = Redirect::create([
+      'redirect_source' => $source,
+      'redirect_redirect' => $uri->target,
+      'status_code' => 301,
+    ]);
+    $redirect->save();
+  }
+
+  $cdm_uris = \Drupal::database()->query("SELECT REPLACE(cdm_url, 'http://cdm.lib.lehigh.edu/', '') AS source, CONCAT('internal:/node/', p.entity_id) AS target
+    FROM _cdm_redirects r
+    INNER JOIN node__field_pid p ON field_pid_value = REPLACE(SUBSTRING_INDEX(islandora_url, '/', -1), '%3A', ':')");
+  foreach ($cdm_uris as $uri) {
+    // add the redirect so we can delete them easily if/when we need to
+    $url = UrlHelper::parse($uri->source);
+    $source = [
+      'path' => trim($url['path']),
+      'query' => [],
+    ];
+    $redirect = Redirect::create([
+      'redirect_source' => $source,
+      'redirect_redirect' => $uri->target,
+      'status_code' => 301,
+    ]);
+    $redirect->save();
+  }
+
+}
+
+
+/**
+ * Move discoverygarden embargo into node field.
+ */
+function lehigh_islandora_update_100103() {
+  $nids = \Drupal::database()->query("SELECT embargoed_node, COALESCE(expiration_date, '2999-12-31') FROM {embargo}")->fetchAllKeyed();
+  foreach ($nids as $nid => $date) {
+    $node = Node::load($nid);
+    if (!$node) continue;
+    $node->set('field_edtf_date_embargo', $date);
+    $node->save();
+  }
+  \Drupal::database()->query("TRUNCATE TABLE {embargo}");
+  \Drupal::service('module_installer')->uninstall([
+    'embargo',
+    'islandora_hierarchical_access',
+  ]);
+}

@@ -1,3 +1,5 @@
 _core:
   default_config_hash: NCzOnzkSw_H5SbPJb-EOzzJby1pQ8JI6IzZJckM7WOU
-iiif_server: 'https://islandora-stage.lib.lehigh.edu/cantaloupe/iiif/2'
+iiif_server: 'https://preserve.lehigh.edu/cantaloupe/iiif/2'
+use_relative_paths: false
+show_title: node

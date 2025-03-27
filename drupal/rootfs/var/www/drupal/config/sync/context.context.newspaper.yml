@@ -12,7 +12,7 @@ name: newspaper
 group: Display
 description: "If a Newspaper, display the newspaper's children (issues) by date."
 requireAllConditions: false
-disabled: false
+disabled: true
 conditions:
   node_has_term:
     id: node_has_term
@@ -47,4 +47,4 @@ reactions:
         third_party_settings: {  }
     include_default_blocks: 1
     saved: false
-weight: -9
+weight: -11

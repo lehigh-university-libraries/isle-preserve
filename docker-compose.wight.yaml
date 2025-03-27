@@ -1,0 +1,39 @@
+services:
+  alpaca:
+    environment:
+      ALPACA_MAX_REDELIVERIES: 1
+      ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 1
+      ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
+      ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
+  mergepdf:
+    image: lehighlts/scyllaridae-mergepdf:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+      MAX_THREADS: 3
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  libreoffice:
+    image: lehighlts/scyllaridae-libreoffice:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  houdini:
+    image: lehighlts/scyllaridae-imagemagick:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./tmp/houdini:/tmp:rw
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  parry:
+    volumes:
+      - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
+  selenium:
+    # once https://github.com/minkphp/MinkSelenium2Driver supports selenium 4
+    # we can get newer browser support
+    image: selenium/standalone-firefox:3.141
+  mariadb:
+    image: mariadb:11.7.2-noble
+    secrets:
+      - source: DB_ROOT_PASSWORD
+        target: MARIADB_ROOT_PASSWORD

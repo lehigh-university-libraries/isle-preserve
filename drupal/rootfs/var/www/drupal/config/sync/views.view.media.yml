@@ -785,6 +785,7 @@ display:
         type: full
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 50
           total_pages: null
           id: 0
@@ -817,7 +818,7 @@ display:
         options:
           perm: 'access media overview'
       cache:
-        type: tag
+        type: none
         options: {  }
       empty:
         area_text_custom:
@@ -1260,6 +1261,105 @@ display:
                   min: ''
                   max: ''
                   value: ''
+        field_media_image_width:
+          id: field_media_image_width
+          table: media__field_media_image
+          field: field_media_image_width
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '<='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: width_op
+            label: 'Image (field_media_image:width)'
+            description: ''
+            use_operator: true
+            operator: field_media_image_width_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: width
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+              fedoraadmin: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        mid:
+          id: mid
+          table: media_field_data
+          field: mid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          entity_field: mid
+          plugin_id: numeric
+          operator: '>'
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: mid_op
+            label: ID
+            description: ''
+            use_operator: false
+            operator: mid_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: mid
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              content_editor: '0'
+              administrator: '0'
+              fedoraadmin: '0'
+              ga_no_tracking: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       style:
         type: table
         options:
@@ -2029,18 +2129,7 @@ display:
             use_serializer_encode_only: false
       defaults:
         fields: false
-      display_extenders:
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
+      display_extenders: {  }
       path: admin/content/media/csv
       auth:
         - basic_auth
@@ -2077,17 +2166,11 @@ display:
     display_options:
       display_description: ''
       display_extenders:
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
+        facets_display_extender:
+          facet_settings: {  }
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
       path: admin/content/media
       menu:
         type: tab

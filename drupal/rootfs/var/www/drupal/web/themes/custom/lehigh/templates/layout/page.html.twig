@@ -53,27 +53,72 @@
  * @see html.html.twig
  */
 #}
-
-
-<header>
-  <section id="main-nav" class='full'>
-    <div class="logo-div">
-      <a class="nav-logo" title="Home" href="{{ url('<front>') }}"> <img class="lehigh-logo" alt="Lehigh University" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/marks/lehigh-mark-dark.svg"></a>
-    </div>
-    {{ page.navigation }}
-    <div class="mobile-options">
-      <img class="mobile-search" alt="Search" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/search-icon.svg">
-      <div class="mobile-menu">
-        <img class="menu-icon" alt="Menu" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/menu-icon.svg">
+<header class="lehigh-header">
+  <nav class="lehigh-nav lehigh-header-nav lehigh-navbar utility-nav container-fluid">
+    <div class="lehigh-branding">
+      <div class="container-fluid">
+        <div class="row align-items-center">
+          <div class="utility-nav--start lehigh-navbar-brand col-md-3">
+            <a href="https://lts.lehigh.edu">
+              <img src="https://www.lehigh.edu/~inltswms/images/logos/lehighuniversity-lts-wordmark.svg" width="300px"
+                height="43" alt="" />
+            </a>
+          </div><!-- utility-nav--start -->
+          <div class="utility-nav--mid col-md-9 d-none d-lg-block">
+            <div class="lehigh-navbarSupportedContent">
+              {{ main_menu }}
+            </div>
+          </div>
+          <div class="row collapse" id="collapseSearch">
+            <form id="main-nav-search" action="/browse" method="GET" class="row g-2 p-4 pt-2 pb-2">
+              <div class="input-group">
+                <input id="main-nav-search-text" type="text" autocomplete="off" class="form-control"
+                  placeholder="Search for keywords, names, and locations" name="search_api_fulltext">
+                <span class="input-group-text ps-0 pe-0" id="homepage-search">
+                  <button class="trigger btn">
+                    <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"
+                      alt="Location" width="24" height="24" />
+                  </button>
+                </span>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
+      <div class="lehigh-main-nav">
+        <div class="container-fluid">
+          <button class="trigger p-4" id="lehigh-navbar-toggler" type="button"
+            aria-controls="lehigh-navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon">
+              <img class="icon icon-close open" src="https://www.lehigh.edu/~inltswms/images/icons/menu.svg" alt="">
+              <img class="icon close" src="https://www.lehigh.edu/~inltswms/images/icons/close.svg" alt="">
+            </span>
+          </button>
+          <div id="lehigh-navbarSupportedContent" class=" collapse nav-wrapper lehigh-max-width lehigh-mx-auto">
+            <div class="lehigh-row">
+              {% include 'menu--main--mobile.html.twig' with { items: main_menu_items } %}
+            </div>
+            <div class="row" id="MobileSearch">
+              <form id="mobile-nav-search" action="/browse" method="GET" class="row g-2 p-4 pt-2 pb-2">
+                <div class="input-group">
+                  <input id="mobile-nav-search-text" type="text" autocomplete="off" class="form-control"
+                    placeholder="Search for keywords, names, and locations" name="search_api_fulltext">
+                  <span class="input-group-text ps-0 pe-0" id="homepage-search">
+                    <button class="trigger btn">
+                      <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"
+                        alt="Location" width="24" height="24" />
+                    </button>
+                  </span>
+                </div>
+              </form>
+            </div>
+
+          </div><!-- end nav-wrapper -->
+        </div><!-- end container fluid -->
+      </div><!-- end main-nav -->
     </div>
-
-  </section>
-
+  </nav>
 </header>
-
-
-
 {% if page.splash  %}
   <section id="splash" class='full' role="region">
     {{ page.splash }}
@@ -132,15 +177,6 @@
     </div>
   </section>
 {% endif %}
-
-{% if page.search_dropdown or page.search_dropdown %}
-<section id="search-dropdown" class='full' role="region">
-  {{ page.search_dropdown }}
-</section>
-{% endif %}
-
-
-
 
 {% if page.main_alt or page.main_alt_sidebar or page.main_alt_sidebar_left%}
   <section id="main-alt" class='region'>
@@ -238,70 +274,137 @@
 
   <div class='tier-container'>
     <img class="overlay-close" alt="Close Menu" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/close.svg">
-
     {{ page.overlay }}
   </div>
 
 </section>
 {% endif %}
+<footer class="lehigh-footer" role="contentinfo">
+    <div class="footer">
+        <div class="container-fluid">
+            <div class="footer--start row">
+                <div class="footer--left col-md-4">
+                    <div class="footer--logo">
+                        <span class="leh-logo logo_rev">
+                            <img src="https://www.lehigh.edu/~inltswms/images/logos/lts-logo.png" height="56"
+                                width="392" alt="">
+                        </span>
+                    </div>
+                    <div class="footer--social">
+                        <div class="footer--heading social">
+                            <h3>Follow LTS on Social</h3>
+                        </div>
+                        <div class="footer--social-icon">
+                            <ul class="social-icons">
+                                <li id="footer-social-fb">
+                                    <a href="https://www.facebook.com/LehighLTS/" aria-label="Facebook">
+                                        <span class="title sr-only">Facebook</span>
+                                        <span class="primary social-icon"><img
+                                                src="https://www.lehigh.edu/~inltswms/images/icons/facebook.svg"
+                                                alt=""></span>
+                                    </a>
+                                </li>
+                                <li id="footer-social-x">
+                                    <a href="https://twitter.com/LehighLTS" aria-label="Twitter">
+                                        <span class="title sr-only">Twitter</span>
+                                        <span class="primary social-icon"><img
+                                                src="https://www.lehigh.edu/~inltswms/images/icons/twitter.svg"
+                                                alt=""></span>
+                                    </a>
+                                </li>
+                                <li id="footer-social-ig">
+                                    <a href="https://www.instagram.com/lehighlts/" aria-label="Instagram">
+                                        <span class="title sr-only">Instagram</span>
+                                        <span class="primary social-icon"><img
+                                                src="https://www.lehigh.edu/~inltswms/images/icons/instagram.svg"
+                                                alt=""></span>
+                                    </a>
+                                </li>
+                                <li id="footer-social-yt">
+                                    <a href="https://www.youtube.com/@ltslehigh" aria-label="YouTube">
+                                        <span class="title sr-only">YouTube</span>
+                                        <span class="primary social-icon"><img
+                                                src="https://www.lehigh.edu/~inltswms/images/icons/youtube.svg"
+                                                alt=""></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
 
-<footer id='page-footer' class='full' role="contentinfo">
-  <div class="upper-footer">
-    <h2>The Preserve: Lehigh Library Digital Collections</h2>
-    <div class="upper-footer-content">
-      <div class="upper-footer-item">
-        {{ page.footer.lehigh_upperfootercontent}}
-      </div>
-      <div class="upper-footer-item">
-        {{ page.footer.lehigh_upperfooterlinks }}
-      </div>
-      <div class="upper-footer-item">
-        {{ page.footer.lehigh_upperfootersites }}
-      </div>
-      <div class="upper-footer-item">
-        {{ page.footer.lehigh_upperfooterlegend }}
-      </div>
-    </div>
-  </div>
-  <div class="bottom-footer">
-    <div class="footer-content">
-      <div class="footer-item footer-social">
-        <a href="{{ url('<front>') }}"><img class="lehigh-logo" alt="Lehigh University" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/marks/lehigh-mark-light.svg"></a>
-        <div class="social-media">
-          <p class="footer-title"> Follow LTS on Social </p>
-          <div class="social-media-icons">
-            <a href="https://www.facebook.com/lehighu/"><img class="social-icon" alt="Facebook" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/fb-icon.svg"></a>
-            <a href="https://twitter.com/LehighU"><img class="social-icon" alt="Twitter" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/twitter-icon.svg"></a>
-            <a href="https://www.instagram.com/lehighu/"><img class="social-icon" alt="Instagram" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/insta-icon.svg"></a>
-            <a href="https://www.youtube.com/user/lehighuofficial"><img class="social-icon" alt="YouTube" src="{{ base_path ~ active_theme_path() }}/assets/img/svg/icons/yb-icon.svg"></a>
-          </div>
+
+                </div>
+                <div class="footer--center col-md-8">
+                    <div class="row">
+                        <div class="footer--center col-md-7">
+                            <div class="footer--heading">
+                                <h3>Library and Technology Services</h3>
+                            </div>
+                            <div class="footer--address">
+                                <address class="footer--location">
+                                    <img src="https://www.lehigh.edu/~inltswms/images/icons/location.svg" alt="Location"
+                                        width="24" height="24" />
+                                    <div class="address--text">
+                                        <span>EWFM Library</span>
+                                        <span>8A East Packer Ave.</span>
+                                        <span>Lehigh University, Bethlehem, PA 18015</span>
+                                    </div>
+                                </address>
+                                <div class="footer--phone">
+                                    <img src="https://www.lehigh.edu/~inltswms/images/icons/phone.svg" alt="Phone"
+                                        width="24" height="24" />
+                                    <div class="address--text">610-758-4357</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer--right col-md-5">
+                            <div class="footer--connect">
+                                <div class="footer--heading">
+                                    <h3>Connect with Us</h3>
+                                </div>
+                                <div class="footer--connect-cta btn-group">
+                                    <a href="https://help.lehigh.edu/" class="btn btn-tertiary"
+                                        aria-label="Get Help" role="button">Get Help</a>
+                                    <a href="https://lts.lehigh.edu/spaces/hours-directions"
+                                        class="btn btn-tertiary" aria-label="LTS Hours" role="button">LTS
+                                        Hours</a>
+                                </div>
+                            </div>
+                            <div class="footer--gift">
+                                <div class="footer--heading">
+                                    <h3><img src="https://www.lehigh.edu/~inltswms/images/icons/gift-icon.svg" alt="">
+                                        Make a Gift</h3>
+                                </div>
+                                <a href="https://lts.lehigh.edu/about/giving-lts"
+                                    class="btn btn-primary btn-gift" aria-label="Give Now"
+                                    role="button">Give Now</a>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end footer center-->
+            </div>
+            <div class="footer--mid" id="lfd"><!-- _PLEASE_ LEAVE THIS ID AS #lfd -- we add dynamic footer here -->
+            </div>
+            <div class="footer--end row">
+                <div class="footer--copyright col-md-6">
+                    <p>&copy; <span id="copyright-year">{{ now | date('Y') }}</span> Lehigh University <a
+                            class="lehigh-copyright" href="https://lehigh.edu/copyright">All
+                            Rights Reserved</a></p>
+                </div>
+                <div class="footer--accessibility col-md-6">
+                    <ul>
+                        <li><a href="https://accessibility.lehigh.edu/">Web Accessibility</a></li>
+                        <li><a href="https://www.lehigh.edu/terms">Terms</a></li>
+                        <li><a href="https://www.lehigh.edu/privacy">Privacy</a></li>
+                        <li>
+                            <a class="d-block px-sm-3 py-1 py-sm-2 py-lg-0" href="/user/login">Website Editor Login</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
-      <div class="footer-item">
-        {{ page.footer.footer_info }}
-      </div>
-      <div class="footer-item">
-        {{ page.footer.footer_contact }}
-      </div>
     </div>
-    <div class="footer-nav">
-      {{ page.footer.footer_nav}}
-    </div>
-    <div class="copyright">
-      <div class="left-items">
-        <p>©{{ 'now' | date('Y') }}  Lehigh University</p>
-        <p>All Rights Reserved</p>
-      </div>
-      <div class="right-items">
-      <a href="https://accessibility.lehigh.edu/">Web Accessibility</a>
-      <a href="https://www.lehigh.edu/terms">Terms</a>
-      <a href="https://www.lehigh.edu/privacy">Privacy</a>
-      <a href="/user">Website Editor Login</a>
-      </div>
-    </div>
-  </div>
 </footer>
-
 {% if page.mobile_toolbar %}
   <section id="mobile-toolbar" class='full' role="navigation">
     <div class="tier-container">

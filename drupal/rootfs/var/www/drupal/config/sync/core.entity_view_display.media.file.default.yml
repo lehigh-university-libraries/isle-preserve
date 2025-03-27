@@ -4,12 +4,13 @@ status: true
 dependencies:
   config:
     - field.field.media.file.field_file_size
-    - field.field.media.file.field_hocr_extracted_text
+    - field.field.media.file.field_height
     - field.field.media.file.field_media_file
     - field.field.media.file.field_media_of
     - field.field.media.file.field_media_use
     - field.field.media.file.field_mime_type
     - field.field.media.file.field_original_name
+    - field.field.media.file.field_width
     - media.type.file
   module:
     - file
@@ -34,13 +35,14 @@ content:
     third_party_settings: {  }
     weight: 6
     region: content
-  field_hocr_extracted_text:
-    type: file_default
+  field_height:
+    type: number_integer
     label: above
     settings:
-      use_description_as_link_text: true
+      thousand_separator: ''
+      prefix_suffix: true
     third_party_settings: {  }
-    weight: 8
+    weight: 9
     region: content
   field_media_file:
     type: file_default
@@ -80,6 +82,15 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 7
+    region: content
+  field_width:
+    type: number_integer
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    weight: 10
     region: content
   name:
     type: string

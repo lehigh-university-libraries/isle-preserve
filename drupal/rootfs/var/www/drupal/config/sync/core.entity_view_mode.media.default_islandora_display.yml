@@ -1,0 +1,11 @@
+uuid: ff6f978a-8346-43a7-8130-c5cdb352ca21
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+id: media.default_islandora_display
+label: 'Default Islandora Display'
+description: ''
+targetEntityType: media
+cache: true

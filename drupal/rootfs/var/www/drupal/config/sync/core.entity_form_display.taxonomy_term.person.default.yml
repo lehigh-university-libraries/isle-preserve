@@ -7,10 +7,15 @@ dependencies:
     - field.field.taxonomy_term.person.field_authority_link
     - field.field.taxonomy_term.person.field_cat_date_begin
     - field.field.taxonomy_term.person.field_cat_date_end
+    - field.field.taxonomy_term.person.field_contributor_status
+    - field.field.taxonomy_term.person.field_email
+    - field.field.taxonomy_term.person.field_identifier
+    - field.field.taxonomy_term.person.field_institution
     - field.field.taxonomy_term.person.field_relationships
     - taxonomy.vocabulary.person
   module:
     - controlled_access_terms
+    - lehigh_islandora
     - path
     - text
 _core:
@@ -61,6 +66,36 @@ content:
       strict_dates: false
       intervals: false
       sets: false
+    third_party_settings: {  }
+  field_contributor_status:
+    type: options_select
+    weight: 26
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_email:
+    type: email_default
+    weight: 12
+    region: content
+    settings:
+      placeholder: ''
+      size: 60
+    third_party_settings: {  }
+  field_identifier:
+    type: attr_default
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_institution:
+    type: entity_reference_autocomplete
+    weight: 27
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_relationships:
     type: typed_relation_default

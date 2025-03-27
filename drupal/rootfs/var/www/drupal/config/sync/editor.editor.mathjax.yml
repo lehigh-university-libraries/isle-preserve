@@ -1,0 +1,26 @@
+uuid: 062f9cf5-26b9-4934-9722-6d2419bbad4e
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.mathjax
+  module:
+    - ckeditor5
+format: mathjax
+editor: ckeditor5
+settings:
+  toolbar:
+    items:
+      - heading
+      - bold
+      - italic
+  plugins:
+    ckeditor5_heading:
+      enabled_headings:
+        - heading2
+        - heading3
+        - heading4
+        - heading5
+        - heading6
+image_upload:
+  status: false

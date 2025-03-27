@@ -1,0 +1,22 @@
+uuid: 350762d8-6321-4b25-936d-5d3426567f9b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: repository_items
+label: 'Repository Items'
+type: 'canonical_entities:node'
+pattern: '[node:parent-url]/[node:title]'
+selection_criteria:
+  484caa2d-9bfd-476e-8bcf-caf0ccf7de25:
+    id: 'entity_bundle:node'
+    negate: false
+    uuid: 484caa2d-9bfd-476e-8bcf-caf0ccf7de25
+    context_mapping:
+      node: node
+    bundles:
+      islandora_object: islandora_object
+selection_logic: and
+weight: -5
+relationships: {  }

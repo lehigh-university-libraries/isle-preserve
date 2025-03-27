@@ -1,0 +1,15 @@
+uuid: b6805e70-2782-4f0b-a511-89f10ea7fa4a
+langcode: en
+status: true
+dependencies: {  }
+name: small_100w
+label: 'Small (100w)'
+effects:
+  11abdcf8-76af-4494-a638-aa3acda43512:
+    uuid: 11abdcf8-76af-4494-a638-aa3acda43512
+    id: image_scale
+    weight: 1
+    data:
+      width: 100
+      height: null
+      upscale: false

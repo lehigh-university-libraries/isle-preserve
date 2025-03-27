@@ -1,0 +1,24 @@
+#block-lehigh-views-block-top-level-collections-block-1 {
+  padding-top: 1.8rem;
+}
+
+@media only screen and (min-width: 1200px) and (max-width: 1375px) {
+  .themed-grid {
+    grid-template-columns: repeat(var(--grid-columns-lrg, 3), minmax(0, 1fr));
+  }
+}
+
+.block-lehigh-site-cta-block {
+  background: #FFFFFF;
+  border: 1px solid #b9babb;
+  border-radius: 5px;
+}
+
+.block-lehigh-site-cta-block h2:after {
+  background: #a32a3e;
+  margin-left: 12px;
+}
+
+.featured-resources .views-view-grid.cols-3 .card {
+  max-width: 33.333333333333%;
+}

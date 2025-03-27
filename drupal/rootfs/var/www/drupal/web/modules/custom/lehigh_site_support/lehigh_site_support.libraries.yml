@@ -2,3 +2,7 @@
 site_cta:
   js:
     assets/js/siteCTA.js: {}
+thumbnails:
+  css:
+    component:
+      css/thumbnails.css: {}

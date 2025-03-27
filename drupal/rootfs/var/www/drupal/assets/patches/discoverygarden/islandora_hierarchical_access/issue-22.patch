@@ -1,0 +1,12 @@
+diff --git a/islandora_hierarchical_access.module b/islandora_hierarchical_access.module
+index 592cbbf..2999a99 100644
+--- a/islandora_hierarchical_access.module
++++ b/islandora_hierarchical_access.module
+@@ -39,7 +39,6 @@ function islandora_hierarchical_access_entity_insert(EntityInterface $entity) :
+   if ($entity_type_manager->hasHandler($entity_type_id, EntityCUDHandler::NAME)) {
+     /** @var \Drupal\islandora_hierarchical_access\EntityCUDHandlerInterface $handler */
+     $handler = $entity_type_manager->getHandler($entity_type_id, EntityCUDHandler::NAME);
+-    $handler->create($entity);
+   }
+ }
+ 

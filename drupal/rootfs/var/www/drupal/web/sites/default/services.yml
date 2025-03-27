@@ -1,0 +1,4 @@
+parameters:
+  cors.config:
+    enabled: true
+    allowedOriginsPatterns: ['/(islandora\.dev|.*\.lehigh\.edu)/']

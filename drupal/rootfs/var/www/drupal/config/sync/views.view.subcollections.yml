@@ -6,8 +6,6 @@ dependencies:
     - core.entity_view_mode.node.card
     - node.type.islandora_object
     - taxonomy.vocabulary.islandora_models
-  content:
-    - 'taxonomy_term:islandora_models:bfe55772-2c9a-49a6-836f-94fdf2a6a351'
   module:
     - node
     - stop14_tools
@@ -128,9 +126,22 @@ display:
           plugin_id: standard
           order: ASC
           expose:
-            label: ''
-            field_identifier: ''
-          exposed: false
+            label: Title
+            field_identifier: title
+          exposed: true
+        field_edtf_date_created_value:
+          id: field_edtf_date_created_value
+          table: node__field_edtf_date_created
+          field: field_edtf_date_created_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: standard
+          order: ASC
+          expose:
+            label: 'Date Created (field_edtf_date_created)'
+            field_identifier: field_edtf_date_created_value
+          exposed: true
       arguments:
         field_member_of_target_id:
           id: field_member_of_target_id
@@ -139,7 +150,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: numeric
+          plugin_id: entity_target_id
           default_action: default
           exception:
             value: all
@@ -149,7 +160,6 @@ display:
           title: ''
           default_argument_type: node
           default_argument_options: {  }
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -166,6 +176,7 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
+          target_entity_type_id: node
       filters:
         status:
           id: status
@@ -272,7 +283,8 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
-        - user
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
@@ -285,17 +297,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
       block_description: Subcollection
@@ -306,7 +307,8 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
-        - user
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }

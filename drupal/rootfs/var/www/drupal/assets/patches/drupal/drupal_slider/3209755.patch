@@ -1,0 +1,24 @@
+diff --git a/templates/drupal-slider-views-style.html.twig b/templates/drupal-slider-views-style.html.twig
+index a7a32e0..24aefbc 100644
+--- a/templates/drupal-slider-views-style.html.twig
++++ b/templates/drupal-slider-views-style.html.twig
+@@ -1,12 +1,16 @@
+ {{attached}}
+-<div class="slider-pro" id="{{id}}">	
+-	<div class="sp-slides">{{ rows }}</div>
++<div class="slider-pro" id="{{id}}">
++	<div class="sp-slides">
++		{% for row in rows %}
++			<div class="sp-slide">{{ row }}</div>
++		{% endfor %}
++	</div>
+ 	{% if rows.0['#view'].style_plugin.render_tokens.0['{{ drupal_slider_thumbnails }}']|render|striptags is not empty %}
+ 		<div class="sp-thumbnails">
+ 			{% for row in rows %}
+ 			{% set img = row['#view'].style_plugin.render_tokens[ loop.index0 ]['{{ drupal_slider_thumbnails }}']|render|striptags %}
+ 				<img class="sp-thumbnail" src="{{ img }}"/>
+ 			{% endfor %}
+-		</div>	
++		</div>
+ 	{% endif %}
+ </div>

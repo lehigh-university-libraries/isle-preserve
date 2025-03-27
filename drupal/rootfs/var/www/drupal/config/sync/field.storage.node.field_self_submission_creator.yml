@@ -1,0 +1,20 @@
+uuid: 6fafeb4b-15d7-489d-9b76-419a3dd183ce
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - taxonomy
+id: node.field_self_submission_creator
+field_name: field_self_submission_creator
+entity_type: node
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

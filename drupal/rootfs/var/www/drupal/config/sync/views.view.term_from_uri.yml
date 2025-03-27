@@ -90,6 +90,7 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
+          pagination_heading_level: h4
       exposed_form:
         type: basic
         options:
@@ -130,7 +131,6 @@ display:
             query_param: uri
             fallback: ''
             multiple: and
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -227,7 +227,6 @@ display:
             query_param: uri
             fallback: ''
             multiple: and
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -304,7 +303,6 @@ display:
             query_param: authority_link
             fallback: ''
             multiple: and
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true

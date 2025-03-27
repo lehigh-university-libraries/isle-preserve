@@ -1,11 +1,18 @@
 uuid: 8d5aba43-6a48-4042-92e7-d02a9805f27c
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - field_permissions
 _core:
   default_config_hash: OeKGIkmZA_c-t6QLH81WNQx8gDCc1MRmxaTuQgxBByU
 id: administrator
 label: Administrator
 weight: 3
 is_admin: true
-permissions: {  }
+permissions:
+  - 'create field_crop_thumbnails_top'
+  - 'edit field_crop_thumbnails_top'
+  - 'edit own field_crop_thumbnails_top'
+  - 'view field_crop_thumbnails_top'
+  - 'view own field_crop_thumbnails_top'

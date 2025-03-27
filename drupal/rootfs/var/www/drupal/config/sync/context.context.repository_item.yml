@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - views.view.default_media_display
     - views.view.downloads
     - views.view.in_collections
     - views.view.item_title
@@ -47,7 +48,7 @@ reactions:
         provider: views
         label_display: '0'
         region: above_content
-        weight: '0'
+        weight: '-2'
         custom_id: views_block_item_title_title_area
         theme: lehigh
         css_class: ''
@@ -66,7 +67,7 @@ reactions:
         provider: views
         label_display: visible
         region: main_sidebar
-        weight: '-1'
+        weight: '-3'
         custom_id: views_block_rights_and_reproductions_rights_block
         theme: lehigh
         css_class: ''
@@ -85,27 +86,8 @@ reactions:
         provider: views
         label_display: visible
         region: main_sidebar
-        weight: '0'
+        weight: '-2'
         custom_id: views_block_downloads_block_1
-        theme: lehigh
-        css_class: ''
-        unique: 0
-        context_id: repository_item
-        context_mapping: {  }
-        views_label: ''
-        items_per_page: none
-        exposed: {  }
-        third_party_settings: {  }
-        override: {  }
-      50510948-b14d-472b-bd44-af6a39536fb6:
-        uuid: 50510948-b14d-472b-bd44-af6a39536fb6
-        id: 'views_block:related_items-block_1'
-        label: ''
-        provider: views
-        label_display: visible
-        region: secondary_content
-        weight: '0'
-        custom_id: views_block_related_items_block_1
         theme: lehigh
         css_class: ''
         unique: 0
@@ -135,6 +117,44 @@ reactions:
         exposed: {  }
         third_party_settings: {  }
         override: {  }
-    include_default_blocks: 0
+      4ef4fb36-f054-4582-a0de-abd8fc54c5aa:
+        uuid: 4ef4fb36-f054-4582-a0de-abd8fc54c5aa
+        id: 'views_block:default_media_display-original_file_block'
+        label: ''
+        provider: views
+        label_display: '0'
+        region: above_content
+        weight: '-3'
+        custom_id: views_block_default_media_display_original_file_block
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: repository_item
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+      2fbefa3d-8f72-45ea-b0f4-089c4a0c715e:
+        uuid: 2fbefa3d-8f72-45ea-b0f4-089c4a0c715e
+        id: 'views_block:related_items-block_1'
+        label: ''
+        provider: views
+        label_display: visible
+        region: secondary_content
+        weight: '0'
+        custom_id: views_block_related_items_block_1
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: repository_item
+        context_mapping: {  }
+        views_label: ''
+        items_per_page: none
+        exposed: {  }
+        third_party_settings: {  }
+        override: {  }
+    include_default_blocks: 1
     saved: false
-weight: 0
+weight: 1

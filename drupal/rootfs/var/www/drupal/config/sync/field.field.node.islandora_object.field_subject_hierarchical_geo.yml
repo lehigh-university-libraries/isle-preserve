@@ -1,0 +1,21 @@
+uuid: 594d4891-d26e-449f-bc79-3cf6bfde2b7d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_subject_hierarchical_geo
+    - node.type.islandora_object
+  module:
+    - lehigh_islandora
+id: node.islandora_object.field_subject_hierarchical_geo
+field_name: field_subject_hierarchical_geo
+entity_type: node
+bundle: islandora_object
+label: 'Subject Hierarchical Geo'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: hierarchical_geographic

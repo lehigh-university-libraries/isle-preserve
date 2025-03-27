@@ -2,10 +2,10 @@
 
 namespace Drupal\lehigh_site_support\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\Component\Utility\Html;
 
 /**
  * Configure lehigh Digital Collections settings for this site.
@@ -49,7 +49,6 @@ class SettingsForm extends ConfigFormBase {
       '#group' => 'lehigh_site_support_settings',
     ];
 
-
     $form['site_copy'] = [
       '#type' => 'fieldset',
       '#title' => t('Site Copy'),
@@ -57,36 +56,34 @@ class SettingsForm extends ConfigFormBase {
     ];
 
     // Copy settings information defined in lehigh_site_support.module
-    // The module provides tokens for all formatted text items
-
-    foreach(lehigh_site_support_get_site_copy_keys() as $key => $values) {
-      $group = array_key_exists('group',$values) ? $values['group'] : 'site_copy';
+    // The module provides tokens for all formatted text items.
+    foreach (lehigh_site_support_get_site_copy_keys() as $key => $values) {
+      $group = array_key_exists('group', $values) ? $values['group'] : 'site_copy';
       $form[$group][$key] = [
         '#type' => 'text_format',
-        '#title' => $this->t($values['title']),
+        '#title' => $values['title'],
         '#description' => $values['description'],
         '#rows' => 15,
         '#format' => !empty($config->get($key)['format']) ?
-          $config->get($key)['format'] :
-          null,
+        $config->get($key)['format'] :
+        NULL,
         '#default_value' => !empty($config->get($key)['value']) ?
-          $config->get($key)['value'] :
-          $values['default_value']
+        $config->get($key)['value'] :
+        $values['default_value'],
       ];
     }
 
-    foreach(lehigh_site_support_get_tokenized_text_field_keys() as $key => $values) {
-      $group = array_key_exists('group',$values) ? $values['group'] : 'site_copy';
+    foreach (lehigh_site_support_get_tokenized_text_field_keys() as $key => $values) {
+      $group = array_key_exists('group', $values) ? $values['group'] : 'site_copy';
       $form[$group][$key] = [
         '#type' => 'textfield',
-        '#title' => $this->t($values['title']),
+        '#title' => $values['title'],
         '#description' => $values['description'],
         '#default_value' => !empty($config->get($key)) ?
-          $config->get($key) :
-          $values['default_value']
+        $config->get($key) :
+        $values['default_value'],
       ];
     }
-
 
     $form['collections'] = [
       '#type' => 'fieldset',
@@ -94,11 +91,9 @@ class SettingsForm extends ConfigFormBase {
       '#group' => 'general',
     ];
 
-
-
     $vlist = [];
     // To get names:
-    foreach(Vocabulary::loadMultiple() as $voc) {
+    foreach (Vocabulary::loadMultiple() as $voc) {
       $vlist[$voc->getOriginalId()] = $voc->label();
     }
 
@@ -108,52 +103,24 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('collections_vocabulary'),
       '#group' => 'general',
       '#title' => 'Top-level collections vocabulary',
-      '#description' => 'Choose the vocabulary that represents the active top-level collections. Used by the site to direct collection search forms.'
+      '#description' => 'Choose the vocabulary that represents the active top-level collections. Used by the site to direct collection search forms.',
     ];
 
-    $form['collections']['collection_searchfield_placeholder'] =[
+    $form['collections']['collection_searchfield_placeholder'] = [
       '#type' => 'textfield',
       '#default_value' => $config->get('collection_searchfield_placeholder') ?? 'Search for keywords, names, and locations',
       '#title' => 'Collection search form placeholder',
-      '#description' => 'Placeholder text to present to a user on collection search forms'
+      '#description' => 'Placeholder text to present to a user on collection search forms',
     ];
 
-    $form['collections']['collections_route_path'] =[
+    $form['collections']['collections_route_path'] = [
       '#type' => 'textfield',
       '#default_value' => $config->get('collections_route_path') ?? 'collections',
       '#title' => 'Collections route path',
-      '#description' => 'Path slug that represents base path for all collections.'
+      '#description' => 'Path slug that represents base path for all collections.',
     ];
 
-    /*
-    if (!empty($config->get('collections_vocabulary'))) {
-
-      $cterms = [];
-
-      foreach (\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($config->get('collections_vocabulary')) as $term) {
-        $cterms[$term->tid] = $term->name;
-      }
-
-      $form['collections']['default_collection'] = [
-        '#type' => 'select',
-        '#options' => $cterms,
-        '#default_value' => $config->get('default_collection'),
-        '#group' => 'general',
-        '#title' => 'Default search field collection',
-        '#description' => 'This collection will be set as the default on the Digital Libraries home page search form.'
-      ];
-
-    }*/
-
     return parent::buildForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-
-    parent::validateForm($form, $form_state);
   }
 
   /**
@@ -162,37 +129,31 @@ class SettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('lehigh_site_support.settings');
 
-    // Site copy
-
-    foreach(array_keys(array_merge(lehigh_site_support_get_site_copy_keys(),lehigh_site_support_get_tokenized_text_field_keys())) as $key) {
+    // Site copy.
+    foreach (array_keys(array_merge(lehigh_site_support_get_site_copy_keys(), lehigh_site_support_get_tokenized_text_field_keys())) as $key) {
       $config
         ->set($key, $form_state->getValue($key))
         ->save();
     }
 
-      // Collections vocabulary
-
+    // Collections vocabulary.
     $config
-      ->set('collections_vocabulary',$form_state->getValue('collections_vocabulary'))
+      ->set('collections_vocabulary', $form_state->getValue('collections_vocabulary'))
       ->save();
 
-
-    // Searchfield placeholder
-
+    // Searchfield placeholder.
     $config
-      ->set('collection_searchfield_placeholder',$form_state->getValue('collection_searchfield_placeholder'))
+      ->set('collection_searchfield_placeholder', $form_state->getValue('collection_searchfield_placeholder'))
       ->save();
 
-    // Collections route path
-
+    // Collections route path.
     $config
-      ->set('collections_route_path',urlencode(HTML::escape(strtolower($form_state->getValue('collections_route_path')))))
+      ->set('collections_route_path', urlencode(HTML::escape(strtolower($form_state->getValue('collections_route_path')))))
       ->save();
 
-    // Searchfield default collection
-
+    // Searchfield default collection.
     $config
-      ->set('default_collection',urlencode(HTML::escape(strtolower($form_state->getValue('default_collection')))))
+      ->set('default_collection', urlencode(HTML::escape(strtolower($form_state->getValue('default_collection')))))
       ->save();
 
     parent::submitForm($form, $form_state);

@@ -1,0 +1,19 @@
+uuid: 73959471-2ba9-47f5-9f34-697e39fd9b38
+langcode: en
+status: true
+dependencies:
+  config:
+    - contact.form.contact_us
+    - field.storage.contact_message.field_telephone
+id: contact_message.contact_us.field_telephone
+field_name: field_telephone
+entity_type: contact_message
+bundle: contact_us
+label: 'Phone Number'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -11,7 +11,7 @@ name: all_media
 group: Indexing
 description: 'Index all media bundles in Fedora and Blazegraph'
 requireAllConditions: false
-disabled: false
+disabled: true
 conditions:
   islandora_entity_bundle:
     id: islandora_entity_bundle
@@ -41,10 +41,4 @@ reactions:
     saved: false
     actions:
       index_media_in_fedora: index_media_in_fedora
-      index_media_in_triplestore: index_media_in_triplestore
-  delete:
-    id: delete
-    saved: false
-    actions:
-      delete_media_from_triplestore: delete_media_from_triplestore
 weight: -8

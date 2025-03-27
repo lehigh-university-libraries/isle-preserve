@@ -11,13 +11,13 @@ field_name: field_keywords
 entity_type: node
 bundle: islandora_object
 label: Keywords
-description: ''
+description: 'Keywords or tags that help describe your work. Keywords are not controlled and there is no list of authorized terms. Provide the terms that you find most appropriate.'
 required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:taxonomy_term'
+  handler: 'default:filter_existing_terms'
   handler_settings:
     target_bundles:
       keywords: keywords

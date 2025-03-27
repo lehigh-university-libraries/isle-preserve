@@ -30,15 +30,28 @@
     'block',
     'block-' ~ configuration.provider|clean_class,
     'block-' ~ plugin_id|clean_class,
+    'accordion',
   ]
 %}
 <div{{ attributes.addClass(classes) }}>
-  {{ title_prefix }}
-  {% if label %}
-    <h3 class="alt"{{ title_attributes }}>{{ label }}</h3>
-  {% endif %}
-  {{ title_suffix }}
-  {% block content %}
-    {{ content }}
-  {% endblock %}
+  <div class="accordion-item">
+    {{ title_prefix }}
+    {% if label %}
+      <h3 class="accordion-header m-0">
+        <a class="accordion-button" data-bs-toggle="collapse" data-bs-target="#collapse{{ plugin_id|clean_class }}" aria-expanded="true" aria-controls="collapse{{ plugin_id|clean_class }}" style="color: initial; background-color: initial">
+          {{ label }}
+        </a>
+      </h3>
+    {% endif %}
+    {{ title_suffix }}
+
+    {% block content %}
+      <div id="collapse{{ plugin_id|clean_class }}" class="accordion-collapse collapse show" data-bs-parent="#{{ plugin_id|clean_class }}">
+        <div class="accordion-body">
+          {{ content }}
+        </div>
+      </div>
+    {% endblock %}
+
+    </div>
 </div>

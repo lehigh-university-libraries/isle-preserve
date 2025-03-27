@@ -1,0 +1,24 @@
+uuid: b8d92651-8bdb-42dc-b6d7-bb4ad892ae27
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_relation
+    - filter.format.basic_html
+    - node.type.islandora_object
+  module:
+    - text
+id: node.islandora_object.field_relation
+field_name: field_relation
+entity_type: node
+bundle: islandora_object
+label: Relation
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - basic_html
+field_type: text_long

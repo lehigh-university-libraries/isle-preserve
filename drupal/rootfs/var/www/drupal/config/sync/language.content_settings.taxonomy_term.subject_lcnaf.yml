@@ -1,0 +1,11 @@
+uuid: 1c800455-ac2d-4166-b8c8-3c03e197350c
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.subject_lcnaf
+id: taxonomy_term.subject_lcnaf
+target_entity_type_id: taxonomy_term
+target_bundle: subject_lcnaf
+default_langcode: site_default
+language_alterable: false

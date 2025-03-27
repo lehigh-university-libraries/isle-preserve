@@ -1,0 +1,15 @@
+uuid: a75f9947-8ce2-46d8-a711-82b0130a7b3e
+langcode: en
+status: true
+dependencies: {  }
+name: wide_2600w
+label: 'Wide (2600w)'
+effects:
+  e97c1178-2394-48e8-9df1-23bf2a813a79:
+    uuid: e97c1178-2394-48e8-9df1-23bf2a813a79
+    id: image_scale
+    weight: 1
+    data:
+      width: 2600
+      height: null
+      upscale: false

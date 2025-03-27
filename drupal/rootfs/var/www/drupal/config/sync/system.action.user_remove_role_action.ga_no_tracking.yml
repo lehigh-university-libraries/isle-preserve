@@ -1,0 +1,14 @@
+uuid: 7e82a770-b6fa-42a1-bfa2-fc288de96a23
+langcode: en
+status: true
+dependencies:
+  config:
+    - user.role.ga_no_tracking
+  module:
+    - user
+id: user_remove_role_action.ga_no_tracking
+label: 'Remove the GA - no tracking role from the selected user(s)'
+type: user
+plugin: user_remove_role_action
+configuration:
+  rid: ga_no_tracking

@@ -1,0 +1,20 @@
+uuid: 19968ef6-4909-49b7-bfc2-120c470c5ffe
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_fits
+id: pdf_add_coverpage
+label: 'Add Coverpage'
+type: node
+plugin: generate_fits_derivative
+configuration:
+  queue: islandora-pdf-coverpage
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#OriginalFile'
+  derivative_term_uri: 'http://pcdm.org/use#ServiceFile'
+  mimetype: application/xml
+  args: null
+  destination_media_type: document
+  scheme: private
+  path: 'derivatives/coverpage/[node:nid].pdf'

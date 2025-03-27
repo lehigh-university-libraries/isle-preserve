@@ -1,0 +1,61 @@
+{
+  extends: [
+    'config:best-practices',
+    ':rebaseStalePrs',
+    'customManagers:dockerfileVersions',
+  ],
+  packageRules: [
+    {
+      matchDatasources: [
+        'repology',
+      ],
+      versioning: 'loose',
+    },
+    {
+      matchUpdateTypes: [
+        'minor',
+        'patch',
+        'digest',
+      ],
+      groupName: 'all non-major dependencies',
+      schedule: [
+        'after 10pm on Friday',
+      ],
+      matchPackageNames: [
+        '*',
+      ],
+    },
+    {
+      matchUpdateTypes: [
+        'major',
+      ],
+      groupName: 'all major updates',
+      schedule: [
+        'after 10pm on the first day of the month',
+      ],
+      matchPackageNames: [
+        '*',
+      ],
+    },
+  ],
+  customManagers: [
+    {
+      customType: 'regex',
+      fileMatch: [
+        '^Dockerfile$',
+      ],
+      matchStrings: [
+        '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION="(?<currentValue>.*)"\\s',
+      ],
+    },
+  ],
+  labels: [
+    'dependencies',
+  ],
+  osvVulnerabilityAlerts: true,
+  dependencyDashboardOSVVulnerabilitySummary: 'unresolved',
+  vulnerabilityAlerts: {
+    enabled: true,
+  },
+}
+

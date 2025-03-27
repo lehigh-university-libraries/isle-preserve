@@ -6,7 +6,6 @@ dependencies:
     - rest
     - serialization
     - taxonomy
-    - user
 _core:
   default_config_hash: 6S5Bt8qGqeGpHv2L9rc_3qXRZN1jwx9yyrsUd7TqLwY
 id: term_from_term_name
@@ -76,6 +75,7 @@ display:
         type: mini
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 10
           total_pages: null
           id: 0
@@ -101,9 +101,8 @@ display:
           sort_asc_label: Asc
           sort_desc_label: Desc
       access:
-        type: perm
-        options:
-          perm: 'administer taxonomy'
+        type: none
+        options: {  }
       cache:
         type: tag
         options: {  }
@@ -130,7 +129,6 @@ display:
             query_param: uri
             fallback: ''
             multiple: and
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -194,7 +192,6 @@ display:
         - request_format
         - url
         - url.query_args
-        - user.permissions
       tags: {  }
   rest_export_1:
     id: rest_export_1
@@ -232,7 +229,6 @@ display:
             query_param: name
             fallback: ''
             multiple: and
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -277,7 +273,6 @@ display:
             query_param: vocab
             fallback: ''
             multiple: and
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -307,10 +302,16 @@ display:
         cache: false
         arguments: false
       display_description: ''
-      display_extenders: {  }
+      display_extenders:
+        facets_display_extender:
+          facet_settings: {  }
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
       path: term_from_term_name
       auth:
         - basic_auth
+        - cookie
     cache_metadata:
       max-age: -1
       contexts:
@@ -318,5 +319,4 @@ display:
         - 'languages:language_interface'
         - request_format
         - url
-        - user.permissions
       tags: {  }

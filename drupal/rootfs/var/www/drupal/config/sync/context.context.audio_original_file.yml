@@ -6,31 +6,31 @@ dependencies:
     - islandora
 _core:
   default_config_hash: LF_53zO22iJb5lGnTEum37B_719Nz_EM5iG-fOKt3-I
-label: 'Audio Derivatives'
+label: 'Audio/Video Service File Derivatives'
 name: audio_original_file
 group: Derivatives
 description: 'Derivatives for Audio'
 requireAllConditions: true
-disabled: true
+disabled: false
 conditions:
   media_has_term:
     id: media_has_term
     negate: false
     context_mapping:
       media: '@islandora.media_route_context_provider:media'
-    uri: 'http://pcdm.org/use#OriginalFile'
+    uri: 'http://pcdm.org/use#ServiceFile'
     logic: and
   parent_node_has_term:
     id: parent_node_has_term
     negate: false
     context_mapping:
       media: '@islandora.media_route_context_provider:media'
-    uri: 'http://purl.org/coar/resource_type/c_18cc'
-    logic: and
+    uri: 'http://purl.org/coar/resource_type/c_18cc,http://purl.org/coar/resource_type/c_12ce'
+    logic: or
 reactions:
   derivative:
     id: derivative
     saved: false
     actions:
-      audio_generate_a_service_file_from_an_original_file: audio_generate_a_service_file_from_an_original_file
+      get_vtt_from_audio: get_vtt_from_audio
 weight: -8

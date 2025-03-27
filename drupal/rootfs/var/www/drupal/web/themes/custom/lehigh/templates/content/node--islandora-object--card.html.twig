@@ -78,7 +78,7 @@
     node.isSticky() ? 'node--sticky',
     not node.isPublished() ? 'node--unpublished',
     view_mode ? 'node--view-mode-' ~ view_mode|clean_class,
-    'card',
+    'agileCard',
     is_collection == true ? "collection",
 ]
 %}
@@ -127,7 +127,13 @@
     {% if content.group_footer or reference_count > 0 %}
         <footer>
             {% if reference_count > 0 %}
-                <div class="item-label reference-count"> {{ reference_count }} {% if is_collection %}Sub-Collections {%  else %}Items{% endif%} </div>
+                <div class="item-label reference-count"> {{ reference_count }}
+                {% if is_collection and not is_sub_collection %}
+                    Sub-Collections
+                {%  else %}
+                    Items
+                {% endif%}
+                </div>
             {% endif %}
             {{ content.group_footer }}
         </footer>

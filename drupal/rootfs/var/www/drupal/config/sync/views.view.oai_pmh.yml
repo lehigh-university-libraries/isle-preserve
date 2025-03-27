@@ -4,6 +4,9 @@ status: true
 dependencies:
   config:
     - node.type.islandora_object
+    - taxonomy.vocabulary.islandora_models
+  content:
+    - 'taxonomy_term:islandora_models:9848c6b7-cd3c-4c9d-b256-8040df72b2c4'
   module:
     - node
     - taxonomy
@@ -90,6 +93,7 @@ display:
             items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
+          pagination_heading_level: h4
       exposed_form:
         type: basic
         options:
@@ -192,6 +196,52 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        field_model_target_id:
+          id: field_model_target_id
+          table: node__field_model
+          field: field_model_target_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: not
+          value:
+            - 28
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: islandora_models
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
       filter_groups:
         operator: AND
         groups:
@@ -246,18 +296,46 @@ display:
     display_plugin: entity_reference
     position: 1
     display_options:
+      pager:
+        type: full
+        options:
+          offset: 0
+          items_per_page: 100
+          total_pages: null
+          id: 0
+          tags:
+            next: 'Next ›'
+            previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+          pagination_heading_level: h4
       style:
         type: entity_reference
         options:
           search_fields:
             title: title
       display_description: ''
-      display_extenders: {  }
+      display_extenders:
+        facets_display_extender:
+          facet_settings: {  }
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
+        - url.query_args
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
@@ -267,6 +345,28 @@ display:
     display_plugin: entity_reference
     position: 1
     display_options:
+      pager:
+        type: full
+        options:
+          offset: 0
+          items_per_page: 100
+          total_pages: null
+          id: 0
+          tags:
+            next: 'Next ›'
+            previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+          pagination_heading_level: h4
       arguments:
         field_member_of_target_id:
           id: field_member_of_target_id
@@ -275,7 +375,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: numeric
+          plugin_id: entity_target_id
           default_action: ignore
           exception:
             value: all
@@ -286,7 +386,6 @@ display:
           default_argument_type: fixed
           default_argument_options:
             argument: ''
-          default_argument_skip_url: false
           summary_options:
             base_path: ''
             count: true
@@ -303,6 +402,7 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
+          target_entity_type_id: node
       style:
         type: entity_reference
         options:
@@ -311,13 +411,19 @@ display:
       defaults:
         arguments: false
       display_description: 'All items with collections grouped into a sets per collection they belong to.'
-      display_extenders: {  }
+      display_extenders:
+        facets_display_extender:
+          facet_settings: {  }
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
+        - url.query_args
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
@@ -327,6 +433,28 @@ display:
     display_plugin: entity_reference
     position: 1
     display_options:
+      pager:
+        type: full
+        options:
+          offset: 0
+          items_per_page: 100
+          total_pages: null
+          id: 0
+          tags:
+            next: 'Next ›'
+            previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+          pagination_heading_level: h4
       filters:
         status:
           id: status
@@ -450,12 +578,18 @@ display:
         filters: false
         filter_groups: false
       display_description: 'Set of items that do not belong to any Collection, to be used with Collection Sets.'
-      display_extenders: {  }
+      display_extenders:
+        facets_display_extender:
+          facet_settings: {  }
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
+        - url.query_args
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }

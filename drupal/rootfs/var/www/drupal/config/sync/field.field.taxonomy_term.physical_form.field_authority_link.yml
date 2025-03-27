@@ -21,6 +21,7 @@ default_value: {  }
 default_value_callback: ''
 settings:
   authority_sources:
+    aat: 'Getty Art & Architecture Thesaurus'
     marcform: 'MARC form of item term list'
     other: Other
   title: 1

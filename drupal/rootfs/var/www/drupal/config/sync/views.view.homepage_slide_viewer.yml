@@ -8,7 +8,7 @@ dependencies:
   content:
     - 'taxonomy_term:site_disposition:88273a5a-e89b-4c53-a83b-9dd53a187626'
   module:
-    - agile_slide_viewer
+    - drupal_slider
     - node
     - taxonomy
     - user
@@ -191,25 +191,22 @@ display:
           limit: true
           error_message: true
       style:
-        type: agile_slide_viewer
+        type: drupal_slider
         options:
-          row_class: ''
-          default_row_class: true
-          title_slide:
-            hastitle: 0
-            title: ''
-            subtitle: ''
-            introduction:
-              value: ''
-              format: basic_html
-            buttonText: ''
-          slidesperrow: '1'
-          centerMode: 0
-          autoplay: 1
-          autoplaySpeed: '3000'
-          fade: 1
-          speed: '500'
-          infinite: 1
+          general:
+            width: '950'
+            height: '600'
+            arrows: 1
+            buttons: 1
+            autoplay: 1
+            autoplayDelay: '5000'
+            shuffle: 0
+            fade: 0
+            carousel: 0
+            full_screen: 0
+            loop: 0
+            orientation: 0
+            thumbnails_position: bottom
       row:
         type: 'entity:node'
         options:
@@ -233,7 +230,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - user
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
@@ -246,17 +242,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -266,7 +251,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - user
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }

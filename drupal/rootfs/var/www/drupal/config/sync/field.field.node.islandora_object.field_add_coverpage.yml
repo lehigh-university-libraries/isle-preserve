@@ -1,0 +1,21 @@
+uuid: 61dd53f4-8fbd-4d68-931d-721e19bac5d5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_add_coverpage
+    - node.type.islandora_object
+id: node.islandora_object.field_add_coverpage
+field_name: field_add_coverpage
+entity_type: node
+bundle: islandora_object
+label: 'Add Coverpage'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

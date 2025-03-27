@@ -1,0 +1,7 @@
+isle_slo.slo:
+    path: "/admin/reports/slos"
+    defaults:
+        _title: "SLOs"
+        _controller: '\Drupal\isle_slo\Controller\SloController'
+    requirements:
+        _permission: "administer nodes"

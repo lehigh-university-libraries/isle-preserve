@@ -11,7 +11,7 @@ name: pdf_original_file
 group: Derivatives
 description: 'Derivatives for PDF documents'
 requireAllConditions: true
-disabled: true
+disabled: false
 conditions:
   media_has_term:
     id: media_has_term
@@ -23,6 +23,7 @@ conditions:
   parent_node_has_term:
     id: parent_node_has_term
     negate: false
+    uuid: a93d4e3e-9466-43bb-8582-ceabca9eb320
     context_mapping:
       media: '@islandora.media_route_context_provider:media'
     uri: 'https://schema.org/DigitalDocument'
@@ -33,5 +34,4 @@ reactions:
     saved: false
     actions:
       digital_document_generate_a_thumbnail_from_an_original_file: digital_document_generate_a_thumbnail_from_an_original_file
-      get_ocr_from_image: get_ocr_from_image
 weight: -6

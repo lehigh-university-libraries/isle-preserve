@@ -1,0 +1,13 @@
+services:
+  drupal:
+    volumes:
+      - ./drupal/rootfs/var/www/drupal/config:/var/www/drupal/config:z,rw,${CONSISTENCY}
+  fabricator:
+    volumes:
+      - /mnt/islandora_staging:/data:r
+      - /home/runner/etds:/home/runner/etds:r
+  mariadb:
+    image: mariadb:11.7.2-noble
+    secrets:
+      - source: DB_ROOT_PASSWORD
+        target: MARIADB_ROOT_PASSWORD

@@ -1,0 +1,13 @@
+uuid: f13c5d4b-0302-42b8-ab6a-9867f8b078e3
+langcode: en
+status: true
+dependencies: {  }
+id: contact_us
+label: 'Contact and Support'
+recipients:
+  - preserve@lehigh.edu
+  - jjc223@lehigh.edu
+reply: ''
+weight: 0
+message: ''
+redirect: /

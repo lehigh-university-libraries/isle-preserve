@@ -1,0 +1,23 @@
+uuid: 167d2287-2a3b-4b25-9705-d14a2f9e0f58
+langcode: en
+status: true
+dependencies:
+  module:
+    - file
+    - node
+id: node.field_file_uploads
+field_name: field_file_uploads
+entity_type: node
+type: file
+settings:
+  target_type: file
+  display_field: false
+  display_default: false
+  uri_scheme: gs-production
+module: file
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

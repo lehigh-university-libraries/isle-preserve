@@ -1,38 +1,28 @@
-vendor
-.idea
-config/sync/.htaccess
-
-# Ignore core files except for custom folder
-# This is necessary because git won't descend into excluded folders
-# to except deep subfolders like web/themes/custom/*
-# See https://superuser.com/questions/465090/git-doesnt-observe-new-exceptions-in-gitignore
-
-web/*
-!web/modules
-!web/themes
-!web/modules/custom
-!web/modules/custom/*
-!web/themes/custom
-!web/themes/custom/*
-
-
-# Alternative even more bulky approach, left for posterity
-# web/INSTALL.txt
-# web/README.md
-# web/autoload.php
-# web/core
-# web/example.gitignore
-# web/index.php
-# web/libraries
-# web/modules/contrib
-# web/profiles/contrib
-# web/robots.txt
-# web/sites
-# web/themes/contrib
-# web/update.php
-# web/web.config
-# web/.csslintrc
-# web/.eslintignore
-# web/.eslintrc.json
-# web/.ht.router.php
-# web/.htaccess
+/drush/contrib/
+/vendor/
+/web/core/
+/web/modules/contrib/
+/web/themes/contrib/
+/web/profiles/contrib/
+/web/libraries/*
+!/web/libraries/chosen
+!/web/libraries/link
+!/web/libraries/fakeobjects
+!/web/libraries/jquery-ui-slider-pips
+/web/sites/*/settings.local.php
+/web/sites/*/files/
+/.env
+.editorconfig
+.gitattributes
+*.[oa]
+*~
+*.DS_*
+*._.
+*.DS_
+*._.*
+*.swp
+\#*\#
+.\#*
+.sass_cache/
+node_modules/
+links.xml

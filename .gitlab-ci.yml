@@ -1,0 +1,78 @@
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+
+stages:
+  - build-lint-test
+  - push
+  - deploy
+  - cleanup
+
+build-lint-test:
+  interruptible: true
+  stage: build-lint-test
+  id_tokens:
+    ID_TOKEN_1:
+      aud: wight
+  variables:
+    ROLLOUT_URL: https://wight.cc.lehigh.edu/_rollout
+  script:
+    - echo "$GCLOUD_KEY" | docker login -u _json_key_base64 --password-stdin https://us-docker.pkg.dev
+    - ./scripts/ci/build-push.sh
+    - ./scripts/ci/trigger-rollout.sh
+    - ./scripts/ci/lint.sh
+    - ./scripts/ci/test.sh
+  tags:
+    - isle
+
+push:
+  interruptible: true
+  stage: push
+  dependencies:
+    - build-lint-test
+  script:
+    - ./scripts/ci/build-push.sh pull
+  tags:
+    - isle
+
+deploy_stage:
+  stage: deploy
+  dependencies:
+    - push
+  id_tokens:
+    ID_TOKEN_1:
+      aud: islandora-test
+  variables:
+    ROLLOUT_URL: https://islandora-test.lib.lehigh.edu/_rollout
+  script:
+    - ./scripts/ci/trigger-rollout.sh
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  tags:
+    - isle
+
+deploy_prod:
+  stage: deploy
+  dependencies:
+    - deploy_stage
+  id_tokens:
+    ID_TOKEN_1:
+      aud: islandora-prod
+  variables:
+    ROLLOUT_URL: https://islandora-prod.lib.lehigh.edu/_rollout
+  script:
+    - ./scripts/ci/trigger-rollout.sh
+  when: manual
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  tags:
+    - isle
+
+cleanup:
+  stage: cleanup
+  script:
+    - ./scripts/ci/cleanup.sh
+    - rm ~/.docker/config.json
+  when: always
+  tags:
+    - isle

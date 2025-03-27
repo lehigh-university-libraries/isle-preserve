@@ -1,0 +1,13 @@
+uuid: de15b6a2-ba2a-4648-97d4-5f2bf7fac56e
+langcode: en
+status: true
+dependencies: {  }
+id: access_request
+label: 'Access Request'
+recipients:
+  - preserve@lehigh.edu
+  - jjc223@lehigh.edu
+reply: ''
+weight: 0
+message: ''
+redirect: ''

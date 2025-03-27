@@ -1,0 +1,13 @@
+diff --git a/src/Plugin/Condition/ViewInclusion.php b/src/Plugin/Condition/ViewInclusion.php
+index ce1e92b..f5cd94a 100644
+--- a/src/Plugin/Condition/ViewInclusion.php
++++ b/src/Plugin/Condition/ViewInclusion.php
+@@ -147,7 +147,7 @@ class ViewInclusion extends ConditionPluginBase implements ContainerFactoryPlugi
+       return TRUE;
+     }
+ 
+-    $route = str_replace('.', '-', $this->currentRouteMatch->getRouteName());
++    $route = empty($this->currentRouteMatch->getRouteName()) ? "" : str_replace('.', '-', $this->currentRouteMatch->getRouteName());
+ 
+     return in_array($route, $this->configuration['view_inclusion'], TRUE);
+   }

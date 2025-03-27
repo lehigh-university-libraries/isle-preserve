@@ -1,0 +1,36 @@
+uuid: 0be8269f-b266-4609-ba50-98640e177349
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+_core:
+  default_config_hash: xavOhHKb20w-w4Izd0AAF6xMVnVZJo00Wv3MFho81pc
+label: 'Page Service File Derivatives'
+name: page_service_file_derivatives
+group: Derivatives
+description: 'Derivatives for Pages'
+requireAllConditions: true
+disabled: false
+conditions:
+  parent_node_has_term:
+    id: parent_node_has_term
+    negate: false
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    uri: 'http://id.loc.gov/ontologies/bibframe/part'
+    logic: and
+  media_has_term:
+    id: media_has_term
+    negate: false
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    uri: 'http://pcdm.org/use#ServiceFile'
+    logic: and
+reactions:
+  derivative:
+    id: derivative
+    saved: false
+    actions:
+      add_image_dimensions_retrieved_from_the_iiif_server: add_image_dimensions_retrieved_from_the_iiif_server
+weight: -7

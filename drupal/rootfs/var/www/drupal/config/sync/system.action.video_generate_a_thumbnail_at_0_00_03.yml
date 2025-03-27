@@ -15,6 +15,6 @@ configuration:
   source_term_uri: 'http://pcdm.org/use#OriginalFile'
   derivative_term_uri: 'http://pcdm.org/use#ThumbnailImage'
   mimetype: image/jpeg
-  args: '-ss 00:00:03.000 -frames 1 -vf scale=100:-2'
+  args: '-ss 00:00:03.000 -frames 1 -vf scale=750:-2'
   scheme: public
   path: '[date:custom:Y]-[date:custom:m]/[node:nid].jpg'

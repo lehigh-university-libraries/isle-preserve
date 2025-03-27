@@ -5,7 +5,24 @@
  * Contains lehigh_islandora.module.
  */
 
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\islandora\Event\StompHeaderEvent;
+use Drupal\islandora\Event\StompHeaderEventException;
+use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\user\Entity\User;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Views;
+use Stomp\Exception\StompException;
+use Stomp\Transport\Message;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Serialization\Json;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+use Drupal\lehigh_islandora\Event\MediaInsertEvent;
 
 /**
  * Implements hook_help().
@@ -23,3 +40,740 @@ function lehigh_islandora_help($route_name, RouteMatchInterface $route_match) {
   }
 }
 
+/**
+ * Implements hook_xmlsitemap_link_alter().
+ */
+function lehigh_islandora_xmlsitemap_link_alter(array &$link, array $context) {
+  $uri = $link['loc'];
+  if (substr($uri, 0, 6) == '/node/') {
+    $components = explode('/', $uri);
+    $nid = array_pop($components);
+    $node = Node::load($nid);
+
+    // Do not add pages to the sitemap.
+    if ($node
+      && $node->hasField('field_model')
+      && !$node->field_model->isEmpty()
+      && $node->field_model->entity->hasField('field_external_uri')
+      && !$node->field_model->entity->field_external_uri->isEmpty()
+      && $node->field_model->entity->field_external_uri->uri == 'http://id.loc.gov/ontologies/bibframe/part') {
+      $link['status'] = 0;
+      $link['access'] = 0;
+    }
+  }
+}
+
+/**
+ * Implements hook_pathauto_pattern_alter().
+ */
+function lehigh_islandora_pathauto_pattern_alter($pattern, array $context) {
+  if (!empty($context['data']['node'])) {
+    $node = $context['data']['node'];
+
+    // Do not create aliases for pages.
+    if ($node
+      && $node->hasField('field_model')
+      && !$node->field_model->isEmpty()
+      && $node->field_model->entity->hasField('field_external_uri')
+      && !$node->field_model->entity->field_external_uri->isEmpty()
+      && $node->field_model->entity->field_external_uri->uri == 'http://id.loc.gov/ontologies/bibframe/part') {
+      $pattern->setPattern('');
+    }
+  }
+}
+
+/**
+ * Implements hook_pathauto_alias_alter().
+ */
+function lehigh_islandora_pathauto_alias_alter(&$alias, array &$context) {
+  if (!empty($context['data']['node'])) {
+    $node = $context['data']['node'];
+
+    if (lehigh_site_support_identify_collection($node, TRUE)) {
+      $context['source'] = '/browse-items/' . $node->id();
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ */
+function lehigh_islandora_theme_registry_alter(array &$theme_registry) {
+  if (empty($theme_registry['media'])) {
+    return;
+  }
+
+  $module_path = \Drupal::service('extension.list.module')->getPath('lehigh_islandora');
+  $theme_registry['media__image__rest_url'] = $theme_registry['media'];
+  $theme_registry['media__image__rest_url']['template'] = 'media--image--rest-url';
+  $theme_registry['media__image__rest_url']['path'] = $module_path . '/templates';
+
+  $theme_registry['node_edit_form']['template'] = 'node-edit-form';
+  $theme_registry['node_edit_form']['path'] = $module_path . '/templates';
+}
+
+/**
+ * Check if a node is embargoed.
+ */
+function lehigh_islandora_node_is_embargoed($node) {
+  if (!is_object($node) ||
+    !$node->hasField('field_edtf_date_embargo') ||
+    $node->field_edtf_date_embargo->isEmpty()) {
+    return FALSE;
+  }
+
+  foreach ($node->field_edtf_date_embargo as $embargo) {
+    $d = new DrupalDateTime($embargo->value, 'UTC');
+    if ($d->getTimestamp() > time()) {
+      return $d;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_metatags_attachments_alter().
+ */
+function lehigh_islandora_metatags_attachments_alter(array &$metatag_attachments) {
+  // See if the node, or one of the parents in the hierarchy,
+  // have google scholar metatags set to be hidden.
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if ($node && is_object($node) && $node->bundle() === 'islandora_object') {
+    $depth = 0;
+    if (lehigh_islandora_node_is_embargoed($node)) {
+      foreach ($metatag_attachments['#attached']['html_head'] as $id => $attachment) {
+        if ($attachment[1] == 'citation_pdf_url') {
+          unset($metatag_attachments['#attached']['html_head'][$id]);
+        }
+      }
+    }
+    while ($depth < 20 && $node->hasField('field_hide_gscholar_metatags')) {
+      if (!$node->field_hide_gscholar_metatags->isEmpty()
+        && $node->field_hide_gscholar_metatags->value) {
+        // Metatags should be hidden for google scholar.
+        foreach ($metatag_attachments['#attached']['html_head'] as $id => $attachment) {
+          if (substr($attachment[1], 0, 9) == 'citation_') {
+            unset($metatag_attachments['#attached']['html_head'][$id]);
+          }
+        }
+        break;
+      }
+
+      // Avoid circular references causing infinite loops.
+      ++$depth;
+
+      // @todo use recursion for multi-valued field_member_of
+      // right now that isn't a thing here at Lehigh.
+      if ($node->hasField('field_member_of') && !$node->field_member_of->isEmpty()) {
+        $node = $node->field_member_of->entity;
+      }
+      else {
+        break;
+      }
+    }
+  }
+}
+
+/**
+ * See if hOCR should be hidden on display.
+ */
+function lehigh_islandora_hide_hocr($node) {
+  $depth = 0;
+  while ($depth < 20 && $node->hasField('field_hide_hocr')) {
+    if (!$node->field_hide_hocr->isEmpty()
+      && $node->field_hide_hocr->value) {
+      return TRUE;
+    }
+
+    // Avoid circular references causing infinite loops.
+    ++$depth;
+
+    // @todo use recursion for multi-valued field_member_of
+    // right now that isn't a thing here at Lehigh.
+    if ($node->hasField('field_member_of') && !$node->field_member_of->isEmpty()) {
+      $node = $node->field_member_of->entity;
+    }
+    else {
+      break;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function lehigh_islandora_media_insert(EntityInterface $media) {
+  $dispatcher = \Drupal::service('event_dispatcher');
+  $event = new MediaInsertEvent($media);
+  $dispatcher->dispatch($event, MediaInsertEvent::NAME);
+
+  if ($media->bundle() == 'image' &&
+    !$media->field_media_use->isEmpty() &&
+    !$media->field_media_of->isEmpty() &&
+    !is_null($media->field_media_of->entity) &&
+    !is_null($media->field_media_of->entity) &&
+    $media->field_media_use->entity->label() == 'Thumbnail Image') {
+    $node = Node::load($media->field_media_of->entity->id());
+    if ($node) {
+      $node->set('field_thumbnail', $media->id());
+      $node->save();
+    }
+  }
+  // Invalidate node cache on media CUD.
+  elseif (isset($media->field_media_of) &&
+    !$media->field_media_of->isEmpty() &&
+    !is_null($media->field_media_of->entity)) {
+    lehigh_islandora_clear_disk_cache($media->field_media_of->entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function lehigh_islandora_media_update(EntityInterface $media) {
+  if (isset($media->field_media_of) &&
+    !$media->field_media_of->isEmpty() &&
+    !is_null($media->field_media_of->entity)) {
+    lehigh_islandora_clear_disk_cache($media->field_media_of->entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function lehigh_islandora_media_delete(EntityInterface $media) {
+  if ($media->bundle() == 'image' &&
+    !$media->field_media_use->isEmpty() &&
+    !$media->field_media_of->isEmpty() &&
+    !is_null($media->field_media_of->entity) &&
+    !is_null($media->field_media_of->entity) &&
+    $media->field_media_use->entity->label() == 'Thumbnail Image') {
+    $node = Node::load($media->field_media_of->entity->id());
+    if ($node) {
+      $node->set('field_thumbnail', NULL);
+      $node->save();
+    }
+  }
+  elseif (isset($media->field_media_of) &&
+    !$media->field_media_of->isEmpty() &&
+    !is_null($media->field_media_of->entity)) {
+    lehigh_islandora_clear_disk_cache($media->field_media_of->entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function lehigh_islandora_node_presave(EntityInterface $entity) {
+  // If we're saving a compound object
+  // see if it needs a thumbnail set.
+  if (lehigh_islandora_parent_needs_thumbnail($entity)) {
+    lehigh_islandora_set_parent_thumbnail($entity);
+  }
+  // Or check if this node's parent is a compound object
+  // and check if the parent needs a thumbnail.
+  elseif ($entity->hasField('field_member_of')) {
+    foreach ($entity->field_member_of as $parent) {
+      if (!is_null($parent->entity) && lehigh_islandora_parent_needs_thumbnail($parent->entity)) {
+        lehigh_islandora_set_parent_thumbnail($parent->entity);
+        break;
+      }
+    }
+  }
+  if (lehigh_site_support_identify_collection($entity, TRUE) &&
+    !is_null($entity->original) &&
+    !lehigh_site_support_identify_collection($entity->original, TRUE)) {
+    $alias_storage = \Drupal::service('entity_type.manager')->getStorage('path_alias');
+    $path = '/node/' . $entity->id();
+    $aliases = $alias_storage->loadByProperties(['path' => $path]);
+    foreach ($aliases as $alias) {
+      $alias->delete();
+    }
+  }
+  if (!lehigh_site_support_identify_collection($entity, TRUE) &&
+    !is_null($entity->original) &&
+    lehigh_site_support_identify_collection($entity->original, TRUE)) {
+    $alias_storage = \Drupal::service('entity_type.manager')->getStorage('path_alias');
+    $path = '/browse-items/' . $entity->id();
+    $aliases = $alias_storage->loadByProperties(['path' => $path]);
+    foreach ($aliases as $alias) {
+      $alias->delete();
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function lehigh_islandora_media_presave(EntityInterface $media) {
+  // For microsoft 365 documents
+  // set the original file to preservation master
+  // so we can create original file being pdf
+  // then service file being.
+  if (lehigh_islandora_media_is_ms_document($media) &&
+      $media->field_media_use->entity->label() === 'Original File') {
+    $media->set('field_media_use', lehigh_islandora_get_tid_by_name('Preservation Master File', 'islandora_media_use'));
+  }
+}
+
+/**
+ * Check if a media entity contains a microsoft document.
+ */
+function lehigh_islandora_media_is_ms_document($media) {
+  if ($media->bundle() !== 'file' && $media->bundle() !== 'document') {
+    return FALSE;
+  }
+
+  if ($media->field_media_use->isEmpty() || is_null($media->field_media_use->entity)) {
+    return FALSE;
+  }
+
+  $file_field = $media->bundle() === 'document' ? 'field_media_document' : 'field_media_file';
+  $file = $media->get($file_field);
+  if ($file->isEmpty() || is_null($file->entity)) {
+    return FALSE;
+  }
+
+  $uri_components = explode('.', $file->entity->getFileUri());
+  $extension = array_pop($uri_components);
+
+  return in_array($extension, ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx']);
+}
+
+/**
+ * See if parent node needs a thumbnail.
+ */
+function lehigh_islandora_parent_needs_thumbnail($entity) : bool {
+  return $entity->hasField('field_model')
+    && $entity->hasField('field_thumbnail')
+    && !$entity->field_model->isEmpty()
+    && !is_null($entity->field_model->entity)
+    && $entity->field_thumbnail->isEmpty()
+    && in_array($entity->field_model->entity->label(), ['Paged Content', 'Compound Object']);
+}
+
+/**
+ * Set thumbnail on parent node from child.
+ */
+function lehigh_islandora_set_parent_thumbnail($node) {
+  $view = Views::getView('children');
+  if (!is_object($view)) {
+    \Drupal::logger('lehigh_islandora')->error("Missing children view");
+    return;
+  }
+
+  $view->setDisplay('block_1');
+  $view->setArguments([$node->id()]);
+  $view->execute();
+  // Bail if there are no children.
+  if (empty($view->result[0]->_entity)) {
+    return;
+  }
+
+  $child = $view->result[0]->_entity;
+  // See if the child has a thumbnail set in the respective field
+  // and use it for this compount object parent's thumbnail.
+  if ($child->hasField('field_thumbnail') && !$child->field_thumbnail->isEmpty()) {
+    $node->set('field_thumbnail', $child->field_thumbnail->target_id);
+  }
+  // otherwise, see if there's a thumbnail attached
+  // and use it for this compount object parent's thumbnail.
+  else {
+    $mid = \Drupal::database()->query("SELECT o.entity_id FROM media__field_media_of o
+      INNER JOIN media__field_media_use u ON u.entity_id = o.entity_id
+      WHERE field_media_use_target_id = :tid AND field_media_of_target_id = :nid", [
+        ":tid" => lehigh_islandora_get_tid_by_name("Thumbnail Image", "islandora_models"),
+        ':nid' => $child->id(),
+      ])->fetchField();
+    if ($mid) {
+      $node->set('field_thumbnail', $mid);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function lehigh_islandora_node_insert(EntityInterface $entity) {
+  lehigh_islandora_clear_disk_cache($entity);
+  if ($entity->hasField('field_input_source') &&
+    $entity->field_input_source->value == 'input_form') {
+    $webhook_url = getenv('SLACK_WEBHOOK');
+    if (!$webhook_url) {
+      return;
+    }
+
+    $payload = [
+      'msg' => 'New submission: ' . $entity->toUrl('canonical', ['absolute' => TRUE])->toString(),
+    ];
+    try {
+      \Drupal::httpClient()->post($webhook_url, [
+        'headers' => ['Content-Type' => 'application/json'],
+        'body' => Json::encode($payload),
+      ]);
+    }
+    catch (RequestException $e) {
+      \Drupal::logger('lehigh_islandora')->error('Failed to send message to Slack: @message', ['@message' => $e->getMessage()]);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function lehigh_islandora_node_update(EntityInterface $entity) {
+  lehigh_islandora_clear_disk_cache($entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ */
+function lehigh_islandora_node_delete(EntityInterface $entity) {
+  lehigh_islandora_clear_disk_cache($entity);
+}
+
+/**
+ * Clear disk cache.
+ */
+function lehigh_islandora_clear_disk_cache(EntityInterface $node) {
+  $filesystem = \Drupal::service('file_system');
+  $request = \Drupal::request();
+  $current_domain = $request->getHost();
+
+  // Remove cached serialized JSON for workbench exports from disk.
+  $json_cache = 'private://serialized/node/' . $node->id() . '.json';
+  $f = $filesystem->realpath($json_cache);
+  if (file_exists($f)) {
+    unlink($f);
+  }
+
+  // Remove cached IIIF manifests from disk
+  // for this node and its parent.
+  $base_dir = $filesystem->realpath("private://iiif/$current_domain");
+  $nids = [$node->id()];
+  if ($node->hasField('field_member_of')) {
+    foreach ($node->field_member_of as $parent) {
+      if (is_null($parent->entity)) {
+        continue;
+      }
+      $nids[] = $parent->entity->id();
+    }
+  }
+  foreach ($nids as $nid) {
+    $pattern = $base_dir . '/*/node/' . $nid . '/*.*';
+    array_map('unlink', glob($pattern));
+    lehigh_islandora_warm_cache($nid);
+  }
+}
+
+/**
+ * Warm cache for a node.
+ */
+function lehigh_islandora_warm_cache($nid) {
+  $node = Node::load($nid);
+  if (!$node) {
+    return;
+  }
+
+  $eventGenerator = \Drupal::service('islandora.eventgenerator');
+  $stomp = \Drupal::service('islandora.stomp');
+  $logger = \Drupal::logger('lehigh_islandora');
+  $eventDispatcher = Drupal::service('event_dispatcher');
+
+  try {
+    $account = User::load(\Drupal::currentUser()->id());
+    $data = [
+      'queue' => 'islandora-cache-warmer',
+      'event' => 'Create',
+    ];
+
+    $event = $eventDispatcher->dispatch(
+      new StompHeaderEvent($node, $account, $data, $data),
+      StompHeaderEvent::EVENT_NAME
+    );
+
+    $json = $eventGenerator->generateEvent($node, $account, $data);
+    $eventMessage = json_decode($json);
+    // Add the special target to crawl this node.
+    $eventMessage->target = $node->toUrl()->setAbsolute()->toString();
+    $json = json_encode($eventMessage);
+    $message = new Message(
+      $json,
+      $event->getHeaders()->all()
+    );
+  }
+  catch (StompHeaderEventException $e) {
+    $logger->error($e->getMessage());
+    return;
+  }
+  catch (StompException $e) {
+    $logger->error("Unable to connect to JMS Broker: @msg", ["@msg" => $e->getMessage()]);
+    return;
+  }
+  catch (\RuntimeException $e) {
+    $logger->error('Error generating event: @msg', ['@msg' => $e->getMessage()]);
+    return;
+  }
+
+  // Send the message.
+  try {
+    $stomp->begin();
+    $stomp->send("islandora-cache-warmer", $message);
+    $stomp->commit();
+  }
+  catch (StompException $e) {
+    // Log it.
+    $logger->error(
+      'Error publishing message: @msg',
+      ['@msg' => $e->getMessage()]
+    );
+  }
+
+  // Also cache the IIIF manifest.
+  if ($node->hasField('field_model') && !$node->field_model->isEmpty()
+    && !is_null($node->field_model->entity)) {
+    $model = $node->field_model->entity->label();
+    $iiif_url = "[node:url:unaliased:absolute]/manifest";
+    if (in_array($model, ['Publication Issue', 'Paged Content'])) {
+      $iiif_url = "[node:url:unaliased:absolute]/book-manifest";
+    }
+    $eventMessage->target = \Drupal::service('token')->replace($iiif_url, ['node' => $node]);
+    $json = json_encode($eventMessage);
+    $message = new Message(
+      $json,
+      $event->getHeaders()->all()
+    );
+    try {
+      $stomp->begin();
+      $stomp->send("islandora-cache-warmer", $message);
+      $stomp->commit();
+    }
+    catch (StompException $e) {
+      $logger->error(
+        'Error publishing message: @msg',
+        ['@msg' => $e->getMessage()]
+      );
+    }
+  }
+}
+
+/**
+ * Helper function to fetch a taxonomy term by name/vocab.
+ */
+function lehigh_islandora_get_tid_by_name($name, $vid, $auto_create = FALSE) {
+  if ($name == "" || $vid == "") {
+    return FALSE;
+  }
+
+  static $cache = [];
+  $cache_key = $vid . ':' . $name;
+  if (isset($cache[$cache_key])) {
+    return $cache[$cache_key];
+  }
+
+  $tid = \Drupal::database()->query('SELECT tid FROM {taxonomy_term_field_data}
+    WHERE name = :name AND vid = :vid', [
+      ':vid' => $vid,
+      ':name' => $name,
+    ])->fetchField();
+  if (!$tid && $auto_create) {
+    $term = Term::create([
+      'vid' => $vid,
+      'name' => $name,
+    ]);
+    $term->save();
+    $tid = $term->id();
+  }
+
+  $cache[$cache_key] = $tid;
+
+  return $tid;
+}
+
+/**
+ * Helper function to get the OCFL directory of a fcrepo object ID.
+ */
+function lehigh_islandora_get_ocfl_dir(string $objectId) : string {
+  $digest = hash('sha256', $objectId);
+  $tupleSize = 3;
+  $numberOfTuples = 3;
+  $path = "/fcrepo/";
+  for ($i = 0; $i < $numberOfTuples * $tupleSize; $i += $tupleSize) {
+    $tuple = substr($digest, $i, $tupleSize);
+    $path .= $tuple . "/";
+  }
+
+  $path .= $digest;
+  return $path;
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function lehigh_islandora_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'browse') {
+    if (isset($view->args[0])) {
+      $arg = (int) $view->args[0];
+    }
+    else {
+      $current_path = \Drupal::service('path.current')->getPath();
+      $current_path = ltrim($current_path, '/');
+      $path_parts = explode('/', $current_path);
+      if (isset($path_parts[1]) && is_numeric($path_parts[1])) {
+        $arg = (int) $path_parts[1];
+      }
+      else {
+        $arg = -1;
+      }
+    }
+
+    // Get the term IDs we filter on.
+    $models = [
+      'collection' => lehigh_islandora_get_tid_by_name('Collection', 'islandora_models'),
+      'sub-collection' => lehigh_islandora_get_tid_by_name('Sub-Collection', 'islandora_models'),
+      'page' => lehigh_islandora_get_tid_by_name('Page', 'islandora_models'),
+    ];
+
+    // /browse-items/-1 -> all non-collection items
+    // browse all items
+    if ($arg == -1) {
+      $query->addCondition('field_model', array_values($models), 'NOT IN');
+      if (empty($_GET['sort_bef_combine'])) {
+        $query->sort('search_api_relevance', 'DESC');
+      }
+    }
+    // /browse-items/0
+    // browse all collections
+    elseif ($arg == 0) {
+      $query->addCondition('field_model', [
+        $models['collection'],
+        $models['sub-collection'],
+      ], 'IN');
+
+      $query->addCondition('field_member_of', [1, 2, 185], 'IN');
+      $query->sort('title');
+    }
+    // Browse a specific collection
+    // /browse-items/([1-9]([0-9]+)?) -> all items in collection.
+    else {
+      $query->addCondition('field_model', [$models['page']], 'NOT IN');
+
+      // Search all sub collections
+      // otherwise only show direct descendants.
+      $field = empty($_GET['search_api_fulltext']) ? 'field_member_of' : 'field_descendant_of';
+      $query->addCondition($field, [$arg], 'IN');
+
+      // See if there's a custom sort on this collection.
+      $sort = \Drupal::database()->query('SELECT field_sort_by_value FROM {node__field_sort_by} WHERE entity_id = :id', [':id' => $arg])->fetchField();
+      if ($sort && empty($_GET['sort_bef_combine'])) {
+        $components = explode('_', $sort);
+        $direction = array_pop($components);
+        $sort_by = implode('_', $components);
+        $query->sort($sort_by, $direction);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lehigh_islandora_form_node_islandora_object_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  $request = \Drupal::request();
+  $display_name = $request->query->get('display');
+  if ($display_name !== 'user_submission') {
+    return;
+  }
+
+  $form['field_abstract']['widget'][0]['attr0']['#default_value'] = 'abstract';
+  $form['#attached']['library'][] = 'lehigh_islandora/node-form';
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function lehigh_islandora_preprocess_node(&$vars) {
+  $node = $vars['node'];
+  if ($vars['view_mode'] !== 'full' || $node->bundle() !== 'islandora_object') {
+    return;
+  }
+  if (lehigh_site_support_identify_collection($node, TRUE)) {
+    return;
+  }
+  $vars['#attached']['library'][] = 'lehigh_islandora/node';
+}
+
+/**
+ * Implements hook_file_download().
+ */
+function lehigh_islandora_file_download($uri) {
+  $nodes = \Drupal::database()->query("SELECT field_media_of_target_id, field_edtf_date_embargo_value FROM {file_managed} f
+    LEFT JOIN {media__field_media_audio_file} a ON field_media_audio_file_target_id = f.fid
+    LEFT JOIN {media__field_media_document} d ON field_media_document_target_id = f.fid
+    LEFT JOIN {media__field_media_file} mf ON field_media_file_target_id = f.fid
+    LEFT JOIN {media__field_media_image} i ON field_media_image_target_id = f.fid
+    LEFT JOIN {media__field_media_video_file} v ON field_media_video_file_target_id = f.fid
+    INNER JOIN {media__field_media_of} m ON
+      m.entity_id = a.entity_id OR
+      m.entity_id = d.entity_id OR
+      m.entity_id = mf.entity_id OR
+      m.entity_id = i.entity_id OR
+      m.entity_id = v.entity_id
+    LEFT JOIN {node__field_edtf_date_embargo} e ON e.entity_id = field_media_of_target_id AND field_edtf_date_embargo_value > NOW()
+    WHERE uri = :uri", [
+      ':uri' => $uri,
+    ])->fetchAllKeyed();
+  $access = FALSE;
+  foreach ($nodes as $nid => $embargoed) {
+    if ($embargoed) {
+      return -1;
+    }
+    $node = Node::load($nid);
+    if ($node && $node->access()) {
+      $access = TRUE;
+    }
+  }
+  if ($access) {
+    $ext = substr($uri, -4);
+    if ($ext == '.pdf') {
+      return ['Content-Type' => 'application/pdf'];
+    }
+    elseif ($ext == '.jp2') {
+      return ['Content-Type' => 'image/jp2'];
+    }
+    return 1;
+  }
+
+  return NULL;
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function lehigh_islandora_user_login($account) {
+  setcookie('DrupalAuth', '1', time() + 864000, '/');
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function lehigh_islandora_user_logout($account) {
+  $cookie_name = 'DrupalAuth';
+  setcookie($cookie_name, '', time() - 3600, '/');
+  unset($_COOKIE[$cookie_name]);
+}
+
+/**
+ * For a given string, get a vector (e.g. foo -> [1,2,3]).
+ */
+function lehigh_islandora_get_vector_data(string $sentence) : string {
+  $client = new Client();
+  $response = $client->request('POST', getenv("LEHIGH_TRANSFORM_SERVICE_URI"), [
+    'json' => json_encode($sentence),
+  ]);
+
+  return $response->getBody()->getContents();
+}

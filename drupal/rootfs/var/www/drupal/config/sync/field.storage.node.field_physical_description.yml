@@ -1,18 +1,20 @@
-uuid: 21ccaafc-b394-40d1-8e23-5c299113a442
+uuid: d1e1847e-31ae-4e73-88a7-9037a757645b
 langcode: en
 status: true
 dependencies:
   module:
+    - field_permissions
+    - lehigh_islandora
     - node
+third_party_settings:
+  field_permissions:
+    permission_type: public
 id: node.field_physical_description
 field_name: field_physical_description
 entity_type: node
-type: string
-settings:
-  max_length: 255
-  case_sensitive: false
-  is_ascii: false
-module: core
+type: textarea_attr
+settings: {  }
+module: lehigh_islandora
 locked: false
 cardinality: -1
 translatable: true

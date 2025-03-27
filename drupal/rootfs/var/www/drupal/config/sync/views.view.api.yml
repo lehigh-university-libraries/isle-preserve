@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.storage.node.field_member_of
+    - field.storage.node.field_thumbnail
     - search_api.index.default_solr_index
   module:
     - rest
@@ -162,7 +163,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: 'https://islandora-stage.lib.lehigh.edu{{ search_api_url }}'
+            text: 'https://preserve.lehigh.edu{{ search_api_url }}'
             make_link: false
             path: ''
             absolute: false
@@ -297,7 +298,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: 'https://islandora-stage.lib.lehigh.edu/node/{{ field_member_of_1 }}'
+            text: 'https://preserve.lehigh.edu/node/{{ field_member_of_1 }}'
             make_link: false
             path: 'https://islandora-stage.lib.lehigh.edu/node/{{ field_member_of_1 }}'
             absolute: false
@@ -362,6 +363,9 @@ display:
                 display_method: label
                 view_mode: default
               page:
+                display_method: label
+                view_mode: default
+              test_content:
                 display_method: label
                 view_mode: default
         search_api_excerpt:
@@ -486,7 +490,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: 'https://islandora-stage.lib.lehigh.edu/browse?search_api_fulltext={{ raw_arguments.search_api_fulltext }}'
+            text: 'https://preserve.lehigh.edu/browse?search_api_fulltext={{ raw_arguments.search_api_fulltext }}'
             make_link: false
             path: ''
             absolute: false
@@ -523,10 +527,106 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
+        field_thumbnail:
+          id: field_thumbnail
+          table: search_api_index_default_solr_index
+          field: field_thumbnail
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api_field
+          label: ''
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: true
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_entity_view
+          settings:
+            view_mode: rest_url
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          field_rendering: true
+          fallback_handler: search_api_entity
+          fallback_options:
+            link_to_item: false
+            use_highlighting: false
+            multi_type: separator
+            multi_separator: ', '
+            display_methods:
+              audio:
+                display_method: label
+                view_mode: default
+              document:
+                display_method: label
+                view_mode: default
+              extracted_text:
+                display_method: label
+                view_mode: default
+              file:
+                display_method: label
+                view_mode: default
+              fits_technical_metadata:
+                display_method: label
+                view_mode: default
+              image:
+                display_method: label
+                view_mode: default
+              remote_video:
+                display_method: label
+                view_mode: default
+              video:
+                display_method: label
+                view_mode: default
       pager:
         type: mini
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 10
           total_pages: null
           id: 0
@@ -555,10 +655,23 @@ display:
         type: none
         options: {  }
       cache:
-        type: none
+        type: search_api_none
         options: {  }
       empty: {  }
-      sorts: {  }
+      sorts:
+        search_api_relevance:
+          id: search_api_relevance
+          table: search_api_index_default_solr_index
+          field: search_api_relevance
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api
+          order: DESC
+          expose:
+            label: ''
+            field_identifier: ''
+          exposed: false
       arguments:
         search_api_fulltext:
           id: search_api_fulltext
@@ -568,17 +681,17 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: search_api_fulltext
-          default_action: empty
+          default_action: default
           exception:
             value: all
             title_enable: false
             title: All
           title_enable: false
           title: ''
-          default_argument_type: fixed
+          default_argument_type: raw
           default_argument_options:
-            argument: ''
-          default_argument_skip_url: false
+            index: 3
+            use_alias: false
           summary_options: {  }
           summary:
             sort_order: asc
@@ -626,6 +739,7 @@ display:
         - 'user.node_grants:view'
       tags:
         - 'config:field.storage.node.field_member_of'
+        - 'config:field.storage.node.field_thumbnail'
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'
   rest_export_1:
@@ -673,20 +787,14 @@ display:
             nothing:
               alias: more_results
               raw_output: false
+            field_thumbnail:
+              alias: thumbnail
+              raw_output: false
+      defaults:
+        arguments: true
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -701,5 +809,142 @@ display:
         - 'user.node_grants:view'
       tags:
         - 'config:field.storage.node.field_member_of'
+        - 'config:field.storage.node.field_thumbnail'
+        - 'config:search_api.index.default_solr_index'
+        - 'search_api_list:default_solr_index'
+  rest_export_2:
+    id: rest_export_2
+    display_title: 'REST export'
+    display_plugin: rest_export
+    position: 1
+    display_options:
+      pager:
+        type: some
+        options:
+          offset: 0
+          items_per_page: 10
+      arguments:
+        field_descendant_of:
+          id: field_descendant_of
+          table: search_api_index_default_solr_index
+          field: field_descendant_of
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api
+          default_action: default
+          exception:
+            value: all
+            title_enable: false
+            title: All
+          title_enable: false
+          title: ''
+          default_argument_type: raw
+          default_argument_options:
+            index: 3
+            use_alias: false
+          summary_options: {  }
+          summary:
+            sort_order: asc
+            number_of_records: 0
+            format: default_summary
+          specify_validation: false
+          validate:
+            type: none
+            fail: 'not found'
+          validate_options: {  }
+          break_phrase: false
+          not: false
+        search_api_fulltext:
+          id: search_api_fulltext
+          table: search_api_index_default_solr_index
+          field: search_api_fulltext
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api_fulltext
+          default_action: default
+          exception:
+            value: all
+            title_enable: false
+            title: All
+          title_enable: false
+          title: ''
+          default_argument_type: raw
+          default_argument_options:
+            index: 4
+            use_alias: false
+          summary_options: {  }
+          summary:
+            sort_order: asc
+            number_of_records: 0
+            format: default_summary
+          specify_validation: false
+          validate:
+            type: none
+            fail: 'not found'
+          validate_options: {  }
+          break_phrase: false
+          not: false
+          parse_mode: terms
+          conjunction: AND
+          fields: {  }
+      style:
+        type: serializer
+        options:
+          uses_fields: false
+          formats:
+            json: json
+      row:
+        type: data_field
+        options:
+          field_options:
+            abstract_description_fulltext:
+              alias: description
+              raw_output: false
+            title:
+              alias: ''
+              raw_output: false
+            search_api_url:
+              alias: url
+              raw_output: false
+            field_member_of:
+              alias: collection_title
+              raw_output: false
+            field_member_of_1:
+              alias: collection_url
+              raw_output: false
+            search_api_excerpt:
+              alias: ''
+              raw_output: false
+            search_api_relevance:
+              alias: ''
+              raw_output: false
+            nothing:
+              alias: more_results
+              raw_output: false
+            field_thumbnail:
+              alias: thumbnail
+              raw_output: false
+      defaults:
+        arguments: false
+      display_extenders:
+        facets_display_extender:
+          facet_settings: {  }
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
+      path: api/v1/collection
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - request_format
+        - url
+        - 'user.node_grants:view'
+      tags:
+        - 'config:field.storage.node.field_member_of'
+        - 'config:field.storage.node.field_thumbnail'
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'

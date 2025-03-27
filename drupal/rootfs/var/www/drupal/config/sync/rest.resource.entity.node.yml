@@ -4,8 +4,10 @@ status: true
 dependencies:
   module:
     - basic_auth
+    - csv_serialization
     - jsonld
     - jwt
+    - lehigh_islandora
     - node
     - serialization
     - user
@@ -17,30 +19,33 @@ granularity: method
 configuration:
   GET:
     supported_formats:
+      - csv
       - jsonld
+      - mods
+      - workbench_csv
       - json
     supported_auth:
-      - basic_auth
       - jwt_auth
+      - basic_auth
       - cookie
   POST:
     supported_formats:
       - json
     supported_auth:
-      - basic_auth
       - jwt_auth
+      - basic_auth
       - cookie
   DELETE:
     supported_formats:
       - json
     supported_auth:
-      - basic_auth
       - jwt_auth
+      - basic_auth
       - cookie
   PATCH:
     supported_formats:
       - json
     supported_auth:
-      - basic_auth
       - jwt_auth
+      - basic_auth
       - cookie

@@ -11,7 +11,7 @@ name: technical_metadata_on_ingest
 group: Derivatives
 description: 'FITS derivatives for all original files'
 requireAllConditions: false
-disabled: true
+disabled: false
 conditions:
   media_has_term:
     id: media_has_term

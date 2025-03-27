@@ -1,6 +1,6 @@
 uuid: 3ced4983-5f62-4085-b66b-08f0eafbc6f1
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - views.view.homepage_slide_viewer

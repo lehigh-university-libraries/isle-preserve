@@ -12,7 +12,7 @@ field_name: field_full_title
 entity_type: node
 bundle: islandora_object
 label: 'Full Title'
-description: 'If the full resource title is longer than 255 characters and you truncated it in the required Title field above, record the full title here.'
+description: 'Provide the title of the article or item you are submitting. Include any subtitles or alternate titles.'
 required: false
 translatable: true
 default_value: {  }

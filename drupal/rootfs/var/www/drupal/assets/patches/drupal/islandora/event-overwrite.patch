@@ -1,0 +1,14 @@
+diff --git a/src/EventGenerator/EventGenerator.php b/src/EventGenerator/EventGenerator.php
+index ab172225..7d63edf2 100644
+--- a/src/EventGenerator/EventGenerator.php
++++ b/src/EventGenerator/EventGenerator.php
+@@ -160,6 +160,9 @@ class EventGenerator implements EventGeneratorInterface {
+     foreach ($keys_to_unset as $key) {
+       unset($data[$key]);
+     }
++    foreach (["file_upload_uri", "source_uri", "destination_uri"] as $key) {
++      if (isset($data[$key])) $data[$key] =  str_replace(["islandora-prod.lib", "islandora-test"], ["preserve", "islandora-stage"], $data[$key]);
++    }
+ 
+     if (!empty($data)) {
+       $event["attachment"] = [

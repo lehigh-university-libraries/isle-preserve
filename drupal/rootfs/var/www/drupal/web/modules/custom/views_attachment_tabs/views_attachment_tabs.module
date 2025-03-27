@@ -3,17 +3,10 @@
 /**
  * @file
  * Primary module hooks for Views Attachment Tab module.
- *
- * @DCG
- * This file is no longer required in Drupal 8.
- * @see https://www.drupal.org/node/2217931
  */
 
-use Drupal\views\ViewExecutable;
 use Drupal\Component\Utility\Html;
-/**
- * Implements hook_form_alter().
- */
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_views_pre_render().
@@ -32,53 +25,22 @@ function views_attachment_tabs_views_pre_render(ViewExecutable $view) {
   }
 
   // Manage attachment tab group parent
-  // Checks if attachment tab option is enabled and that attachments exist
-
+  // Checks if attachment tab option is enabled and that attachments exist.
   $child_attachments = array_merge($view->attachment_before, $view->attachment_after);
 
-  /** @todo – This conditional isn’t right. In one implementation an EVA view
-   *  applied to a rendered node was passing this conditional, causing the
-   *  tabgroup styles to be applied and causing havoc.
-   *
-   *  Not sure why. Was the EVA inheriting the 'attachment_tabs_enabled' option?
-   *  Is the default attachment_tabs_enabled "true" for views created before the
-   *  module is enabled?
-   *
-   *  This conditional ensures that the attachment tab group has child attachments.
-   *  While it solves the problem in the EVA end case, what would happen in an
-   *  EVA had its own attachments? It all points to a logic failure somewhere.
-   *
-   *  Regardless this does the trick for now.
-   */
-
+  // Ensure that the attachment tab group has child attachments.
   if ($extenders['attachment_tabs']->options['attachment_tabs_enabled'] && count($child_attachments) > 0) {
     // Parent view is being rendered so has a BigPipe DOM ID.
     // Child attachments may not have DOM IDs yet, but we can
-    // make the parent DOM id available to the attachment and via JS
-
+    // make the parent DOM id available to the attachment and via JS.
     $parent_dom_id = "vat-parent-" . $view->dom_id;
-    // $row_container_class = $extenders['attachment_tabs']->options['attachment_tabs_default_container_class'];
-
     $tabs = [];
 
-    $default_attachment_display = array_key_exists('default_attachment_display',$view->style_plugin->options) ? $view->style_plugin->options['default_attachment_display'] : '';
+    $default_attachment_display = array_key_exists('default_attachment_display', $view->style_plugin->options) ? $view->style_plugin->options['default_attachment_display'] : '';
     $display->setOption('css_class', "view-attachment-tab-parent {$view->current_display} {$parent_dom_id}");
 
-
-    /*
-    $tabs = [
-      $view->id() => [
-        'label' => $view->getTitle(),
-        'id' => $view->current_display,
-        'parent_dom_id' => $parent_dom_id,
-        'target' => '.view-attachment-tab-'. $view->current_display
-      ]
-    ];
-
-    */
-
     foreach ($child_attachments as $attachment) {
-      /**  @var $attached_view \Drupal\views\ViewExecutable */
+      /**  @var \Drupal\views\ViewExecutable $attached_view */
       $attached_view = $attachment['#view'];
       $attached_display = $attached_view->getDisplay();
       $id = $attached_view->current_display;
@@ -87,29 +49,28 @@ function views_attachment_tabs_views_pre_render(ViewExecutable $view) {
 
       $css_classes = "view-attachment-tab view-attachment-tab-{$attached_view->current_display} {$attached_view->current_display}";
 
-      if($id != $default_attachment_display) {
+      if ($id != $default_attachment_display) {
         $css_classes .= " view-attachment-tab-hidden";
       }
 
-      $attached_display->setOption('css_class',$css_classes);
+      $attached_display->setOption('css_class', $css_classes);
 
       $tabs[$id] = [
         'label' => $attached_view->getTitle(),
         'id' => $id,
         'parent_dom_id' => $parent_dom_id,
-        'target' => '.view-attachment-tab-'. str_replace('_','-',$id),
-        'default' => $id == $default_attachment_display ? true : false
+        'target' => '.view-attachment-tab-' . str_replace('_', '-', $id),
+        'default' => $id == $default_attachment_display ? TRUE : FALSE,
       ];
-    };
-
+    }
 
     $tab_interface = [
       '#theme' => 'views_attachment_tabs',
       '#tabs' => $tabs,
-      '#weight' => -1
+      '#weight' => -1,
     ];
 
-    $display->setOption('attachment_tab_ui',$tab_interface);
+    $display->setOption('attachment_tab_ui', $tab_interface);
 
     $view->element['#attached']['drupalSettings']['viewsAttachmentTabs'] = [
       'tabGroup' => [
@@ -122,22 +83,22 @@ function views_attachment_tabs_views_pre_render(ViewExecutable $view) {
           'view_base_path' => $view->getPath(),
           'view_dom_id' => $view->dom_id,
           'view_child_attachments' => count($child_attachments),
-          'view_tabs' => $tabs
+          'view_tabs' => $tabs,
         ],
       ],
     ];
     $view->element['#attached']['library'][] = 'views_attachment_tabs/views_attachment_tabs.main';
   }
   // Manages tab group child attachments.
-
-
-
   return $view;
 
 }
 
+/**
+ * Implements hook_preprocess_views_view().
+ */
 function views_attachment_tabs_preprocess_views_view(&$vars) {
-  /** @var ViewExecutable $view */
+  /** @var \Drupal\views\ViewExecutable $view */
   $view = &$vars["view"];
   $display = $view->getDisplay();
   $tab_ui = $display->getOption('attachment_tab_ui');
@@ -145,7 +106,6 @@ function views_attachment_tabs_preprocess_views_view(&$vars) {
   if ($tab_ui) {
     $vars['header']['attachment_tab_build'] = $tab_ui;
   }
-
 }
 
 /**
@@ -156,26 +116,8 @@ function views_attachment_tabs_theme($existing, $type, $theme, $path) {
     'views_attachment_tabs' => [
       'template' => 'views/views_attachment_tabs',
       'variables' => [
-        'tabs' => []
-      ]
-    ]
+        'tabs' => [],
+      ],
+    ],
   ];
-}
-/**
- * "views_page:browse__main"
-"views_attachment:browse__card_view"
-"views_attachment:browse__list"
-"views_attachment:browse__masonry"
- */
-function views_attachment_tabs_search_api_query_alter(\Drupal\search_api\Query\QueryInterface &$query) {
-
-$facet_manager = \Drupal::service('facets.manager');
-$search_id = $query->getSearchId();
-
-//dpm($search_id);
-
-//if(strpos($search_id, 'views_page:browse__main') === 0) {
-  //$search_id = 'views_attachment:browse__card_view';
-  //$facet_manager->alterQuery($query, $search_id);
-//}
 }

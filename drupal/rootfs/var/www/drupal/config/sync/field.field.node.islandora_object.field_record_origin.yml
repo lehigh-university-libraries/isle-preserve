@@ -1,0 +1,22 @@
+uuid: f4bfb1a0-e393-451a-b65c-b5c42814b9f3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_record_origin
+    - node.type.islandora_object
+  module:
+    - text
+id: node.islandora_object.field_record_origin
+field_name: field_record_origin
+entity_type: node
+bundle: islandora_object
+label: 'Record Origin'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats: {  }
+field_type: text_long

@@ -1,0 +1,43 @@
+uuid: 4d3ab062-ecb5-4b1c-b1d2-35252d93bdd8
+langcode: en
+status: true
+dependencies:
+  module:
+    - field_permissions
+    - node
+    - options
+third_party_settings:
+  field_permissions:
+    permission_type: public
+id: node.field_sort_by
+field_name: field_sort_by
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: title_asc
+      label: 'Title, ascending'
+    -
+      value: title_desc
+      label: 'Title, descending'
+    -
+      value: field_edtf_date_issued_ASC
+      label: 'Date, ascending'
+    -
+      value: field_edtf_date_issued_desc
+      label: 'Date, descending'
+    -
+      value: relevance_asc
+      label: 'Relevance, ascending'
+    -
+      value: relevance_desc
+      label: 'Relevance, descending'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

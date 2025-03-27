@@ -1,0 +1,6 @@
+[Unit]
+Description=Backup Islandora
+
+[Service]
+Type=oneshot
+ExecStart=/opt/islandora/d10_lehigh_agile/scripts/maintenance/backup.sh

@@ -1,0 +1,68 @@
+.tabledrag-toggle-weight-wrapper,
+.field-multiple-table tbody tr td:not(:nth-child(2)),
+#edit-title-wrapper,
+.form-item--field-abstract-0-attr0,
+.field-actions,
+.js-filter-wrapper,
+label[for="edit-field-abstract-0-value-value"],
+.field-group-tabs-wrapper,
+#field-part-detail-values label,
+input[id$="-caption"],
+input[id$="-title"],
+#edit-field-part-detail-0-number,
+#edit-field-part-detail-0-type,
+#edit-field-input-source-wrapper,
+#edit-status-wrapper,
+[class*="js-form-item-field-self-submission-creator-"][class*="-inline-entity-form-field-identifier-0-attr0"],
+[class*="js-form-item-field-self-submission-creator-"][class*="-inline-entity-form-field-identifier-0-value"]
+  label {
+  display: none !important;
+}
+#field-self-submission-creator-values label {
+  display: block;
+}
+
+.field-actions:has(
+    [data-drupal-selector="edit-field-self-submission-creator-add-more"]
+  ) {
+  display: block !important;
+}
+
+#edit-field-part-detail-0-title {
+  display: initial !important;
+  width: 410px !important;
+  margin-left: -30px;
+}
+
+.field--name-field-full-title label,
+.field--name-field-department-name label,
+.field--name-field-edtf-date-embargo label,
+.field--name-field-local-restriction label {
+  position: relative;
+  box-sizing: border-box;
+  height: var(--space-xl);
+  padding: var(--space-xs) var(--space-m);
+  text-align: start;
+  color: var(--color-text);
+  background: var(--color-gray-050);
+  line-height: 1.25rem;
+  width: 100% !important;
+  align-self: center;
+  border-collapse: collapse;
+  color: rgb(35, 36, 41);
+  display: inline-block;
+  font-family:
+    "system-ui",
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    Oxygen-Sans,
+    Ubuntu,
+    Cantarell,
+    "Helvetica Neue",
+    sans-serif;
+  font-size: 16px !important;
+  font-style: normal;
+  font-weight: 700 !important;
+  margin-bottom: 10px !important;
+}

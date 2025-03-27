@@ -6,3 +6,4 @@ name: 'Resource Label'
 vid: resource_label
 description: 'Used to label content in the homepage’s “Resources” section.'
 weight: 0
+new_revision: false

@@ -1,0 +1,9 @@
+uuid: 55a0605f-cc2d-41bf-ab26-a18118f2d7ac
+langcode: en
+status: true
+dependencies: {  }
+name: Season
+vid: season
+description: null
+weight: 0
+new_revision: false

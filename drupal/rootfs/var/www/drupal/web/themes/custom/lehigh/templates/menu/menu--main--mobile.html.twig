@@ -1,0 +1,33 @@
+{# templates/menu/menu--main--mobile.html.twig #}
+{% macro render_menu(items, attributes, menu_level) %}
+  {% import _self as menus %}
+  {% if menu_level == 1 %}
+  <ul class="lehigh-navlist lehigh-justify-content-between lehigh-align-items-center">
+  {% else %}
+    <ul>
+  {% endif %}
+
+    {% for item in items %}
+      <li class="{{ item.below ? 'lehigh-dropdown' : '' }}">
+        {% if item.below %}
+          {% set r = random() %}
+          <a class="lehigh-dropdown-toggle" href="#" id="mobile-dropdown-{{ r }}" role="button" aria-expanded="false">
+            {{ item.title }}
+            <img class="icon" src="https://www.lehigh.edu/~inltswms/images/icons/expand_more.svg" alt="Location" width="24" height="24">
+          </a>
+          <div class="lehigh-dropdown-menu" aria-labelledby="mobile-dropdown-{{ r }}">
+            <div class="nav-section">
+              {{ menus.render_menu(item.below, attributes, menu_level + 1) }}
+            </div>
+          </div>
+        {% else %}
+          <a href="{{ item.url }}" class="{{ item.below ? 'lehigh-dropdown-toggle' : '' }}">
+            {{ item.title }}
+          </a>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+{% endmacro %}
+
+{{ _self.render_menu(main_menu_items, [], 1) }}

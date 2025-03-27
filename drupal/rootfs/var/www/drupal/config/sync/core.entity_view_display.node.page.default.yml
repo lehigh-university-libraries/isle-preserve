@@ -59,14 +59,6 @@ content:
     third_party_settings: {  }
     weight: 2
     region: content
-  field_resource_label:
-    type: entity_reference_label
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    weight: 3
-    region: content
   links:
     settings: {  }
     third_party_settings: {  }
@@ -74,6 +66,7 @@ content:
     region: content
 hidden:
   field_deck: true
+  field_resource_label: true
   field_thumbnail: true
   langcode: true
   mirador_evas_entity_view_1: true

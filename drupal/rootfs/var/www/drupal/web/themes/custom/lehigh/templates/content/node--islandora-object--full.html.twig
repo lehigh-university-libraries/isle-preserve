@@ -95,7 +95,7 @@
     is_collection == true ? "collection"
 ]
 %}
-{{ attach_library('classy/node') }}
+
 <article{{ attributes.addClass(classes) }}>
   {% if named_anchor %}
     <a id='{{ named_anchor }}'></a>
@@ -107,6 +107,16 @@
     </h2>
   {% endif %}
   {{ title_suffix }}
-  <h2>About this {%  if is_collection %}{{ node.field_model.entity.label }}{% else %}Item{% endif %}</h2>
-  {{ content }}
+  {%  if is_collection %}
+    <style>
+    #primary-content {
+      display: none !important;
+    }
+    </style>
+  {% else %}
+    {% if node.field_model.entity.label != "Compound Object" %}
+    <h2>About this {{ node.field_model.entity.label }}</h2>
+    {% endif %}
+    {{ content }}
+  {% endif %}
 </article>

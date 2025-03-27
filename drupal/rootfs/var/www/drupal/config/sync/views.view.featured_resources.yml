@@ -25,7 +25,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Featured Resources'
+      title: 'Featured External Resources'
       fields:
         title:
           id: title
@@ -140,7 +140,7 @@ display:
           entity_type: node
           entity_field: created
           plugin_id: date
-          order: DESC
+          order: ASC
           expose:
             label: ''
             field_identifier: ''
@@ -280,17 +280,6 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history:

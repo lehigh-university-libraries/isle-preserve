@@ -13,6 +13,7 @@ dependencies:
     - link
     - taxonomy
     - user
+    - views_bulk_operations
 id: taxonomy_terms
 label: 'Taxonomy Terms'
 module: views
@@ -29,16 +30,15 @@ display:
     display_options:
       title: 'Taxonomy Terms'
       fields:
-        taxonomy_term_bulk_form:
-          id: taxonomy_term_bulk_form
-          table: taxonomy_term_data
-          field: taxonomy_term_bulk_form
+        views_bulk_operations_bulk_form:
+          id: views_bulk_operations_bulk_form
+          table: views
+          field: views_bulk_operations_bulk_form
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: taxonomy_term
-          plugin_id: bulk_form
-          label: 'Bulk update'
+          plugin_id: views_bulk_operations_bulk_form
+          label: 'Views bulk operations'
           exclude: false
           alter:
             alter_text: false
@@ -79,8 +79,14 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
+          batch: true
+          batch_size: 10
+          form_step: true
+          ajax_loader: false
+          buttons: false
           action_title: Action
-          include_exclude: exclude
+          clear_on_exposed: true
+          force_selection_info: false
           selected_actions: {  }
         name:
           id: name
@@ -695,6 +701,7 @@ display:
         type: full
         options:
           offset: 0
+          pagination_heading_level: h4
           items_per_page: 50
           total_pages: null
           id: 0
@@ -975,13 +982,17 @@ display:
           columns:
             taxonomy_term_bulk_form: taxonomy_term_bulk_form
             name: name
-            parent_target_id: parent_target_id
+            field_geo_alt_name: field_geo_alt_name
+            field_corp_alt_name: field_corp_alt_name
+            field_alternate_name: field_alternate_name
+            nothing: nothing
             vid: vid
-            field_external_uri: field_external_uri
             field_authority_link: field_authority_link
-            operations: operations
+            field_external_uri: field_external_uri
             changed: changed
-            changed_1: changed_1
+            status: status
+            operations: operations
+            tid: tid
           default: '-1'
           info:
             taxonomy_term_bulk_form:
@@ -996,7 +1007,22 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            parent_target_id:
+            field_geo_alt_name:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_corp_alt_name:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_alternate_name:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            nothing:
               align: ''
               separator: ''
               empty_column: false
@@ -1008,17 +1034,12 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            field_external_uri:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
             field_authority_link:
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            operations:
+            field_external_uri:
               align: ''
               separator: ''
               empty_column: false
@@ -1030,7 +1051,19 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            changed_1:
+            status:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            operations:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            tid:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -1088,17 +1121,11 @@ display:
     position: 1
     display_options:
       display_extenders:
-        matomo:
-          enabled: false
-          keyword_gets: ''
-          keyword_behavior: first
-          keyword_concat_separator: ' '
-          category_behavior: none
-          category_gets: ''
-          category_concat_separator: ' '
-          category_fallback: ''
-          category_facets: {  }
-          category_facets_concat_separator: ', '
+        facets_display_extender:
+          facet_settings: {  }
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
       path: admin/content/taxonomy-terms
       menu:
         type: tab

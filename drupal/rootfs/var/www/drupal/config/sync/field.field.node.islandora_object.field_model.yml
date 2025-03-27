@@ -6,6 +6,8 @@ dependencies:
     - field.storage.node.field_model
     - node.type.islandora_object
     - taxonomy.vocabulary.islandora_models
+  content:
+    - 'taxonomy_term:islandora_models:4b4506ef-23d6-4f60-a783-3a6b5d624594'
 _core:
   default_config_hash: Tqe4AiBzEnYEq7MLccObJrLZvb8AVjv0GLZlM1pcxpo
 id: node.islandora_object.field_model
@@ -16,10 +18,12 @@ label: Model
 description: 'The internal-to-Islandora category of the resource. Affects how the item is displayed/viewed.'
 required: true
 translatable: false
-default_value: {  }
+default_value:
+  -
+    target_uuid: 4b4506ef-23d6-4f60-a783-3a6b5d624594
 default_value_callback: ''
 settings:
-  handler: 'default:taxonomy_term'
+  handler: 'default:filter_existing_terms'
   handler_settings:
     target_bundles:
       islandora_models: islandora_models

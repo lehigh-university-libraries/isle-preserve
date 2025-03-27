@@ -1,7 +1,17 @@
+.phpunit.result.cache
+drupal/rootfs/var/www/drupal/web/sites/default/settings.php
 docker-compose.override.yml
 backup
 drupal/backup
 .DS_Store
+*.log
+
+tmp/*
+!tmp/*/.keep
 
 /.idea
-/drupal/rootfs/var/www/drupal/web/themes/custom/.DS_Store
+
+*.port
+drupal.sql
+drupal.sql.gz
+unhealthy.lock

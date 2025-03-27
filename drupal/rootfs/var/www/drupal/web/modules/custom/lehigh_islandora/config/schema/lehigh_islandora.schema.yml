@@ -1,0 +1,150 @@
+# Field instance.
+field.field_settings.textfield_attr:
+  type: mapping
+  label: Textfield with attributes field settings
+  mapping:
+    attr0_values:
+      type: sequence
+      sequence:
+        type: label
+    attr1_values:
+      type: sequence
+      sequence:
+        type: label
+    attr0_name:
+      type: string
+    attr1_name:
+      type: string
+field.field_settings.textarea_attr:
+  type: mapping
+  label: Textarea with attributes field settings
+  mapping:
+    attr0_values:
+      type: sequence
+      sequence:
+        type: label
+    attr1_values:
+      type: sequence
+      sequence:
+        type: label
+    attr0_name:
+      type: string
+    attr1_name:
+      type: string
+
+# Default value.
+field.value.textfield_attr:
+  type: mapping
+  label: Default value
+  mapping:
+    attr0:
+      type: string
+      label: Attribute One
+    attr1:
+      type: string
+      label: Attribute Two
+    value:
+      type: string
+      label: Value
+field.value.textarea_attr:
+  type: mapping
+  label: Default value
+  mapping:
+    attr0:
+      type: string
+      label: Attribute One
+    attr1:
+      type: string
+      label: Attribute Two
+    value:
+      type: text
+      label: Value
+    format:
+      type: string
+      label: Format
+
+# Field formatter.
+field.formatter.settings.attr_default:
+  type: mapping
+  label: Attr default formatter settings
+  mapping:
+    override_label:
+      type: boolean
+
+
+# Default value.
+field.value.related_item:
+  type: mapping
+  label: Default value
+  mapping:
+    identifier:
+      type: string
+      label: Identifier
+    identifier_type:
+      type: string
+      label: Identifier Type
+    number:
+      type: string
+      label: Number
+    title:
+      type: string
+      label: Title
+
+
+# Default value.
+field.value.hierarchical_geographic:
+  type: mapping
+  label: Default value
+  mapping:
+    continent:
+      type: string
+      label: Continent
+    country:
+      type: string
+      label: Country
+    region:
+      type: string
+      label: Region
+    state:
+      type: string
+      label: State
+    territory:
+      type: string
+      label: Territory
+    county:
+      type: string
+      label: County
+    city:
+      type: string
+      label: City
+    city_section:
+      type: string
+      label: City Section
+    island:
+      type: string
+      label: island
+    area:
+      type: string
+      label: area
+    extraterrestrial_area:
+      type: string
+      label: Extraterrestrial Area
+
+
+# Default value.
+field.value.part_detail:
+  type: mapping
+  label: Default value
+  mapping:
+    type:
+      type: string
+      label: Type
+    caption:
+      type: string
+      label: Caption
+    number:
+      type: string
+      label: Number
+    title:
+      type: string
+      label: Title

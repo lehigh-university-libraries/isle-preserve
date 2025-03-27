@@ -1,0 +1,44 @@
+uuid: fb4ad240-9b67-40ec-8e2b-b7c1d63a787a
+langcode: en
+status: true
+dependencies:
+  module:
+    - context
+    - entity_metrics
+    - islandora
+    - node
+    - system
+  theme:
+    - lehigh
+id: lehigh_nodehistoryblock
+theme: lehigh
+region: main_sidebar
+weight: 26
+provider: null
+plugin: entity_metrics_node_history
+settings:
+  id: entity_metrics_node_history
+  label: Pageviews
+  label_display: visible
+  provider: entity_metrics
+visibility:
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''
+  request_path:
+    id: request_path
+    negate: false
+    pages: '/node/*'
+  request_path_exclusion:
+    id: request_path_exclusion
+    negate: true
+    pages: '<front>'
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      islandora_object: islandora_object

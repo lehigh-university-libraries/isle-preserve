@@ -1,0 +1,101 @@
+lehigh_islandora.legacy_redirect:
+  path: "/islandora/object/{pid}"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\LegacyRedirect::perform'
+    _title: "Legacy Redirect"
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      pid:
+        type: string
+
+lehigh_islandora.paged_content:
+  path: "/api/v1/paged-content"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\PagedContent::get'
+    _title: "Get Parent Items"
+  requirements:
+    _permission: "access content"
+
+lehigh_islandora.legacy_solr_redirect:
+  path: "/islandora/rest/v1/solr/{pid}"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\LegacyRedirect::perform'
+    _title: "Legacy Redirect"
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      pid:
+        type: string
+
+lehigh_islandora.access_request_form:
+  path: "/ajax/access-request-form"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\AccessRequest::accessRequestForm'
+    _title: "Access Request Form"
+  requirements:
+    _permission: "access content"
+
+lehigh_islandora.pfaffs_cdm_redirects:
+  path: "/pfaffs/spr/{parent}/{child}/{zoom}/{x}/{y}"
+  defaults:
+    _title: "Pfaffs Cdm Redirects"
+    _controller: '\Drupal\lehigh_islandora\Controller\PfaffsCdmRedirects::perform'
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      parent:
+        type: integer
+      child:
+        type: integer
+      zoom:
+        type: integer
+      x:
+        type: integer
+      y:
+        type: integer
+
+lehigh_islandora.pfaffs_cdm_redirects_nyleader:
+  path: "/pfaffs/nyleader/{parent}/{child}/{zoom}/{x}/{y}"
+  defaults:
+    _title: "Pfaffs Cdm Redirects"
+    _controller: '\Drupal\lehigh_islandora\Controller\PfaffsCdmRedirects::perform'
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      parent:
+        type: integer
+      child:
+        type: integer
+      zoom:
+        type: integer
+      x:
+        type: integer
+      y:
+        type: integer
+
+lehigh_islandora.lehigh_islandora_vanity_fair:
+  path: "/pfaffs/vfair/{parent}/{child}"
+  defaults:
+    _title: "Lehigh Islandora Vanity Fair"
+    _controller: '\Drupal\lehigh_islandora\Controller\LehighIslandoraVanityFair::perform'
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      parent:
+        type: integer
+      child:
+        type: integer
+
+lehigh_islandora.transform_search:
+  path: "/tsearch"
+  defaults:
+    _title: "Transform Search"
+    _form: 'Drupal\lehigh_islandora\Form\TransformSearchForm'
+  requirements:
+    _permission: "access content"

@@ -1,0 +1,26 @@
+@media only screen and (min-width: 976px) {
+  #block-lehigh-views-block-collection-tabs-block-1 .nav-tabs {
+    position: relative;
+    top: -4.6rem;
+  }
+}
+
+@media only screen and (min-width: 992px) {
+  #block-lehigh-views-block-collection-tabs-block-1 .nav-tabs {
+    margin-left: 33%;
+  }
+}
+
+
+#block-lehigh-views-block-collection-tabs-block-1 .nav-tabs .nav-link:focus {
+  border-color: transparent !important;
+}
+
+#block-lehigh-views-block-collection-tabs-block-1 .nav-tabs .nav-link {
+  padding-top: .75rem !important;
+}
+
+#block-lehigh-views-block-collection-tabs-block-1 .nav-tabs li:has(a.active),
+#block-lehigh-views-block-collection-tabs-block-1 .nav-tabs .nav-link.active {
+  background-color: #9ac0db;
+}

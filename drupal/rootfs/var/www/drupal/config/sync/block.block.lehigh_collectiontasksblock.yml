@@ -1,0 +1,32 @@
+uuid: ab336d50-669a-43e8-96d3-4746af3d12fc
+langcode: en
+status: true
+dependencies:
+  module:
+    - context
+    - islandora
+    - lehigh_islandora
+  theme:
+    - lehigh
+id: lehigh_collectiontasksblock
+theme: lehigh
+region: content
+weight: -22
+provider: null
+plugin: collection_tasks
+settings:
+  id: collection_tasks
+  label: 'Collection Tasks block'
+  label_display: '0'
+  provider: lehigh_islandora
+visibility:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-browse-main: view-browse-main
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    context_mapping: {  }
+    mimetype: ''

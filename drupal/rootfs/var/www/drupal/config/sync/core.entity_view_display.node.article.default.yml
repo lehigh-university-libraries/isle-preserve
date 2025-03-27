@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - field.field.node.article.body
-    - field.field.node.article.comment
     - field.field.node.article.field_content_builder
     - field.field.node.article.field_deck
     - field.field.node.article.field_link
@@ -81,7 +80,6 @@ content:
     weight: 2
     region: content
 hidden:
-  comment: true
   field_deck: true
   field_resource_label: true
   field_thumbnail: true

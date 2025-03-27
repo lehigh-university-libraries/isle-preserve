@@ -28,7 +28,7 @@ settings:
   handler: 'default:file'
   handler_settings: {  }
   file_directory: '[date:custom:Y]-[date:custom:m]'
-  file_extensions: 'mp4 mov wmv avi mts flv f4v swf mkv webm ogv mpeg'
+  file_extensions: 'm4v mp4 mov wmv avi mts flv f4v swf mkv webm ogv mpeg m3u8'
   max_filesize: ''
   description_field: false
 field_type: file

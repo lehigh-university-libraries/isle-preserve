@@ -1,0 +1,21 @@
+uuid: 0d585a99-2dc8-422b-b41e-4de800c94b28
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_create_doi
+    - node.type.islandora_object
+id: node.islandora_object.field_create_doi
+field_name: field_create_doi
+entity_type: node
+bundle: islandora_object
+label: 'Do you want to assign a DOI to this item?'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

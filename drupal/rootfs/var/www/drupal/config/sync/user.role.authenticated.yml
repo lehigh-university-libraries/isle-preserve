@@ -3,18 +3,25 @@ langcode: en
 status: true
 dependencies:
   config:
+    - entity_browser.browser.creators
     - filter.format.basic_html
-    - filter.format.webform_default
+    - filter.format.mathjax
     - media.type.image
+    - node.type.islandora_object
+    - rest.resource.oai_pmh
+    - taxonomy.vocabulary.person
   module:
-    - comment
-    - contact
+    - entity_browser
     - file
     - filter
-    - matomo
+    - form_mode_control
     - media
+    - node
+    - rest
     - shortcut
     - system
+    - taxonomy
+    - toolbar
 _core:
   default_config_hash: I44QAB4es39lNzMQWiJLq2dfjX7VRSOzT_5KzAcUq_M
 id: authenticated
@@ -22,17 +29,22 @@ label: 'Authenticated user'
 weight: 1
 is_admin: false
 permissions:
-  - 'access comments'
   - 'access content'
+  - 'access creators entity browser pages'
   - 'access shortcuts'
-  - 'access site-wide contact form'
+  - 'access toolbar'
   - 'create image media'
+  - 'create islandora_object content'
+  - 'create terms in person'
   - 'delete own files'
-  - 'opt-in or out of matomo tracking'
-  - 'post comments'
-  - 'skip comment approval'
+  - 'edit own islandora_object content'
+  - 'restful get oai_pmh'
   - 'update any media'
   - 'update media'
+  - 'use  The form mode create_person linked to  taxonomy_term entity( person )'
+  - 'use  The form mode user_submission linked to  node entity( islandora_object )'
   - 'use text format basic_html'
-  - 'use text format webform_default'
+  - 'use text format mathjax'
   - 'view media'
+  - 'view own unpublished content'
+  - 'view the administration theme'

@@ -3,30 +3,13 @@ langcode: en
 status: true
 dependencies:
   config:
-    - image.style.large
-    - image.style.thumbnail
-    - image.style.wide
+    - image.style.wide_2600w
   theme:
     - lehigh
 _core:
   default_config_hash: Pvik9YqtjA9ALn5ccla1mwTIE4gN5fQ-dK1B0zX0b1o
 id: wide
 label: Wide
-image_style_mappings:
-  -
-    image_mapping_type: image_style
-    image_mapping: wide
-    breakpoint_id: lehigh.lrg
-    multiplier: 1x
-  -
-    image_mapping_type: image_style
-    image_mapping: large
-    breakpoint_id: lehigh.med
-    multiplier: 1x
-  -
-    image_mapping_type: image_style
-    image_mapping: thumbnail
-    breakpoint_id: lehigh.xsml
-    multiplier: 1x
+image_style_mappings: {  }
 breakpoint_group: lehigh
-fallback_image_style: wide
+fallback_image_style: wide_2600w

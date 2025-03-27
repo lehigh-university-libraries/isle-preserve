@@ -1,0 +1,32 @@
+uuid: 77cb79b7-db5c-4329-a897-761519b98332
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_file_uploads
+    - node.type.islandora_object
+  module:
+    - file
+    - filehash
+third_party_settings:
+  filehash:
+    dedupe: 0
+    dedupe_original: false
+id: node.islandora_object.field_file_uploads
+field_name: field_file_uploads
+entity_type: node
+bundle: islandora_object
+label: File(s)
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: '[current-user:account-name]/[date:custom:U]'
+  file_extensions: 'csv txt doc docx ppt pptx xls xlsx pdf tiff tif jp2 json xml zip gz tar'
+  max_filesize: ''
+  description_field: false
+field_type: file

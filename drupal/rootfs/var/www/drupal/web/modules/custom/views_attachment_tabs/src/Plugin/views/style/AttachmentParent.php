@@ -1,22 +1,12 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\stop14_tools\Plugin\views\style\Ribbon.
- *
- */
-
 namespace Drupal\views_attachment_tabs\Plugin\views\style;
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\Plugin\views\style\StylePluginBase;
-use Drupal\views\ViewExecutable;
 
 /**
  * Style plugin to support the Views Attachment Tabs.
- * Note: This style displays nothing by default. A default attachment
- * must be selected!
  *
  * @ingroup views_style_plugins
  *
@@ -51,11 +41,6 @@ class AttachmentParent extends StylePluginBase {
    */
   protected $usesGrouping = FALSE;
 
-  public function init(ViewExecutable $view, DisplayPluginBase $display, array &$options = NULL) {
-    parent::init($view, $display, $options);
-  }
-
-
   /**
    * {@inheritdoc}
    */
@@ -87,7 +72,7 @@ class AttachmentParent extends StylePluginBase {
 
     if (\Drupal::service('views_attachment_tabs.attachment_parent.service')->flightCheck()) {
       $form += \Drupal::service('views_attachment_tabs.attachment_parent.service')
-        ->buildSettingsForm($this->options,$this->view);
+        ->buildSettingsForm($this->options, $this->view);
     }
     else {
       // Disable Attachment Parent as plugin is not installed.
@@ -96,4 +81,5 @@ class AttachmentParent extends StylePluginBase {
       ];
     }
   }
+
 }

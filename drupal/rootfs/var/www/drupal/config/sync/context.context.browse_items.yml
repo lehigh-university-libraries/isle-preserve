@@ -6,6 +6,7 @@ dependencies:
     - facets.facet.contributor
     - facets.facet.date_created_items
     - facets.facet.genre
+    - facets.facet.keywords
     - facets.facet.material_type
     - facets.facet.media_type
     - facets.facet.member_of
@@ -13,14 +14,16 @@ dependencies:
     - facets.facet.name
     - facets.facet.physical_form
     - facets.facet.places
+    - facets.facet.publisher
     - facets.facet.subject
     - facets.facet.subject_general
     - facets.facet.subject_geographic
+    - facets.facet.subject_lcsh
     - facets.facet.subject_name
     - facets.facet.subject_temporal
-    - facets.facet.subject_topical
   module:
     - facets
+    - stop14_tools
 label: 'Item Browser'
 name: browse_items
 group: Display
@@ -130,24 +133,6 @@ reactions:
         context_id: browse_items
         context_mapping: {  }
         third_party_settings: {  }
-      14a1e85f-81a7-43a6-aa4b-890781b0c3f4:
-        uuid: 14a1e85f-81a7-43a6-aa4b-890781b0c3f4
-        id: 'block_content:814772f8-dd27-4e41-b7f7-b489de24b374'
-        label: 'Exposed Facet Sidebar Title'
-        provider: block_content
-        label_display: '0'
-        region: main_sidebar_left
-        weight: '-3'
-        custom_id: block_content_814772f8_dd27_4e41_b7f7_b489de24b374
-        theme: nyhs
-        css_class: ''
-        unique: 0
-        context_id: browse_items
-        context_mapping: {  }
-        status: true
-        info: ''
-        view_mode: full
-        third_party_settings: {  }
       15c9662e-2d6f-4353-9242-6fd4994e56ab:
         uuid: 15c9662e-2d6f-4353-9242-6fd4994e56ab
         id: 'facet_block:date_created_items'
@@ -155,7 +140,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '0'
+        weight: '-4'
         custom_id: facet_block_date_created_items
         theme: lehigh
         css_class: ''
@@ -170,7 +155,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '1'
+        weight: '-2'
         custom_id: facet_block_genre
         theme: lehigh
         css_class: ''
@@ -185,7 +170,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '-5'
+        weight: '-8'
         custom_id: facet_block_material_type
         theme: lehigh
         css_class: ''
@@ -200,7 +185,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '-4'
+        weight: '-7'
         custom_id: facet_block_physical_form
         theme: lehigh
         css_class: ''
@@ -215,7 +200,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '-7'
+        weight: '-10'
         custom_id: facet_block_member_of
         theme: lehigh
         css_class: ''
@@ -230,7 +215,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '-3'
+        weight: '-6'
         custom_id: facet_block_media_type
         theme: lehigh
         css_class: ''
@@ -245,7 +230,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '-2'
+        weight: '-5'
         custom_id: facet_block_model
         theme: lehigh
         css_class: ''
@@ -260,7 +245,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '-6'
+        weight: '-9'
         custom_id: facet_block_contributor
         theme: lehigh
         css_class: ''
@@ -275,7 +260,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '3'
+        weight: '0'
         custom_id: facet_block_subject_general
         theme: lehigh
         css_class: ''
@@ -290,7 +275,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '4'
+        weight: '1'
         custom_id: facet_block_subject_geographic
         theme: lehigh
         css_class: ''
@@ -305,7 +290,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '5'
+        weight: '2'
         custom_id: facet_block_subject_name
         theme: lehigh
         css_class: ''
@@ -320,7 +305,7 @@ reactions:
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '6'
+        weight: '3'
         custom_id: facet_block_subject_temporal
         theme: lehigh
         css_class: ''
@@ -328,15 +313,60 @@ reactions:
         context_id: browse_items
         context_mapping: {  }
         third_party_settings: {  }
-      af653386-080e-4788-b5a5-14d734a5ae34:
-        uuid: af653386-080e-4788-b5a5-14d734a5ae34
-        id: 'facet_block:subject_topical'
-        label: 'Subject (Topical)'
+      c1c02d96-cbcb-40e3-b8df-7afa88dea990:
+        uuid: c1c02d96-cbcb-40e3-b8df-7afa88dea990
+        id: 'facet_block:publisher'
+        label: Publisher
         provider: facets
         label_display: visible
         region: main_sidebar_left
-        weight: '7'
-        custom_id: facet_block_subject_topical
+        weight: '-3'
+        custom_id: facet_block_publisher
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      82a2384c-23d6-4d22-9fff-e7997a7d123c:
+        uuid: 82a2384c-23d6-4d22-9fff-e7997a7d123c
+        id: stop14_tools_browser_toolbar
+        label: 'Stop14 Browser Toolbar'
+        provider: stop14_tools
+        label_display: '0'
+        region: mobile_toolbar
+        weight: '0'
+        custom_id: stop14_tools_browser_toolbar
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      6ee41cdc-b6ef-4501-b5bb-33de7f41df13:
+        uuid: 6ee41cdc-b6ef-4501-b5bb-33de7f41df13
+        id: 'facet_block:subject_lcsh'
+        label: 'Subject (LCSH)'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-1'
+        custom_id: facet_block_subject_lcsh
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      0ca2d49e-2a05-4bf5-a6c5-a77bb896b369:
+        uuid: 0ca2d49e-2a05-4bf5-a6c5-a77bb896b369
+        id: 'facet_block:keywords'
+        label: Keywords
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '0'
+        custom_id: facet_block_keywords
         theme: lehigh
         css_class: ''
         unique: 0
@@ -345,4 +375,8 @@ reactions:
         third_party_settings: {  }
     include_default_blocks: 1
     saved: false
-weight: -3
+  body_class:
+    id: body_class
+    body_class: 'object-browser path-browse'
+    saved: false
+weight: -5

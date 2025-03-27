@@ -1,0 +1,24 @@
+uuid: 28f1e0b6-57e1-4ab9-8bf2-8539231980e5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_access
+    - filter.format.basic_html
+    - node.type.islandora_object
+  module:
+    - text
+id: node.islandora_object.field_access
+field_name: field_access
+entity_type: node
+bundle: islandora_object
+label: Access
+description: 'What access restrictions, if any, would you like placed on this work. This is commonly used for adding <a href="https://creativecommons.org/share-your-work/cclicenses/"> Creative Commons licenses </a> to submissions.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - basic_html
+field_type: text_long

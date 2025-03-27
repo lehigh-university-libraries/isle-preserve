@@ -51,6 +51,14 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_mime_type:
+    type: string_textfield
+    weight: 11
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_original_name:
     type: string_textarea
     weight: 8
@@ -104,5 +112,4 @@ content:
     third_party_settings: {  }
 hidden:
   field_file_size: true
-  field_mime_type: true
   langcode: true

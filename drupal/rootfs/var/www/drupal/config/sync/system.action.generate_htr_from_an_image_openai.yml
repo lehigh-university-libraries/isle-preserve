@@ -1,0 +1,20 @@
+uuid: 7f4fc54d-3806-4026-bdef-8e0bb89df32d
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_hocr
+id: generate_htr_from_an_image_openai
+label: 'Generate HTR from OpenAI'
+type: node
+plugin: generate_hocr_derivative
+configuration:
+  queue: islandora-openai-htr
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#ServiceFile'
+  derivative_term_uri: 'http://pcdm.org/use#ExtractedText'
+  mimetype: text/plain
+  args: ''
+  destination_media_type: extracted_text
+  scheme: private
+  path: 'derivatives/ocr/node/[node:nid]-handwritten.txt'

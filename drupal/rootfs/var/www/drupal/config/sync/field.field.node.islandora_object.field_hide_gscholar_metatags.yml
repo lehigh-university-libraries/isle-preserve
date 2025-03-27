@@ -1,0 +1,21 @@
+uuid: 29054179-4c7d-40f8-82b7-7bafef3e9708
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_hide_gscholar_metatags
+    - node.type.islandora_object
+id: node.islandora_object.field_hide_gscholar_metatags
+field_name: field_hide_gscholar_metatags
+entity_type: node
+bundle: islandora_object
+label: 'Hide Google Scholar Metatags'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

@@ -1,0 +1,421 @@
+---
+networks:
+  default:
+
+volumes:
+  activemq-data: {}
+  cantaloupe-data: {}
+  drupal-private-files: {}
+  drupal-public-files: {}
+  drupal-solr-config: {}
+  fcrepo-data: {}
+  mariadb-data: {}
+  solr-data: {}
+  xhgui-data: {}
+
+secrets:
+  CERT_PUBLIC_KEY:
+    file: ./certs/cert.pem
+  CERT_PRIVATE_KEY:
+    file: ./certs/privkey.pem
+  CERT_AUTHORITY:
+    file: ./certs/rootCA.pem
+  # UID is used to map the nginx user id number to that of the host to prevent
+  # problems when bind mounting files from this repository into the container
+  # for development purposes.
+  UID:
+    file: ./certs/UID
+  # Production secrets:
+  #
+  # Unless otherwise specified the following command can be used to generate
+  # passwords, wherein:
+  # The range passed to grep is the valid characters
+  #   - '[!-~]' to include special characters or
+  # . - [A-Za-z0-9]'
+  # The number passed to head is the length of the password.
+  #
+  # grep -ao '[A-Za-z0-9]' </dev/urandom | head -32 | tr -d '\n' > ./secrets/PASSWORD
+  ACTIVEMQ_PASSWORD:
+    file: "./secrets/ACTIVEMQ_PASSWORD"
+  ACTIVEMQ_WEB_ADMIN_PASSWORD:
+    file: "./secrets/ACTIVEMQ_WEB_ADMIN_PASSWORD"
+  ALPACA_JMS_PASSWORD:
+    file: "./secrets/ACTIVEMQ_PASSWORD"
+  DB_ROOT_PASSWORD:
+    file: "./secrets/DB_ROOT_PASSWORD"
+  DRUPAL_DEFAULT_ACCOUNT_PASSWORD:
+    file: "./secrets/DRUPAL_DEFAULT_ACCOUNT_PASSWORD"
+  DRUPAL_DEFAULT_DB_PASSWORD:
+    file: "./secrets/DRUPAL_DEFAULT_DB_PASSWORD"
+  # The salt should use the following character range: 'A-Za-z0-9-_'.
+  # And be 74 characters long.
+  DRUPAL_DEFAULT_SALT:
+    file: "./secrets/DRUPAL_DEFAULT_SALT"
+  FCREPO_DB_PASSWORD:
+    file: "./secrets/FCREPO_DB_PASSWORD"
+  JWT_ADMIN_TOKEN:
+    file: "./secrets/JWT_ADMIN_TOKEN"
+  # First generate the private key below.
+  # Then generate with openssl
+  # openssl rsa -pubout -in ./secrets/JWT_PRIVATE_KEY -out ./secrets/JWT_PUBLIC_KEY &>/dev/null
+  JWT_PUBLIC_KEY:
+    file: "./secrets/JWT_PUBLIC_KEY"
+  # Generate with openssl:
+  # openssl genrsa -out ./secrets/JWT_PRIVATE_KEY 2048 &>/dev/null
+  JWT_PRIVATE_KEY:
+    file: "./secrets/JWT_PRIVATE_KEY"
+services:
+  alpaca:
+    image: ${ISLANDORA_REPOSITORY}/alpaca:${ISLANDORA_TAG}
+    environment:
+      ALPACA_MAX_REDELIVERIES: 2
+      ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
+      ALPACA_DERIVATIVE_FITS_CONSUMERS: 3
+      ALPACA_DERIVATIVE_FITS_URL: https://isle-microservices.cc.lehigh.edu/crayfits
+      ALPACA_DERIVATIVE_OCR_CONSUMERS: 3
+      ALPACA_DERIVATIVE_OCR_URL: https://isle-microservices.cc.lehigh.edu/hypercube
+      ALPACA_DERIVATIVE_HOMARUS_CONSUMERS: 3
+      ALPACA_DERIVATIVE_HOMARUS_URL: https://isle-microservices.cc.lehigh.edu/homarus
+      ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 3
+      ALPACA_DERIVATIVE_HOUDINI_URL: https://isle-microservices.cc.lehigh.edu/houdini
+      ALPACA_DERIVATIVE_LIBREOFFICE_URL: https://isle-microservices.cc.lehigh.edu/libreoffice
+      ALPACA_DERIVATIVE_WHISPER_URL: https://isle-microservices.cc.lehigh.edu/whisper
+      ALPACA_DERIVATIVE_OCRPDF_URL: https://isle-microservices.cc.lehigh.edu/ocrpdf
+      ALPACA_DERIVATIVE_HTR_URL: https://isle-microservices.cc.lehigh.edu/openai-htr
+      ALPACA_DERIVATIVE_CLEAN_PDF_URL: https://isle-microservices.cc.lehigh.edu/cleanpdf
+    secrets:
+      - source: ALPACA_JMS_PASSWORD
+      - source: CERT_AUTHORITY
+        target: CERT_PUBLIC_KEY
+    depends_on:
+      activemq:
+        condition: service_healthy
+  fabricator:
+    image: us-docker.pkg.dev/lehigh-lts-images/public/fabricator:main
+    entrypoint:
+      - /app/fabricator
+      - --server
+    labels:
+      traefik.enable: true
+      traefik.http.middlewares.https-redirect.redirectscheme.permanent: true
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
+      traefik.http.routers.fabricator.entrypoints: https
+      traefik.http.routers.fabricator.rule: Host(`${DOMAIN}`) && PathPrefix(`/workbench`)
+      traefik.http.routers.fabricator.tls.certresolver: resolver
+      traefik.http.routers.fabricator.tls: true
+      traefik.http.routers.fabricator.service: fabricator
+      traefik.http.services.fabricator.loadbalancer.server.port: 8080
+    environment:
+      FABRICATOR_DATA_MOUNT: /data
+      SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
+    healthcheck:
+      test: curl -s http://localhost:8080/healthcheck | grep OK
+  mariadb:
+    image: ${ISLANDORA_REPOSITORY}/mariadb:${ISLANDORA_TAG}
+    environment:
+      MYSQL_MAX_ALLOWED_PACKET: 512000000
+      MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
+    secrets:
+      - source: DB_ROOT_PASSWORD
+    volumes:
+      - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
+      - mariadb-data:/var/lib/mysql:Z,rZ
+  parry:
+    image: lehighlts/scyllaridae-parry:main
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
+      - ./conf/parry/scyllaridae.yml:/app/scyllaridae.yml:r
+    depends_on:
+      activemq:
+        condition: service_healthy
+  activemq:
+    image: ${ISLANDORA_REPOSITORY}/activemq:${ISLANDORA_TAG}
+    labels:
+      traefik.enable: false
+    secrets:
+      - source: ACTIVEMQ_PASSWORD
+      - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
+    volumes:
+      - activemq-data:/opt/activemq/data:Z,rw
+      - ./tmp/activemq:/tmp:rw
+      - ./conf/activemq/activemq.xml:/opt/activemq/conf/activemq.xml:r
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
+  cantaloupe:
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/cantaloupe:main
+    environment:
+      CANTALOUPE_PROCESSOR_SELECTION_STRATEGY: "ManualSelectionStrategy"
+      CANTALOUPE_PROCESSOR_MANUALSELECTIONSTRATEGY_JPG: "Java2dProcessor"
+      CANTALOUPE_PROCESSOR_MANUALSELECTIONSTRATEGY_JP2: "GrokProcessor"
+      CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
+      CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
+      CANTALOUPE_MAX_PIXELS: 0
+    secrets:
+      - source: CERT_AUTHORITY
+        target: CERT_PUBLIC_KEY
+    labels:
+      traefik.enable: true
+      traefik.http.middlewares.https-redirect.redirectscheme.permanent: true
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
+      traefik.http.middlewares.cantaloupe-custom-request-headers.headers.customrequestheaders.X-Forwarded-Path: /cantaloupe
+      traefik.http.middlewares.cantaloupe-strip-prefix.stripprefix.prefixes: /cantaloupe
+      traefik.http.middlewares.cantaloupe.chain.middlewares: cantaloupe-strip-prefix,cantaloupe-custom-request-headers
+      traefik.http.routers.cantaloupe_http.entrypoints: http
+      traefik.http.routers.cantaloupe_http.middlewares: https-redirect
+      traefik.http.routers.cantaloupe_http.rule: Host(`${DOMAIN}`) && PathPrefix(`/cantaloupe`)
+      traefik.http.routers.cantaloupe_http.service: cantaloupe
+      traefik.http.routers.cantaloupe_https.middlewares: cantaloupe
+      traefik.http.routers.cantaloupe_https.entrypoints: https
+      traefik.http.routers.cantaloupe_https.rule: Host(`${DOMAIN}`) && PathPrefix(`/cantaloupe`)
+      traefik.http.routers.cantaloupe_https.tls: true
+      traefik.http.services.cantaloupe.loadbalancer.server.port: 8182
+    volumes:
+      - /opt/islandora/volumes/cantaloupe-data:/data:rw
+      - ./tmp/cantaloupe:/tmp:rw
+  memcached:
+    image: memcached:1.6.29
+    command: memcached -m 2048 -I 5m
+    healthcheck:
+      test: >
+        bash -c "echo stats | (exec 3<>/dev/tcp/localhost/11211; cat >&3; timeout 0.1 cat <&3; exec 3<&-) | grep pid"
+  drupal:
+    image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${GIT_BRANCH}
+    labels:
+      traefik.enable: true
+      traefik.http.routers.drupal_http.entrypoints: http
+      traefik.http.routers.drupal_http.middlewares: https-redirect
+      traefik.http.routers.drupal_http.service: drupal
+      traefik.http.routers.drupal_https.entrypoints: https
+      traefik.http.routers.drupal_https.service: drupal
+      traefik.http.routers.drupal_https.tls: true
+      traefik.http.services.drupal.loadbalancer.server.port: 80
+
+      traefik.http.middlewares.https-redirect.redirectscheme.permanent: true
+      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
+
+      traefik.http.routers.drupal_https.tls.certresolver: resolver
+      traefik.http.routers.drupal_https.priority: 10
+
+      traefik.http.routers.drupal_http.rule: Host(`${DOMAIN}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
+      traefik.http.routers.drupal_https.rule: Host(`${DOMAIN}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
+
+      traefik.http.routers.drupal_https.middlewares: captcha-protect
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.challengeTmpl: /challenge.tmpl.html
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.captchaProvider: turnstile
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.siteKey: ${TURNSTILE_SITE_KEY}
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.secretKey: ${TURNSTILE_SECRET_KEY}
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.enableStatsPage: "true"
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.ipForwardedHeader: "X-Forwarded-For"
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.goodBots: apple.com,archive.org,duckduckgo.com,iframely.com,facebook.com,google.com,googlebot.com,googleusercontent.com,instagram.com,kagibot.org,linkedin.com,msn.com,openalex.org,twitter.com,x.com
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.protectRoutes: "/"
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.protectParameters: "true"
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.exemptIps: 128.180.0.0/16
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.persistentStateFile: /tmp/state.json
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.ipv4subnetMask: 8
+      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.persistentStateFile:protectFileExtensions: "jp2,tiff,php,html"
+
+      traefik.http.routers.redirect_http.entrypoints: http
+      traefik.http.routers.redirect_http.service: drupal
+      traefik.http.routers.redirect_http.rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
+      traefik.http.routers.redirect_http.middlewares: redirect-sans
+
+      traefik.http.routers.redirect_https.entrypoints: https
+      traefik.http.routers.redirect_https.service: drupal
+      traefik.http.routers.redirect_https.rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
+      traefik.http.routers.redirect_https.middlewares: redirect-sans
+      traefik.http.routers.redirect_https.tls: true
+
+      traefik.http.middlewares.redirect-sans.redirectregex.permanent: true
+      traefik.http.middlewares.redirect-sans.redirectregex.regex: ^https?://([^/]+)(/.*)?
+      traefik.http.middlewares.redirect-sans.redirectregex.replacement: https://${DOMAIN}$${2}
+    environment:
+      DEVELOPMENT_ENVIRONMENT: false
+      DRUPAL_DEFAULT_BROKER_URL: "tcp://activemq:61613"
+      DRUPAL_DEFAULT_CANTALOUPE_URL: "https://${DOMAIN}/cantaloupe/iiif/2"
+      DRUPAL_DEFAULT_CONFIGDIR: "/var/www/drupal/config/sync"
+      DRUPAL_DEFAULT_FCREPO_HOST: "fcrepo"
+      DRUPAL_DEFAULT_FCREPO_PORT: 8080
+      DRUPAL_DEFAULT_FCREPO_URL: "http://fcrepo:8080/fcrepo/rest/"
+      DRUPAL_DEFAULT_INSTALL_EXISTING_CONFIG: "true"
+      DRUPAL_DEFAULT_NAME: "Islandora Digital Collections"
+      DRUPAL_DEFAULT_PROFILE: "minimal"
+      DRUPAL_DEFAULT_SITE_URL: "${DOMAIN}"
+      DRUPAL_DRUSH_URI: "https://${DOMAIN}"
+      NGINX_REAL_IP_RECURSIVE: ${REVERSE_PROXY}
+      NGINX_SET_REAL_IP_FROM: ${FRONTEND_IP_1}
+      NGINX_SET_REAL_IP_FROM2: ${FRONTEND_IP_2}
+      NGINX_SET_REAL_IP_FROM3: ${FRONTEND_IP_3}
+      DTT_BASE_URL: "https://${DOMAIN}"
+      PHP_POST_MAX_SIZE: "100G"
+      PHP_UPLOAD_MAX_FILESIZE: "100G"
+      PHP_MEMORY_LIMIT: "1G"
+      NGINX_CLIENT_BODY_TIMEOUT: 3600s
+      NGINX_FASTCGI_CONNECT_TIMEOUT: 3600s
+      NGINX_FASTCGI_READ_TIMEOUT: 3600s
+      NGINX_FASTCGI_SEND_TIMEOUT: 3600s
+      NGINX_KEEPALIVE_TIMEOUT: 3600s
+      NGINX_LINGERING_TIMEOUT: 50s
+      NGINX_PROXY_CONNECT_TIMEOUT: 3600s
+      NGINX_PROXY_READ_TIMEOUT: 3600s
+      NGINX_PROXY_SEND_TIMEOUT: 3600s
+      NGINX_SEND_TIMEOUT: 3600s
+      PHP_DEFAULT_SOCKET_TIMEOUT: 3600
+      PHP_MAX_EXECUTION_TIME: 3600
+      PHP_MAX_INPUT_TIME: 3600
+      PHP_PROCESS_CONTROL_TIMEOUT: 3600
+      PHP_REQUEST_TERMINATE_TIMEOUT: 3600
+      SOLR_HOCR_PLUGIN_PATH: ${SOLR_HOCR_PLUGIN_PATH}
+      GOOGLE_APPLICATION_CREDENTIALS: /tmp/svc.json
+      DB_MYSQL_HOST: "mariadb"
+      DB_MYSQL_PORT: "3306"
+      DRUPAL_DEFAULT_DB_NAME: "drupal_default"
+      DRUPAL_DEFAULT_DB_USER: "drupal_default"
+      DRUPAL_DEFAULT_SOLR_CORE: "default"
+      DRUPAL_DEFAULT_SOLR_HOST: "solr"
+      DRUPAL_DEFAULT_SOLR_PORT: 8983
+      DRUPAL_DEFAULT_DB_PASSWORD: "${DRUPAL_DEFAULT_DB_PASSWORD}"
+      TURNSTILE_SITE_KEY: "${TURNSTILE_SITE_KEY}"
+      TURNSTILE_SECRET_KEY: "${TURNSTILE_SECRET_KEY}"
+      DRUPAL_DEFAULT_SALT: "${DRUPAL_DEFAULT_SALT}"
+      SLACK_WEBHOOK: "${SLACK_WEBHOOK_SUBMISSION}"
+      LEHIGH_TRANSFORM_SERVICE_URI: "${LEHIGH_TRANSFORM_SERVICE_URI}"
+    secrets:
+      - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
+      - source: DB_ROOT_PASSWORD
+      - source: DRUPAL_DEFAULT_ACCOUNT_PASSWORD
+      - source: DRUPAL_DEFAULT_DB_PASSWORD
+      - source: DRUPAL_DEFAULT_SALT
+      - source: JWT_PRIVATE_KEY
+      - source: JWT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+        target: CERT_PUBLIC_KEY
+    volumes:
+      - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:rw
+      - /opt/islandora/volumes/drupal-private-files:/var/www/drupal/private:rw
+      - /opt/islandora/volumes/fcrepo-data/home/data/ocfl-root:/fcrepo:r
+      - drupal-solr-config:/opt/solr/server/solr/default:z,rw
+      - ./tmp/drupal:/tmp:rw
+      - ./tmp/nginx:/var/lib/nginx/tmp:rw
+      - ./conf/nginx/default.conf:/etc/nginx/http.d/default.conf:r
+      - ./conf/php-fpm/www.conf:/etc/confd/templates/www.conf.tmpl:r
+      - ./conf/nginx/drupal.fpm.conf.tmpl:/etc/confd/templates/drupal.fpm.conf.tmpl:r
+      - ./conf/nginx/drupal.defaults.conf:/etc/nginx/shared/drupal.defaults.conf:r
+      - ./conf/nginx/mime.types:/etc/nginx/mime.types:r
+      - ./conf/conf.d/workbench.conf.toml:/etc/confd/conf.d/workbench.conf.toml:r
+      - ./conf/php-fpm/workbench.conf:/etc/confd/templates/workbench.conf.tmpl:r
+      - ./conf/nginx/workbench.fpm.conf.tmpl:/etc/confd/templates/workbench.fpm.conf.tmpl:r
+      - ./conf/nginx/workbench.fpm.conf.toml:/etc/confd/conf.d/workbench.fpm.conf.toml:r
+      - ./secrets/GOOGLE_APPLICATION_CREDENTIALS:/tmp/svc.json:r
+    healthcheck:
+      interval: 60s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      solr:
+        condition: service_healthy
+      memcached:
+        condition: service_healthy
+  fcrepo:
+    image: ${ISLANDORA_REPOSITORY}/fcrepo6:${ISLANDORA_TAG}
+    environment:
+      FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
+      FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
+      FCREPO_PERSISTENCE_TYPE: "mysql"
+      DB_HOST: mariadb
+      DB_PORT: 3306
+      TOMCAT_CATALINA_OPTS: "-Dfcrepo.session.timeout=600000"
+    secrets:
+      - source: JWT_ADMIN_TOKEN
+      - source: JWT_PUBLIC_KEY
+      - source: DB_ROOT_PASSWORD
+      - source: FCREPO_DB_PASSWORD
+    volumes:
+      - /opt/islandora/volumes/fcrepo-data:/data:rw
+      - ./tmp/fcrepo:/tmp:rw
+    depends_on:
+      activemq:
+        condition: service_started
+  solr:
+    image: ${ISLANDORA_REPOSITORY}/solr:${ISLANDORA_TAG}
+    volumes:
+      - solr-data:/opt/solr/server/solr/default/data:Z,rw
+      - type: volume
+        source: drupal-solr-config
+        target: /opt/solr/server/solr/default
+        read_only: false
+        volume:
+          nocopy: true
+  rollout:
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/rollout:main
+    labels:
+      traefik.enable: true
+      traefik.http.routers.rollout.entrypoints: https
+      traefik.http.routers.rollout.rule: PathPrefix(`/_rollout`)
+      traefik.http.routers.rollout.middlewares: rollout-strip-prefix,rollout-ip
+      traefik.http.middlewares.rollout-strip-prefix.stripPrefix.prefixes: /_rollout
+      traefik.http.routers.rollout.tls.certresolver: resolver
+      traefik.http.routers.rollout.tls: true
+      traefik.http.services.rollout.loadbalancer.server.port: 8080
+      traefik.http.middlewares.rollout-ip.ipwhitelist.sourcerange: 172.16.0.0/12, 192.168.0.0/16, 127.0.0.1/32, 128.180.2.69/32
+      traefik.http.middlewares.rollout-ip.ipwhitelist.ipstrategy.depth: ${ROLLOUT_DEPTH}
+    volumes:
+      - /opt/islandora/d10_lehigh_agile:/opt/islandora/d10_lehigh_agile
+      - /opt/islandora/d10_lehigh_agile/scripts/maintenance/rollout.sh:/rollout.sh
+      - /home/rollout/.ssh:/root/.ssh
+      - /home/rollout/.gitconfig:/root/.gitconfig
+      - /home/rollout/.docker:/root/.docker
+      - /home/rollout/.env:/home/rollout/.env
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      DOCKER_HOST: ${DOCKER_HOST}
+      HOST: $HOST
+      DOMAIN: "${DOMAIN}"
+      JWKS_URI: ${JWKS_URI}
+      JWT_AUD: $HOST
+      CUSTOM_CLAIMS: ${CUSTOM_CLAIMS}
+      ROLLOUT_DEPTH: ${ROLLOUT_DEPTH}
+      SLACK_WEBHOOK: ${SLACK_WEBHOOK}
+      GIT_BRANCH: staging
+      ROLLOUT_LOCK_FILE: /opt/islandora/d10_lehigh_agile/rollout.lock
+  traefik:
+    image: traefik:v3.3.3
+    command: >-
+      --api.insecure=true
+      --api.dashboard=true
+      --api.debug=true
+      --ping=true
+      --entryPoints.http.address=:80
+      --entryPoints.https.address=:443
+      --entryPoints.http.forwardedHeaders.trustedIPs=${FRONTEND_IP_1},${FRONTEND_IP_2},${FRONTEND_IP_3}
+      --entryPoints.https.forwardedHeaders.trustedIPs=${FRONTEND_IP_1},${FRONTEND_IP_2},${FRONTEND_IP_3}
+      --entryPoints.ssh.address=:22
+      --entryPoints.https.transport.respondingTimeouts.readTimeout=3600
+      --providers.file.filename=/etc/traefik/tls.yml
+      --providers.docker=true
+      --providers.docker.network=default
+      --providers.docker.exposedByDefault=false
+      --experimental.plugins.captcha-protect.modulename=github.com/libops/captcha-protect
+      --experimental.plugins.captcha-protect.version=v1.6.1
+    labels:
+      traefik.enable: false
+    ports:
+      - "80:80"
+      - "443:443"
+    security_opt:
+      - label=type:container_runtime_t # Required for selinux to access the docker socket.
+    volumes:
+      - ./certs:/etc/ssl/traefik:Z,ro
+      - ./tls.yml:/etc/traefik/tls.yml:Z,ro
+      - ./tmp/traefik:/tmp:rw
+      - /var/run/docker.sock:/var/run/docker.sock:z
+      - ./conf/traefik/challenge.tmpl.html:/challenge.tmpl.html:ro
+    healthcheck:
+      test: traefik healthcheck --ping
+    networks:
+      default:
+        aliases:
+          - ${DOMAIN}

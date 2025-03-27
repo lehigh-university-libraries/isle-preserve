@@ -1,0 +1,15 @@
+
+# Default value.
+field.value.islandora_collection_tabs:
+  type: mapping
+  label: Default value
+  mapping:
+    label:
+      type: string
+      label: Tab Label
+    value:
+      type: text
+      label: Tab Content
+    default:
+      type: boolean
+      label: Default

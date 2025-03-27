@@ -11,3 +11,4 @@ tag_trim_maxlength:
   metatag_maxlength_description: null
   metatag_maxlength_abstract: null
 tag_scroll_max_height: ''
+tag_trim_end: '|.,-:;/+&([{"'''

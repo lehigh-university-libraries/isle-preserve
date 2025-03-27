@@ -1,0 +1,11 @@
+uuid: 9f30b704-c8fa-41ca-a955-a1bff0411c21
+langcode: en
+status: true
+dependencies:
+  module:
+    - taxonomy
+id: taxonomy_term.create_person
+label: 'Create Person'
+description: ''
+targetEntityType: taxonomy_term
+cache: true

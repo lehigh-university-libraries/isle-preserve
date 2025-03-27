@@ -1,0 +1,23 @@
+uuid: 03f887ab-fd33-460a-bf68-3e0956b52a1d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_local_restriction
+    - node.type.islandora_object
+id: node.islandora_object.field_local_restriction
+field_name: field_local_restriction
+entity_type: node
+bundle: islandora_object
+label: 'Restrict to on-campus access only?'
+description: 'Check this box to limit access of this work to the Lehigh campus. Restricted materials can also be accessed via VPN.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Local Restriction'
+  off_label: Open
+field_type: boolean

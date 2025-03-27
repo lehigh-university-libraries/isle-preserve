@@ -4,7 +4,8 @@ status: true
 dependencies: {  }
 _core:
   default_config_hash: FbKJCP8hHad8W3AR8WNWA56OJD--aW9qGrqTzyIMVDM
-name: Subject
+name: 'Subject (General)'
 vid: subject
-description: 'Subject matter to which the records pertain, such as topics, events, people, and organizations.'
+description: 'Subject matter to which the records pertain, such as events, people, and organizations.'
 weight: 0
+new_revision: false

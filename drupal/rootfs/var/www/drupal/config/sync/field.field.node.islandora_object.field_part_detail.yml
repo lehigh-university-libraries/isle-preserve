@@ -1,0 +1,21 @@
+uuid: 4d0a535d-0849-488c-8f7e-45c900c465a9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_part_detail
+    - node.type.islandora_object
+  module:
+    - lehigh_islandora
+id: node.islandora_object.field_part_detail
+field_name: field_part_detail
+entity_type: node
+bundle: islandora_object
+label: 'Has this item been published elsewhere?'
+description: 'If your work appears in another publication, such as a journal or book, please provide the citation information (Title, Volume, Issue Number, Page Range).'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: part_detail

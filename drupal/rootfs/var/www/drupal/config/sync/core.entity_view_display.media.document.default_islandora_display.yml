@@ -1,0 +1,53 @@
+uuid: adc9314c-e148-447d-aba1-42c33be8021b
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.media.default_islandora_display
+    - field.field.media.document.field_file_size
+    - field.field.media.document.field_media_document
+    - field.field.media.document.field_media_of
+    - field.field.media.document.field_media_use
+    - field.field.media.document.field_mime_type
+    - field.field.media.document.field_original_name
+    - media.type.document
+  module:
+    - pdf
+_core:
+  default_config_hash: 4yXGTC9oOSH5Olk67Ro48R69mP2Ya6EKedPLK10f-nM
+id: media.document.default_islandora_display
+targetEntityType: media
+bundle: document
+mode: default_islandora_display
+content:
+  field_gemini_uri:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+  field_media_document:
+    type: pdf_default
+    label: visually_hidden
+    settings:
+      keep_pdfjs: '1'
+      width: 100%
+      height: 900px
+      page: ''
+      zoom: auto
+      custom_zoom: ''
+      pagemode: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  created: true
+  field_file_size: true
+  field_media_of: true
+  field_media_use: true
+  field_mime_type: true
+  field_original_name: true
+  langcode: true
+  name: true
+  search_api_excerpt: true
+  thumbnail: true
+  uid: true

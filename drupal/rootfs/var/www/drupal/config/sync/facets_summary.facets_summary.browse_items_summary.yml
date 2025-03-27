@@ -14,19 +14,24 @@ processor_configs:
   reset_facets:
     processor_id: reset_facets
     weights:
-      build: '30'
+      build: '-9'
     settings:
       link_text: 'Reset filters'
       position: after
   show_count:
     processor_id: show_count
     weights:
-      build: '5'
+      build: '-7'
+    settings: {  }
+  show_search_query:
+    processor_id: show_search_query
+    weights:
+      build: '-10'
     settings: {  }
   show_text_when_empty:
     processor_id: show_text_when_empty
     weights:
-      build: '10'
+      build: '-8'
     settings:
       text:
         value: '<p>Your selection has returned no results.</p>'
@@ -119,6 +124,18 @@ facets:
   subject_topical:
     checked: true
     label: 'Subject (Topical)'
+    separator: ', '
+    show_count: false
+    weight: 0
+  publisher:
+    checked: true
+    label: Publisher
+    separator: ', '
+    show_count: false
+    weight: 0
+  collection:
+    checked: true
+    label: Sub-Collection
     separator: ', '
     show_count: false
     weight: 0

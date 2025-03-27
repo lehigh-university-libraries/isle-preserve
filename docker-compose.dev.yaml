@@ -1,0 +1,137 @@
+services:
+  alpaca:
+    environment:
+      ALPACA_DERIVATIVE_FITS_URL: http://crayfits:8080
+      ALPACA_DERIVATIVE_OCR_URL: http://hypercube:8080
+      ALPACA_DERIVATIVE_HOMARUS_URL: http://homarus:8080
+      ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
+      ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
+      ALPACA_DERIVATIVE_WHISPER_URL: http://whisper:8080
+      ALPACA_DERIVATIVE_OCRPDF_URL: http://ocrpdf:8080
+      ALPACA_DERIVATIVE_HTR_URL: http://ocrpdf:8080
+    volumes:
+      - ./tmp/alpaca:/tmp:rw
+      - ./conf/alpaca/alpaca.properties.tmpl:/etc/confd/templates/alpaca.properties.tmpl:r
+      - ./conf/alpaca/cacert-import.sh:/etc/s6-overlay/scripts/cacert-import.sh
+      - ./certs/lehigh.pem:/usr/local/share/ca-certificates/lehigh.pem:r
+  cantaloupe:
+    volumes:
+      - cantaloupe-data:/data:Z,rw
+  drupal:
+    environment:
+      LEHIGH_TRANSFORM_SERVICE_URI: "http://transformer:8080"
+    volumes:
+      - type: volume
+        source: drupal-public-files
+        target: /var/www/drupal/web/sites/default/files
+        read_only: false
+      - type: volume
+        source: drupal-private-files
+        target: /var/www/drupal/private
+        read_only: false
+      - fcrepo-data:/fcrepo:r
+      - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
+  fcrepo:
+    volumes:
+      - fcrepo-data:/data:Z,rw
+  transformer:
+    image: ghcr.io/lehigh-university-libraries/sentence-transformer:main
+  mariadb:
+    image: mariadb:11.7.2-noble
+    secrets:
+      - source: DB_ROOT_PASSWORD
+        target: MARIADB_ROOT_PASSWORD
+    ports:
+      - 3306:3306
+  memcached:
+    command: memcached -m 256 -I 5m
+  parry:
+    volumes:
+      - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
+  fits:
+    image: ${ISLANDORA_REPOSITORY}/fits:${ISLANDORA_TAG}
+    volumes:
+      - ./tmp/fits:/tmp:rw
+  crayfits:
+    image: lehighlts/scyllaridae-fits:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./tmp/crayfits:/tmp:rw
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  hls:
+    image: lehighlts/scyllaridae-hls:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  homarus:
+    image: lehighlts/scyllaridae-ffmpeg:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./tmp/homarus:/tmp:rw
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  houdini:
+    image: lehighlts/scyllaridae-imagemagick:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./tmp/houdini:/tmp:rw
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  hypercube:
+    image: lehighlts/scyllaridae-tesseract:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./tmp/hypercube:/tmp:rw
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  ocrpdf:
+    image: lehighlts/scyllaridae-ocrpdf:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+  libreoffice:
+    image: lehighlts/scyllaridae-libreoffice:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  coverpage:
+    image: lehighlts/scyllaridae-coverpage:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  cache-warmer:
+    image: lehighlts/scyllaridae-cache-warmer:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+      DRUPAL_URL: "https://${DOMAIN}"
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  mergepdf:
+    image: lehighlts/scyllaridae-mergepdf:main
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+      MAX_THREADS: 3
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
+  xhgui-mongodb:
+    image: percona/percona-server-mongodb:3.6
+    command: --storageEngine=wiredTiger
+    environment:
+      - MONGO_INITDB_DATABASE=xhprof
+    volumes:
+      - xhgui-data:/data/db
+  xhgui:
+    image: xhgui/xhgui
+    volumes:
+      - ./conf/xhgui/config:/var/www/xhgui/config
+      - ./conf/xhgui/nginx.conf:/etc/nginx/http.d/default.conf:ro
+    environment:
+      - XHGUI_MONGO_HOSTNAME=xhgui-mongodb
+      - XHGUI_MONGO_DATABASE=xhprof
+    depends_on:
+      - xhgui-mongodb
+  rollout:
+    profiles: [donotstart]

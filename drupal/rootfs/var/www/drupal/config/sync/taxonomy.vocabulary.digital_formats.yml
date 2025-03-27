@@ -6,3 +6,4 @@ name: 'Digital Formats'
 vid: digital_formats
 description: 'Format of Original File'
 weight: 0
+new_revision: false

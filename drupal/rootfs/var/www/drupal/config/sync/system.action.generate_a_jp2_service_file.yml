@@ -15,6 +15,6 @@ configuration:
   source_term_uri: 'http://pcdm.org/use#OriginalFile'
   derivative_term_uri: 'http://pcdm.org/use#ServiceFile'
   mimetype: image/jp2
-  args: ''
-  scheme: public
-  path: '[date:custom:Y]-[date:custom:m]/[node:nid].jp2'
+  args: '-quiet'
+  scheme: private
+  path: 'derivatives/service/node/[node:nid]/[node:nid]-service-file.jp2'
