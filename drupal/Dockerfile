@@ -20,5 +20,4 @@ RUN --mount=type=cache,id=custom-drupal-composer-${TARGETARCH},sharing=locked,ta
       php83-pecl-memcache \
       php83-pecl-xhprof \
       ffmpeg && \
-    /var/www/drupal/scripts/ca-certs.sh && \
     cleanup.sh
