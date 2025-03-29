@@ -16,35 +16,23 @@ permissions:
 
 jobs:
   lint-test-build-push:
-    runs-on: ubuntu-24.04
+    # run on self hosted to take advantage of docker build cache
+    # and composer cache
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: 8.3
-          tools: composer:v2
-
-      - name: Get composer cache directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+      - name: composer install
+        run: mkdir -p /app/composer-cache && composer install
         working-directory: codebase
-
-      - name: Cache dependencies
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install dependencies
-        run: composer install
-        working-directory: codebase
+        env:
+          # let composer cache persist on container restarts
+          # since we mount a docker volume on /app
+          COMPOSER_HOME: /app/composer-cache
 
       - run: ./scripts/ci/lint.sh
 
-      - name: Extract branch or tag name as docker tag
+      - name: Extract branch name as docker tag
         shell: bash
         run: |-
           TAG=$(echo "${GITHUB_REF#refs/heads/}" | sed 's/[^a-zA-Z0-9._-]//g' | awk '{print substr($0, length($0)-120)}')
@@ -97,6 +85,7 @@ jobs:
       - run: ./scripts/ci/test.sh
 
   deploy-stage:
+    #    if: github.ref == 'refs/heads/main'
     runs-on: self-hosted
     needs: [deploy-test]
     steps:
@@ -105,5 +94,3 @@ jobs:
       - run: ./scripts/ci/trigger-rollout.sh
         env:
           ROLLOUT_URL: https://islandora-test.lib.lehigh.edu/_rollout
-
-      - run: ./scripts/ci/test.sh

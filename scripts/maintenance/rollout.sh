@@ -5,10 +5,10 @@ set -eou pipefail
 GIT_BRANCH=${GIT_BRANCH:-main}
 DRUPAL_DOCKER_TAG=${DRUPAL_DOCKER_TAG:-main}
 
-if [ "$HOST" = "islandora-prod" ] || [ "$HOST" = "islandora-test" ]; then
-  # safeguard to main for stage+prod
-  export GIT_BRANCH=main
-  export DRUPAL_DOCKER_TAG=main
+if [ "$HOST" = "islandora-prod" ]; then
+  # safeguard to main for prod
+  GIT_BRANCH=main
+  DRUPAL_DOCKER_TAG=main
 fi
 
 send_slack_message() {
@@ -37,7 +37,7 @@ docker_compose() {
 cd /opt/islandora/d10_lehigh_agile
 git fetch origin
 
-send_slack_message "Rolling out changes to $DOMAIN :rocket: :shipit: :rocket:"
+send_slack_message "Rolling out changes to https://$DOMAIN :rocket: :shipit: :rocket:"
 
 # check for any commit messages that start with a JIRA tag for our project
 JIRA_TICKETS=$(git log --format="%s" HEAD..origin/main | grep -E "^IS-[0-9]+" | sort || echo "")
@@ -56,6 +56,13 @@ git reset --hard
 git checkout "$GIT_BRANCH"
 git pull origin "$GIT_BRANCH"
 
+# pull before putting site into maintenance mode
+# to keep downtime to a minimum
+docker_compose pull --quiet
+
+docker compose exec drupal drush state:set system.maintenance_mode 1 --input-format=integer
+docker compose exec drupal drush cr
+
 echo "bring up all containers"
 docker_compose up \
   --remove-orphans \
@@ -64,8 +71,6 @@ docker_compose up \
   --quiet-pull \
   -d
 
-docker compose exec drupal drush state:set system.maintenance_mode 1 --input-format=integer
-docker compose exec drupal drush cr
 docker compose exec drupal drush updb -y
 docker compose exec drupal drush state:set system.maintenance_mode 0 --input-format=integer
 docker compose exec drupal drush cr
@@ -90,4 +95,5 @@ if [ "$HOST" = "islandora-prod" ]; then
   docker compose exec drupal drush scr scripts/performance/cache-warmer.php
 else
   docker compose exec drupal rm -rf /var/www/drupal/private/canonical/islandora-stage.lib.lehigh.edu || echo "No dir"
+  docker system prune -af
 fi
