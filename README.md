@@ -194,6 +194,10 @@ SET manages a grafana and telegraf stack to collect system level metrics on the 
 
 ## CI/CD
 
+We use a self-hosted runner to deploy into our infrastructure. The runner is on the dev server. It should only ever need a token to setup the runner set once, and it has a TTL of 1h. That can be rotated by editing `/home/rollout/.env and setting the `--token XXX` value from https://github.com/lehigh-university-libraries/isle-preserve/settings/actions/runners/new into the `GITHUB_RUNNER_TOKEN` variable.
+
+The dev/stage/prod servers have a deploy key set at https://github.com/lehigh-university-libraries/isle-preserve/settings/keys to allow a `git pull`
+
 ```mermaid
 sequenceDiagram
     actor Alice
