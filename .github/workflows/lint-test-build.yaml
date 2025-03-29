@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
       - name: composer install
-        run: mkdir -p /app/composer-cache && composer install
+        run: mkdir -p "${COMPOSER_HOME}" && composer install
         working-directory: codebase
         env:
           # let composer cache persist on container restarts
