@@ -2,143 +2,93 @@
 
 set -eou pipefail
 
-if [ ! -v HOST ]; then
-  HOST=$(hostname)
+GIT_BRANCH=${GIT_BRANCH:-main}
+DRUPAL_DOCKER_TAG=${DRUPAL_DOCKER_TAG:-main}
+
+if [ "$HOST" = "islandora-prod" ] || [ "$HOST" = "islandora-test" ]; then
+  # safeguard to main for stage+prod
+  export GIT_BRANCH=main
+  export DRUPAL_DOCKER_TAG=main
 fi
 
-if [ "$HOST" != "wight" ]; then
-  # safeguard to staging for stage+prod
-  export GIT_BRANCH=staging
-fi
+send_slack_message() {
+    escaped_message=$(echo "$@" | jq -Rsa .)
+    curl -s -o /dev/null -XPOST "$SLACK_WEBHOOK_URL" -d '{
+      "msg": '"$escaped_message"'
+    }'
+}
 
 handle_error() {
-  curl -s -o /dev/null -XPOST $SLACK_WEBHOOK -d '{
-    "msg": "🚨 Roll out failed 🚨"
-  }'
-  exit 1
+    send_slack_message "🚨 Roll out failed 🚨"
+    exit 1
 }
 
 trap 'handle_error' ERR
 
-compose_up() {
+docker_compose() {
+    export GIT_BRANCH=main
     docker compose \
       --env-file .env \
       --env-file /home/rollout/.env \
       -f docker-compose.yaml \
       -f docker-compose.$HOST.yaml \
-      up -d
-}
-
-wait_for_drupal_container() {
-    local failure_count=0
-    while [[ $failure_count -lt 5 ]]; do
-        if docker container ls --format "{{ .Names }}" | grep drupal || false; then
-            echo "Drupal container started..."
-            return 0
-        else
-            failure_count=$((failure_count + 1))
-            echo "Drupal container not found.."
-            sleep 5
-        fi
-    done
-    echo "Timeout exceeded, exiting"
-    exit 1
-}
-
-wait_for_mysql() {
-    local failure_count=0
-    DRUPAL_CONTAINER=$(docker container ls --format "{{ .Names }}" | grep drupal)
-    while [[ $failure_count -lt 20 ]]; do
-        if docker exec $DRUPAL_CONTAINER drush status | grep -E "^Database.*Connected" || false; then
-            echo "Drupal connected to MySQL..."
-            return 0
-        else
-            failure_count=$((failure_count + 1))
-            echo "Drupal not connected to MySQL.."
-            sleep 5
-        fi
-    done
-    echo "Timeout exceeded, exiting"
-    exit 1
+      "$@"
 }
 
 cd /opt/islandora/d10_lehigh_agile
 git fetch origin
 
-if [ "$HOST" = "islandora-prod" ]; then
-  curl -s -o /dev/null -XPOST $SLACK_WEBHOOK -d '{
-    "msg": "Rolling out changes to https://preserve.lehigh.edu :rocket: :shipit: :rocket:"
-  }'
-elif [ "$HOST" = "islandora-test" ]; then
-  curl -s -o /dev/null -XPOST $SLACK_WEBHOOK -d '{
-    "msg": "Rolling out changes to https://islandora-stage.lib.lehigh.edu :rocket: :shipit: :rocket:"
-  }'
-else
-  curl -s -o /dev/null -XPOST $SLACK_WEBHOOK -d '{
-    "msg": "Rolling out changes to https://'$HOST'.lib.lehigh.edu :rocket: :shipit: :rocket:"
-  }'
-fi
+send_slack_message "Rolling out changes to $DOMAIN :rocket: :shipit: :rocket:"
 
-JIRA_TICKETS=$(git log --format="%s" HEAD..origin/staging | grep -E "^IS-[0-9]+" | sort || echo "")
+# check for any commit messages that start with a JIRA tag for our project
+JIRA_TICKETS=$(git log --format="%s" HEAD..origin/main | grep -E "^IS-[0-9]+" | sort || echo "")
 if [ "$JIRA_TICKETS" != "" ]; then
   MSG="Changes include:\n"
   MSG+=$(echo "$JIRA_TICKETS"| sed 's/^/https:\/\/lehigh.atlassian.net\/browse\//; s/$/\\n/')
   ESC_MSG=$(echo "$MSG" | sed 's/"/\\"/g')
-  # webhooks have a rate limit of 1s
+  # slack webhooks have a rate limit of 1s
+  # and we already called the webhook to alert on the rollout
   # also, sometimes they are out of order so fix that
-  sleep 10
-  curl -s -o /dev/null -XPOST $SLACK_WEBHOOK -d '{
-    "msg": "'"$ESC_MSG"'"
-  }'
+  sleep 5
+  send_slack_message "$ESC_MSG"
 fi
-
-# make sure our sidecar images are on latest
-for IMAGE in $(docker compose config --format json | \
-  jq -r .services[].image | \
-  grep -E "(lehighlts|us\-docker\.pkg\.dev)" | \
-  grep -v drupal)
-do
-  docker pull $IMAGE
-done
-
-compose_up
 
 git reset --hard
-git checkout $GIT_BRANCH
-git pull origin $GIT_BRANCH
+git checkout "$GIT_BRANCH"
+git pull origin "$GIT_BRANCH"
 
-DRUPAL_CONTAINER=$(docker container ls --format "{{ .Names }}" | grep drupal)
+echo "bring up all containers"
+docker_compose up \
+  --remove-orphans \
+  --wait \
+  --pull missing \
+  --quiet-pull \
+  -d
 
-if [ $HOST != "wight" ]; then
-  docker pull us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:staging
-fi
+docker compose exec drupal drush state:set system.maintenance_mode 1 --input-format=integer
+docker compose exec drupal drush cr
+docker compose exec drupal drush updb -y
+docker compose exec drupal drush state:set system.maintenance_mode 0 --input-format=integer
+docker compose exec drupal drush cr
 
-docker exec $DRUPAL_CONTAINER drush state:set system.maintenance_mode 1 --input-format=integer
-docker exec $DRUPAL_CONTAINER drush cr
-
-compose_up
-
-wait_for_drupal_container
-wait_for_mysql
-
-docker exec $DRUPAL_CONTAINER drush updb -y
-docker exec $DRUPAL_CONTAINER drush state:set system.maintenance_mode 0 --input-format=integer
-docker exec $DRUPAL_CONTAINER drush cr
-
+# ensure drupal nginx user owns drupal config folder
 chown -R 100:101 drupal/rootfs/var/www/drupal/config
 
-# make 100% sure we're up
-compose_up
+echo "ensuring all containers are online"
+docker_compose up \
+  --remove-orphans \
+  --wait \
+  --pull missing \
+  --quiet-pull \
+  -d
 
-curl -s -o /dev/null -XPOST $SLACK_WEBHOOK -d '{
-  "msg": "Roll out complete 🎉"
-}'
+send_slack_message "Roll out complete 🎉"
 
 if [ "$HOST" = "islandora-prod" ]; then
   sleep 10
   # flush the cache for all authenticated users (everything except /var/www/drupal/private/canonical/0)
-  docker exec $DRUPAL_CONTAINER find /var/www/drupal/private/canonical/preserve.lehigh.edu -maxdepth 1 -type d -regex '.*/[1-9]\([0-9]*\)' -exec rm -rf {} \;
-  docker exec $DRUPAL_CONTAINER drush scr scripts/performance/cache-warmer.php
+  docker compose exec drupal find /var/www/drupal/private/canonical/preserve.lehigh.edu -maxdepth 1 -type d -regex '.*/[1-9]\([0-9]*\)' -exec rm -rf {} \;
+  docker compose exec drupal drush scr scripts/performance/cache-warmer.php
 else
-  docker exec $DRUPAL_CONTAINER rm -rf /var/www/drupal/private/canonical/islandora-stage.lib.lehigh.edu || echo "No dir"
+  docker compose exec drupal rm -rf /var/www/drupal/private/canonical/islandora-stage.lib.lehigh.edu || echo "No dir"
 fi

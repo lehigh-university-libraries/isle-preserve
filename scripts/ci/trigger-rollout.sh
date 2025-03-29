@@ -2,16 +2,34 @@
 
 set -eou pipefail
 
-echo "Triggering rollout via $ROLLOUT_URL"
-echo "${ID_TOKEN_1}" | jq -rR 'split(".") | .[1] | @base64d | fromjson | .project_path + " " + .user_email + " " + .aud'
+echo "Fetching GitHub OIDC token"
+TOKEN=$(curl -s \
+    -H "Accept: application/json; api-version=2.0" \
+    -H "Content-Type: application/json" -d "{}"  \
+    -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+    "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -er '.value')
 
-for i in {1..3}; do
+# add some buffer to avoid iat issues
+sleep 5
+
+echo "Triggering rollout via $ROLLOUT_URL"
+echo "${TOKEN}" | jq -rR 'split(".") | .[1] | @base64d | fromjson | .aud'
+
+PAYLOAD=$(cat <<EOF
+{
+  "git-branch": "${GITHUB_REF_NAME}",
+  "docker-tag": "${GITHUB_REF_NAME}"
+}
+EOF
+)
+
+while true; do
   STATUS=$(curl -sk \
     --max-time 900 \
     -w '%{http_code}' \
     -o /dev/null  \
-    -d '{"git-branch": "'"${CI_COMMIT_BRANCH}"'"}' \
-    -H "Authorization: bearer ${ID_TOKEN_1}" \
+    -d "$PAYLOAD" \
+    -H "Authorization: bearer ${TOKEN}" \
     -H "X-Forwarded-For: 128.180.2.69" \
     "${ROLLOUT_URL}")
 
@@ -20,7 +38,13 @@ for i in {1..3}; do
     echo "Rollout complete"
     exit 0
   fi
-  SLEEP_INTERVAL=$(( 60 * i ))
+
+  COUNT=$(( COUNT + 1 ))
+  if [ "$COUNT" -gt 3 ]; then
+    break
+  fi
+
+  SLEEP_INTERVAL=$(( 60 * COUNT ))
   echo "trying again in ${SLEEP_INTERVAL}s"
   sleep "${SLEEP_INTERVAL}"
 done
