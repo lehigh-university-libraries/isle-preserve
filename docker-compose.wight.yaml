@@ -49,7 +49,7 @@ services:
       - actions-runner-data:/app:rw
       - /var/run/docker.sock:/var/run/docker.sock:z
   gha-runner-updater:
-    image: docker:28.0.4-cli
+    image: docker:28.0.4-cli@sha256:c5e0b27a15f49b571f968defe19cc9a072d531ee90300ba5a1d2ea4dffa760e4
     working_dir: /app
     entrypoint: /bin/sh
     command: -c "while true; do /app/scripts/ci/update-gha.sh; sleep 600; done"
