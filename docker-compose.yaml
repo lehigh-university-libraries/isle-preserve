@@ -12,6 +12,7 @@ volumes:
   mariadb-data: {}
   solr-data: {}
   xhgui-data: {}
+  actions-runner-data: {}
 
 secrets:
   CERT_PUBLIC_KEY:
@@ -87,6 +88,11 @@ services:
       - source: ALPACA_JMS_PASSWORD
       - source: CERT_AUTHORITY
         target: CERT_PUBLIC_KEY
+    volumes:
+      - ./tmp/alpaca:/tmp:rw
+      - ./conf/alpaca/alpaca.properties.tmpl:/etc/confd/templates/alpaca.properties.tmpl:r
+      - ./conf/alpaca/cacert-import.sh:/etc/s6-overlay/scripts/cacert-import.sh
+      - ./certs/lehigh.pem:/usr/local/share/ca-certificates/lehigh.pem:r
     depends_on:
       activemq:
         condition: service_healthy
@@ -100,7 +106,7 @@ services:
       traefik.http.middlewares.https-redirect.redirectscheme.permanent: true
       traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
       traefik.http.routers.fabricator.entrypoints: https
-      traefik.http.routers.fabricator.rule: Host(`${DOMAIN}`) && PathPrefix(`/workbench`)
+      traefik.http.routers.fabricator.rule: PathPrefix(`/workbench`)
       traefik.http.routers.fabricator.tls.certresolver: resolver
       traefik.http.routers.fabricator.tls: true
       traefik.http.routers.fabricator.service: fabricator
@@ -182,7 +188,7 @@ services:
       test: >
         bash -c "echo stats | (exec 3<>/dev/tcp/localhost/11211; cat >&3; timeout 0.1 cat <&3; exec 3<&-) | grep pid"
   drupal:
-    image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${GIT_BRANCH}
+    image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${DRUPAL_DOCKER_TAG}
     labels:
       traefik.enable: true
       traefik.http.routers.drupal_http.entrypoints: http
@@ -315,6 +321,8 @@ services:
       retries: 5
       start_period: 30s
     depends_on:
+      mariadb:
+        condition: service_healthy
       solr:
         condition: service_healthy
       memcached:
@@ -372,14 +380,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       DOCKER_HOST: ${DOCKER_HOST}
-      HOST: $HOST
+      HOST: ${HOST}
       DOMAIN: "${DOMAIN}"
       JWKS_URI: ${JWKS_URI}
-      JWT_AUD: $HOST
+      JWT_AUD: ${HOST}
       CUSTOM_CLAIMS: ${CUSTOM_CLAIMS}
       ROLLOUT_DEPTH: ${ROLLOUT_DEPTH}
       SLACK_WEBHOOK: ${SLACK_WEBHOOK}
-      GIT_BRANCH: staging
       ROLLOUT_LOCK_FILE: /opt/islandora/d10_lehigh_agile/rollout.lock
   traefik:
     image: traefik:v3.3.3@sha256:19884a9d0b922b321c9cff54cbfe43f3169893041b8dd4ea6100677afaddce46

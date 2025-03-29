@@ -37,3 +37,11 @@ services:
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
+  github-actions-runner:
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner@sha256:e5ba58de5ea69f2b33ce4799f0b84d6cf573f4a0535ef0e6f155877939901455
+    environment:
+      GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
+      GITHUB_REPO: "https://github.com/lehigh-university-libraries/isle-preserve"
+      LABELS: isle
+    volumes:
+      - actions-runner-data:/app:rw
