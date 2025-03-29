@@ -13,7 +13,7 @@ fi
 
 send_slack_message() {
     escaped_message=$(echo "$@" | jq -Rsa .)
-    curl -s -o /dev/null -XPOST "$SLACK_WEBHOOK_URL" -d '{
+    curl -s -o /dev/null -XPOST "$SLACK_WEBHOOK" -d '{
       "msg": '"$escaped_message"'
     }'
 }
