@@ -61,7 +61,8 @@ jobs:
           docker buildx build \
             --platform linux/amd64,linux/arm64/v8 \
             --push \
-            -t us-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT }}/isle/drupal:${{ steps.extract_tag.outputs.tag }}
+            -t us-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT }}/isle/drupal:${{ steps.extract_tag.outputs.tag }} \
+            drupal
 
   deploy-test:
     runs-on: self-hosted
