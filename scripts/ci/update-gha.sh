@@ -5,11 +5,14 @@ set -eou pipefail
 RUNNER_CONTAINER="github-actions-runner"
 RUNNER_IMAGE="us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main"
 
-if docker compose logs --tail 1 "$RUNNER_CONTAINER" | grep -q "Running job"; then
-    echo "Running a job"
-    exit 0
-fi
+ensure_idle() {
+    if docker compose logs -f docker-compose.yaml -f docker-compose.wight.yaml \--tail 1 "$RUNNER_CONTAINER" | grep -q "Running job"; then
+        echo "Running a job"
+        exit 0
+    fi
+}
 
+ensure_idle
 echo "Runner is idle. Checking for image update..."
 
 CURRENT_IMAGE_ID=$(docker images --format "{{.ID}}" "$RUNNER_IMAGE")
@@ -21,5 +24,13 @@ if [ "$CURRENT_IMAGE_ID" = "$NEW_IMAGE_ID" ]; then
     exit 0
 fi
 
+# we may have a job since we pulled
+ensure_idle
+
 echo "New image pulled, restarting runner..."
-docker compose up github-actions-runner -d
+docker compose \
+  -f docker-compose.yaml \
+  -f docker-compose.wight.yaml \
+  up \
+  "$RUNNER_CONTAINER" \
+  -d
