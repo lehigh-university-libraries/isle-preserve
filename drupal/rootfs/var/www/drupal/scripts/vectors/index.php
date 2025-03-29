@@ -63,7 +63,7 @@ foreach ($nids as $nid => $uri) {
   $sentence = implode(" ", $sentences);
   $vectorData = lehigh_islandora_get_vector_data($sentence);
   $db->query("INSERT INTO node__embeddings(entity_id, changed, embedding)
-    VALUES (:nid, :time, :sentence, vec_fromtext(:vector))", [
+    VALUES (:nid, :time, vec_fromtext(:vector))", [
       ':nid' => $nid,
       ':time' => time(),
       ':vector' => $vectorData,
