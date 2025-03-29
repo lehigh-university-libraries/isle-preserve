@@ -5,6 +5,8 @@ on:
       - "**"
     paths-ignore:
       - "**/*.md"
+      - ".github/workflows/*.yaml"
+      - "renovate.json5"
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
