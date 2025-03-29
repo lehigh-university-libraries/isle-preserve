@@ -3,6 +3,17 @@ FROM islandora/imagemagick:alpine-3.20.2-imagemagick-7.1.1.36-r0@sha256:a1fa03a1
 FROM islandora/leptonica:alpine-3.20.2-leptonica-1.84.1-r0@sha256:9e9e46a328d8b55a61a352a6b06ff175f98e40cd5773c9bf93aac58fb56b65f7 as leptonica
 FROM islandora/drupal:${ISLANDORA_DRUPAL_TAG}
 
+ARG \
+    # renovate: datasource=repology depName=alpine_3_20/php83-pdo_sqlite
+    PHP_VERSION=8.3.15-r0 \
+    # renovate: datasource=repology depName=alpine_3_20/php83-pecl-uploadprogress
+    PHP_MEMCACHE_VERSION=8.2-r0 \
+    # renovate: datasource=repology depName=alpine_3_20/php83-pecl-uploadprogress
+    PHP_UPLOAD_VERSION=2.0.2-r1 \
+    # renovate: datasource=repology depName=alpine_3_20/php83-pecl-xhprof
+    PHP_XHPROF_VERSION=2.3.9-r2 \
+    # renovate: datasource=repology depName=alpine_3_20/ffmpeg
+    FFMPEG_VERSION=6.1.1-r8
 
 RUN --mount=type=cache,id=install-packages-${TARGETARCH},sharing=locked,target=/root/.composer/cache \
     --mount=type=bind,from=imagemagick,source=/packages,target=/packages \
@@ -12,13 +23,13 @@ RUN --mount=type=cache,id=install-packages-${TARGETARCH},sharing=locked,target=/
     cp -r /etc/apk/keys-imagemagick/* /etc/apk/keys-leptonica/* /etc/apk/keys/ && \
     apk update && \
     apk upgrade --available && \
-    apk add /packages/imagemagick-*.apk /packages-leptonica/leptonica-*.apk && \
     apk add --no-cache \
-      php83-pdo_sqlite \
-      php83-pecl-uploadprogress \
-      php83-pecl-memcache \
-      php83-pecl-xhprof \
-      ffmpeg && \
+      /packages/imagemagick-*.apk /packages-leptonica/leptonica-*.apk \
+      php83-pdo_sqlite=="${PHP_VERSION}" \
+      php83-pecl-uploadprogress=="${PHP_UPLOAD_VERSION}" \
+      php83-pecl-memcache=="${PHP_MEMCACHE_VERSION}" \
+      php83-pecl-xhprof=="${PHP_XHPROF_VERSION}" \
+      ffmpeg=="${FFMPEG_VERSION}" && \
     cleanup.sh
 
 COPY --link rootfs /
