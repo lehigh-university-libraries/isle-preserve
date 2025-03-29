@@ -19,7 +19,7 @@
         'us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner',
       ],
       pinDigests: false,
-      pinVersions: false,
+      rangeStrategy: 'replace',
     },
     {
       matchUpdateTypes: [
