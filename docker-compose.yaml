@@ -384,9 +384,8 @@ services:
       DOCKER_HOST: ${DOCKER_HOST}
       HOST: ${HOST}
       DOMAIN: "${DOMAIN}"
-      JWKS_URI: ${JWKS_URI}
-      JWT_AUD: ${HOST}
-      CUSTOM_CLAIMS: ${CUSTOM_CLAIMS}
+      JWKS_URI: "https://token.actions.githubusercontent.com/.well-known/jwks"
+      JWT_AUD: "https://github.com/lehigh-university-libraries"
       ROLLOUT_DEPTH: ${ROLLOUT_DEPTH}
       SLACK_WEBHOOK: ${SLACK_WEBHOOK}
       ROLLOUT_LOCK_FILE: /opt/islandora/d10_lehigh_agile/rollout.lock

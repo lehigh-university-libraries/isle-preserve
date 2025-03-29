@@ -23,6 +23,7 @@ PAYLOAD=$(cat <<EOF
 EOF
 )
 
+COUNT=0
 while true; do
   STATUS=$(curl -sk \
     --max-time 900 \
