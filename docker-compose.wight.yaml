@@ -55,4 +55,5 @@ services:
     command: -c "while true; do /app/scripts/ci/update-gha.sh; sleep 600; done"
     volumes:
       - ./:/app
+      - /home/rollout/.docker:/root/.docker
       - /var/run/docker.sock:/var/run/docker.sock:z
