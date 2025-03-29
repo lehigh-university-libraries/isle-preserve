@@ -40,7 +40,7 @@ services:
     healthcheck:
       test: test /run/mysqld/mysqld.sock
   github-actions-runner:
-    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner@sha256:22644b161ca82a2451d3c9a77b9f69f458568e21510733b1d79b8b654f2c81d5
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner@sha256:ae970d6d00c54d754eee124c61d32e48bfc45e4956027594c451e80de5268d0a
     environment:
       GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
       GITHUB_REPO: "https://github.com/lehigh-university-libraries/isle-preserve"
