@@ -41,6 +41,8 @@ services:
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
+    healthcheck:
+      test: test /run/mysqld/mysqld.sock
     ports:
       - 3306:3306
   memcached:

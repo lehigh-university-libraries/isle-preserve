@@ -124,7 +124,7 @@ services:
     secrets:
       - source: DB_ROOT_PASSWORD
     healthcheck:
-      test: mysqladmin ping --socket=/var/run/mysqld/mysqld.sock | grep -q alive
+      test: test /run/mysqld/mysqld.sock
     volumes:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
