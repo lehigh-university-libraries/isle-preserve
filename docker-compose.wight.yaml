@@ -47,3 +47,4 @@ services:
       LABELS: isle
     volumes:
       - actions-runner-data:/app:rw
+      - /var/run/docker.sock:/var/run/docker.sock:z
