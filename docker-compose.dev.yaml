@@ -9,11 +9,6 @@ services:
       ALPACA_DERIVATIVE_WHISPER_URL: http://whisper:8080
       ALPACA_DERIVATIVE_OCRPDF_URL: http://ocrpdf:8080
       ALPACA_DERIVATIVE_HTR_URL: http://ocrpdf:8080
-    volumes:
-      - ./tmp/alpaca:/tmp:rw
-      - ./conf/alpaca/alpaca.properties.tmpl:/etc/confd/templates/alpaca.properties.tmpl:r
-      - ./conf/alpaca/cacert-import.sh:/etc/s6-overlay/scripts/cacert-import.sh
-      - ./certs/lehigh.pem:/usr/local/share/ca-certificates/lehigh.pem:r
   cantaloupe:
     volumes:
       - cantaloupe-data:/data:Z,rw
