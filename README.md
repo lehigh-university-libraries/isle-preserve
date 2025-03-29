@@ -17,23 +17,25 @@ This is the development and production infrastructure for Lehigh Preserve.
 ## Requirements
 
 - [Docker 24.0+](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/install/linux/) **Already included in OSX with Docker**
-- [mkcert 1.4+](https://github.com/FiloSottile/mkcert) **Local Development only**
+- [Docker Compose 2.0+](https://docs.docker.com/compose/install/linux/)
+- [mkcert 1.4+](https://github.com/FiloSottile/mkcert)
 
 ## Architecture
 
 ### Network
 
-Staging and production domains are backends behind SET's managed haproxy instance.
+Staging and production ISLE deployments are backends behind SET's managed haproxy instance.
 
-Staging is a backend on SET's internal-only haproxy instance, which requires on-campus or VPN to access. Production is a backend on SET's external haproxy instance which allows `0.0.0.0/0` access. The external haproxy manages TLS certificates for the site as well as a "tarpit" ruleset to block known bad actors // bots.
+Staging is a backend on SET's internal-only haproxy instance, which requires on-campus or VPN to access. Production is a backend on SET's external haproxy instance which allows `0.0.0.0/0` access.
+
+haproxy manages TLS certificates for the site as well as a "tarpit" ruleset to block known bad actors // bots.
 
 ```mermaid
 flowchart TD
     Alice[Alice]
-    haproxy["https://preserve.lehigh.edu<br>(haproxy)"]
-    islandora-traefik["https://islandora-prod.lib.lehigh.edu<br>(traefik)"]
-    islandora-nginx-drupal["nginx docker service"]
+    haproxy["preserve.lehigh.edu:443<br>(haproxy)"]
+    islandora-traefik["islandora-prod.lib.lehigh.edu:443<br>(traefik)"]
+    islandora-nginx-drupal["islandora-prod.lib.lehigh.edu:80<br>(drupal)"]
     Alice -- GET /foo --> haproxy
     haproxy -- GET /foo --> islandora-traefik
     islandora-traefik -- GET /foo --> islandora-nginx-drupal
@@ -194,30 +196,45 @@ SET manages a grafana and telegraf stack to collect system level metrics on the 
 
 ## CI/CD
 
+We use a self-hosted runner to deploy into our infrastructure. The runner is on the dev server, and is running via our [github-actions-runner docker image](https://github.com/lehigh-university-libraries/docker-builds/tree/main/actions-runner). The runner docker image should only need a valid runner registration token one time during initial setup, which has already been done. If it ever needs done again, you can edit `/home/rollout/.env` on `wight.cc.lehigh.edu` and set the `--token XXX` value found at https://github.com/lehigh-university-libraries/isle-preserve/settings/actions/runners/new into the `GITHUB_RUNNER_TOKEN` variable.
+
+The dev/stage/prod servers have a deploy key set at https://github.com/lehigh-university-libraries/isle-preserve/settings/keys to allow a `git pull`. It's the SSH public key at `/home/rollout/.ssh/id_rsa.pub`. That user also needs to have GitHub in its `/home/rollout/.ssh/known_hosts` file to allow `git pull`
+
+Here is how the CI works. Basically, create a PR on a new branch. That will:
+
+- run lint on the custom drupal modules
+- build docker image for branch
+- deploy branch to dev
+- run tests
+- deploy branch to stage
+
+Once the PR merges the same thing will happen with the `main` branch. Once everything looks OK you can manually deploy to prod on the [deploy-prod.yaml GHA](https://github.com/lehigh-university-libraries/isle-preserve/actions/workflows/deploy-prod.yaml)
+
 ```mermaid
 sequenceDiagram
     actor Alice
-    Alice->>GitLab: git push origin staging
-    GitLab-->>wight.cc.lehigh.edu: run .gitlab-ci.yml
-    wight.cc.lehigh.edu->>wight.cc.lehigh.edu: docker build
-    wight.cc.lehigh.edu->>wight.cc.lehigh.edu: rollout
-    wight.cc.lehigh.edu->>wight.cc.lehigh.edu: lint/test
-    wight.cc.lehigh.edu->>us-docker.pkg.dev: docker push
-    wight.cc.lehigh.edu->>islandora-stage.lib.lehigh.edu: curl /_rollout
-    islandora-stage.lib.lehigh.edu->>GitLab: git pull
+    Alice->>GitHub: git push origin staging
+    GitHub-->>wight.cc.lehigh.edu(actions-runner): run .github/workflows/lint-test-build-push.yml
+    wight.cc.lehigh.edu(actions-runner)->>wight.cc.lehigh.edu: curl /_rollout
+    wight.cc.lehigh.edu(actions-runner)->>wight.cc.lehigh.edu: lint/test on wight test instance
+    wight.cc.lehigh.edu(actions-runner)->>us-docker.pkg.dev: docker push
+    wight.cc.lehigh.edu(actions-runner)->>islandora-stage.lib.lehigh.edu: curl /_rollout
+    islandora-stage.lib.lehigh.edu->>GitHub: git pull
     islandora-stage.lib.lehigh.edu->>us-docker.pkg.dev: docker pull
-    islandora-stage.lib.lehigh.edu->>islandora-stage.lib.lehigh.edu: docker compose --profile prod up -d
-    Alice-->>GitLab: Clicks prod deploy button
-    GitLab->>wight.cc.lehigh.edu: run .gitlab-ci.yml deploy_prod
-    wight.cc.lehigh.edu->>islandora-prod.lib.lehigh.edu: curl /_rollout
-    islandora-prod.lib.lehigh.edu->>GitLab: git pull
+    islandora-stage.lib.lehigh.edu->>islandora-stage.lib.lehigh.edu: docker compose up
+    Alice-->>GitHub: merge PR into main
+    Alice->>Alice: tests changes on staging
+    Alice->>GitHub: run .github/workflows/deploy-prod.yml
+    GitHub->>wight.cc.lehigh.edu(actions-runner): run .github/workflows/deploy-prod.yml
+    wight.cc.lehigh.edu(actions-runner)->>islandora-prod.lib.lehigh.edu: curl /_rollout
+    islandora-prod.lib.lehigh.edu->>GitHub: git pull
     islandora-prod.lib.lehigh.edu->>us-docker.pkg.dev: docker pull
-    islandora-prod.lib.lehigh.edu->>islandora-prod.lib.lehigh.edu: docker compose --profile prod up -d
+    islandora-prod.lib.lehigh.edu->>islandora-prod.lib.lehigh.edu: docker compose up
 ```
 
 If a rollout fails, often it can be caused by a change that causes the docker stack (specificaly traefik or the rollout container) to have its container recreated.
 
-Until we devise a way to gracefully handle recovering from this scenario you can get everything copacetic by just running `docker compose --profile PROFILE_NAME up -d` on the stack. An obvious remediation would be just trying to re-run the pipeline but knowning when to do that should be handled by the CI/CD process and not left up to committers to figure out.
+Until we devise a way to gracefully handle recovering from this scenario you can get everything copacetic by just running `sudo systemctl restart islandora` on the stack. An obvious remediation would be just trying to re-run the pipeline but knowning when to do that should be handled by the CI/CD process and not left up to committers to figure out.
 
 The state convergence process is wrapped in a [oneshot systemd unit](./scripts/systemd/islandora.service) installed on dev/stage/prod you can run from your laptop via
 
@@ -225,11 +242,11 @@ The state convergence process is wrapped in a [oneshot systemd unit](./scripts/s
 ./scripts/maintenance/fixup-ci.sh
 ```
 
-Which will ask for your password before running on each environment to avoid forcing a rollout across the fleet (and b/c it's a sudo command). Running that script on a given environment is akin to rolling out the `staging` branch to that environment. Meaning, any code on the `HEAD` of that branch will be put into that environment and the rollout process itself will cause around 30s of downtime.
+Which will ask for your password before running on each environment to avoid forcing a rollout across the fleet (and b/c it's a sudo command). Running that script on a given environment is akin to rolling out the `main` branch to that environment. Meaning, any code on the `HEAD` of that branch will be put into that environment and the rollout process itself will cause around 30s of downtime.
 
 ## Self Healing
 
-There is [a systemd timer+service](./scripts/systemd/health.service) that runs every minute that executes [a bash script](./scripts/maintenance/health.sh) that checks the health of the docker compose ISLE deployment. If a service is unhealthy or otherwise stopped, the script alerts via slack and basically just does `docker compose up -d`. Thrashing on the services is left to the tech admin to troubleshoot further.
+There is [a systemd service](./scripts/systemd/health.service) that starts [docker-autoheal](https://github.com/lehigh-university-libraries/docker-autoheal) which runs on a 10s timer to check the health of the docker compose ISLE deployment. If a service is unhealthy or otherwise stopped, the script alerts via slack and basically just does `docker compose up -d`. Thrashing on the services is left to the tech admin to troubleshoot further.
 
 ## Backups
 
@@ -249,7 +266,7 @@ Our staging server has read only access to our production filesystem to keep fil
 
 #### Google Cloud Storage
 
-There are also GCS buckets [defined via terraform](https://github.com/lehigh-university-libraries/gcloud-terraform/blob/main/projects/lehigh-preserve-isle/03-gcs.tf) that store files temporarily in a GCS bucket. These buckets are only used for a temporary holding place for user uploads.
+There are also GCS buckets [defined via terraform](https://github.com/lehigh-university-libraries/gcloud-terraform/blob/main/projects/lehigh-preserve-isle/03-gcs.tf) that store files temporarily in a GCS bucket. These buckets are only used for a temporary holding place for user uploads from [https://preserve.lehigh.edu/submit](https://preserve.lehigh.edu/submit)
 
 ## TLS Certificates
 
@@ -261,7 +278,7 @@ There is a third set of TLS certifactes in the kubernetes cluster managed by SET
 
 ```
 openssl s_client -connect isle-microservices.cc.lehigh.edu:443 -servername isle-microservices.cc.lehigh.edu <<EOF | openssl x509 -outform PEM > certs/lehigh.pem
-GET /houdini/healthcheck HTTP/1.1
+GET /houdini HTTP/1.1
 Host: isle-microservices.cc.lehigh.edu
 EOF
 ```

@@ -37,3 +37,24 @@ services:
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
+    healthcheck:
+      test: test /run/mysqld/mysqld.sock
+  github-actions-runner:
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main
+    environment:
+      GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
+      GITHUB_REPO: "https://github.com/lehigh-university-libraries/isle-preserve"
+      LABELS: isle
+    volumes:
+      - actions-runner-data:/app:rw
+      - /var/run/docker.sock:/var/run/docker.sock:z
+  gha-runner-updater:
+    image: docker:28.0.4-cli
+    working_dir: /app
+    entrypoint: /bin/sh
+    command: -c "while true; do /app/scripts/ci/update-gha.sh; sleep 600; done"
+    volumes:
+      - ./:/app
+      - /home/rollout/.docker:/root/.docker
+      - /home/rollout/.env:/home/rollout/.env
+      - /var/run/docker.sock:/var/run/docker.sock:z

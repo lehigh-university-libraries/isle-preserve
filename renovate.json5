@@ -12,6 +12,16 @@
       versioning: 'loose',
     },
     {
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner',
+      ],
+      pinDigests: false,
+      pinVersions: false,
+    },
+    {
       matchUpdateTypes: [
         'minor',
         'patch',
@@ -58,4 +68,3 @@
     enabled: true,
   },
 }
-
