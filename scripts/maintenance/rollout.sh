@@ -26,7 +26,6 @@ handle_error() {
 trap 'handle_error' ERR
 
 docker_compose() {
-    export GIT_BRANCH=main
     docker compose \
       --env-file .env \
       --env-file /home/rollout/.env \
