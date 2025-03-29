@@ -40,11 +40,19 @@ services:
     healthcheck:
       test: test /run/mysqld/mysqld.sock
   github-actions-runner:
-    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner@sha256:ae970d6d00c54d754eee124c61d32e48bfc45e4956027594c451e80de5268d0a
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main
     environment:
       GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
       GITHUB_REPO: "https://github.com/lehigh-university-libraries/isle-preserve"
       LABELS: isle
     volumes:
       - actions-runner-data:/app:rw
+      - /var/run/docker.sock:/var/run/docker.sock:z
+  gha-runner-updater:
+    image: docker:28.0.4-cli
+    working_dir: /app
+    entrypoint: /bin/sh
+    command: -c "while true; do /app/scripts/ci/update-gha.sh; sleep 600; done"
+    volumes:
+      - ./:/app
       - /var/run/docker.sock:/var/run/docker.sock:z

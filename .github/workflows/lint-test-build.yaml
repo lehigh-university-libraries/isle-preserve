@@ -22,10 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - uses: hadolint/hadolint-action@54c9adbab1582c2ef04b2016b760714a4bfde3cf # v3.1.0
-        with:
-          dockerfile: drupal/Dockerfile
-          verbose: true
+      - run: hadolint --verbose ./drupal/Dockerfile
 
       - name: composer install
         run: mkdir -p "${COMPOSER_HOME}" && composer install
