@@ -24,9 +24,11 @@ This is the development and production infrastructure for Lehigh Preserve.
 
 ### Network
 
-Staging and production domains are backends behind SET's managed haproxy instance.
+Staging and production ISLE deployments are backends behind SET's managed haproxy instance.
 
-Staging is a backend on SET's internal-only haproxy instance, which requires on-campus or VPN to access. Production is a backend on SET's external haproxy instance which allows `0.0.0.0/0` access. The external haproxy manages TLS certificates for the site as well as a "tarpit" ruleset to block known bad actors // bots.
+Staging is a backend on SET's internal-only haproxy instance, which requires on-campus or VPN to access. Production is a backend on SET's external haproxy instance which allows `0.0.0.0/0` access.
+
+haproxy manages TLS certificates for the site as well as a "tarpit" ruleset to block known bad actors // bots.
 
 ```mermaid
 flowchart TD
@@ -194,9 +196,19 @@ SET manages a grafana and telegraf stack to collect system level metrics on the 
 
 ## CI/CD
 
-We use a self-hosted runner to deploy into our infrastructure. The runner is on the dev server. It should only ever need a token to setup the runner set once, and it has a TTL of 1h. That can be rotated by editing `/home/rollout/.env and setting the `--token XXX` value from https://github.com/lehigh-university-libraries/isle-preserve/settings/actions/runners/new into the `GITHUB_RUNNER_TOKEN` variable.
+We use a self-hosted runner to deploy into our infrastructure. The runner is on the dev server, and is running via our [github-actions-runner docker image](https://github.com/lehigh-university-libraries/docker-builds/tree/main/actions-runner). The runner docker image should only need a valid runner registration token one time during initial setup, which has already been done. If it ever needs done again, you can edit `/home/rollout/.env` on `wight.cc.lehigh.edu` and set the `--token XXX` value found at https://github.com/lehigh-university-libraries/isle-preserve/settings/actions/runners/new into the `GITHUB_RUNNER_TOKEN` variable.
 
-The dev/stage/prod servers have a deploy key set at https://github.com/lehigh-university-libraries/isle-preserve/settings/keys to allow a `git pull`
+The dev/stage/prod servers have a deploy key set at https://github.com/lehigh-university-libraries/isle-preserve/settings/keys to allow a `git pull`. It's the SSH public key at `/home/rollout/.ssh/id_rsa.pub`. That user also needs to have GitHub in its `/home/rollout/.ssh/known_hosts` file to allow `git pull`
+
+Here is how the CI works. Basically, create a PR on a new branch. That will:
+
+- run lint on the custom drupal modules
+- build docker image for branch
+- deploy branch to dev
+- run tests
+- deploy branch to stage
+
+Once the PR merges the same thing will happen with the `main` branch. Once everything looks OK you can manually deploy to prod on the [deploy-prod.yaml GHA](https://github.com/lehigh-university-libraries/isle-preserve/actions/workflows/deploy-prod.yaml)
 
 ```mermaid
 sequenceDiagram
@@ -211,7 +223,9 @@ sequenceDiagram
     islandora-stage.lib.lehigh.edu->>us-docker.pkg.dev: docker pull
     islandora-stage.lib.lehigh.edu->>islandora-stage.lib.lehigh.edu: docker compose up
     Alice-->>GitHub: merge PR into main
-    GitHub->>wight.cc.lehigh.edu(actions-runner): run .github/workflows/deploy.yml
+    Alice->>Alice: tests changes on staging
+    Alice->>GitHub: run .github/workflows/deploy-prod.yml
+    GitHub->>wight.cc.lehigh.edu(actions-runner): run .github/workflows/deploy-prod.yml
     wight.cc.lehigh.edu(actions-runner)->>islandora-prod.lib.lehigh.edu: curl /_rollout
     islandora-prod.lib.lehigh.edu->>GitHub: git pull
     islandora-prod.lib.lehigh.edu->>us-docker.pkg.dev: docker pull

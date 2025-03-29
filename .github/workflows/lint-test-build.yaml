@@ -85,7 +85,6 @@ jobs:
       - run: ./scripts/ci/test.sh
 
   deploy-stage:
-    #    if: github.ref == 'refs/heads/main'
     runs-on: self-hosted
     needs: [deploy-test]
     steps:
