@@ -43,6 +43,9 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
           restore-keys: ${{ runner.os }}-composer-
 
+      - run: composer install
+        working-directory: codebase
+
       - run: ./scripts/ci/lint.sh
 
       - name: Extract branch name as docker tag
