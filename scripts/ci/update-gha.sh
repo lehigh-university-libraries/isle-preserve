@@ -5,8 +5,17 @@ set -eou pipefail
 RUNNER_CONTAINER="github-actions-runner"
 RUNNER_IMAGE="us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main"
 
+docker_compose() {
+    docker compose \
+      --env-file .env \
+      --env-file /home/rollout/.env \
+      -f docker-compose.yaml \
+      -f docker-compose.wight.yaml \
+      "$@"
+}
+
 ensure_idle() {
-    if docker compose logs -f docker-compose.yaml -f docker-compose.wight.yaml \--tail 1 "$RUNNER_CONTAINER" | grep -q "Running job"; then
+    if docker_compose logs --tail 1 "$RUNNER_CONTAINER" | grep -q "Running job"; then
         echo "Running a job"
         exit 0
     fi
@@ -28,9 +37,6 @@ fi
 ensure_idle
 
 echo "New image pulled, restarting runner..."
-docker compose \
-  -f docker-compose.yaml \
-  -f docker-compose.wight.yaml \
-  up \
+docker_compose up \
   "$RUNNER_CONTAINER" \
   -d

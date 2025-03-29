@@ -56,4 +56,5 @@ services:
     volumes:
       - ./:/app
       - /home/rollout/.docker:/root/.docker
+      - /home/rollout/.env:/home/rollout/.env
       - /var/run/docker.sock:/var/run/docker.sock:z
