@@ -15,8 +15,7 @@ ARG \
     # renovate: datasource=repology depName=alpine_3_20/ffmpeg
     FFMPEG_VERSION=6.1.1-r8
 
-RUN --mount=type=cache,id=install-packages-${TARGETARCH},sharing=locked,target=/root/.composer/cache \
-    --mount=type=bind,from=imagemagick,source=/packages,target=/packages \
+RUN --mount=type=bind,from=imagemagick,source=/packages,target=/packages \
     --mount=type=bind,from=imagemagick,source=/etc/apk/keys,target=/etc/apk/keys-imagemagick \
     --mount=type=bind,from=leptonica,source=/packages,target=/packages-leptonica \
     --mount=type=bind,from=leptonica,source=/etc/apk/keys,target=/etc/apk/keys-leptonica \
@@ -35,9 +34,5 @@ RUN --mount=type=cache,id=install-packages-${TARGETARCH},sharing=locked,target=/
 COPY --link rootfs /
 
 RUN --mount=type=cache,id=custom-drupal-composer-${TARGETARCH},sharing=locked,target=/root/.composer/cache \
-    --mount=type=bind,from=imagemagick,source=/packages,target=/packages \
-    --mount=type=bind,from=imagemagick,source=/etc/apk/keys,target=/etc/apk/keys-imagemagick \
-    --mount=type=bind,from=leptonica,source=/packages,target=/packages-leptonica \
-    --mount=type=bind,from=leptonica,source=/etc/apk/keys,target=/etc/apk/keys-leptonica \
     composer install -d /var/www/drupal && \
     chown -R nginx:nginx /var/www/drupal
