@@ -112,7 +112,7 @@
         "drupal/advanced_search": "^2.0.0@beta",
         "drupal/antibot": "^2.0",
         "drupal/autocomplete_deluxe": "^2.1",
-        "drupal/better_exposed_filters": "^6.0",
+        "drupal/better_exposed_filters": "^7.0",
         "drupal/bulk_update_fields": "^2.0@alpha",
         "drupal/colorbox": "^2.0",
         "drupal/config_update": "^2.0@alpha",
