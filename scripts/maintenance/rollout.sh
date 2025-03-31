@@ -11,6 +11,9 @@ if [ "$HOST" = "islandora-prod" ]; then
   DRUPAL_DOCKER_TAG=main
 fi
 
+echo "Deploying git branch $GIT_BRANCH, docker tag $DRUPAL_DOCKER_TAG"
+export DRUPAL_DOCKER_TAG
+
 send_slack_message() {
     escaped_message=$(echo "$@" | jq -Rsa .)
     curl -s -o /dev/null -XPOST "$SLACK_WEBHOOK" -d '{
