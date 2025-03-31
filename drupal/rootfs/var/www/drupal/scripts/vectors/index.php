@@ -5,14 +5,17 @@ use Drupal\node\Entity\Node;
 $entity_type_manager = \Drupal::entityTypeManager();
 $node_storage   = $entity_type_manager->getStorage('node');
 $sql = "SELECT nid, f.uri FROM node_field_data n
+  INNER JOIN node__field_model m ON n.nid = m.entity_id
   INNER JOIN media__field_media_of mo ON field_media_of_target_id = n.nid
   INNER JOIN media__field_media_use mu ON mo.entity_id = mu.entity_id AND field_media_use_target_id = 14
   INNER JOIN media__field_media_file mf ON mf.entity_id = mu.entity_id
   INNER JOIN file_managed f ON f.fid = field_media_file_target_id
-  WHERE n.type = 'islandora_object'
+  WHERE field_model_target_id <> :pc
     AND nid NOT IN (SELECT entity_id from node__embeddings)";
-
-$nids = \Drupal::database()->query($sql)->fetchAllKeyed();
+$d_args = [
+  ':pc' => lehigh_islandora_get_tid_by_name("Paged Content", "islandora_models")
+];
+$nids = \Drupal::database()->query($sql, $d_args)->fetchAllKeyed();
 if (count($nids) == 0) {
   exit(0);
 }

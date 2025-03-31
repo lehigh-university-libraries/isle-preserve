@@ -63,7 +63,9 @@ final class TransformSearchForm extends FormBase {
             ':nid' => $nid,
             ':vector' => $transform,
           ])->fetchField();
-        $form['results'][$nid]['#markup'] .= "<p>" . strip_tags($sentence) . "</p>";
+        if ($sentence) {
+          $form['results'][$nid]['#markup'] .= "<p>" . strip_tags($sentence) . "</p>";
+        }
         $form['results'][$nid]['#markup'] .= "<p>Distance: $row->distance</p>";
         $form['results'][$nid]['#markup'] .= '<p><a class="btn btn-primary" href="/node/' . $nid . '">View Item</a></p></div>';
       }

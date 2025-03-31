@@ -3,13 +3,16 @@
 set -eou pipefail
 
 GIT_BRANCH=${GIT_BRANCH:-main}
-DRUPAL_DOCKER_TAG=${DRUPAL_DOCKER_TAG:-main}
+DRUPAL_DOCKER_TAG=${DOCKER_TAG:-main}
 
 if [ "$HOST" = "islandora-prod" ]; then
   # safeguard to main for prod
   GIT_BRANCH=main
   DRUPAL_DOCKER_TAG=main
 fi
+
+echo "Deploying git branch $GIT_BRANCH, docker tag $DRUPAL_DOCKER_TAG"
+export DRUPAL_DOCKER_TAG
 
 send_slack_message() {
     escaped_message=$(echo "$@" | jq -Rsa .)
