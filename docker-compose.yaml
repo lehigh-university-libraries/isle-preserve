@@ -184,7 +184,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - ./tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.29@sha256:56a39bd5c2d5c0a656d0aca25ad5b0d8cd40b7050d2805b58a04194a16d3953b
+    image: memcached:1.6.38@sha256:30796e7bffa46884fa352eadeb6dff15829b2f51ef706421bc8333e401363725
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -390,7 +390,7 @@ services:
       SLACK_WEBHOOK: ${SLACK_WEBHOOK}
       ROLLOUT_LOCK_FILE: /opt/islandora/d10_lehigh_agile/rollout.lock
   traefik:
-    image: traefik:v3.3.3@sha256:19884a9d0b922b321c9cff54cbfe43f3169893041b8dd4ea6100677afaddce46
+    image: traefik:v3.3.4@sha256:cc11989f418e2cfe5e60fc40c92c1813be847f58eda15eced7d5ac890255ad9e
     command: >-
       --api.insecure=true
       --api.dashboard=true
