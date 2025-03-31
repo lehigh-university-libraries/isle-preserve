@@ -3,7 +3,7 @@
 set -eou pipefail
 
 GIT_BRANCH=${GIT_BRANCH:-main}
-DRUPAL_DOCKER_TAG=${DRUPAL_DOCKER_TAG:-main}
+DRUPAL_DOCKER_TAG=${DOCKER_TAG:-main}
 
 if [ "$HOST" = "islandora-prod" ]; then
   # safeguard to main for prod
