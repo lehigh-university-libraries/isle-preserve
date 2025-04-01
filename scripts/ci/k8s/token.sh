@@ -9,7 +9,7 @@ if [ ! -v TOKEN ]; then
     file_modification_time=$(stat -c "%Y" "$KUBECONFIG")
     file_age=$((current_time - file_modification_time))
     if [[ $file_age -lt 36000 ]]; then
-        echo "Not rotating token, only 10h old"
+        echo "Not rotating token, less than 10h old: $file_age"
         exit 0
     fi
 

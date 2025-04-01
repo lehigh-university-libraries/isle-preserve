@@ -259,7 +259,7 @@ This is the kubernetes service account our CI pipeline authenticates as.
 
 Then, whenever changes occur in `ci/k8s/*.yaml` that service account is used to `kubectl apply` [our microservice manifests](./ci/k8s)
 
-The token used to authenticate is rotated every hour on our self hosted runner via [scripts/ci/k8s/token.sh](./scripts/ci/k8s/token.sh). If needed, with your kubectl account you can generate a token with
+The token used to authenticate is rotated every 10 hours on our self hosted runner via [scripts/ci/k8s/token.sh](./scripts/ci/k8s/token.sh). If needed, with your kubectl account you can generate a token with
 
 ```
 kubectl create token isle-ci \
