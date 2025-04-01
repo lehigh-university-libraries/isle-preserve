@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-whisper
-          image: lehighlts/scyllaridae-whisper:main
+          image: lehighlts/scyllaridae-whisper:main@sha256:b9279ea3d231119d4c6624f874d09d90a707af17b0216d76b38d6e3dc850f0e4
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
