@@ -11,7 +11,7 @@ metadata:
   namespace: islandora-metadata
 rules:
   - apiGroups: ["", "apps"]
-    resources: ["deployments", "services"]
+    resources: ["deployments", "services", "pods"]
     verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
   - apiGroups: ["networking.k8s.io"]
     resources: ["ingresses"]

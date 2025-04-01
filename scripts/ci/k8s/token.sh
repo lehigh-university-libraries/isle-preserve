@@ -8,8 +8,8 @@ if [ ! -v TOKEN ]; then
     current_time=$(date +%s)
     file_modification_time=$(stat -c "%Y" "$KUBECONFIG")
     file_age=$((current_time - file_modification_time))
-    if [[ $file_age -lt 3600 ]]; then
-        echo "Not rotating token"
+    if [[ $file_age -lt 36000 ]]; then
+        echo "Not rotating token, only 10h old"
         exit 0
     fi
 
@@ -30,7 +30,7 @@ contexts:
 - name: ci-context
   context:
     cluster: kubernetes
-    KUBE_NAMESPACE: $KUBE_NAMESPACE
+    namespace: $KUBE_NAMESPACE
     user: $KUBE_SVC_ACCOUNT
 current-context: ci-context
 users:
