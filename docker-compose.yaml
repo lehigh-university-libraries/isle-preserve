@@ -67,7 +67,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:4.0.4
+    image: islandora/alpaca:4.0.4@sha256:39f65158ca83dca0074ef5e9e3355efb6a37bf56f7eaec01f18b25dfbafd9018
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -117,7 +117,7 @@ services:
     healthcheck:
       test: curl -s http://localhost:8080/healthcheck | grep OK
   mariadb:
-    image: islandora/mariadb:4.0.4
+    image: islandora/mariadb:4.0.4@sha256:b2d68bf5eb703a98f302ee0fa3d45fc843c1e233ff0aff689e925f63151982e5
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -137,7 +137,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:4.0.4
+    image: islandora/activemq:4.0.4@sha256:b962cf8be9baff044f8f38045d35e5d048bb7173bb26981e3deb8d233961576c
     labels:
       traefik.enable: false
     secrets:
@@ -330,7 +330,7 @@ services:
       memcached:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:4.0.4
+    image: islandora/fcrepo6:4.0.4@sha256:b07f9715eb5126ffbbcedce746ce26e8f642477887d6b6eb8ffddeccf73fa20a
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -350,7 +350,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:4.0.4
+    image: islandora/solr:4.0.4@sha256:f75b5406a3076b223c097cd2afaa6a91bc10f5ed86bb2840f63731cc1997c76b
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
