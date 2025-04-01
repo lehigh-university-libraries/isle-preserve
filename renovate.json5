@@ -5,6 +5,11 @@
     ':rebaseStalePrs',
     'customManagers:dockerfileVersions',
   ],
+  kubernetes: {
+    fileMatch: [
+      'ci/k8s/.+\\.yaml$',
+    ],
+  },
   packageRules: [
     {
       matchDatasources: [
