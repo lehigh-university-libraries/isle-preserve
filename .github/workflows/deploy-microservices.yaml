@@ -18,7 +18,6 @@ jobs:
 
       - name: rollout
         run: |
+          export KUBECONFIG=/etc/kubeconfigs/ci.yaml
           kubectl apply -f ./ci/k8s
           kubectl rollout status -f ./ci/k8s
-        env:
-          KUBECONFIG: ${{ env.KUBECONFIG }}
