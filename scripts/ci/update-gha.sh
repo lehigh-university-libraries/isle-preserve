@@ -2,6 +2,9 @@
 
 set -eou pipefail
 
+# make sure k8s svc token stays fresh
+/app/scripts/ci/k8s/token.sh
+
 RUNNER_CONTAINER="github-actions-runner"
 RUNNER_IMAGE="us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main"
 

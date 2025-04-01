@@ -15,3 +15,5 @@ tmp/*
 drupal.sql
 drupal.sql.gz
 unhealthy.lock
+
+conf/kubeconfigs/ci.yaml

@@ -45,16 +45,30 @@ services:
       GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
       GITHUB_REPO: "https://github.com/lehigh-university-libraries/isle-preserve"
       LABELS: isle
+      KUBECONFIG: /etc/kubeconfigs/ci.yaml
     volumes:
       - actions-runner-data:/app:rw
       - /var/run/docker.sock:/var/run/docker.sock:z
+      - ./conf/kubeconfigs:/etc/kubeconfigs:r
   gha-runner-updater:
-    image: docker:28.0.4-cli@sha256:c5e0b27a15f49b571f968defe19cc9a072d531ee90300ba5a1d2ea4dffa760e4
+    image: us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main
     working_dir: /app
     entrypoint: /bin/sh
     command: -c "while true; do /app/scripts/ci/update-gha.sh; sleep 600; done"
+    environment:
+      KUBECONFIG: /etc/kubeconfigs/ci.yaml
+      KUBE_SVC_ACCOUNT: isle-ci
+      KUBE_NAMESPACE: islandora-metadata
+      KUBE_CA_CERT_FILE: /run/secrets/KUBE_CA_CERT
+      KUBE_SERVER_URL: ${KUBE_SERVER_URL}
+    secrets:
+      - KUBE_CA_CERT
     volumes:
       - ./:/app
       - /home/rollout/.docker:/root/.docker
       - /home/rollout/.env:/home/rollout/.env
       - /var/run/docker.sock:/var/run/docker.sock:z
+      - ./conf/kubeconfigs:/etc/kubeconfigs:rw
+secrets:
+  KUBE_CA_CERT:
+    file: ./certs/kube.base64.pem

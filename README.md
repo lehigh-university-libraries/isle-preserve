@@ -7,6 +7,7 @@
   - [Setup as a systemd Service](#setup-as-a-systemd-service)
   - [Monitoring and Metrics](#monitoring-and-metrics)
 - [CI/CD](#cicd)
+  - [Microservices](#microservices)
 - [Self Healing](#self-healing)
 - [Backups](#backups)
 
@@ -243,6 +244,32 @@ The state convergence process is wrapped in a [oneshot systemd unit](./scripts/s
 ```
 
 Which will ask for your password before running on each environment to avoid forcing a rollout across the fleet (and b/c it's a sudo command). Running that script on a given environment is akin to rolling out the `main` branch to that environment. Meaning, any code on the `HEAD` of that branch will be put into that environment and the rollout process itself will cause around 30s of downtime.
+
+### Microservices
+
+All of the Islandora microservices are deployed in SET's kubernetes cluster.
+
+A CI service account was created one time via
+
+```
+$ kubectl apply -f ci/svc.yaml
+```
+
+This is the kubernetes service account our CI pipeline authenticates as.
+
+Then, whenever changes occur in `ci/k8s/*.yaml` that service account is used to `kubectl apply` [our microservice manifests](./ci/k8s)
+
+The token used to authenticate is rotated every hour on our self hosted runner via [scripts/ci/k8s/token.sh](./scripts/ci/k8s/token.sh). If needed, with your kubectl account you can generate a token with
+
+```
+kubectl create token isle-ci \
+  --namespace=islandora-metadata \
+  --duration=24h
+ssh wight.cc.lehigh.edu
+docker exec -it lehigh-d10-gha-runner-updater-1 bash
+export TOKEN=TOKEN-YOU-GOT-FROM-ABOVE-COMMAND
+/app/scripts/ci/k8s/token.sh
+```
 
 ## Self Healing
 
