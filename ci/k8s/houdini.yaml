@@ -1,0 +1,49 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: islandora-imagemagick
+spec:
+  selector:
+    app: islandora-imagemagick
+  ports:
+    - protocol: TCP
+      port: 8087
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: islandora-imagemagick
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: islandora-imagemagick
+  template:
+    metadata:
+      labels:
+        app: islandora-imagemagick
+    spec:
+      containers:
+        - name: scyllaridae-imagemagick
+          image: lehighlts/scyllaridae-imagemagick:main
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: "JWKS_URI"
+              value: "https://preserve.lehigh.edu/oauth/discovery/keys"
+          resources:
+            requests:
+              memory: "256Mi"
+              cpu: "100m"
+            limits:
+              memory: "10Gi"
+          ports:
+            - containerPort: 8080
+              hostPort: 8087
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
