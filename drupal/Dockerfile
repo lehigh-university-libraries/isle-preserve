@@ -1,7 +1,6 @@
-ARG ISLANDORA_DRUPAL_TAG=4@sha256:47bff97b55216814462ec4a002da079cd7584cee62446d9a69fb2bd6e01c3279
 FROM islandora/imagemagick:alpine-3.20.2-imagemagick-7.1.1.36-r0@sha256:a1fa03a18e7e232e380d070d196dc2c0e0a8762dd385640b932e28fcacfd9b05 as imagemagick
 FROM islandora/leptonica:alpine-3.20.2-leptonica-1.84.1-r0@sha256:9e9e46a328d8b55a61a352a6b06ff175f98e40cd5773c9bf93aac58fb56b65f7 as leptonica
-FROM islandora/drupal:${ISLANDORA_DRUPAL_TAG}
+FROM islandora/drupal:4@sha256:47bff97b55216814462ec4a002da079cd7584cee62446d9a69fb2bd6e01c3279
 
 ARG \
     # renovate: datasource=repology depName=alpine_3_20/php83-pdo_sqlite
@@ -33,6 +32,5 @@ RUN --mount=type=bind,from=imagemagick,source=/packages,target=/packages \
 
 COPY --link rootfs /
 
-RUN --mount=type=cache,id=custom-drupal-composer-${TARGETARCH},sharing=locked,target=/root/.composer/cache \
-    composer install -d /var/www/drupal && \
+RUN composer install -d /var/www/drupal && \
     chown -R nginx:nginx /var/www/drupal
