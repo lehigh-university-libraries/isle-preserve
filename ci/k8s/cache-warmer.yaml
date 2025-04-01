@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-cache-warmer
-          image: lehighlts/scyllaridae-cache-warmer:main
+          image: lehighlts/scyllaridae-cache-warmer:main@sha256:6aaccb9d66ff843490dc8b4d16f7d22c4c15ea67a1299ae1db28496f59c6c3a6
           imagePullPolicy: IfNotPresent
           env:
             - name: "DRUPAL_URL"

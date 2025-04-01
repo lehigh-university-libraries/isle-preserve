@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-mergepdf
-          image: lehighlts/scyllaridae-mergepdf:main
+          image: lehighlts/scyllaridae-mergepdf:main@sha256:674deec79735440275df81ac79cacf5431158259af9f509df5bd2251582c1030
           imagePullPolicy: IfNotPresent
           env:
             - name: MAX_THREADS

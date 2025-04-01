@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-coverpage
-          image: lehighlts/scyllaridae-coverpage:main
+          image: lehighlts/scyllaridae-coverpage:main@sha256:9bc80dd99c4c59a7fff303c16885f7d7810cd53a5691590b5e8de4ba02fd9263
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
