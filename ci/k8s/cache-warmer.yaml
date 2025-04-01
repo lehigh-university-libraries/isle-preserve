@@ -32,6 +32,8 @@ spec:
           env:
             - name: "DRUPAL_URL"
               value: "https://preserve.lehigh.edu"
+            - name: "JWKS_URI"
+              value: "https://preserve.lehigh.edu/oauth/discovery/keys"
           resources:
             requests:
               memory: "32Mi"
