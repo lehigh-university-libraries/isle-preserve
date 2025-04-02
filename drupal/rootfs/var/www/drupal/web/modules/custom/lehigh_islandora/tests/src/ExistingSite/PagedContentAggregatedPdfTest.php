@@ -69,6 +69,9 @@ class PagedContentAggregatedPdfTest extends DerivativeTestBase {
       ]);
     }
 
+    $cron = \Drupal::service('cron');
+    $cron->run();
+
     $pdfCreated = FALSE;
     foreach (range(0, 20) as $i) {
       $mid = \Drupal::database()->query('SELECT m.entity_id

@@ -4,6 +4,7 @@ namespace Drupal\lehigh_islandora\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\lehigh_islandora\Event\MediaInsertEvent;
+use Drupal\lehigh_islandora\Plugin\QueueWorker\IslandoraEventsCron;
 
 /**
  * Subscribes to custom media insert events.
@@ -80,39 +81,7 @@ class MediaInsertSubscriber implements EventSubscriberInterface {
           if (is_null($parent->entity)) {
             continue;
           }
-
-          // See if all service files have been created
-          // for the parent paged content item.
-          $readyToAggregate = \Drupal::database()->query('SELECT m.entity_id
-            FROM node__field_model m
-            INNER JOIN node__field_member_of c ON field_member_of_target_id = m.entity_id
-            INNER JOIN media__field_media_of cm ON cm.field_media_of_target_id = c.entity_id
-            INNER JOIN media__field_media_use cmu ON cmu.entity_id = cm.entity_id
-            WHERE m.entity_id = :nid
-              AND cmu.field_media_use_target_id = :service
-              AND field_model_target_id = :paged
-            GROUP BY m.entity_id HAVING COUNT(*) = (
-              SELECT COUNT(*)
-                FROM node__field_model m
-                INNER JOIN node__field_member_of c ON field_member_of_target_id = m.entity_id
-                INNER JOIN media__field_media_of cm ON cm.field_media_of_target_id = c.entity_id
-                INNER JOIN media__field_media_use cmu ON cmu.entity_id = cm.entity_id
-                WHERE m.entity_id = :nid
-                  AND cmu.field_media_use_target_id = :original
-                  AND field_model_target_id = :paged
-            )
-            LIMIT 1', [
-              ':nid' => $parent->entity->id(),
-              ':original' => lehigh_islandora_get_tid_by_name('Original File', 'islandora_media_use'),
-              ':service' => lehigh_islandora_get_tid_by_name('Service File', 'islandora_media_use'),
-              ':paged' => lehigh_islandora_get_tid_by_name('Paged Content', 'islandora_models'),
-            ])->fetchField();
-          if ($readyToAggregate) {
-            lehigh_islandora_clear_disk_cache($parent->entity);
-            $action_storage = \Drupal::entityTypeManager()->getStorage('action');
-            $action = $action_storage->load('paged_content_created_aggregated_pdf');
-            $action->execute([$parent->entity]);
-          }
+          IslandoraEventsCron::insertItem('node', $parent->entity->id(), 'paged_content_created_aggregated_pdf', TRUE);
         }
       }
 
