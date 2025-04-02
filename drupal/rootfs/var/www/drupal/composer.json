@@ -318,7 +318,7 @@
         "post-root-package-install": ["Islandora\\StarterSite::rootPackageInstall"]
     },
     "require-dev": {
-        "chi-teck/drupal-code-generator": "^3.3",
+        "chi-teck/drupal-code-generator": "^4.0",
         "drupal/config_inspector": "^2.1",
         "drupal/core-dev": "^10.1",
         "drupal/devel": "^5.0",
