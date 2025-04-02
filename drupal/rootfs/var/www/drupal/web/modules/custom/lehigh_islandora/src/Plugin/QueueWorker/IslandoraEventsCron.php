@@ -7,6 +7,7 @@ use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Session\AccountSwitcher;
 use Drupal\Core\Session\UserSession;
 use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -46,6 +47,13 @@ class IslandoraEventsCron extends QueueWorkerBase implements ContainerFactoryPlu
   protected $entityTypeManager;
 
   /**
+   * The account switcher service.
+   *
+   * @var \Drupal\Core\Session\AccountSwitcher
+   */
+  protected $accountSwitcher;
+
+  /**
    * Constructs a new IslandoraEventsCron object.
    *
    * @param array $configuration
@@ -60,12 +68,15 @@ class IslandoraEventsCron extends QueueWorkerBase implements ContainerFactoryPlu
    *   The logger channel.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $accountSwitcher
+   *   The account switcher service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $db, LoggerChannelInterface $logger, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Connection $db, LoggerChannelInterface $logger, EntityTypeManagerInterface $entityTypeManager, AccountSwitcher $accountSwitcher) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->db = $db;
     $this->logger = $logger;
     $this->entityTypeManager = $entityTypeManager;
+    $this->accountSwitcher = $accountSwitcher;
   }
 
   /**
@@ -78,7 +89,8 @@ class IslandoraEventsCron extends QueueWorkerBase implements ContainerFactoryPlu
       $plugin_definition,
       $container->get('database'),
       $container->get('logger.factory')->get('lehigh_islandora'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('account_switcher')
     );
   }
 
@@ -107,16 +119,16 @@ class IslandoraEventsCron extends QueueWorkerBase implements ContainerFactoryPlu
       $this->logger->error('Unknown action: @action', ['@action' => $action_id]);
       return;
     }
-    $accountSwitcher = \Drupal::service('account_switcher');
+
     $account = User::load($entity->getOwnerId());
     $userSession = new UserSession([
       'uid'   => $account->id(),
       'name'  => $account->getDisplayName(),
       'roles' => $account->getRoles(),
     ]);
-    $accountSwitcher->switchTo($userSession);
+    $this->accountSwitcher->switchTo($userSession);
     $action->execute([$entity]);
-    $accountSwitcher->switchBack();
+    $this->accountSwitcher->switchBack();
   }
 
   /**
