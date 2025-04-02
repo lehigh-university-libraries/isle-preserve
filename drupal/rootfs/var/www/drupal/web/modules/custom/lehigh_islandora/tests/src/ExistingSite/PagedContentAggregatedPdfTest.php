@@ -69,10 +69,10 @@ class PagedContentAggregatedPdfTest extends DerivativeTestBase {
       ]);
     }
 
-    // give derivatives time to process
+    // Give derivatives time to process.
     sleep(30);
 
-    // run cron to emit our event from the queue
+    // Run cron to emit our event from the queue.
     \Drupal::service('cron')->run();
 
     $pdfCreated = FALSE;
