@@ -105,6 +105,9 @@ jobs:
 
       - run: ./scripts/ci/test.sh
 
+      - if: ${{ always() }}
+        run: ./scripts/ci/cleanup.sh
+
   deploy-stage:
     runs-on: self-hosted
     needs: [deploy-test]
