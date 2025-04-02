@@ -5,7 +5,7 @@ if (getenv("DRUPAL_DEFAULT_SITE_URL") !== "wight.cc.lehigh.edu") {
 }
 
 $connection = \Drupal::database();
-$patterns = ['node%', 'media%'];
+$patterns = ['node%', 'media%', 'file%', 'taxonomy_index'];
 foreach ($patterns as $pattern) {
   $result = $connection->query("SHOW TABLES LIKE :pattern", [':pattern' => $pattern]);
   $tables = $result->fetchCol();
