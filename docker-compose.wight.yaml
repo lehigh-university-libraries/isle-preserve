@@ -2,7 +2,7 @@ services:
   alpaca:
     environment:
       ALPACA_MAX_REDELIVERIES: 1
-      ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 1
+      ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 3
       ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
   mergepdf:
