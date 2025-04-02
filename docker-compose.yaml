@@ -67,7 +67,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:4.0.4@sha256:39f65158ca83dca0074ef5e9e3355efb6a37bf56f7eaec01f18b25dfbafd9018
+    image: islandora/alpaca:4.0.5@sha256:e2fdb90ef441e8585ee81e093e047527c87a3b4d7254dd59f9932b9682c45b87
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -117,7 +117,7 @@ services:
     healthcheck:
       test: curl -s http://localhost:8080/healthcheck | grep OK
   mariadb:
-    image: islandora/mariadb:4.0.4@sha256:b2d68bf5eb703a98f302ee0fa3d45fc843c1e233ff0aff689e925f63151982e5
+    image: islandora/mariadb:4.0.5@sha256:b459568a24056ba6bd4288d6400e7816421395fb7f637385b7aa482a8df39777
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -137,7 +137,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:4.0.4@sha256:b962cf8be9baff044f8f38045d35e5d048bb7173bb26981e3deb8d233961576c
+    image: islandora/activemq:4.0.5@sha256:28ab4563e8fbbd5e6c424e2d15f59d4fe55587e379ea1ce4b0d96799a65cd438
     labels:
       traefik.enable: false
     secrets:
@@ -184,7 +184,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - ./tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.38@sha256:30796e7bffa46884fa352eadeb6dff15829b2f51ef706421bc8333e401363725
+    image: memcached:1.6.38@sha256:ab338da3b6bc39fe4f340aba0dc10d31ab35159ae292c97599d387ca25f7100b
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -359,7 +359,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:4.0.4@sha256:b07f9715eb5126ffbbcedce746ce26e8f642477887d6b6eb8ffddeccf73fa20a
+    image: islandora/fcrepo6:4.0.5@sha256:b39f125493d9c289042c192f49d2117c403a44b8455a6291db261674fe5aadc8
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -379,7 +379,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:4.0.4@sha256:f75b5406a3076b223c097cd2afaa6a91bc10f5ed86bb2840f63731cc1997c76b
+    image: islandora/solr:4.0.5@sha256:8eb3f614e17d5709010b0ba475277081406c6201294ab762fedbb0d43a1040f1
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
@@ -419,7 +419,7 @@ services:
       SLACK_WEBHOOK: ${SLACK_WEBHOOK}
       ROLLOUT_LOCK_FILE: /opt/islandora/d10_lehigh_agile/rollout.lock
   traefik:
-    image: traefik:v3.3.4@sha256:cc11989f418e2cfe5e60fc40c92c1813be847f58eda15eced7d5ac890255ad9e
+    image: traefik:v3.3.5@sha256:104204dadedf5d1284f8ef8f97f705649ac81aa6f7a6c9abf13e2c59245b8abc
     command: >-
       --api.insecure=true
       --api.dashboard=true
