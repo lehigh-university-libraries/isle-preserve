@@ -99,3 +99,13 @@ lehigh_islandora.transform_search:
     _form: 'Drupal\lehigh_islandora\Form\TransformSearchForm'
   requirements:
     _permission: "access content"
+
+lehigh_islandora.queue:
+  path: "/admin/reports/queue"
+  defaults:
+    _form: '\Drupal\lehigh_islandora\Form\ProcessQueue'
+    _title: "Islandora events queue"
+  requirements:
+    _permission: "administer rest resources"
+  options:
+    _admin_route: TRUE

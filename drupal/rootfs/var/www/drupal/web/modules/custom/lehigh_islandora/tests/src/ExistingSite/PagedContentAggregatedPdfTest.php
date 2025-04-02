@@ -69,8 +69,16 @@ class PagedContentAggregatedPdfTest extends DerivativeTestBase {
       ]);
     }
 
+    // Give derivatives time to process.
+    sleep(30);
+
     $pdfCreated = FALSE;
-    foreach (range(0, 20) as $i) {
+    foreach (range(0, 30) as $i) {
+      // Run cron to emit our event from the queue.
+      if ($i % 10 == 0) {
+        \Drupal::service('cron')->run();
+      }
+
       $mid = \Drupal::database()->query('SELECT m.entity_id
         FROM media__field_media_of m
         INNER JOIN media__field_media_use mu ON mu.entity_id = m.entity_id
