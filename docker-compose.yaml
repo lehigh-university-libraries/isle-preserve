@@ -239,7 +239,7 @@ services:
       traefik.http.middlewares.redirect-sans.redirectregex.permanent: true
       traefik.http.middlewares.redirect-sans.redirectregex.regex: ^https?://([^/]+)(/.*)?
       traefik.http.middlewares.redirect-sans.redirectregex.replacement: https://${DOMAIN}$${2}
-    environment:
+    environment: &drupal-environment
       DEVELOPMENT_ENVIRONMENT: false
       DRUPAL_DEFAULT_BROKER_URL: "tcp://activemq:61613"
       DRUPAL_DEFAULT_CANTALOUPE_URL: "https://${DOMAIN}/cantaloupe/iiif/2"
@@ -328,6 +328,35 @@ services:
       solr:
         condition: service_healthy
       memcached:
+        condition: service_healthy
+  drupal-cron:
+    image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${DRUPAL_DOCKER_TAG}
+    entrypoint: /bin/bash
+    command: /var/www/drupal/scripts/cron.sh
+    environment:
+      <<: [*drupal-environment]
+    secrets:
+      - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
+      - source: DB_ROOT_PASSWORD
+      - source: DRUPAL_DEFAULT_ACCOUNT_PASSWORD
+      - source: DRUPAL_DEFAULT_DB_PASSWORD
+      - source: DRUPAL_DEFAULT_SALT
+      - source: JWT_PRIVATE_KEY
+      - source: JWT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+        target: CERT_PUBLIC_KEY
+    volumes:
+      - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:rw
+      - /opt/islandora/volumes/drupal-private-files:/var/www/drupal/private:rw
+      - /opt/islandora/volumes/fcrepo-data/home/data/ocfl-root:/fcrepo:r
+      - drupal-solr-config:/opt/solr/server/solr/default:z,rw
+      - ./tmp/drupal:/tmp:rw
+      - ./conf/nginx/workbench.fpm.conf.toml:/etc/confd/conf.d/workbench.fpm.conf.toml:r
+      - ./secrets/GOOGLE_APPLICATION_CREDENTIALS:/tmp/svc.json:r
+    healthcheck:
+      test: pgrep /var/www/drupal/scripts/cron.sh
+    depends_on:
+      drupal:
         condition: service_healthy
   fcrepo:
     image: islandora/fcrepo6:4.0.4@sha256:b07f9715eb5126ffbbcedce746ce26e8f642477887d6b6eb8ffddeccf73fa20a
