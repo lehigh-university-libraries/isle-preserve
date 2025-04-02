@@ -7,6 +7,8 @@ use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Session\UserSession;
+use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -84,6 +86,7 @@ class IslandoraEventsCron extends QueueWorkerBase implements ContainerFactoryPlu
    * {@inheritdoc}
    */
   public function processItem($data) {
+
     $action_id = $data['action'];
     $entity_type = $data['entity_type'];
     $entity_id = $data['entity_id'];
@@ -104,7 +107,16 @@ class IslandoraEventsCron extends QueueWorkerBase implements ContainerFactoryPlu
       $this->logger->error('Unknown action: @action', ['@action' => $action_id]);
       return;
     }
+    $accountSwitcher = \Drupal::service('account_switcher');
+    $account = User::load($entity->getOwnerId());
+    $userSession = new UserSession([
+      'uid'   => $account->id(),
+      'name'  => $account->getDisplayName(),
+      'roles' => $account->getRoles(),
+    ]);
+    $accountSwitcher->switchTo($userSession);
     $action->execute([$entity]);
+    $accountSwitcher->switchBack();
   }
 
   /**
