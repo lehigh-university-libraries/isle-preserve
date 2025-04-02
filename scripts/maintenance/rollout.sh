@@ -64,7 +64,6 @@ git pull origin "$GIT_BRANCH"
 docker_compose pull --quiet
 
 docker compose exec drupal drush state:set system.maintenance_mode 1 --input-format=integer
-docker compose exec drupal drush cr
 
 docker_compose down drupal memcached
 
