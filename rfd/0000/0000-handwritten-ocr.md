@@ -35,7 +35,7 @@ We plan to use the `Resource Type` field to determine what material was handwrit
 
 If the media is a PDF, we will need to split the PDF into individual images and send each image to the HTR service. So PDFs and images are treated similarly.
 
-Should I use `Mixed material` or `Manuscript` if it contains printed text and handwriting? I have also used `Mixed material` to describe items that contain both photographs and text, so it is not a guarantee of handwriting being present.
+Both `Mixed material` and `Manuscript` will result in having the material sent through the HTR service.
 
 #### Automated detection
 
