@@ -354,7 +354,7 @@ services:
       - ./conf/nginx/workbench.fpm.conf.toml:/etc/confd/conf.d/workbench.fpm.conf.toml:r
       - ./secrets/GOOGLE_APPLICATION_CREDENTIALS:/tmp/svc.json:r
     healthcheck:
-      test: pgrep /var/www/drupal/scripts/cron.sh
+      test: ps aux | grep -q "/var/www/drupal/scripts/cron.sh"
     depends_on:
       drupal:
         condition: service_healthy
