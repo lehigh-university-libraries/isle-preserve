@@ -17,7 +17,7 @@ $settings['reverse_proxy_addresses'] = [
   '172.0.0.0/8'
 ];
 
-$settings['reverse_proxy_trusted_headers'] = \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR | 
+$settings['reverse_proxy_trusted_headers'] = \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_FOR |
 \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PROTO | \Symfony\Component\HttpFoundation\Request::HEADER_X_FORWARDED_PORT;
 
 /**
@@ -33,7 +33,7 @@ $settings['reverse_proxy_trusted_headers'] = \Symfony\Component\HttpFoundation\R
  * See https://www.drupal.org/documentation/modules/file for more information
  * about securing private files.
  */
-$settings['file_private_path'] = '/var/www/drupal/private/';
+$settings['file_private_path'] = '/var/www/drupal/private';
 $settings['file_assets_path'] = 'sites/default/files';
 
 // Shared configuration, config_split is used for any site specific differences.
