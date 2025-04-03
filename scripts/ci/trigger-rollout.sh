@@ -26,13 +26,13 @@ EOF
 COUNT=0
 while true; do
   STATUS=$(curl -sk \
-    --max-time 900 \
+    --max-time 300 \
     -w '%{http_code}' \
     -o /dev/null  \
     -d "$PAYLOAD" \
     -H "Authorization: bearer ${TOKEN}" \
     -H "X-Forwarded-For: 128.180.2.69" \
-    "${ROLLOUT_URL}")
+    "${ROLLOUT_URL}" || 0)
 
   echo "Received $STATUS"
   if [ ${STATUS} = 200 ]; then
