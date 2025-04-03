@@ -1,5 +1,6 @@
 name: lint-test-build-push
 on:
+  workflow_dispatch:
   push:
     branches:
       - "**"
