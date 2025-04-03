@@ -2,6 +2,14 @@
 
 set -eou pipefail
 
+ENV_FILES=(
+    .env
+    /home/rollout/.env
+)
+for ENV in "${ENV_FILES[@]}"; do
+    export $(grep -Ev '^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG)' "$ENV" | xargs)
+done
+
 GIT_BRANCH=${GIT_BRANCH:-main}
 DRUPAL_DOCKER_TAG=${DOCKER_TAG:-main}
 
@@ -99,5 +107,7 @@ if [ "$HOST" = "islandora-prod" ]; then
   docker compose exec drupal drush scr scripts/performance/cache-warmer.php
 else
   docker compose exec drupal rm -rf /var/www/drupal/private/canonical/islandora-stage.lib.lehigh.edu || echo "No dir"
-  docker system prune -af
+  if [ "$(( RANDOM % 10 ))" -eq 0 ]; then
+    docker system prune -af
+  fi
 fi

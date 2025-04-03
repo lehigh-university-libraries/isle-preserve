@@ -1,0 +1,155 @@
+http:
+  routers:
+    http_redirect:
+      rule: PathPrefix(`/`)
+      entryPoints:
+        - http
+      middlewares:
+        - https-redirect
+      service: drupal
+    # send prod requests for fabricator to staging
+    fabricator-proxy:
+      rule: Host(`preserve.lehigh.edu`) && PathPrefix(`/workbench`)
+      entryPoints:
+        - https
+      tls: {}
+      middlewares:
+        - fabricator-proxy-headers
+      service: fabricator-proxy-service
+      priority: 100
+    fabricator:
+      rule: PathPrefix(`/workbench`)
+      entryPoints:
+        - https
+      tls: {}
+      service: fabricator
+    cantaloupe:
+      rule: PathPrefix(`/cantaloupe`)
+      entryPoints:
+        - https
+      middlewares:
+        - cantaloupe-strip-prefix
+        - cantaloupe-custom-request-headers
+      tls: {}
+      service: cantaloupe
+    rollout:
+      rule: PathPrefix(`/_rollout`)
+      entryPoints:
+        - https
+      tls: {}
+      middlewares:
+        - rollout-strip-prefix
+        - rollout-ip
+      service: rollout
+    redirect_i7:
+      rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
+      service: drupal
+      entryPoints:
+        - https
+      middlewares:
+        - redirect-sans
+      tls: {}
+    # if none of the other rules apply, serve drupal
+    drupal:
+      rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
+      entryPoints:
+        - https
+      tls: {}
+      priority: 10
+      middlewares:
+        - captcha-protect
+      service: drupal
+  services:
+    fabricator:
+      loadBalancer:
+        servers:
+          - url: http://fabricator:8080
+    cantaloupe:
+      loadBalancer:
+        servers:
+          - url: http://cantaloupe:8182
+    drupal:
+      loadBalancer:
+        servers:
+          - url: http://drupal:80
+    rollout:
+      loadBalancer:
+        servers:
+          - url: http://rollout:8080
+    fabricator-proxy-service:
+      loadBalancer:
+        servers:
+          - url: https://islandora-stage.lib.lehigh.edu/workbench
+  middlewares:
+    https-redirect:
+      redirectScheme:
+        scheme: https
+        permanent: true
+    cantaloupe-custom-request-headers:
+      headers:
+        customRequestHeaders:
+          X-Forwarded-Path: /cantaloupe
+    cantaloupe-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - /cantaloupe
+    captcha-protect:
+      plugin:
+        captcha-protect:
+          challengeTmpl: /challenge.tmpl.html
+          captchaProvider: turnstile
+          siteKey: {{ env "TURNSTILE_SITE_KEY" }}
+          secretKey: {{ env "TURNSTILE_SECRET_KEY" }}
+          enableStatsPage: "true"
+          ipForwardedHeader: X-Forwarded-For
+          goodBots:
+            - apple.com
+            - archive.org
+            - commoncrawl.org
+            - duckduckgo.com
+            - iframely.com
+            - facebook.com
+            - google.com
+            - googlebot.com
+            - googleusercontent.com
+            - instagram.com
+            - kagibot.org
+            - linkedin.com
+            - msn.com
+            - openalex.org
+            - twitter.com
+            - x.com
+          protectRoutes: /
+          protectParameters: "true"
+          exemptIps: 128.180.0.0/16
+          ipv4subnetMask: 8
+          persistentStateFile: /tmp/state.json
+          protectFileExtensions: jp2,tiff,php,html
+    redirect-sans:
+      redirectRegex:
+        regex: ^https?://([^/]+)(/.*)?
+        replacement: https://{{ env "DOMAIN" }}$${2}
+        permanent: true
+    rollout-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - /_rollout
+    rollout-ip:
+      ipWhiteList:
+        sourceRange:
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+          - 127.0.0.1/32
+          - 128.180.2.69/32
+        ipStrategy:
+          depth: {{ env "ROLLOUT_DEPTH" }}
+    fabricator-proxy-headers:
+      headers:
+        customRequestHeaders:
+          Host: islandora-stage.lib.lehigh.edu
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/ssl/traefik/cert.pem
+        keyFile: /etc/ssl/traefik/privkey.pem

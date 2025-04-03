@@ -132,3 +132,6 @@ services:
       - xhgui-mongodb
   rollout:
     profiles: [donotstart]
+  traefik:
+    ports:
+      - 8080:8080
