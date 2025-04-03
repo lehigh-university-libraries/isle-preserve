@@ -17,3 +17,4 @@ drupal.sql.gz
 unhealthy.lock
 
 conf/kubeconfigs/ci.yaml
+drupal/rootfs/var/www/drupal/phpcs.xml.dist

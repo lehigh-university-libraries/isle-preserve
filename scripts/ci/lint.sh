@@ -2,23 +2,16 @@
 
 set -eou pipefail
 
-TRAEFIK_CONFIG="./conf/traefik/config.yaml"
-
-# need ggrep on mac OS for grep -P
-grep() {
-  if [[ "$OSTYPE" == "darwin"* ]]; then
-    ggrep "$@"
-    return
-  fi
-  grep "$@"
-}
+TRAEFIK_CONFIG="./conf/traefik/config.tmpl"
 
 check_traefik() {
     DOCKER_VARS=$(docker compose config traefik --format json | \
       jq -r '.services.traefik.environment | keys[]' | sort -u)
 
-    TRAEFIK_VARS=$(grep -oP '(?<!\$)\$\{[^}]+\}' "$TRAEFIK_CONFIG" | \
-      sed 's/[${}]//g' | sort -u)
+    TRAEFIK_VARS=$(grep "{{ env" "$TRAEFIK_CONFIG" | \
+      awk -F '{{ env "' '{print $2}' | \
+      awk -F '" }}' '{print $1}' | \
+      sort -u)
 
     echo "Environment variables defined in docker-compose (traefik):"
     printf "%s\n" "$DOCKER_VARS"
