@@ -32,7 +32,7 @@ while true; do
     -d "$PAYLOAD" \
     -H "Authorization: bearer ${TOKEN}" \
     -H "X-Forwarded-For: 128.180.2.69" \
-    "${ROLLOUT_URL}" || 0)
+    "${ROLLOUT_URL}" || echo 0)
 
   echo "Received $STATUS"
   if [ ${STATUS} = 200 ]; then
