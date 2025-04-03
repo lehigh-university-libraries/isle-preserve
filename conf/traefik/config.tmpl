@@ -98,8 +98,8 @@ http:
         captcha-protect:
           challengeTmpl: /challenge.tmpl.html
           captchaProvider: turnstile
-          siteKey: {? {env "TURNSTILE_SITE_KEY": ''} : ''}
-          secretKey: {? {env "TURNSTILE_SECRET_KEY": ''} : ''}
+          siteKey: {{ env "TURNSTILE_SITE_KEY" }}
+          secretKey: {{ env "TURNSTILE_SECRET_KEY" }}
           enableStatsPage: "true"
           ipForwardedHeader: X-Forwarded-For
           goodBots:
@@ -142,7 +142,7 @@ http:
           - 127.0.0.1/32
           - 128.180.2.69/32
         ipStrategy:
-          depth: {? {env "ROLLOUT_DEPTH": ''} : ''}
+          depth: {{ env "ROLLOUT_DEPTH" }}
     fabricator-proxy-headers:
       headers:
         customRequestHeaders:
