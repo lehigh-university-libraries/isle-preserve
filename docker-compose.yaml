@@ -101,16 +101,6 @@ services:
     entrypoint:
       - /app/fabricator
       - --server
-    labels:
-      traefik.enable: true
-      traefik.http.middlewares.https-redirect.redirectscheme.permanent: true
-      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
-      traefik.http.routers.fabricator.entrypoints: https
-      traefik.http.routers.fabricator.rule: PathPrefix(`/workbench`)
-      traefik.http.routers.fabricator.tls.certresolver: resolver
-      traefik.http.routers.fabricator.tls: true
-      traefik.http.routers.fabricator.service: fabricator
-      traefik.http.services.fabricator.loadbalancer.server.port: 8080
     environment:
       FABRICATOR_DATA_MOUNT: /data
       SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
@@ -138,8 +128,6 @@ services:
         condition: service_healthy
   activemq:
     image: islandora/activemq:4.0.5@sha256:28ab4563e8fbbd5e6c424e2d15f59d4fe55587e379ea1ce4b0d96799a65cd438
-    labels:
-      traefik.enable: false
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -164,22 +152,6 @@ services:
     secrets:
       - source: CERT_AUTHORITY
         target: CERT_PUBLIC_KEY
-    labels:
-      traefik.enable: true
-      traefik.http.middlewares.https-redirect.redirectscheme.permanent: true
-      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
-      traefik.http.middlewares.cantaloupe-custom-request-headers.headers.customrequestheaders.X-Forwarded-Path: /cantaloupe
-      traefik.http.middlewares.cantaloupe-strip-prefix.stripprefix.prefixes: /cantaloupe
-      traefik.http.middlewares.cantaloupe.chain.middlewares: cantaloupe-strip-prefix,cantaloupe-custom-request-headers
-      traefik.http.routers.cantaloupe_http.entrypoints: http
-      traefik.http.routers.cantaloupe_http.middlewares: https-redirect
-      traefik.http.routers.cantaloupe_http.rule: Host(`${DOMAIN}`) && PathPrefix(`/cantaloupe`)
-      traefik.http.routers.cantaloupe_http.service: cantaloupe
-      traefik.http.routers.cantaloupe_https.middlewares: cantaloupe
-      traefik.http.routers.cantaloupe_https.entrypoints: https
-      traefik.http.routers.cantaloupe_https.rule: Host(`${DOMAIN}`) && PathPrefix(`/cantaloupe`)
-      traefik.http.routers.cantaloupe_https.tls: true
-      traefik.http.services.cantaloupe.loadbalancer.server.port: 8182
     volumes:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - ./tmp/cantaloupe:/tmp:rw
@@ -191,54 +163,6 @@ services:
         bash -c "echo stats | (exec 3<>/dev/tcp/localhost/11211; cat >&3; timeout 0.1 cat <&3; exec 3<&-) | grep pid"
   drupal:
     image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${DRUPAL_DOCKER_TAG}
-    labels:
-      traefik.enable: true
-      traefik.http.routers.drupal_http.entrypoints: http
-      traefik.http.routers.drupal_http.middlewares: https-redirect
-      traefik.http.routers.drupal_http.service: drupal
-      traefik.http.routers.drupal_https.entrypoints: https
-      traefik.http.routers.drupal_https.service: drupal
-      traefik.http.routers.drupal_https.tls: true
-      traefik.http.services.drupal.loadbalancer.server.port: 80
-
-      traefik.http.middlewares.https-redirect.redirectscheme.permanent: true
-      traefik.http.middlewares.https-redirect.redirectscheme.scheme: https
-
-      traefik.http.routers.drupal_https.tls.certresolver: resolver
-      traefik.http.routers.drupal_https.priority: 10
-
-      traefik.http.routers.drupal_http.rule: Host(`${DOMAIN}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
-      traefik.http.routers.drupal_https.rule: Host(`${DOMAIN}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
-
-      traefik.http.routers.drupal_https.middlewares: captcha-protect
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.challengeTmpl: /challenge.tmpl.html
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.captchaProvider: turnstile
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.siteKey: ${TURNSTILE_SITE_KEY}
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.secretKey: ${TURNSTILE_SECRET_KEY}
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.enableStatsPage: "true"
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.ipForwardedHeader: "X-Forwarded-For"
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.goodBots: apple.com,archive.org,duckduckgo.com,iframely.com,facebook.com,google.com,googlebot.com,googleusercontent.com,instagram.com,kagibot.org,linkedin.com,msn.com,openalex.org,twitter.com,x.com
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.protectRoutes: "/"
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.protectParameters: "true"
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.exemptIps: 128.180.0.0/16
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.persistentStateFile: /tmp/state.json
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.ipv4subnetMask: 8
-      traefik.http.middlewares.captcha-protect.plugin.captcha-protect.persistentStateFile:protectFileExtensions: "jp2,tiff,php,html"
-
-      traefik.http.routers.redirect_http.entrypoints: http
-      traefik.http.routers.redirect_http.service: drupal
-      traefik.http.routers.redirect_http.rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
-      traefik.http.routers.redirect_http.middlewares: redirect-sans
-
-      traefik.http.routers.redirect_https.entrypoints: https
-      traefik.http.routers.redirect_https.service: drupal
-      traefik.http.routers.redirect_https.rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
-      traefik.http.routers.redirect_https.middlewares: redirect-sans
-      traefik.http.routers.redirect_https.tls: true
-
-      traefik.http.middlewares.redirect-sans.redirectregex.permanent: true
-      traefik.http.middlewares.redirect-sans.redirectregex.regex: ^https?://([^/]+)(/.*)?
-      traefik.http.middlewares.redirect-sans.redirectregex.replacement: https://${DOMAIN}$${2}
     environment: &drupal-environment
       DEVELOPMENT_ENVIRONMENT: false
       DRUPAL_DEFAULT_BROKER_URL: "tcp://activemq:61613"
@@ -390,20 +314,9 @@ services:
           nocopy: true
   rollout:
     image: us-docker.pkg.dev/lehigh-lts-images/internal/rollout:main
-    labels:
-      traefik.enable: true
-      traefik.http.routers.rollout.entrypoints: https
-      traefik.http.routers.rollout.rule: PathPrefix(`/_rollout`)
-      traefik.http.routers.rollout.middlewares: rollout-strip-prefix,rollout-ip
-      traefik.http.middlewares.rollout-strip-prefix.stripPrefix.prefixes: /_rollout
-      traefik.http.routers.rollout.tls.certresolver: resolver
-      traefik.http.routers.rollout.tls: true
-      traefik.http.services.rollout.loadbalancer.server.port: 8080
-      traefik.http.middlewares.rollout-ip.ipwhitelist.sourcerange: 172.16.0.0/12, 192.168.0.0/16, 127.0.0.1/32, 128.180.2.69/32
-      traefik.http.middlewares.rollout-ip.ipwhitelist.ipstrategy.depth: ${ROLLOUT_DEPTH}
     volumes:
       - /opt/islandora/d10_lehigh_agile:/opt/islandora/d10_lehigh_agile
-      - /opt/islandora/d10_lehigh_agile/scripts/maintenance/rollout.sh:/rollout.sh
+      - /opt/islandora/d10_lehigh_agile/scripts/maintenance/rollout.sh:/rollout.sh:ro
       - /home/rollout/.ssh:/root/.ssh
       - /home/rollout/.gitconfig:/root/.gitconfig
       - /home/rollout/.docker:/root/.docker
@@ -431,14 +344,18 @@ services:
       --entryPoints.https.forwardedHeaders.trustedIPs=${FRONTEND_IP_1},${FRONTEND_IP_2},${FRONTEND_IP_3}
       --entryPoints.ssh.address=:22
       --entryPoints.https.transport.respondingTimeouts.readTimeout=3600
-      --providers.file.filename=/etc/traefik/tls.yml
+      --providers.file.filename=/etc/traefik/config.yaml
+      --providers.file.watch=true
       --providers.docker=true
       --providers.docker.network=default
       --providers.docker.exposedByDefault=false
       --experimental.plugins.captcha-protect.modulename=github.com/libops/captcha-protect
       --experimental.plugins.captcha-protect.version=v1.6.1
-    labels:
-      traefik.enable: false
+    environment:
+      DOMAIN: ${DOMAIN}
+      ROLLOUT_DEPTH: ${ROLLOUT_DEPTH}
+      TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
     ports:
       - "80:80"
       - "443:443"
@@ -446,7 +363,7 @@ services:
       - label=type:container_runtime_t # Required for selinux to access the docker socket.
     volumes:
       - ./certs:/etc/ssl/traefik:Z,ro
-      - ./tls.yml:/etc/traefik/tls.yml:Z,ro
+      - ./conf/traefik/config.tmpl:/etc/traefik/config.yaml:ro
       - ./tmp/traefik:/tmp:rw
       - /var/run/docker.sock:/var/run/docker.sock:z
       - ./conf/traefik/challenge.tmpl.html:/challenge.tmpl.html:ro
