@@ -2,6 +2,14 @@
 
 set -eou pipefail
 
+ENV_FILES=(
+    .env
+    /home/rollout/.env
+)
+for ENV in "${ENV_FILES[@]}"; do
+    export $(grep -Ev '^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG)' "$ENV" | xargs)
+done
+
 GIT_BRANCH=${GIT_BRANCH:-main}
 DRUPAL_DOCKER_TAG=${DOCKER_TAG:-main}
 

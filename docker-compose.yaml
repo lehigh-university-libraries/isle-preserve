@@ -314,6 +314,7 @@ services:
           nocopy: true
   rollout:
     image: us-docker.pkg.dev/lehigh-lts-images/internal/rollout:main
+    restart: always
     volumes:
       - /opt/islandora/d10_lehigh_agile:/opt/islandora/d10_lehigh_agile
       - /opt/islandora/d10_lehigh_agile/scripts/maintenance/rollout.sh:/rollout.sh:ro
@@ -323,16 +324,12 @@ services:
       - /home/rollout/.env:/home/rollout/.env
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
-      DOCKER_HOST: ${DOCKER_HOST}
-      HOST: ${HOST}
-      DOMAIN: "${DOMAIN}"
       JWKS_URI: "https://token.actions.githubusercontent.com/.well-known/jwks"
       JWT_AUD: "https://github.com/lehigh-university-libraries"
-      ROLLOUT_DEPTH: ${ROLLOUT_DEPTH}
-      SLACK_WEBHOOK: ${SLACK_WEBHOOK}
       ROLLOUT_LOCK_FILE: /opt/islandora/d10_lehigh_agile/rollout.lock
   traefik:
     image: traefik:v3.3.5@sha256:104204dadedf5d1284f8ef8f97f705649ac81aa6f7a6c9abf13e2c59245b8abc
+    restart: always
     command: >-
       --api.insecure=true
       --api.dashboard=true
