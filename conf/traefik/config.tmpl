@@ -1,20 +1,21 @@
 http:
   routers:
-    fabricator:
-      rule: PathPrefix(`/workbench`)
-      entryPoints:
-        - https
-      tls:
-        certResolver: resolver
-      service: fabricator
-    cantaloupe_http:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/cantaloupe`)
+    http_redirect:
+      rule: PathPrefix(`/`)
       entryPoints:
         - http
       middlewares:
         - https-redirect
-      service: cantaloupe
-    cantaloupe_https:
+      service: drupal
+
+    fabricator:
+      rule: PathPrefix(`/workbench`)
+      entryPoints:
+        - https
+      tls: {}
+      service: fabricator
+
+    cantaloupe:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/cantaloupe`)
       entryPoints:
         - https
@@ -23,19 +24,12 @@ http:
         - cantaloupe-custom-request-headers
       tls: {}
       service: cantaloupe
-    drupal_http:
-      rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
-      entryPoints:
-        - http
-      middlewares:
-        - https-redirect
-      service: drupal
-    drupal_https:
+
+    drupal:
       rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
       entryPoints:
         - https
-      tls:
-        certResolver: resolver
+      tls: {}
       priority: 10
       middlewares:
         - captcha-protect
@@ -45,8 +39,7 @@ http:
       rule: PathPrefix(`/_rollout`)
       entryPoints:
         - https
-      tls:
-        certResolver: resolver
+      tls: {}
       middlewares:
         - rollout-strip-prefix
         - rollout-ip
@@ -56,20 +49,19 @@ http:
       rule: Host(`preserve.lehigh.edu`) && PathPrefix(`/workbench`)
       entryPoints:
         - https
-      tls:
-        certResolver: resolver
+      tls: {}
       middlewares:
         - fabricator-proxy-headers
       service: fabricator-proxy-service
 
     redirect_i7:
       entryPoints:
-        - http
         - https
       rule: "Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)"
       service: drupal
       middlewares:
         - redirect-sans
+      tls: {}
 
   services:
     fabricator:
@@ -149,6 +141,7 @@ http:
       stripPrefix:
         prefixes:
           - /_rollout
+
     rollout-ip:
       ipWhiteList:
         sourceRange:
