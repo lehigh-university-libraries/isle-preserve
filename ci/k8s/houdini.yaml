@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-imagemagick
-          image: lehighlts/scyllaridae-imagemagick:main@sha256:d5e09d17a4450cba4d7a7e462e0a2b2b156e986636601848a15a9936331c186c
+          image: lehighlts/scyllaridae-imagemagick:main@sha256:406cf7b5e1097d898bb0ce6717f3640f1690fbee40824c513937475c5898d9f6
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
