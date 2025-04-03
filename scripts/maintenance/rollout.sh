@@ -107,4 +107,7 @@ if [ "$HOST" = "islandora-prod" ]; then
   docker compose exec drupal drush scr scripts/performance/cache-warmer.php
 else
   docker compose exec drupal rm -rf /var/www/drupal/private/canonical/islandora-stage.lib.lehigh.edu || echo "No dir"
+  if [ "$(( RANDOM % 10 ))" -eq 0 ]; then
+    docker system prune -af
+  fi
 fi
