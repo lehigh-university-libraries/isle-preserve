@@ -8,6 +8,17 @@ http:
         - https-redirect
       service: drupal
 
+    # send prod requests for fabricator to staging
+    fabricator-proxy:
+      rule: Host(`preserve.lehigh.edu`) && PathPrefix(`/workbench`)
+      entryPoints:
+        - https
+      tls: {}
+      middlewares:
+        - fabricator-proxy-headers
+      service: fabricator-proxy-service
+      priority: 100
+
     fabricator:
       rule: PathPrefix(`/workbench`)
       entryPoints:
@@ -16,7 +27,7 @@ http:
       service: fabricator
 
     cantaloupe:
-      rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/cantaloupe`)
+      rule: PathPrefix(`/cantaloupe`)
       entryPoints:
         - https
       middlewares:
@@ -24,16 +35,6 @@ http:
         - cantaloupe-custom-request-headers
       tls: {}
       service: cantaloupe
-
-    drupal:
-      rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
-      entryPoints:
-        - https
-      tls: {}
-      priority: 10
-      middlewares:
-        - captcha-protect
-      service: drupal
 
     rollout:
       rule: PathPrefix(`/_rollout`)
@@ -45,23 +46,25 @@ http:
         - rollout-ip
       service: rollout
 
-    fabricator-proxy:
-      rule: Host(`preserve.lehigh.edu`) && PathPrefix(`/workbench`)
-      entryPoints:
-        - https
-      tls: {}
-      middlewares:
-        - fabricator-proxy-headers
-      service: fabricator-proxy-service
-
     redirect_i7:
+      rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
+      service: drupal
       entryPoints:
         - https
-      rule: "Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)"
-      service: drupal
       middlewares:
         - redirect-sans
       tls: {}
+
+    # if none of the other rules apply, serve drupal
+    drupal:
+      rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
+      entryPoints:
+        - https
+      tls: {}
+      priority: 10
+      middlewares:
+        - captcha-protect
+      service: drupal
 
   services:
     fabricator:
