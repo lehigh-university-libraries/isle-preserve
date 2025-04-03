@@ -161,6 +161,7 @@ services:
     healthcheck:
       test: >
         bash -c "echo stats | (exec 3<>/dev/tcp/localhost/11211; cat >&3; timeout 0.1 cat <&3; exec 3<&-) | grep pid"
+      start_period: 3s
   drupal:
     image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${DRUPAL_DOCKER_TAG}
     environment: &drupal-environment
@@ -279,6 +280,7 @@ services:
       - ./secrets/GOOGLE_APPLICATION_CREDENTIALS:/tmp/svc.json:r
     healthcheck:
       test: ps aux | grep -q "/var/www/drupal/scripts/cron.sh"
+      start_period: 3s
     depends_on:
       drupal:
         condition: service_healthy
