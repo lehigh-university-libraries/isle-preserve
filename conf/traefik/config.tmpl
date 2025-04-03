@@ -7,7 +7,6 @@ http:
       middlewares:
         - https-redirect
       service: drupal
-
     # send prod requests for fabricator to staging
     fabricator-proxy:
       rule: Host(`preserve.lehigh.edu`) && PathPrefix(`/workbench`)
@@ -18,14 +17,12 @@ http:
         - fabricator-proxy-headers
       service: fabricator-proxy-service
       priority: 100
-
     fabricator:
       rule: PathPrefix(`/workbench`)
       entryPoints:
         - https
       tls: {}
       service: fabricator
-
     cantaloupe:
       rule: PathPrefix(`/cantaloupe`)
       entryPoints:
@@ -35,7 +32,6 @@ http:
         - cantaloupe-custom-request-headers
       tls: {}
       service: cantaloupe
-
     rollout:
       rule: PathPrefix(`/_rollout`)
       entryPoints:
@@ -45,7 +41,6 @@ http:
         - rollout-strip-prefix
         - rollout-ip
       service: rollout
-
     redirect_i7:
       rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
       service: drupal
@@ -54,7 +49,6 @@ http:
       middlewares:
         - redirect-sans
       tls: {}
-
     # if none of the other rules apply, serve drupal
     drupal:
       rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
@@ -65,7 +59,6 @@ http:
       middlewares:
         - captcha-protect
       service: drupal
-
   services:
     fabricator:
       loadBalancer:
@@ -87,7 +80,6 @@ http:
       loadBalancer:
         servers:
           - url: https://islandora-stage.lib.lehigh.edu/workbench
-
   middlewares:
     https-redirect:
       redirectScheme:
@@ -106,8 +98,8 @@ http:
         captcha-protect:
           challengeTmpl: /challenge.tmpl.html
           captchaProvider: turnstile
-          siteKey: {{ env "TURNSTILE_SITE_KEY" }}
-          secretKey: {{ env "TURNSTILE_SECRET_KEY" }}
+          siteKey: {? {env "TURNSTILE_SITE_KEY": ''} : ''}
+          secretKey: {? {env "TURNSTILE_SECRET_KEY": ''} : ''}
           enableStatsPage: "true"
           ipForwardedHeader: X-Forwarded-For
           goodBots:
@@ -133,18 +125,15 @@ http:
           ipv4subnetMask: 8
           persistentStateFile: /tmp/state.json
           protectFileExtensions: jp2,tiff,php,html
-
     redirect-sans:
       redirectRegex:
         regex: ^https?://([^/]+)(/.*)?
         replacement: https://{{ env "DOMAIN" }}$${2}
         permanent: true
-
     rollout-strip-prefix:
       stripPrefix:
         prefixes:
           - /_rollout
-
     rollout-ip:
       ipWhiteList:
         sourceRange:
@@ -153,13 +142,11 @@ http:
           - 127.0.0.1/32
           - 128.180.2.69/32
         ipStrategy:
-          depth: {{ env "ROLLOUT_DEPTH" }}
-
+          depth: {? {env "ROLLOUT_DEPTH": ''} : ''}
     fabricator-proxy-headers:
       headers:
         customRequestHeaders:
           Host: islandora-stage.lib.lehigh.edu
-
 tls:
   stores:
     default:
