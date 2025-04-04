@@ -92,6 +92,7 @@ module:
   islandora_video: 0
   islandora_vtt: 0
   islandora_workbench_integration: 0
+  isle_slo: 0
   jquery_ui: 0
   jquery_ui_autocomplete: 0
   jquery_ui_datepicker: 0
