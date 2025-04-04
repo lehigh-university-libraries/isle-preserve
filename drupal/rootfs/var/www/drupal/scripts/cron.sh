@@ -2,6 +2,19 @@
 
 set -eou pipefail
 
+# copy JS/CSS/IMG files to /tmp
+# this is so our static nginx frontend has access to those assets
+# that are baked into the drupal image
+#
+# IMO we really should only need to build ONE drupal image
+# rather than one image for drupal
+# and another image for this static nginx frontend
+#
+# so we get those assets in our drupal image into nginx static frontend
+# if everytime our drupal-cron service starts it copies
+# over the current drupal CSS/JS/IMG assets into /tmp/web
+# which we then mount in the nginx static frontend to serve those files
+# TODO: better document this in an ADR
 echo "Copying static assets into temp so our static site has access"
 DIRS=(
   "core"
