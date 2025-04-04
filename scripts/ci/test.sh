@@ -41,4 +41,4 @@ curl -ksf \
 && exit 1 || echo "Failed as expected"
 
 # make sure static site is still serving content
-curl -kvsf "https://${DOMAIN}/" -o /dev/null
+curl -ksf "https://${DOMAIN}/" -o /dev/null
