@@ -40,6 +40,8 @@ curl -ksf \
   "https://${DOMAIN}/?cache-warmer=1"  -o /dev/null \
 && exit 1 || echo "Failed as expected"
 
-# make sure static site is still serving content
+echo "make sure static site is still serving content"
 curl -ksf "https://${DOMAIN}/" -o /dev/null
+
+echo "all is well. Bring containers back up"
 docker start lehigh-d10-drupal-1 lehigh-d10-drupal-lehigh-1
