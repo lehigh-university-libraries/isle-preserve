@@ -256,7 +256,7 @@ services:
     restart: always
     volumes:
       - /opt/islandora/volumes/drupal-private-files/canonical/$DOMAIN/0:/usr/share/nginx/drupal:ro
-      - ./tmp/drupal/web:/var/www/drupal/web:ro
+      - ./tmp/drupal/web:/var/www/drupal/web:rw
       - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:ro
       - ./conf/nginx/static.conf:/etc/nginx/conf.d/default.conf:ro
     healthcheck:
