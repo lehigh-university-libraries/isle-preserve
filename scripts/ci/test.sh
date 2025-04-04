@@ -2,20 +2,27 @@
 
 set -eou pipefail
 
+echo "waiting for drupal to come online"
 docker exec lehigh-d10-drupal-1 \
   timeout 600 bash -c "while ! test -f /installed; do sleep 5; done"
 
+echo "running selenium tests"
 docker exec lehigh-d10-drupal-1 \
   su nginx -s /bin/bash -c "DTT_BASE_URL='http://drupal' php vendor/bin/phpunit \
     -c phpunit.selenium.xml \
     --debug \
     --verbose"
 
+echo "running tests against live site config"
 docker exec lehigh-d10-drupal-1 \
   su nginx -s /bin/bash -c "php vendor/bin/phpunit \
     -c phpunit.unit.xml \
     --debug \
     --verbose"
+
+echo "\n\n============================================="
+echo "testing HA setup"
+echo "=============================================\n\n"
 
 echo "make sure drupal is online"
 curl -vsf "https://${DOMAIN}/" -o /dev/null

@@ -103,6 +103,8 @@ jobs:
           ROLLOUT_URL: https://wight.cc.lehigh.edu/_rollout
 
       - run: ./scripts/ci/test.sh
+        env:
+          DOMAIN: wight.cc.lehigh.edu
 
       - if: ${{ always() }}
         run: ./scripts/ci/cleanup.sh
