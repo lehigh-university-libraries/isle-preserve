@@ -49,6 +49,6 @@ php_codesnff() {
 
 echo "Checking YML files"
 ls -l ./*.yaml ./conf/**/*.yml "$TRAEFIK_CONFIG"
-yq . ./*.yaml ./conf/**/*.yml "$TRAEFIK_CONFIG"
+yq . ./*.yaml ./conf/**/*.yml "$TRAEFIK_CONFIG" > /dev/null
 check_traefik
 php_codesnff
