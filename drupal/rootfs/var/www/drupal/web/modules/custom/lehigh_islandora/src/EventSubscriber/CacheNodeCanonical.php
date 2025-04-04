@@ -138,18 +138,18 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
 
     // Only apply on the node canonical view or our collections/browse views.
     $route_name = $request->attributes->get('_route');
-    if (in_array($route_name, ["view.browse.main", "entity.node.canonical"])) {
-      if ($request->attributes->has('node')) {
-        $node = $request->attributes->get('node');
-        if ($node instanceof NodeInterface && $node->bundle() !== 'islandora_object') {
-          return FALSE;
-        }
+    if (!in_array($route_name, ["view.browse.main", "entity.node.canonical"])) {
+      return FALSE;
+    }
+    if ($request->attributes->has('node')) {
+      $node = $request->attributes->get('node');
+      if ($node instanceof NodeInterface && $node->bundle() !== 'islandora_object') {
+        // make sure we always cache the homepage
+        return $request->getPathInfo() == "/";
       }
-
-      return TRUE;
     }
 
-    return FALSE;
+    return TRUE;
   }
 
   /**
@@ -163,8 +163,11 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
     // Make a subdirectory based on the current user ID.
     $base_dir .= '/' . \Drupal::currentUser()->id();
 
-    // Another dir based on the current path.
-    $base_dir .= '/' . $path;
+    // Another dir based on the current path
+    // unless it's the homepage node - keep that at the root dir.
+    if ($path !== 'node/310') {
+      $base_dir .= '/' . $path;
+    }
     $filesystem->prepareDirectory($base_dir, FileSystemInterface::CREATE_DIRECTORY);
     $base_dir = $filesystem->realpath($base_dir);
 
