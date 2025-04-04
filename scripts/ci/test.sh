@@ -25,7 +25,9 @@ echo "testing HA setup"
 echo "=============================================\n\n"
 
 echo "make sure drupal is online"
-curl -kvsf "https://${DOMAIN}/" -o /dev/null
+curl -ksf \
+  -H "X-Forwarded-For: 128.180.1.1" \
+  "https://${DOMAIN}/" -o /dev/null
 
 echo "bring drupal containers down"
 docker stop lehigh-d10-drupal-1 lehigh-d10-drupal-lehigh-1
@@ -33,9 +35,10 @@ docker stop lehigh-d10-drupal-1 lehigh-d10-drupal-lehigh-1
 sleep 5
 
 echo "Send request to drupal container which should fail"
-curl -kvsf \
+curl -ksf \
   -H "X-Forwarded-For: 128.180.1.1" \
-  "https://${DOMAIN}/?cache-warmer=1" && exit 1 || echo "Failed as expected"
+  "https://${DOMAIN}/?cache-warmer=1"  -o /dev/null \
+&& exit 1 || echo "Failed as expected"
 
 # make sure static site is still serving content
 curl -kvsf "https://${DOMAIN}/" -o /dev/null
