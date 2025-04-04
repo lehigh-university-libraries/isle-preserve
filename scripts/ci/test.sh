@@ -42,3 +42,4 @@ curl -ksf \
 
 # make sure static site is still serving content
 curl -ksf "https://${DOMAIN}/" -o /dev/null
+docker start lehigh-d10-drupal-1 lehigh-d10-drupal-lehigh-1
