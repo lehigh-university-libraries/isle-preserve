@@ -144,7 +144,7 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
     if ($request->attributes->has('node')) {
       $node = $request->attributes->get('node');
       if ($node instanceof NodeInterface && $node->bundle() !== 'islandora_object') {
-        // make sure we always cache the homepage
+        // Make sure we always cache the homepage.
         return $request->getPathInfo() == "/";
       }
     }
