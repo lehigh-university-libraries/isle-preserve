@@ -16,3 +16,19 @@ docker exec lehigh-d10-drupal-1 \
     -c phpunit.unit.xml \
     --debug \
     --verbose"
+
+echo "make sure drupal is online"
+curl -vsf "https://${DOMAIN}/" -o /dev/null
+
+echo "bring drupal containers down"
+docker stop lehigh-d10-drupal-1 lehigh-d10-drupal-lehigh-1
+
+sleep 5
+
+echo "Send request to drupal container which should fail"
+curl -vsf \
+  -H "X-Forwarded-For: 128.180.1.1" \
+  "https://${DOMAIN}/?cache-warmer=1" && exit 1 || echo "Failed as expected"
+
+# make sure static site is still serving content
+curl -vsf "https://${DOMAIN}/" -o /dev/null

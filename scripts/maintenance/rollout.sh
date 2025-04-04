@@ -67,13 +67,16 @@ git reset --hard
 git checkout "$GIT_BRANCH"
 git pull origin "$GIT_BRANCH"
 
+# make sure drupal is already online
+docker_compose up drupal -d
+
 # pull before putting site into maintenance mode
 # to keep downtime to a minimum
 docker_compose pull --quiet
 
 docker compose exec drupal drush state:set system.maintenance_mode 1 --input-format=integer
 
-docker_compose down drupal memcached
+docker_compose down memcached
 
 echo "bring up all containers"
 docker_compose up \
@@ -107,6 +110,7 @@ if [ "$HOST" = "islandora-prod" ]; then
   docker compose exec drupal drush scr scripts/performance/cache-warmer.php
 else
   docker compose exec drupal rm -rf /var/www/drupal/private/canonical/islandora-stage.lib.lehigh.edu || echo "No dir"
+  curl -sf "https://${DOMAIN}/?cache-warmer=1"
   if [ "$(( RANDOM % 10 ))" -eq 0 ]; then
     docker system prune -af
   fi
