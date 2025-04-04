@@ -1,7 +1,0 @@
-[template]
-src = "workbench.conf.tmpl"
-dest = "/etc/php83/php-fpm.d/workbench.conf"
-uid = 0
-gid = 0
-mode = "0644"
-keys = [ "/" ]

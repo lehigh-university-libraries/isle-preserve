@@ -20,10 +20,6 @@ services:
         source: drupal-public-files
         target: /var/www/drupal/web/sites/default/files
         read_only: false
-      - type: volume
-        source: drupal-private-files
-        target: /var/www/drupal/private
-        read_only: false
       - fcrepo-data:/fcrepo:r
       - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
   fcrepo:

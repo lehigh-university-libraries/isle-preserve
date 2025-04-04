@@ -49,6 +49,24 @@ http:
       middlewares:
         - redirect-sans
       tls: {}
+    drupal-lehigh:
+      rule: |
+        Host(`{{ env "DOMAIN" }}`) && HeaderRegexp(`X-Forwarded-For`, `(.*)?(128\.180\.[0-9]{1,3}\.[0-9]{1,3})$`)
+      entryPoints:
+        - https
+      tls: {}
+      priority: 20
+      service: drupal-lehigh
+    drupal-static:
+      rule: |
+        Host(`{{ env "DOMAIN" }}`) && Method(`GET`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !HeaderRegexp(`X-Forwarded-For`, `(.*)?(128\.180\.[0-9]{1,3}\.[0-9]{1,3})$`) && !PathPrefix(`/system`)
+      entryPoints:
+        - https
+      tls: {}
+      priority: 15
+      middlewares:
+        - captcha-protect
+      service: drupal-static
     # if none of the other rules apply, serve drupal
     drupal:
       rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
@@ -68,6 +86,14 @@ http:
       loadBalancer:
         servers:
           - url: http://cantaloupe:8182
+    drupal-static:
+      loadBalancer:
+        servers:
+          - url: http://drupal-static:80
+    drupal-lehigh:
+      loadBalancer:
+        servers:
+          - url: http://drupal-lehigh:80
     drupal:
       loadBalancer:
         servers:

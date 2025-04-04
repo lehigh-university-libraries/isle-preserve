@@ -56,14 +56,11 @@ $config['islandora_repository_reports_activemq.settings']['islandora_repository_
 
 $config['turnstile.settings']['site_key'] = getenv("TURNSTILE_SITE_KEY");
 $config['turnstile.settings']['secret_key'] = getenv("TURNSTILE_SECRET_KEY");
-
-// Others are hardcoded.
-$config['key.key.islandora_rsa_key']['key_provider_settings']['file_location'] = '/opt/keys/jwt/private.key';
-// Some settings are derived from environment variables.
 $settings['hash_salt'] = getenv('DRUPAL_DEFAULT_SALT');
 $settings['trusted_host_patterns'] = [
-  0 => getenv('DRUPAL_DEFAULT_SITE_URL'),
+  getenv('DRUPAL_DEFAULT_SITE_URL'),
   'drupal',
+  'drupal-lehigh',
   'islandora-prod.lib.lehigh.edu',
   'islandora-test.lib.lehigh.edu',
 ];
@@ -79,6 +76,8 @@ $databases['default']['default'] = [
   'driver' => 'mysql',
   'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
 ];
+
+$config['key.key.islandora_rsa_key']['key_provider_settings']['file_location'] = '/opt/keys/jwt/private.key';
 
 // Flysystem
 $settings['flysystem']['fedora']['driver'] = 'fedora';
