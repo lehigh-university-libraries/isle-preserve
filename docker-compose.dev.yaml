@@ -16,10 +16,6 @@ services:
     environment:
       LEHIGH_TRANSFORM_SERVICE_URI: "http://transformer:8080"
     volumes:
-      - type: volume
-        source: drupal-public-files
-        target: /var/www/drupal/web/sites/default/files
-        read_only: false
       - fcrepo-data:/fcrepo:r
       - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
   fcrepo:

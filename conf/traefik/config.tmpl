@@ -58,8 +58,7 @@ http:
       priority: 20
       service: drupal-lehigh
     drupal-static:
-      rule: |
-        Host(`{{ env "DOMAIN" }}`) && Method(`GET`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !HeaderRegexp(`X-Forwarded-For`, `(.*)?(128\.180\.[0-9]{1,3}\.[0-9]{1,3})$`) && !PathPrefix(`/system`)
+      rule: Host(`{{ env "DOMAIN" }}`) && Method(`GET`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !HeaderRegexp(`X-Forwarded-For`, `(.*)?(128\.180\.[0-9]{1,3}\.[0-9]{1,3})$`) && !PathPrefix(`/system`)
       entryPoints:
         - https
       tls: {}
