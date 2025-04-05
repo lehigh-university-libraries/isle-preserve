@@ -19,6 +19,18 @@
     },
     {
       matchDatasources: [
+        'docker-compose',
+      ],
+      matchPackageNames: [
+        'traefik',
+        'nginx',
+      ],
+      schedule: [
+        '* 12 1-7 * 4',
+      ],
+    },
+    {
+      matchDatasources: [
         'docker',
       ],
       matchPackageNames: [

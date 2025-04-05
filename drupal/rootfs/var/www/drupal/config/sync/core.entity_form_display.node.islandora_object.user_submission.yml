@@ -92,7 +92,6 @@ dependencies:
   module:
     - autocomplete_deluxe
     - controlled_access_terms
-    - entity_browser_entity_form
     - field_group
     - file
     - inline_entity_form
@@ -286,6 +285,7 @@ third_party_settings:
         - group_dissertations
         - group_creator_metadata
         - group_geographic_coordinates
+        - field_edtf_date_created
         - group_other
       label: Metadata
       region: hidden
@@ -301,7 +301,6 @@ third_party_settings:
     group_date_tab:
       children:
         - field_copyright_date
-        - field_edtf_date_created
         - field_date_modified
         - field_date_other
         - field_date_season
@@ -386,7 +385,7 @@ third_party_settings:
       label: Other
       region: hidden
       parent_name: group_metadata_tabs
-      weight: 2
+      weight: 3
       format_type: tab
       format_settings:
         classes: ''
@@ -458,7 +457,7 @@ content:
     third_party_settings: {  }
   field_edtf_date_created:
     type: edtf_default
-    weight: 1
+    weight: 2
     region: content
     settings:
       strict_dates: false
@@ -538,7 +537,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_self_submission_creator:
-    type: inline_entity_form_complex
+    type: inline_entity_form_simple
     weight: 3
     region: content
     settings:
@@ -546,27 +545,17 @@ content:
       override_labels: true
       label_singular: ''
       label_plural: ''
-      auto_open: true
       allow_new: true
-      allow_existing: false
-      allow_edit: false
-      match_operator: CONTAINS
-      allow_duplicate: false
       hide_fieldset: false
       hide_title: false
       collapsible: false
       collapsed: false
       revision: false
-      removed_reference: keep
       config_labels_button: complex_label
       labels:
         label_singular_person: person
         label_plural_person: people
-      add_existing_widget: select
-      auto_open_edit_form: 0
-    third_party_settings:
-      entity_browser_entity_form:
-        entity_browser_id: _none
+    third_party_settings: {  }
   status:
     type: boolean_checkbox
     weight: 16

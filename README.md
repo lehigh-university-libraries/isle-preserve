@@ -35,12 +35,21 @@ haproxy manages TLS certificates for the site as well as a "tarpit" ruleset to b
 flowchart TD
     Alice[Alice]
     haproxy["preserve.lehigh.edu:443<br>(haproxy)"]
-    islandora-traefik["islandora-prod.lib.lehigh.edu:443<br>(traefik)"]
-    islandora-nginx-drupal["islandora-prod.lib.lehigh.edu:80<br>(drupal)"]
+    islandora-traefik{"islandora-prod.lib.lehigh.edu:443<br>(traefik)"}
+    captcha-protect{"captcha-protect"}
+    nginx["nginx:80"]
+    drupal-lehigh["drupal-lehigh:80"]
+    drupal["drupal:80"]
     Alice -- GET /foo --> haproxy
     haproxy -- GET /foo --> islandora-traefik
-    islandora-traefik -- GET /foo --> islandora-nginx-drupal
-    islandora-nginx-drupal -- "the response traffic<br>really goes back through traefik/haproxy<br>to reach Alice<br>but easier to illustrate this route" --> Alice
+    islandora-traefik -- off-campus and anonymous --> captcha-protect
+    islandora-traefik -- on-campus or logged in? --> drupal-lehigh
+    drupal-lehigh --> Alice
+    captcha-protect -- needs challenged? 302 /challenge --> Alice
+    captcha-protect -- does not need challenged --> nginx
+    nginx -- GET req with no params and response on disk? --> Alice
+    nginx -- else --> drupal
+    drupal -- foo.html --> Alice
 ```
 
 ## Production
