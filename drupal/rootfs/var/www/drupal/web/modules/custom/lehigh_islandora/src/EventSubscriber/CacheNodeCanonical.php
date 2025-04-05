@@ -164,7 +164,7 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
 
     // Another dir based on the current path
     // unless it's the homepage node - keep that at the root dir.
-    if ($path !== 'node/310') {
+    if ($path !== 'home') {
       $base_dir .= '/' . $path;
     }
     $filesystem->prepareDirectory($base_dir, FileSystemInterface::CREATE_DIRECTORY);
