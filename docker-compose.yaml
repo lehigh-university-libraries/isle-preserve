@@ -260,7 +260,7 @@ services:
       - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:ro
       - ./conf/nginx/static.conf:/etc/nginx/conf.d/default.conf:ro
     healthcheck:
-      test: curl -sf http://localhost
+      test: curl -sfo /dev/null http://localhost/themes/custom/lehigh/favicon.ico
       start_period: 5s
   drupal-cron:
     image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${DRUPAL_DOCKER_TAG}
