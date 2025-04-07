@@ -148,6 +148,7 @@ http:
           protectRoutes: /
           protectParameters: "true"
           exemptIps: 128.180.0.0/16
+          exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
           ipv4subnetMask: 8
           persistentStateFile: /tmp/state.json
           protectFileExtensions: jp2,tiff,php,html
