@@ -30,7 +30,7 @@ curl -ksf \
   "https://${DOMAIN}/" -o /dev/null
 
 echo "bring drupal containers down"
-docker stop lehigh-d10-drupal-1 lehigh-d10-drupal-lehigh-1
+docker stop lehigh-d10-drupal-1
 
 sleep 5
 
@@ -44,4 +44,13 @@ echo "make sure static site is still serving content"
 curl -ksf "https://${DOMAIN}/" -o /dev/null
 
 echo "all is well. Bring containers back up"
-docker start lehigh-d10-drupal-1 lehigh-d10-drupal-lehigh-1
+docker start lehigh-d10-drupal-1
+
+docker stop lehigh-d10-drupal-static-1
+
+sleep 5
+
+echo "now test when drupal container is up, but static is down"
+curl -ksf "https://${DOMAIN}/" -o /dev/null
+
+docker start lehigh-d10-drupal-static-1
