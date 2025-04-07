@@ -49,27 +49,25 @@ http:
       middlewares:
         - redirect-sans
       tls: {}
-    drupal-static:
-      rule: Host(`{{ env "DOMAIN" }}`) && Method(`GET`) && !HeaderRegexp(`X-Forwarded-For`, `(.*)?(128\.180\.[0-9]{1,3}\.[0-9]{1,3})$`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`cache-warmer`, `.*`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !PathPrefix(`/system`)
+    drupal-lehigh:
+      rule: Host(`islandora-prod.lib.lehigh.edu`) && !Path(`/`)
       entryPoints:
         - https
       tls: {}
       priority: 20
+      service: drupal-lehigh
+    drupal-static:
+      rule: Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`cache-warmer`, `.*`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !PathPrefix(`/system`)
+      entryPoints:
+        - https
+      tls: {}
+      priority: 15
       middlewares:
         - captcha-protect
       service: drupal-static
-    drupal-lehigh:
-      rule: Host(`{{ env "DOMAIN" }}`) && !HeaderRegexp(`X-Forwarded-For`, `.*`)  || HeaderRegexp(`X-Forwarded-For`, `(.*)?(128\.180\.[0-9]{1,3}\.[0-9]{1,3})$`)
-      entryPoints:
-        - https
-      middlewares:
-        - captcha-protect
-      tls: {}
-      priority: 15
-      service: drupal-lehigh
     # if none of the other rules apply, serve drupal
     drupal:
-      rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
+      rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-prod.lib.lehigh.edu`) || Host(`islandora-test.lib.lehigh.edu`)
       entryPoints:
         - https
       tls: {}
