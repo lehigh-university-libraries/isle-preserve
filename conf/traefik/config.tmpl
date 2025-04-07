@@ -5,7 +5,7 @@ http:
       entryPoints:
         - http
       middlewares:
-        - https-redirect
+        - redirect-sans
       service: drupal
     # send prod requests for fabricator to staging
     fabricator-proxy:
@@ -57,7 +57,7 @@ http:
       priority: 20
       service: drupal-lehigh
     drupal-static:
-      rule: Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`cache-warmer`, `.*`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !PathPrefix(`/system`)
+      rule: (Host(`{{ env "DOMAIN" }}`) || Host(`islandora-prod.lib.lehigh.edu`)) && Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`cache-warmer`, `.*`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !PathPrefix(`/system`)
       entryPoints:
         - https
       tls: {}
@@ -153,7 +153,7 @@ http:
     redirect-sans:
       redirectRegex:
         regex: ^https?://([^/]+)(/.*)?
-        replacement: https://{{ env "DOMAIN" }}$${2}
+        replacement: https://{{ env "DOMAIN" }}${2}
         permanent: true
     rollout-strip-prefix:
       stripPrefix:
