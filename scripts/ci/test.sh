@@ -20,9 +20,9 @@ docker exec lehigh-d10-drupal-1 \
     --debug \
     --verbose"
 
-echo "\n\n============================================="
+echo -e "\n\n============================================="
 echo "testing HA setup"
-echo "=============================================\n\n"
+echo -e "=============================================\n\n"
 
 echo "make sure drupal is online"
 curl -ksf \
@@ -35,10 +35,8 @@ docker stop lehigh-d10-drupal-1
 sleep 5
 
 echo "Send request to drupal container which should fail"
-curl -ksf \
-  -H "X-Forwarded-For: 128.180.1.1" \
-  "https://${DOMAIN}/?cache-warmer=1"  -o /dev/null \
-&& exit 1 || echo "Failed as expected"
+curl -ksf "https://${DOMAIN}/?foo=bar" -o /dev/null \
+  && exit 1 || echo "Failed as expected"
 
 echo "make sure static site is still serving content"
 curl -ksf "https://${DOMAIN}/" -o /dev/null
@@ -46,25 +44,21 @@ curl -ksf "https://${DOMAIN}/" -o /dev/null
 echo "all is well. Bring containers back up"
 docker start lehigh-d10-drupal-1
 
+echo "Checking site is still OK if static service is down"
 docker stop lehigh-d10-drupal-static-1
 
-sleep 5
+sleep 10
 
-echo "now test when drupal container is up, but static is down"
 curl -ksf "https://${DOMAIN}/" -o /dev/null
 
+echo "all is well. Bring containers back up"
 docker start lehigh-d10-drupal-static-1
 
 echo "Ensuring redirects work"
 ensure_redirect() {
-  REQUEST_URL="https://$DOMAIN"
-  if [ "$#" -eq 2 ]; then
-    REQUEST_URL=$2
-  fi
-
   curl -svk \
-    -H "Host: $1" \
-    "${REQUEST_URL}" 2>&1 \
+    -H "Host: $2" \
+    "$1" 2>&1 \
   | grep -i "location: https://${DOMAIN}" > /dev/null
 }
 HOSTS=(
@@ -72,9 +66,9 @@ HOSTS=(
   "preserve.lib.lehigh.edu"
 )
 for HOST in "${HOSTS[@]}"; do
-  ensure_redirect "$HOST"
-  echo "$HOST redirected to $DOMAIN"
+  ensure_redirect "https://${DOMAIN}" "$HOST"
+  echo "$HOST redirected to https://$DOMAIN"
 done
 
-ensure_redirect "$DOMAIN" "http://${DOMAIN}"
+ensure_redirect "http://${DOMAIN}" "$DOMAIN"
 echo "http redirected to https for ${DOMAIN}"
