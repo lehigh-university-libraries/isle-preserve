@@ -365,6 +365,7 @@ services:
       --experimental.plugins.captcha-protect.version=v1.8.1
     environment:
       DOMAIN: ${DOMAIN}
+      INTERNAL_DOMAIN: ${INTERNAL_DOMAIN}
       ROLLOUT_DEPTH: ${ROLLOUT_DEPTH}
       TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}

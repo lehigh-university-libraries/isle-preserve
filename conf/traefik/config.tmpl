@@ -50,14 +50,14 @@ http:
         - redirect-sans
       tls: {}
     drupal-lehigh:
-      rule: Host(`islandora-prod.lib.lehigh.edu`) && !Path(`/`)
+      rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Path(`/`)
       entryPoints:
         - https
       tls: {}
       priority: 20
       service: drupal-lehigh
     drupal-static:
-      rule: (Host(`{{ env "DOMAIN" }}`) || Host(`islandora-prod.lib.lehigh.edu`)) && Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`cache-warmer`, `.*`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !PathPrefix(`/system`)
+      rule: Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`cache-warmer`, `.*`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !PathPrefix(`/system`)
       entryPoints:
         - https
       tls: {}
@@ -88,6 +88,14 @@ http:
       loadBalancer:
         servers:
           - url: http://drupal-static:80
+            weight: 99
+          - url: http://drupal:80
+            weight: 1
+        healthCheck:
+            path: /healthcheck
+            scheme: http
+            interval: 10s
+            timeout: 3s
     drupal-lehigh:
       loadBalancer:
         servers:
