@@ -49,6 +49,8 @@ http:
       middlewares:
         - redirect-sans
       tls: {}
+    # special drupal container reserved for workbench jobs
+    # which we have configured to use the internal domain
     drupal-lehigh:
       rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Path(`/`)
       entryPoints:
@@ -57,7 +59,7 @@ http:
       priority: 20
       service: drupal-lehigh
     drupal-static:
-      rule: Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`cache-warmer`, `.*`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !PathPrefix(`/system`)
+      rule: Method(`GET`) && !PathPrefix(`/system`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`)
       entryPoints:
         - https
       tls: {}
@@ -67,7 +69,7 @@ http:
       service: drupal-static
     # if none of the other rules apply, serve drupal
     drupal:
-      rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-prod.lib.lehigh.edu`) || Host(`islandora-test.lib.lehigh.edu`)
+      rule: Host(`{{ env "DOMAIN" }}`) || Host(`{{ env "INTERNAL_DOMAIN" }}`)
       entryPoints:
         - https
       tls: {}
