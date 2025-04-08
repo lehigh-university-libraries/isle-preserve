@@ -59,7 +59,7 @@ http:
       priority: 20
       service: drupal-lehigh
     drupal-static:
-      rule: Method(`GET`) && !PathPrefix(`/system`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`)
+      rule: (Method(`POST`) && Path(`/challenge`)) || (Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`))
       entryPoints:
         - https
       tls: {}
@@ -130,6 +130,10 @@ http:
     captcha-protect:
       plugin:
         captcha-protect:
+          rateLimit: 20
+          protectRoutes: /
+          protectParameters: "true"
+          exemptIps: 128.180.0.0/16
           challengeTmpl: /challenge.tmpl.html
           captchaProvider: turnstile
           siteKey: {{ env "TURNSTILE_SITE_KEY" }}
@@ -153,9 +157,6 @@ http:
             - openalex.org
             - twitter.com
             - x.com
-          protectRoutes: /
-          protectParameters: "true"
-          exemptIps: 128.180.0.0/16
           exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
           ipv4subnetMask: 8
           persistentStateFile: /tmp/state.json

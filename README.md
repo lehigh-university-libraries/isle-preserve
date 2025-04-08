@@ -37,18 +37,16 @@ flowchart TD
     haproxy["preserve.lehigh.edu:443<br>(haproxy)"]
     islandora-traefik{"islandora-prod.lib.lehigh.edu:443<br>(traefik)"}
     captcha-protect{"captcha-protect"}
-    nginx["nginx:80"]
+    nginx{"nginx:80<br>foo.html cached on disk?"}
     drupal-lehigh["drupal-lehigh:80"]
     drupal["drupal:80"]
     Alice -- GET /foo --> haproxy
     haproxy -- GET /foo --> islandora-traefik
-    islandora-traefik -- off-campus and anonymous --> captcha-protect
-    islandora-traefik -- on-campus or logged in? --> drupal-lehigh
-    drupal-lehigh --> Alice
-    captcha-protect -- needs challenged? 302 /challenge --> Alice
-    captcha-protect -- does not need challenged --> nginx
-    nginx -- GET req with no params and response on disk? --> Alice
-    nginx -- else --> drupal
+    islandora-traefik -- is this a bot? --> captcha-protect
+    captcha-protect -- maybe? 302 /challenge --> Alice
+    captcha-protect -- no --> nginx
+    nginx -- Yes? Send cached response --> Alice
+    nginx -- No --> drupal
     drupal -- foo.html --> Alice
 ```
 
