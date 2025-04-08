@@ -54,3 +54,27 @@ echo "now test when drupal container is up, but static is down"
 curl -ksf "https://${DOMAIN}/" -o /dev/null
 
 docker start lehigh-d10-drupal-static-1
+
+echo "Ensuring redirects work"
+ensure_redirect() {
+  REQUEST_URL="https://$DOMAIN"
+  if [ "$#" -eq 2 ]; then
+    REQUEST_URL=$2
+  fi
+
+  curl -svk \
+    -H "Host: $1" \
+    "${REQUEST_URL}" 2>&1 \
+  | grep -i "location: https://${DOMAIN}" > /dev/null
+}
+HOSTS=(
+  "digitalcollections.lib.lehigh.edu"
+  "preserve.lib.lehigh.edu"
+)
+for HOST in "${HOSTS[@]}"; do
+  ensure_redirect "$HOST"
+  echo "$HOST redirected to $DOMAIN"
+done
+
+ensure_redirect "$DOMAIN" "http://${DOMAIN}"
+echo "http redirected to https for ${DOMAIN}"
