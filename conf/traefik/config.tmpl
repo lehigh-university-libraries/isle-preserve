@@ -59,7 +59,7 @@ http:
       priority: 20
       service: drupal-lehigh
     drupal-static:
-      rule: (Method(`POST`) && Path(`/challenge`)) || (Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`))
+      rule: (Method(`POST`) && Path(`/challenge`)) || (Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`_format`, `^.*$`))
       entryPoints:
         - https
       tls: {}
