@@ -5,7 +5,7 @@ http:
       entryPoints:
         - http
       middlewares:
-        - https-redirect
+        - redirect-sans
       service: drupal
     # send prod requests for fabricator to staging
     fabricator-proxy:
@@ -49,27 +49,27 @@ http:
       middlewares:
         - redirect-sans
       tls: {}
-    drupal-static:
-      rule: Host(`{{ env "DOMAIN" }}`) && Method(`GET`) && !HeaderRegexp(`X-Forwarded-For`, `(.*)?(128\.180\.[0-9]{1,3}\.[0-9]{1,3})$`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`cache-warmer`, `.*`) && !QueryRegexp(`search_api_fulltext`, `.*`) && !QueryRegexp(`f`, `.*`) && !PathPrefix(`/system`)
+    # special drupal container reserved for workbench jobs
+    # which we have configured to use the internal domain
+    drupal-lehigh:
+      rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Path(`/`)
       entryPoints:
         - https
       tls: {}
       priority: 20
+      service: drupal-lehigh
+    drupal-static:
+      rule: Method(`GET`) && !PathPrefix(`/system`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`)
+      entryPoints:
+        - https
+      tls: {}
+      priority: 15
       middlewares:
         - captcha-protect
       service: drupal-static
-    drupal-lehigh:
-      rule: Host(`{{ env "DOMAIN" }}`) && !HeaderRegexp(`X-Forwarded-For`, `.*`)  || HeaderRegexp(`X-Forwarded-For`, `(.*)?(128\.180\.[0-9]{1,3}\.[0-9]{1,3})$`)
-      entryPoints:
-        - https
-      middlewares:
-        - captcha-protect
-      tls: {}
-      priority: 15
-      service: drupal-lehigh
     # if none of the other rules apply, serve drupal
     drupal:
-      rule: Host(`{{ env "DOMAIN" }}`) || Host(`islandora-test.lib.lehigh.edu`) || Host(`islandora-prod.lib.lehigh.edu`)
+      rule: Host(`{{ env "DOMAIN" }}`) || Host(`{{ env "INTERNAL_DOMAIN" }}`)
       entryPoints:
         - https
       tls: {}
@@ -90,6 +90,14 @@ http:
       loadBalancer:
         servers:
           - url: http://drupal-static:80
+            weight: 99
+          - url: http://drupal:80
+            weight: 1
+        healthCheck:
+            path: /healthcheck
+            scheme: http
+            interval: 10s
+            timeout: 3s
     drupal-lehigh:
       loadBalancer:
         servers:
@@ -155,7 +163,7 @@ http:
     redirect-sans:
       redirectRegex:
         regex: ^https?://([^/]+)(/.*)?
-        replacement: https://{{ env "DOMAIN" }}$${2}
+        replacement: https://{{ env "DOMAIN" }}${2}
         permanent: true
     rollout-strip-prefix:
       stripPrefix:

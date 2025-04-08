@@ -254,6 +254,8 @@ services:
   drupal-static:
     image: nginx:1.27.4@sha256:124b44bfc9ccd1f3cedf4b592d4d1e8bddb78b51ec2ed5056c52d3692baebc19
     restart: always
+    environment:
+      ROLLOUT: 20250408
     volumes:
       - /opt/islandora/volumes/drupal-private-files/canonical/$DOMAIN/0:/usr/share/nginx/drupal:ro
       - ./tmp/drupal/web:/var/www/drupal/web:rw
@@ -365,6 +367,7 @@ services:
       --experimental.plugins.captcha-protect.version=v1.8.1
     environment:
       DOMAIN: ${DOMAIN}
+      INTERNAL_DOMAIN: ${INTERNAL_DOMAIN}
       ROLLOUT_DEPTH: ${ROLLOUT_DEPTH}
       TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
