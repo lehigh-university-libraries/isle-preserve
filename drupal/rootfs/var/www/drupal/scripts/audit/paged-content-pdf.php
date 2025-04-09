@@ -21,7 +21,8 @@ $action_storage = $entity_type_manager->getStorage('action');
 $action = $action_storage->load($action_name);
 
 $sql = "SELECT m.entity_id AS nid, f.uri, COUNT(*) AS children
-  FROM node__field_model m
+  FROM node_field_data n
+  INNER JOIN node__field_model m ON m.entity_id = n.nid
   INNER JOIN node__field_member_of c ON c.field_member_of_target_id = m.entity_id
   INNER JOIN media__field_media_of mo ON m.entity_id = field_media_of_target_id
   INNER JOIN media__field_media_document d ON d.entity_id = mo.entity_id
