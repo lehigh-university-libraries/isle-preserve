@@ -777,3 +777,35 @@ function lehigh_islandora_get_vector_data(string $sentence) : string {
 
   return $response->getBody()->getContents();
 }
+
+/**
+ * Given a fedora URI, get the path on disk.
+ */
+function lehigh_islandora_fcrepo_realpath($uri) {
+  $fedora_id = str_replace('fedora://', 'info:fedora/', $uri);
+  $ocfl_dir = lehigh_islandora_get_ocfl_dir($fedora_id);
+  $inventory = $ocfl_dir . '/extensions/0005-mutable-head/head/inventory.json';
+  if (!file_exists($inventory)) {
+    return "";
+  }
+
+  $inventory_json = file_get_contents($inventory);
+  $inventory = json_decode($inventory_json);
+
+  $manifests = $inventory->manifest;
+  $file = FALSE;
+  $components = explode('/', $uri);
+  $filename = array_pop($components);
+  $filename = rawurlencode($filename);
+  foreach ($manifests as $manifest) {
+    $components = explode('/', $manifest[0]);
+    $manifestFile = array_pop($components);
+    $manifestFile = urldecode($manifestFile);
+    $manifestFile = rawurlencode($manifestFile);
+    if ($manifestFile == $filename) {
+      return $ocfl_dir . '/' . $manifest[0];
+    }
+  }
+
+  return "";
+}
