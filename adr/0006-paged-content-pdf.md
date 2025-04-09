@@ -24,7 +24,7 @@ So instead, we opted to add a single event in Drupal's queue, and create a queue
 
 Positive:
 
-- A conveient way to download all children images
+- A convenient way to download all children images
 - Creating the PDF as an original file allows us to leverage how the rest of our repository content is indexed. Namely, since the original file on the paged content item will have OCR created, we get all children page OCR added to our search index
 
 Negative:
