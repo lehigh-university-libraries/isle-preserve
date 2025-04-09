@@ -27,7 +27,8 @@ $sql = "SELECT m.entity_id AS nid, f.uri, COUNT(*) AS children
   INNER JOIN media__field_media_document d ON d.entity_id = mo.entity_id
   INNER JOIN file_managed f ON f.fid = field_media_document_target_id
   WHERE field_model_target_id = 27
-  GROUP BY m.entity_id";
+  GROUP BY m.entity_id
+  ORDER BY m.entity_id";
 
 $items = \Drupal::database()->query($sql);
 
@@ -36,11 +37,11 @@ foreach ($items as $item) {
     $item->uri = lehigh_islandora_fcrepo_realpath($item->uri);
   }
   else {
-    $item->uri = str_replace("private://", "/var/www/drupal/private", $item->uri);
+    $item->uri = str_replace("private://", "/var/www/drupal/private/", $item->uri);
   }
 
   if (!file_exists($item->uri) || is_dir($item->uri)) {
-    echo "Unable to find file $file\n";
+    echo "Unable to find file for $item->nid $item->uri\n";
     continue;
   }
 
@@ -48,12 +49,10 @@ foreach ($items as $item) {
   $output = [];
   exec($cmd, $output);
   if (!empty($output[0]) && $output[0] == $item->children) {
-    echo "$item->nid has a PDF with all its children\n";
     continue;
   }
 
   echo "Need new PDF for $item->nid at $item->uri. $output[0] !== $item->children\n";
-  continue;
   try {
     $nodes = $node_storage->loadMultiple([$item->nid]);
   } catch (Exception $e) {
