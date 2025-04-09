@@ -35,8 +35,20 @@ for DIR in "${DIRS[@]}"; do
   /var/www/drupal/web/$DIR/ /tmp/web/$DIR/ && ls -l /tmp/web
 done
 
+echo "Putting docker secrets in place"
+cp /run/secrets/JWT_PRIVATE_KEY /opt/keys/jwt/private.key
+for f in /run/secrets/*; do
+  name=$(basename "$f")
+  export "$name"="$(< "$f")"
+done
+
+cd /var/www/drupal || exit 1
+
+echo "Starting cron"
 DURATION=${DURATION:-600}
 while true; do
-  drush --uri "$DRUPAL_DRUSH_URI" queue:run lehigh_islandora_events
+  time drush --uri "$DRUPAL_DRUSH_URI/" queue:run lehigh_islandora_events
+  time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/paged-content-pdf.php
+
   sleep "$DURATION"
 done
