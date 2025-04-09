@@ -790,21 +790,22 @@ function lehigh_islandora_fcrepo_realpath($uri) {
   }
 
   $inventory_json = file_get_contents($inventory);
-  $inventory = json_decode($inventory_json);
+  $inventory = json_decode($inventory_json, TRUE);
+  $head = $inventory['head'];
+  $state = $inventory['versions'][$head]['state'];
+  $manifest  = $inventory['manifest'];
 
-  $manifests = $inventory->manifest;
-  $file = FALSE;
   $components = explode('/', $uri);
   $filename = array_pop($components);
   $filename = rawurlencode($filename);
-  foreach ($manifests as $manifest) {
-    $components = explode('/', $manifest[0]);
-    $manifestFile = array_pop($components);
-    $manifestFile = urldecode($manifestFile);
-    $manifestFile = rawurlencode($manifestFile);
-    if ($manifestFile == $filename) {
-      return $ocfl_dir . '/' . $manifest[0];
+  foreach ($state as $digest => $files) {
+    if (!in_array($filename, $files)) {
+      continue;
     }
+    if (empty($manifest[$digest][0])) {
+      continue;
+    }
+    return $ocfl_dir . '/' . $manifest[$digest][0];
   }
 
   return "";
