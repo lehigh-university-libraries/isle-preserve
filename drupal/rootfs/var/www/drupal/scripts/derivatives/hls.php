@@ -47,30 +47,7 @@ foreach($rows as $nid => $mid) {
     continue;
   }
 
-  $fedora_id = str_replace('fedora://', 'info:fedora/', $fileEntity->uri->value);
-  $ocfl_dir = lehigh_islandora_get_ocfl_dir($fedora_id);
-  $inventory = $ocfl_dir . '/extensions/0005-mutable-head/head/inventory.json';
-  if (!file_exists($inventory)) {
-    continue;
-  }
-  $inventory_json = file_get_contents($inventory);
-  $inventory = json_decode($inventory_json);
-
-  $manifests = $inventory->manifest;
-  $file = FALSE;
-  $components = explode('/', $fileEntity->uri->value);
-  $filename = array_pop($components);
-  $filename = rawurlencode($filename);
-  foreach ($manifests as $manifest) {
-    $components = explode('/', $manifest[0]);
-    $manifestFile = array_pop($components);
-    $manifestFile = urldecode($manifestFile);
-    $manifestFile = rawurlencode($manifestFile);
-    if ($manifestFile == $filename) {
-      $file = $ocfl_dir . '/' . $manifest[0];
-      break;
-    }
-  }
+  $file = lehigh_islandora_fcrepo_realpath($fileEntity->uri->value);
   if (!file_exists($file) || is_dir($file)) {
     continue;
   }
