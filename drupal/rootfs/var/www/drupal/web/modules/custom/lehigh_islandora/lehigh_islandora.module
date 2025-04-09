@@ -793,7 +793,7 @@ function lehigh_islandora_fcrepo_realpath($uri) {
   $inventory = json_decode($inventory_json, TRUE);
   $head = $inventory['head'];
   $state = $inventory['versions'][$head]['state'];
-  $manifest  = $inventory['manifest'];
+  $manifest = $inventory['manifest'];
 
   $components = explode('/', $uri);
   $filename = array_pop($components);
