@@ -26,11 +26,14 @@ $sql = "SELECT m.entity_id AS nid, f.uri, COUNT(*) AS children
   INNER JOIN media__field_media_of mo ON m.entity_id = field_media_of_target_id
   INNER JOIN media__field_media_document d ON d.entity_id = mo.entity_id
   INNER JOIN file_managed f ON f.fid = field_media_document_target_id
-  WHERE field_model_target_id = 27
+  WHERE field_model_target_id = :tid AND n.created > :since
   GROUP BY m.entity_id
   ORDER BY m.entity_id";
-
-$items = \Drupal::database()->query($sql);
+$d_args = [
+  ':tid' => lehigh_islandora_get_tid_by_name("Paged Content", "islandora_models"),
+  ':since' => time() - 86400
+];
+$items = \Drupal::database()->query($sql, $d_args);
 
 foreach ($items as $item) {
   if (strpos($item->uri, "fedora://") !== FALSE) {
