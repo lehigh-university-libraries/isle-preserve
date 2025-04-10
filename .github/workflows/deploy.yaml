@@ -45,4 +45,11 @@ jobs:
     runs-on: self-hosted
     environment: prod
     steps:
-      - run: echo "Deploying to production"
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - run: |
+          echo "Deploying to production"
+          exit 0
+          ./scripts/ci/trigger-rollout.sh
+        env:
+          ROLLOUT_URL: https://islandora-prod.lib.lehigh.edu/_rollout
