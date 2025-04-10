@@ -24,7 +24,7 @@ jobs:
       - name: validate input
         run: |
           regex='^https://[A-Za-z0-9\.\-]+\/_rollout$'
-          if [[ "${{ github.event.inputs.url }}" =~ $regex ]]; then
+          if [[ "${{ inputs.url }}" =~ $regex ]] || [[ "${{ github.event.inputs.url }}" =~ $regex ]]; then
             echo "Valid URL"
           else
             echo "Invalid URL"
@@ -33,6 +33,15 @@ jobs:
 
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
+      - name: determine input source
+        id: set_url
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "url=${{ github.event.inputs.url }}" >> $GITHUB_OUTPUT
+          else
+            echo "url=${{ inputs.url }}" >> $GITHUB_OUTPUT
+          fi
+
       - run: ./scripts/ci/trigger-rollout.sh
         env:
-          ROLLOUT_URL: "${{ github.event.inputs.url }}"
+          ROLLOUT_URL: "${{ steps.set_url.outputs.url }}"
