@@ -118,7 +118,7 @@ jobs:
 
       - uses: ./.github/workflows/deploy.yaml
         with:
-          url: https://islandora-stage.lib.lehigh.edu/_rollout
+          url: https://islandora-test.lib.lehigh.edu/_rollout
 
   deploy-prod:
     if: github.ref == 'refs/heads/main'

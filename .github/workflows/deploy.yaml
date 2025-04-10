@@ -5,13 +5,13 @@ on:
       url:
         description: "Rollout URL"
         type: string
-        default: https://islandora-stage.lib.lehigh.edu/_rollout
+        default: https://islandora-test.lib.lehigh.edu/_rollout
   workflow_call:
     inputs:
       url:
         description: "Rollout URL"
         type: string
-        default: https://islandora-stage.lib.lehigh.edu/_rollout
+        default: https://islandora-test.lib.lehigh.edu/_rollout
 
 permissions:
   contents: read
