@@ -1,8 +1,5 @@
 name: deploy
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       url:
@@ -21,7 +18,7 @@ permissions:
   id-token: write
 
 jobs:
-  deploy-stage:
+  run:
     runs-on: self-hosted
     steps:
       - name: validate input
@@ -39,17 +36,3 @@ jobs:
       - run: ./scripts/ci/trigger-rollout.sh
         env:
           ROLLOUT_URL: "${{ github.event.inputs.url }}"
-
-  deploy-prod:
-    needs: deploy-stage
-    runs-on: self-hosted
-    environment: prod
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - run: |
-          echo "Deploying to production"
-          exit 0
-          ./scripts/ci/trigger-rollout.sh
-        env:
-          ROLLOUT_URL: https://islandora-prod.lib.lehigh.edu/_rollout
