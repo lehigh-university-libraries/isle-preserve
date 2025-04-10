@@ -149,6 +149,7 @@ Once the PR is ready:
 - merge into main
 - main automatically deploys to stage
 - manual approval to deploy to prod
+  - manual approval is done by setting the GitHub Action job to use [the prod environment setup in GitHub](https://github.com/lehigh-university-libraries/isle-preserve/settings/environments/6279574835/edit)
 
 ```mermaid
 sequenceDiagram
