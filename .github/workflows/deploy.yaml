@@ -1,0 +1,48 @@
+name: deploy
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Rollout URL"
+        type: string
+        default: https://islandora-stage.lib.lehigh.edu/_rollout
+  workflow_call:
+    inputs:
+      url:
+        description: "Rollout URL"
+        type: string
+        default: https://islandora-stage.lib.lehigh.edu/_rollout
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy-stage:
+    runs-on: self-hosted
+    steps:
+      - name: validate input
+        run: |
+          regex='^https://[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?)*\/_rollout$'
+          if [[ "${{ github.event.inputs.url }}" =~ $regex ]]; then
+            echo "Valid URL"
+          else
+            echo "Invalid URL"
+            exit 1
+          fi
+
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - run: ./scripts/ci/trigger-rollout.sh
+        env:
+          ROLLOUT_URL: "${{ github.event.inputs.url }}"
+
+  deploy-prod:
+    needs: deploy-stage
+    runs-on: self-hosted
+    environment: prod
+    steps:
+      - run: echo "Deploying to production"
