@@ -7,7 +7,6 @@ on:
     paths-ignore:
       - "ci/**/*.yaml"
       - "**/*.md"
-      - ".github/workflows/*.yaml"
       - "renovate.json5"
 
 concurrency:
@@ -93,14 +92,16 @@ jobs:
             us-docker.pkg.dev/${{ secrets.GCLOUD_PROJECT }}/isle/drupal:${{ steps.extract_tag.outputs.tag }}
 
   deploy-test:
-    runs-on: self-hosted
     needs: [lint-test-build-push]
+    uses: ./.github/workflows/deploy.yaml
+    with:
+      url: https://wight.cc.lehigh.edu/_rollout
+
+  test:
+    runs-on: self-hosted
+    needs: [deploy-test]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - uses: ./.github/workflows/deploy.yaml
-        with:
-          url: https://wight.cc.lehigh.edu/_rollout
 
       - run: ./scripts/ci/test.sh
         env:
@@ -111,26 +112,7 @@ jobs:
 
   deploy-stage:
     if: github.ref == 'refs/heads/main'
-    needs: [deploy-test]
-    runs-on: self-hosted
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - uses: ./.github/workflows/deploy.yaml
-        with:
-          url: https://islandora-test.lib.lehigh.edu/_rollout
-
-  deploy-prod:
-    if: github.ref == 'refs/heads/main'
-    needs: [deploy-stage]
-    runs-on: self-hosted
-    # this gates the job so it needs manual approval
-    environment: prod
-    steps:
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-
-      - run: echo "Deploying to production" && exit 1
-
-      - uses: ./.github/workflows/deploy.yaml
-        with:
-          url: https://islandora-prod.lib.lehigh.edu/_rollout
+    needs: [test]
+    uses: ./.github/workflows/deploy.yaml
+    with:
+      url: https://islandora-test.lib.lehigh.edu/_rollout
