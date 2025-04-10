@@ -98,9 +98,9 @@ jobs:
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - run: ./scripts/ci/trigger-rollout.sh
-        env:
-          ROLLOUT_URL: https://wight.cc.lehigh.edu/_rollout
+      - uses: ./.github/workflows/deploy.yaml
+        with:
+          url: https://wight.cc.lehigh.edu/_rollout
 
       - run: ./scripts/ci/test.sh
         env:
@@ -110,11 +110,27 @@ jobs:
         run: ./scripts/ci/cleanup.sh
 
   deploy-stage:
-    runs-on: self-hosted
+    if: github.ref == 'refs/heads/main'
     needs: [deploy-test]
+    runs-on: self-hosted
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
 
-      - run: ./scripts/ci/trigger-rollout.sh
-        env:
-          ROLLOUT_URL: https://islandora-test.lib.lehigh.edu/_rollout
+      - uses: ./.github/workflows/deploy.yaml
+        with:
+          url: https://islandora-stage.lib.lehigh.edu/_rollout
+
+  deploy-prod:
+    if: github.ref == 'refs/heads/main'
+    needs: [deploy-stage]
+    runs-on: self-hosted
+    # this gates the job so it needs manual approval
+    environment: prod
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
+
+      - run: echo "Deploying to production" && exit 1
+
+      - uses: ./.github/workflows/deploy.yaml
+        with:
+          url: https://islandora-prod.lib.lehigh.edu/_rollout
