@@ -45,10 +45,11 @@ done
 cd /var/www/drupal || exit 1
 
 echo "Starting cron"
-DURATION=${DURATION:-600}
+DURATION=${DURATION:-900}
 while true; do
   time drush --uri "$DRUPAL_DRUSH_URI/" queue:run lehigh_islandora_events
   time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/paged-content-pdf.php
+  time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/jp2.php
 
   sleep "$DURATION"
 done
