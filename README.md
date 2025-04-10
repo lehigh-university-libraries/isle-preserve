@@ -114,87 +114,6 @@ A custom Drupal module was implemented to locally record and save a very limited
 2. Past efforts of getting historical data out of GA in the event Google discontinues a service, or a web properties need to move between accounts, has proven difficult or in some cases simply not possible. Storing data locally ensures we will have historical metric data and that we could potentially migrate that to some future system
 3. Managing sending event data to be able to report on in GA whether through custom JavaScript events or GTM is a process that's outside of a typical development workflow and can easily be forgotten or drift from the rendered HTML responses GTM relies on. Though we can help mitigate this risk by having functional javascript tests around what GTM expects. This shouldn't be strickly required for all GTM tracking but for imporant metrics it'd be wise to add in our CI/CD pipeline
 
-##### Example Entity Metric reports
-
-Below are some sample MySQL queries we could use to build dashboards. This is intended to just show what's possible so we can decide what reports we want and build dashboards in Drupal to view that data
-
-**Page views by author**
-
-```
-SELECT DATE_FORMAT(FROM_UNIXTIME(m.timestamp), '%b %Y') AS month, t.name AS author, COUNT(*) AS pageviews from entity_metrics_data m
-INNER JOIN node_field_data n ON n.nid = m.entity_id
-INNER JOIN node__field_linked_agent a ON a.entity_id = n.nid
-INNER JOIN taxonomy_term_field_data t ON t.tid = field_linked_agent_target_id
-WHERE m.entity_type = 'node' AND field_linked_agent_rel_type IN ('relators:cre', 'relators:aut')
-GROUP BY DATE_FORMAT(FROM_UNIXTIME(m.timestamp), '%b %Y'), t.tid
-ORDER BY m.timestamp, COUNT(*) DESC
----
-month	author	pageviews
-Apr 2024	Anonymous	18
-Apr 2024	Chen, Jingying	4
-Apr 2024	Lehigh University. Alumni Association.	4
-Apr 2024	Boyle, Michael Lewis	3
-...
-...
-May 2024	King Brothers Orchestra	4
-May 2024	Hampton, Alexis	4
-May 2024	Gipson, Brianna	4
-May 2024	Barkstrom, Elyse	3
-...
-...
-```
-
-**Pageviews by region**
-
-```
-SELECT r.country, r.region, r.city, n.title, count(*) AS pageviews from entity_metrics_data m
-INNER JOIN entity_metrics_regions r ON r.id = m.region_id
-INNER JOIN node_field_data n ON n.nid = m.entity_id
-WHERE m.entity_type = 'node'
-GROUP BY r.id, n.nid
-ORDER BY count(*) desc
----
-country	region	city	title	pageviews
-US	Pennsylvania	Bethlehem	Welcome to Lehigh Digital Collections	123
-US	Pennsylvania	Bethlehem	Document submittted by an anonymous donor	19
-US	Pennsylvania	Bethlehem	COVID-19 and Air Quality in New York State	6
-US	Pennsylvania	Bethlehem	Epitome: Yearbook 1912	6
-US	Pennsylvania	Bethlehem	Homelessness: The Pandemic Before COVID-19	5
-US	Pennsylvania	Bethlehem	Estate documents of Harry E. Packer- Stock certificates 1881-1886	5
-US	Pennsylvania	Bethlehem	About Collections	5
-US	Pennsylvania	Bethlehem	The Economic Effects of the COVID-19 to Our Society	5
-...
-...
-```
-
-**Downloads by region**
-
-```
-SELECT r.country, r.region, r.city, parent.title AS collection, n.title, count(*) AS downloads from entity_metrics_data m
-INNER JOIN entity_metrics_regions r ON r.id = m.region_id
-INNER JOIN media_field_data media ON media.mid = m.entity_id
-INNER JOIN media__field_media_use mu ON mu.entity_id = m.entity_id
-INNER JOIN media__field_media_of mo ON mo.entity_id = m.entity_id
-INNER JOIN node_field_data n ON n.nid = field_media_of_target_id
-INNER JOIN node__field_member_of rel ON rel.entity_id = n.nid
-INNER JOIN node_field_data parent ON parent.nid = field_member_of_target_id
-WHERE m.entity_type = 'media' AND field_media_use_target_id = 16
-GROUP BY r.id, n.nid
-ORDER BY count(*) desc;
----
-country	region	city	collection	title	downloads
-US	Pennsylvania	Bethlehem	Theses and Dissertations	Optimization techniques for calculating a modification of the a-parameter in the Cu - Ni, Au - Ni and Au - Cu binary systems.	10
-US	Pennsylvania	Bethlehem	EES/ES 097 The Environment in the Times of COVID-19	Homelessness: The Pandemic Before COVID-19	4
-US	Pennsylvania	Bethlehem	To What Extend do Pandemic Affect Chinese Attitutde Towards Nature	To What Extend do Pandemic Affect Chinese Attitutde Towards Nature [Spreadsheet]	4
-US	Pennsylvania	Bethlehem	EES/ES 097 The Environment in the Times of COVID-19	COVID-19 and Air Quality in New York State	3
-US	Pennsylvania	Bethlehem	FIRE, Volume 01, Issue 01 (2014)	BOOK REVIEW: Cuervo, H., & Wyn, J. (2012). Young People Making it Work: Continuity and Change in Rural Places. Victoria, Australia: Melbourne University Press. 208 pages, ill., ISBN: 9780522860979.	3
-US	Pennsylvania	Bethlehem	Music Performance Programs	The Jazz Clarinet	3
-US	Pennsylvania	Bethlehem	Music Performance Programs	Deborah Andrus, clarinet ; DeMarina Trio	3
-US	Pennsylvania	Bethlehem	Music Performance Programs	Wind Ensemble at Lehigh University: Signatures	3
-US	Pennsylvania	Bethlehem	Archival Collections	Joseph Phineas Davis Journal - Cuzco May 26, 1864 to July 29, 1864	2
-US	Pennsylvania	Bethlehem	Music Performance Programs	60!	2
-```
-
 ##### System Metrics
 
 SET manages a grafana and telegraf stack to collect system level metrics on the server that hosts ISLE.
@@ -214,43 +133,41 @@ Here is how the CI works. Basically, create a PR on a new branch. That will:
 - build docker image for branch
 - deploy branch to dev
 - run tests
-- deploy branch to stage
-
-Once the PR merges the same thing will happen with the `main` branch. Once everything looks OK you can manually deploy to prod on the [deploy-prod.yaml GHA](https://github.com/lehigh-university-libraries/isle-preserve/actions/workflows/deploy-prod.yaml)
 
 ```mermaid
 sequenceDiagram
     actor Alice
-    Alice->>GitHub: git push origin staging
+    Alice->>GitHub: git push origin branch-name
     GitHub-->>wight.cc.lehigh.edu(actions-runner): run .github/workflows/lint-test-build-push.yml
+    wight.cc.lehigh.edu(actions-runner)->>us-docker.pkg.dev: docker build/push
     wight.cc.lehigh.edu(actions-runner)->>wight.cc.lehigh.edu: curl /_rollout
     wight.cc.lehigh.edu(actions-runner)->>wight.cc.lehigh.edu: lint/test on wight test instance
-    wight.cc.lehigh.edu(actions-runner)->>us-docker.pkg.dev: docker push
+```
+
+Once the PR is ready:
+
+- merge into main
+- main automatically deploys to stage
+- manual approval to deploy to prod
+
+```mermaid
+sequenceDiagram
+    actor Alice
+    participant GitHub
+    participant us-docker.pkg.dev
+    Alice-->>GitHub: merge PR into main
     wight.cc.lehigh.edu(actions-runner)->>islandora-stage.lib.lehigh.edu: curl /_rollout
     islandora-stage.lib.lehigh.edu->>GitHub: git pull
     islandora-stage.lib.lehigh.edu->>us-docker.pkg.dev: docker pull
     islandora-stage.lib.lehigh.edu->>islandora-stage.lib.lehigh.edu: docker compose up
-    Alice-->>GitHub: merge PR into main
     Alice->>Alice: tests changes on staging
-    Alice->>GitHub: run .github/workflows/deploy-prod.yml
+    Alice->>GitHub: approve prod deployment
     GitHub->>wight.cc.lehigh.edu(actions-runner): run .github/workflows/deploy-prod.yml
     wight.cc.lehigh.edu(actions-runner)->>islandora-prod.lib.lehigh.edu: curl /_rollout
     islandora-prod.lib.lehigh.edu->>GitHub: git pull
     islandora-prod.lib.lehigh.edu->>us-docker.pkg.dev: docker pull
     islandora-prod.lib.lehigh.edu->>islandora-prod.lib.lehigh.edu: docker compose up
 ```
-
-If a rollout fails, often it can be caused by a change that causes the docker stack (specificaly traefik or the rollout container) to have its container recreated.
-
-Until we devise a way to gracefully handle recovering from this scenario you can get everything copacetic by just running `sudo systemctl restart islandora` on the stack. An obvious remediation would be just trying to re-run the pipeline but knowning when to do that should be handled by the CI/CD process and not left up to committers to figure out.
-
-The state convergence process is wrapped in a [oneshot systemd unit](./scripts/systemd/islandora.service) installed on dev/stage/prod you can run from your laptop via
-
-```
-./scripts/maintenance/fixup-ci.sh
-```
-
-Which will ask for your password before running on each environment to avoid forcing a rollout across the fleet (and b/c it's a sudo command). Running that script on a given environment is akin to rolling out the `main` branch to that environment. Meaning, any code on the `HEAD` of that branch will be put into that environment and the rollout process itself will cause around 30s of downtime.
 
 ### Microservices
 
