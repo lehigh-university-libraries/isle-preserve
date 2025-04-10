@@ -11,7 +11,7 @@ on:
       url:
         description: "Rollout URL"
         type: string
-        default: https://islandora-test.lib.lehigh.edu/_rollout
+        required: true
 
 permissions:
   contents: read
