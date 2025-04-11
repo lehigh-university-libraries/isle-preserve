@@ -62,7 +62,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:4.0.5@sha256:e2fdb90ef441e8585ee81e093e047527c87a3b4d7254dd59f9932b9682c45b87
+    image: islandora/alpaca:4.0.7@sha256:71394339447eba194abaaaee6f9147e4b78e9da16587c117979f456c1c45802b
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -103,7 +103,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:4.0.5@sha256:b459568a24056ba6bd4288d6400e7816421395fb7f637385b7aa482a8df39777
+    image: islandora/mariadb:4.0.7@sha256:ace294e4c86b4c0f1003f1cf6a569630b0139299dc85241e57406c91409150eb
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -124,7 +124,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:4.0.5@sha256:28ab4563e8fbbd5e6c424e2d15f59d4fe55587e379ea1ce4b0d96799a65cd438
+    image: islandora/activemq:4.0.7@sha256:a08cbfdb33aeb72e4aef8a4dae87dd6ab956a037b6805b14f2498e468742e6c6
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -157,7 +157,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - ./tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.38@sha256:ab338da3b6bc39fe4f340aba0dc10d31ab35159ae292c97599d387ca25f7100b
+    image: memcached:1.6.38@sha256:d507e44415954bce3186ddf56353d4a68f1b77ef5a11626870b838731e0abaf0
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -252,7 +252,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.27.4@sha256:124b44bfc9ccd1f3cedf4b592d4d1e8bddb78b51ec2ed5056c52d3692baebc19
+    image: nginx:1.27.4@sha256:09369da6b10306312cd908661320086bf87fbae1b6b0c49a1f50ba531fef2eab
     restart: always
     environment:
       ROLLOUT: 20250408
@@ -294,7 +294,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:4.0.5@sha256:b39f125493d9c289042c192f49d2117c403a44b8455a6291db261674fe5aadc8
+    image: islandora/fcrepo6:4.0.7@sha256:c586433e60c00f4deb4159df7fb198276e3986f84abdb64eb0189e5af74f8332
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -316,7 +316,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:4.0.5@sha256:8eb3f614e17d5709010b0ba475277081406c6201294ab762fedbb0d43a1040f1
+    image: islandora/solr:4.0.7@sha256:f3ebdbf708eaf1a8f58cbd22cf9b97b1a2771c8e0d5dfdddd446a60ab6fddd4f
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
