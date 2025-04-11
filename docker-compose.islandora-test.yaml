@@ -7,7 +7,7 @@ services:
       - /mnt/islandora_staging:/data:r
       - /home/runner/etds:/home/runner/etds:r
   mariadb:
-    image: mariadb:11.7.2-noble@sha256:310d29fbb58169dcddb384b0ff138edb081e2773d6e2eceb976b3668089f2f84
+    image: mariadb:11.7.2-noble@sha256:81e893032978c4bf8ad43710b7a979774ed90787fa32d199162148ce28fe3b76
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD

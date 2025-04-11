@@ -24,7 +24,7 @@ services:
   transformer:
     image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:d7219810daf842d75d70bf249cda1d455af864d9d37168ede4725ddd4af2a574
   mariadb:
-    image: mariadb:11.7.2-noble@sha256:310d29fbb58169dcddb384b0ff138edb081e2773d6e2eceb976b3668089f2f84
+    image: mariadb:11.7.2-noble@sha256:81e893032978c4bf8ad43710b7a979774ed90787fa32d199162148ce28fe3b76
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
@@ -38,7 +38,7 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   fits:
-    image: islandora/fits:4.0.5@sha256:e1640c4d7f002f25816bf5c61e26bae90b407ac0105ca6894ca1960d674f1baa
+    image: islandora/fits:4.0.7@sha256:3d3e4ac7d2c7b6c5a83cac8656d825a773e84f2be3c7f2e55cee28e97f2d98f1
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:

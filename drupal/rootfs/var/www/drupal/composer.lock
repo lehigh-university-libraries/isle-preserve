@@ -5371,17 +5371,17 @@
         },
         {
             "name": "drupal/islandora",
-            "version": "2.14.3",
+            "version": "2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/islandora.git",
-                "reference": "2.14.3"
+                "reference": "2.15.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/islandora-2.14.3.zip",
-                "reference": "2.14.3",
-                "shasum": "6a49937297278d6576d8c2464fb444b34683e2b9"
+                "url": "https://ftp.drupal.org/files/projects/islandora-2.15.0.zip",
+                "reference": "2.15.0",
+                "shasum": "c1c8713f328f8778f8d80b03e7246ac7dda19fd0"
             },
             "require": {
                 "drupal/action": "*",
@@ -5420,8 +5420,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.14.3",
-                    "datestamp": "1743242180",
+                    "version": "2.15.0",
+                    "datestamp": "1744312299",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -8741,26 +8741,26 @@
         },
         {
             "name": "drupal/term_condition",
-            "version": "2.0.3",
+            "version": "2.0.4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/term_condition.git",
-                "reference": "2.0.3"
+                "reference": "2.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/term_condition-2.0.3.zip",
-                "reference": "2.0.3",
-                "shasum": "71663280615e1a377c6e7a0ce9bead6cf42df33e"
+                "url": "https://ftp.drupal.org/files/projects/term_condition-2.0.4.zip",
+                "reference": "2.0.4",
+                "shasum": "72402a53ef088768e8c829901ea775a4c23dbab1"
             },
             "require": {
-                "drupal/core": "^9 || ^10"
+                "drupal/core": "^9 || ^10 || ^11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.0.3",
-                    "datestamp": "1688599686",
+                    "version": "2.0.4",
+                    "datestamp": "1744101843",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -8773,7 +8773,7 @@
             ],
             "authors": [
                 {
-                    "name": "DanielVeza",
+                    "name": "danielveza",
                     "homepage": "https://www.drupal.org/user/3362504"
                 },
                 {
