@@ -11,3 +11,4 @@ queueMiddlewares:
     url: https://isle-microservices.cc.lehigh.edu/mergepdf
     consumers: 3
     forwardAuth: true
+    noPut: true

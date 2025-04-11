@@ -37,7 +37,7 @@ spec:
               memory: "256Mi"
               cpu: "100m"
             limits:
-              memory: "10Gi"
+              memory: "64Gi"
           ports:
             - containerPort: 8080
               hostPort: 8087
