@@ -3,6 +3,7 @@ _core:
 broker_url: 'tcp://activemq:61613'
 jwt_expiry: '86400 secs'
 delete_media_and_files: true
+fast_term_queries: true
 redirect_after_media_save: false
 upload_form_location: ''
 upload_form_allowed_mimetypes: ''
@@ -13,4 +14,3 @@ gemini_pseudo_bundles:
   'image:media': 'image:media'
   'video:media': 'video:media'
 gemini_url: ''
-fast_term_queries: true

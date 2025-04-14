@@ -1,8 +1,8 @@
-name: 'Lehigh Islandora'
+name: "Lehigh Islandora"
 type: module
-description: 'Various custom code needed for Lehigh Preserve'
-core_version_requirement: ^10
-package: 'Custom'
+description: "Various custom code needed for Lehigh Preserve"
+core_version_requirement: ^10 || ^11
+package: "Custom"
 dependencies:
   - islandora:islandora
   - token:token

@@ -1,0 +1,164 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for stop14_tools module.
+ */
+
+use Drupal\Core\Template\Attribute;
+
+/**
+ * Implements hook_preprocess_media().
+ */
+function stop14_tools_preprocess_media(&$vars) {
+
+  /** @var Drupal\media\Entity\Media $media */
+  $media = &$vars['media'];
+
+  /** @var  Drupal\Core\Field\FieldItemList $fieldlist */
+  foreach ($media->getFields() as &$fieldlist) {
+
+    /** @var Drupal\Core\Field\FieldItemInterface $field */
+    foreach ($fieldlist as $field) {
+      $ar = stop14_tools_set_aspect_ratio($field);
+
+      // Set aspect ratio for media wrapper based on first image field.
+      if ($ar && !array_key_exists('aspect_ratio', $vars)) {
+        $vars['aspect_ratio'] = $ar;
+        $vars['figure_aspect_ratio_class'] = "figure-{$ar}";
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_image().
+ */
+function stop14_tools_preprocess_image(&$vars) {
+  if (array_key_exists('width', $vars) && array_key_exists('height', $vars)) {
+    $vars['aspect_ratio'] = stop14_tools_aspect_ratio($vars['width'], $vars['height']);
+    if ($vars['aspect_ratio'] !== NULL) {
+      $vars['attributes']['aspect-ratio'] = $vars['aspect_ratio'];
+      $class = "img-{$vars['aspect_ratio']}";
+
+      if (array_key_exists('class', $vars['attributes'])) {
+        $vars['attributes']['class'][] = " " . $class;
+      }
+      else {
+        $vars['attributes']['class'] = [$class];
+      }
+    }
+  }
+}
+
+/**
+ * Set aspect ratio property for all fields with width and height parameters.
+ *
+ * @param \Drupal\Core\Field\FieldItemInterface $field
+ *   A Drupal field object.
+ *
+ * @return string|null
+ *   The aspect ratio.
+ */
+function stop14_tools_set_aspect_ratio($field) {
+  if ($field) {
+    $value = $field->getValue();
+
+    if ($value && array_key_exists('width', $value) && array_key_exists('height', $value)) {
+      $aspect_ratio = stop14_tools_aspect_ratio($value['width'], $value['height']);
+      $field->set('aspect_ratio', $aspect_ratio);
+      return $aspect_ratio;
+    }
+
+  }
+
+  return NULL;
+}
+
+/**
+ * Calculates aspect ratio based on provided width and height of image.
+ *
+ * @param string $width
+ *   The width.
+ * @param string $height
+ *   The height.
+ *
+ * @return string|null
+ *   A string (null|square|portrait|landscape)
+ */
+function stop14_tools_aspect_ratio($width, $height) {
+  if (!$width || !$height) {
+    return NULL;
+  }
+
+  $width = (int) $width;
+  $height = (int) $height;
+
+  if ($width === $height) {
+    return 'square';
+  }
+  elseif ($width > $height) {
+    return 'landscape';
+  }
+  elseif ($height > $width) {
+    return 'portrait';
+  }
+  else {
+    return NULL;
+  }
+
+}
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function stop14_tools_preprocess_field(&$vars) {
+
+  $element = &$vars['element'];
+  if ($element['#entity_type'] === 'paragraph') {
+    // Add paragraph object to field template.
+    $vars['paragraph'] = $vars['element']['#object'];
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function stop14_tools_theme() {
+  return [
+    'stop14_browser_toolbar' => [
+      'template' => 'browser-toolbar',
+      'variables' => [],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_views_view_themed_grid().
+ */
+function stop14_tools_preprocess_views_view_themed_grid(&$vars) {
+  // Get view options.
+  $view = $vars['view'];
+  $rows = $vars['rows'];
+  $style = $view->style_plugin;
+  $options = $style->options;
+
+  // Add settings as template variables if needed.
+  foreach ($options as $key => $option) {
+    $vars[$key] = $option;
+  }
+
+  $styleAttr = [
+    "--grid-columns-sml: {$options['breakpoints']['sml']}",
+    "--grid-columns-med: {$options['breakpoints']['med']}",
+    "--grid-columns-lrg: {$options['breakpoints']['lrg']}",
+    "--grid-columns-xlrg: {$options['breakpoints']['xlrg']}",
+  ];
+
+  // Add component options as attributes.
+  $vars['attributes'] = new Attribute([
+    'style' => implode('; ', $styleAttr) . ';',
+  ]);
+
+  template_preprocess_views_view_unformatted($vars);
+}

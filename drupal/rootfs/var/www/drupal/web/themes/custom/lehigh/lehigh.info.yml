@@ -1,14 +1,14 @@
 # @file
 # Drupal information about the Agile Theme
 # Replace “themename” in property values with theme key name
-name: 'Lehigh Digital Collections Theme'
+name: "Lehigh Digital Collections Theme"
 type: theme
-description: 'Based on the Stop14 Theme Builder.'
-alt text: 'Lehigh Digital Collections'
+description: "Based on the Stop14 Theme Builder."
+alt text: "Lehigh Digital Collections"
 version: 1.0.0
 base theme: false
 core: 8.x
-core_version_requirement: ^8 || ^9 || ^10
+core_version_requirement: ^11
 libraries:
   - lehigh/global-styling
 logo: assets/img/svg/marks/logo.svg

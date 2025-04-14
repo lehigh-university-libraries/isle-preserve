@@ -1,0 +1,4 @@
+administer stop14_tools configuration:
+  title: 'Administer stop14_tools configuration'
+  description: 'Optional description.'
+  restrict access: true

@@ -17,7 +17,6 @@ dependencies:
     - controlled_access_terms
     - csv_serialization
     - entity_reference_facet_link
-    - masonry_views
     - rest
     - search_api
     - serialization
@@ -25,7 +24,6 @@ dependencies:
     - user
     - views_attachment_tabs
     - views_data_export
-    - views_infinite_scroll
 _core:
   default_config_hash: d-DwLzBXnDh7as84BBK0Pxv16Ypczqg_TF9tjAyNgjU
 id: browse
@@ -136,13 +134,13 @@ display:
               autosubmit: true
               autosubmit_exclude_textfield: true
               autosubmit_textfield_delay: 500
+              autosubmit_textfield_minimum_length: 3
               autosubmit_hide: false
               input_required: false
               allow_secondary: false
               secondary_label: 'Advanced options'
               secondary_open: false
               reset_button_always_show: false
-              autosubmit_textfield_minimum_length: 3
             sort:
               plugin_id: default
               advanced:
@@ -1480,94 +1478,6 @@ display:
         - 'config:field.storage.node.field_resource_type'
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'
-  list:
-    id: list
-    display_title: 'Browse Items (List)'
-    display_plugin: attachment
-    position: 2
-    display_options:
-      enabled: false
-      title: 'List View'
-      pager:
-        type: full
-        options:
-          offset: 0
-          pagination_heading_level: h4
-          items_per_page: 24
-          total_pages: null
-          id: 0
-          tags:
-            next: 'next ›'
-            previous: '‹ previous'
-            first: '« First'
-            last: 'Last »'
-          expose:
-            items_per_page: true
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '24'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          quantity: 9
-      style:
-        type: default
-        options:
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-      row:
-        type: search_api
-        options:
-          view_modes:
-            'entity:node':
-              article: default
-              islandora_object: list
-              page: default
-      defaults:
-        title: false
-        css_class: false
-        style: false
-        row: false
-        header: false
-      css_class: list-view
-      display_description: ''
-      header:
-        result:
-          id: result
-          table: views
-          field: result
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: result
-          empty: false
-          content: 'Displaying @start - @end of @total'
-      display_extenders:
-        facets_display_extender:
-          facet_settings:
-            'search_api:views_page__browse__main': 'search_api:views_page__browse__main'
-        attachment_tabs:
-          attachment_tabs_enabled: false
-        ajax_history: {  }
-      displays:
-        main: main
-      attachment_position: after
-      inherit_exposed_filters: true
-      inherit_pager: true
-      render_pager: true
-    cache_metadata:
-      max-age: -1
-      contexts:
-        - 'languages:language_interface'
-        - url
-        - url.query_args
-        - 'url.query_args:sort_by'
-        - 'url.query_args:sort_order'
-        - 'user.node_grants:view'
-      tags:
-        - 'config:search_api.index.default_solr_index'
-        - 'search_api_list:default_solr_index'
   main:
     id: main
     display_title: 'Browse Items (Main)'
@@ -1636,93 +1546,3 @@ display:
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'
       cacheable: false
-  masonry:
-    id: masonry
-    display_title: 'Browse Items (Masonry)'
-    display_plugin: attachment
-    position: 2
-    display_options:
-      enabled: false
-      title: 'Masonry View'
-      pager:
-        type: infinite_scroll
-        options:
-          offset: 0
-          items_per_page: 24
-          total_pages: null
-          id: 0
-          tags:
-            next: 'Next ›'
-            previous: '‹ Previous'
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          views_infinite_scroll:
-            button_text: 'Load More'
-            automatically_load_content: false
-            initially_load_all_pages: false
-      style:
-        type: masonry
-        options:
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-          layoutColumnWidth: ''
-          gutterWidth: ''
-          stampSelector: ''
-          isLayoutResizable: 1
-          isLayoutAnimated: 1
-          layoutAnimationDuration: '500'
-          isLayoutFitsWidth: 0
-          isLayoutImagesLoadedFirst: 1
-          isLayoutImagesLazyLoaded: 0
-          isItemsWidthForce: 1
-          isItemsPositionInPercent: 0
-      row:
-        type: search_api
-        options:
-          view_modes:
-            'entity:node':
-              article: default
-              islandora_object: card
-              page: default
-      defaults:
-        title: false
-        css_class: false
-        style: false
-        row: false
-        header: false
-      css_class: masonry-view
-      display_description: ''
-      header: {  }
-      display_extenders:
-        facets_display_extender:
-          facet_settings:
-            'search_api:views_page__browse__main': 'search_api:views_page__browse__main'
-        attachment_tabs:
-          attachment_tabs_enabled: false
-          enabled: 0
-          attachment_tabs: null
-        ajax_history: {  }
-      displays:
-        main: main
-      attachment_position: after
-      inherit_exposed_filters: true
-      inherit_pager: false
-    cache_metadata:
-      max-age: -1
-      contexts:
-        - 'languages:language_interface'
-        - url
-        - url.query_args
-        - 'url.query_args:sort_by'
-        - 'url.query_args:sort_order'
-        - 'user.node_grants:view'
-      tags:
-        - 'config:search_api.index.default_solr_index'
-        - 'search_api_list:default_solr_index'

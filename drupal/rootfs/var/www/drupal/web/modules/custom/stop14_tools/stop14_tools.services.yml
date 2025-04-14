@@ -1,0 +1,10 @@
+services:
+  stop14_tools.themed_grid.service:
+    class: Drupal\stop14_tools\Services\ThemedGridService
+    arguments:
+      [
+        "@module_handler",
+        "@theme.manager",
+        "@language_manager",
+        "@config.factory",
+      ]
