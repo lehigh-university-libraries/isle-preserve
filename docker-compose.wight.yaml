@@ -33,7 +33,7 @@ services:
     # we can get newer browser support
     image: selenium/standalone-firefox:3.141@sha256:738eeec4eba6e44d0e5f0697e36b77b907e3c6fb647759a82fe47dec0d188abf
   mariadb:
-    image: mariadb:11.7.2-noble@sha256:310d29fbb58169dcddb384b0ff138edb081e2773d6e2eceb976b3668089f2f84
+    image: mariadb:11.7.2-noble@sha256:81e893032978c4bf8ad43710b7a979774ed90787fa32d199162148ce28fe3b76
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
