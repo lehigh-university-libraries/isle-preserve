@@ -4,6 +4,18 @@ use Drupal\redirect\Entity\Redirect;
 use Drupal\Core\Url;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
+use Drupal\Core\Session\UserSession;
+use Drupal\user\Entity\User;
+
+$userid = 1;
+$account = User::load($userid);
+$accountSwitcher = Drupal::service('account_switcher');
+$userSession = new UserSession([
+  'uid'   => $account->id(),
+  'name'  => $account->getDisplayName(),
+  'roles' => $account->getRoles(),
+]);
+$accountSwitcher->switchTo($userSession);
 
 $media_storage = \Drupal::entityTypeManager()->getStorage('media');
 $utils = \Drupal::service('islandora.utils');
