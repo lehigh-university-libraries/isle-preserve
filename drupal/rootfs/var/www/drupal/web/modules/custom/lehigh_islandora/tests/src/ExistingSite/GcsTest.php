@@ -53,8 +53,10 @@ class GcsTest extends ExistingSiteBase {
     $this->assertEquals($data, $this->getSession()->getPage()->getContent());
 
     $file->delete();
-    $this->drupalGet($uri);
-    $this->assertSession()->statusCodeEquals(404);
+    $this->drupalGet($uri, [
+      'query' => ['foo' => rand()]
+    ]);
+    $this->assertSession()->statusCodeEquals(403);
   }
 
 }
