@@ -1,0 +1,9 @@
+{
+    "name": "stop14/stop14_tools",
+    "description": "An evolving set of Drupal extensions. Includes a Content Editorial feature defining a standard set of paragraph entities, an overlay menu, and some useful Twig extensions.",
+    "type": "drupal-module",
+    "require": {
+        "php": ">=7.4"
+    },
+    "license": "MIT"
+}

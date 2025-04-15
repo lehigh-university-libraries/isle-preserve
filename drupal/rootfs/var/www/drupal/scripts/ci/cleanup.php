@@ -1,6 +1,6 @@
 <?php
 
-if (getenv("DRUPAL_DEFAULT_SITE_URL") !== "wight.cc.lehigh.edu") {
+if (getenv("DRUPAL_DEFAULT_SITE_URL") !== "islandora.dev" && getenv("DRUPAL_DEFAULT_SITE_URL") !== "wight.cc.lehigh.edu") {
   exit(1);
 }
 

@@ -7,8 +7,6 @@ if (PHP_SAPI === 'cli') {
   ini_set('memory_limit', '-1');
 }
 
-$settings['state_cache'] = TRUE;
-
 // Required when running Drupal behind a reverse proxy.
 $settings['reverse_proxy'] = TRUE;
 $settings['reverse_proxy_addresses'] = [

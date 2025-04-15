@@ -3,6 +3,6 @@ type: module
 description: Generates a user interface to tab between views attachments. Can be used to facilitate multiple layouts for a single view.
 package: Stop14
 core: 8.x
-core_version_requirement: ^8 || ^9 || ^10
+core_version_requirement: ^10 || ^11
 dependencies:
-  - views
+  - drupal:views

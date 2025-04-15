@@ -1,0 +1,7 @@
+name: "Stop14 Tools"
+type: module
+description: Provides useful APIs and functional support.
+package: Stop14
+core_version_requirement: ^11
+dependencies:
+  - twig_attributes:twig_attributes

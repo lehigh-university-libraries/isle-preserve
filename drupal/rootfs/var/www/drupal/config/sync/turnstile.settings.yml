@@ -1,7 +1,5 @@
 _core:
   default_config_hash: XmhZJ3pA2yY3vK2rXn6bd-CVDReyX8F_oxLX4zIc6tw
-site_key: TURNSTILE_SITE_KEY
-secret_key: TURNSTILE_SECRET_KEY
 turnstile_src: 'https://challenges.cloudflare.com/turnstile/v0/api.js'
 widget:
   theme: auto
@@ -11,3 +9,5 @@ widget:
   retry: auto
   retry_interval: 8000
   appearance: always
+site_key: TURNSTILE_SITE_KEY
+secret_key: TURNSTILE_SECRET_KEY
