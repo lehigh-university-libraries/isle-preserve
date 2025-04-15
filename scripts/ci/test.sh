@@ -6,14 +6,17 @@ echo "waiting for drupal to come online"
 docker exec lehigh-d10-drupal-1 \
   timeout 600 bash -c "while ! test -f /installed; do sleep 5; done"
 
+echo -e "\n\n============================================="
 echo "running selenium tests"
+echo -e "=============================================\n\n"
 docker exec lehigh-d10-drupal-1 \
   su nginx -s /bin/bash -c "DTT_BASE_URL='http://drupal' php vendor/bin/phpunit \
     -c phpunit.selenium.xml \
-    --debug \
-    --verbose"
+    --debug"
 
+echo -e "\n\n============================================="
 echo "running tests against live site config"
+echo -e "=============================================\n\n"
 docker exec lehigh-d10-drupal-1 \
   su nginx -s /bin/bash -c "php vendor/bin/phpunit \
     -c phpunit.unit.xml \
