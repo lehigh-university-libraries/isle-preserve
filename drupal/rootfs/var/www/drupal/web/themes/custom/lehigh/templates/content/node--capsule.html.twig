@@ -90,10 +90,10 @@
         {{ content.field_thumbnail }}
       {% endif %}
       {% if content.field_representative_media %}
-        {{ content.field_representative_media|strip_anchors }}
+        {{ content.field_representative_media }}
       {% endif %}
       {% if content.media_evas_thumbnail %}
-        {{ content.media_evas_thumbnail|strip_anchors }}
+        {{ content.media_evas_thumbnail }}
       {% endif %}
     </header>
     <div{{ content_attributes.addClass('node--content') }}>
@@ -116,7 +116,7 @@
 
       <h3{{ title_attributes }}>{{ label }}</h3>
     {{ title_suffix }}
-      {{ content|without('field_thumbnail', 'media_evas_thumbnail', 'field_representative_media', 'field_type','group_card_footer')|strip_anchors }}
+      {{ content|without('field_thumbnail', 'media_evas_thumbnail', 'field_representative_media', 'field_type','group_card_footer') }}
       <div class="more">More</div>
     </div>
   </a>
