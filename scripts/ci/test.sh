@@ -17,8 +17,7 @@ echo "running tests against live site config"
 docker exec lehigh-d10-drupal-1 \
   su nginx -s /bin/bash -c "php vendor/bin/phpunit \
     -c phpunit.unit.xml \
-    --debug \
-    --verbose"
+    --debug"
 
 echo -e "\n\n============================================="
 echo "testing HA setup"
