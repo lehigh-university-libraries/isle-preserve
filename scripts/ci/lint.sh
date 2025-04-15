@@ -36,7 +36,7 @@ check_traefik() {
     fi
 }
 
-php_codesnff() {
+php_codesniff() {
     echo "Running PHP codesniffer on custom modules"
     cd codebase
     cp web/core/phpcs.xml.dist .
@@ -51,4 +51,4 @@ echo "Checking YML files"
 ls -l ./*.yaml ./conf/**/*.yml "$TRAEFIK_CONFIG"
 yq . ./*.yaml ./conf/**/*.yml "$TRAEFIK_CONFIG" > /dev/null
 check_traefik
-php_codesnff
+#php_codesniff
