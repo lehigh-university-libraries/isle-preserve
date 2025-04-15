@@ -90,17 +90,17 @@
         {{ content.field_thumbnail }}
       {% endif %}
       {% if content.field_representative_media %}
-        {{ content.field_representative_media|strip_anchors }}
+        {{ content.field_representative_media }}
       {% endif %}
     </header>
     <div{{ content_attributes.addClass('node--content') }}>
     {{ title_suffix }}
-      {{ content|without('field_type','group_caption')|strip_anchors }}
+      {{ content|without('field_type','group_caption') }}
     </div>
   {% if content.group_caption %}
     <footer class="reversed">
       <h3{{ title_attributes }}>{{ label }}</h3>
-      {{ content.group_caption|strip_anchors }}
+      {{ content.group_caption }}
       {% if url %}
         <div class="more-info">More about this</div>
       {% endif %}

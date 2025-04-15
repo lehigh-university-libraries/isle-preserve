@@ -91,10 +91,10 @@
           {{ content.field_thumbnail }}
         {% endif %}
         {% if content.field_representative_media %}
-          {{ content.field_representative_media|strip_anchors }}
+          {{ content.field_representative_media }}
         {% endif %}
         {% if content.media_evas_thumbnail %}
-          {{ content.media_evas_thumbnail|strip_anchors }}
+          {{ content.media_evas_thumbnail }}
         {% endif %}
       </header>
     </a>
@@ -111,7 +111,7 @@
       </div>
       <h3{{ title_attributes }}>{{ label }}</h3>
         {{ title_suffix }}
-        {{ content|without('field_thumbnail', 'field_description','media_evas_thumbnail', 'field_representative_media', 'field_type','group_footer')|strip_anchors }}
+        {{ content|without('field_thumbnail', 'field_description','media_evas_thumbnail', 'field_representative_media', 'field_type','group_footer') }}
         <div class="more">View Item</div>
       </div>
 
