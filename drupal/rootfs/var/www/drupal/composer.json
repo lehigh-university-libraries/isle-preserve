@@ -40,48 +40,6 @@
                     "type": "zip"
                 }
             }
-        },
-        {
-            "type": "package",
-            "package": {
-                "name": "jackmoore/colorbox",
-                "version": "1.6.4",
-                "type": "drupal-library",
-                "dist": {
-                    "url": "https://github.com/jackmoore/colorbox/archive/1.6.4.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        {
-            "type": "package",
-            "package": {
-                "name": "freepik-labs/dom-purify",
-                "version": "0.2.5",
-                "type": "drupal-library",
-                "dist": {
-                    "url": "https://github.com/Freepik-Labs/dom-purify/archive/refs/tags/0.2.5.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        {
-            "type": "package",
-            "package": {
-                "name": "imagesloaded/imagesloaded",
-                "version": "v4.1.4",
-                "type": "drupal-library",
-                "dist": {
-                    "url": "https://github.com/desandro/imagesloaded/archive/v4.1.4.zip",
-                    "type": "zip"
-                },
-                "extra": {
-                    "installer-name": "imagesloaded"
-                },
-                "require": {
-                    "composer/installers": "~1.0"
-                }
-            }
         }
     ],
     "require": {
@@ -171,7 +129,6 @@
         "drupal/views_infinite_scroll": "^2.0",
         "drupal/xmlsitemap": "^2.0@beta",
         "drush/drush": "^13",
-        "imagesloaded/imagesloaded": "^4.1",
         "islandora-rdm/islandora_fits": "dev-8.x-1.x as 1.x-dev",
         "islandora/views_nested_details": "^1.0",
         "lehigh-university-libraries/islandora_rights_statements": "1.x-dev",
