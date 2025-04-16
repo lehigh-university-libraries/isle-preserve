@@ -10,8 +10,8 @@ on:
       - "renovate.json5"
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: "one-job-at-a-time"
+  cancel-in-progress: false
 
 permissions:
   contents: read
