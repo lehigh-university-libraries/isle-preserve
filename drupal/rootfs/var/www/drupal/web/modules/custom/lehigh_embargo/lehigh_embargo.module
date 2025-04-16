@@ -1,0 +1,142 @@
+<?php
+
+/**
+ * @file
+ * Contains lehigh_embargo.module.
+ */
+
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\node\Entity\Node;
+
+define('LEHIGH_EMBARGO_INDEFINITE', '2999-12-31');
+
+/**
+ * Implements hook_preprocess_media().
+ */
+function lehigh_embargo_preprocess_media(&$vars) {
+  if ($vars['view_mode'] !== 'default_islandora_display') {
+    return;
+  }
+  $media = $vars['media'];
+  $node = $media->get('field_media_of')->entity;
+
+  $embargoDate = lehigh_embargo_node_is_embargoed($node);
+  if (!$embargoDate) {
+    return;
+  }
+
+  $date = $embargoDate->format('Y-m-d');
+  $embargo_suffix = 'until ' . $date;
+  if ($date == LEHIGH_EMBARGO_INDEFINITE) {
+    $embargo_suffix = 'indefinitely';
+  }
+
+  $vars['content'] = [
+    '#markup' => '<div class="alert alert-warning" role="alert">
+      This file is embargoed '
+    . $embargo_suffix
+    . '</div>',
+  ];
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function lehigh_embargo_preprocess_block(&$vars) {
+  if (!empty($vars['plugin_id']) && $vars['plugin_id'] == 'views_block:downloads-block_1') {
+    $route_match = \Drupal::routeMatch();
+    $node = $route_match->getParameter('node');
+    if (lehigh_embargo_node_is_embargoed($node)) {
+      $vars['content'] = [];
+      $vars['label'] = '';
+      return;
+    }
+  }
+}
+
+/**
+ * Implements hook_metatags_attachments_alter().
+ */
+function lehigh_embargo_metatags_attachments_alter(array &$metatag_attachments) {
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (!$node || !is_object($node) || $node->bundle() !== 'islandora_object') {
+    return;
+  }
+
+  if (!lehigh_embargo_node_is_embargoed($node)) {
+    return;
+  }
+
+  foreach ($metatag_attachments['#attached']['html_head'] as $id => $attachment) {
+    if ($attachment[1] == 'citation_pdf_url') {
+      unset($metatag_attachments['#attached']['html_head'][$id]);
+    }
+  }
+}
+
+/**
+ * Check if a node is embargoed.
+ */
+function lehigh_embargo_node_is_embargoed($node) {
+  if (!is_object($node) ||
+    !$node->hasField('field_edtf_date_embargo') ||
+    $node->field_edtf_date_embargo->isEmpty()) {
+    return FALSE;
+  }
+
+  foreach ($node->field_edtf_date_embargo as $embargo) {
+    $dt = new DrupalDateTime($embargo->value, 'UTC');
+    if ($dt->getTimestamp() > time()) {
+      return $dt;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_file_download().
+ */
+function lehigh_embargo_file_download($uri) {
+  $nodes = \Drupal::database()->query("SELECT field_media_of_target_id, field_edtf_date_embargo_value
+    FROM {file_managed} f
+    LEFT JOIN {media__field_media_audio_file} a ON field_media_audio_file_target_id = f.fid
+    LEFT JOIN {media__field_media_document} d ON field_media_document_target_id = f.fid
+    LEFT JOIN {media__field_media_file} mf ON field_media_file_target_id = f.fid
+    LEFT JOIN {media__field_media_image} i ON field_media_image_target_id = f.fid
+    LEFT JOIN {media__field_media_video_file} v ON field_media_video_file_target_id = f.fid
+    INNER JOIN {media__field_media_of} m ON
+      m.entity_id = a.entity_id OR
+      m.entity_id = d.entity_id OR
+      m.entity_id = mf.entity_id OR
+      m.entity_id = i.entity_id OR
+      m.entity_id = v.entity_id
+    LEFT JOIN {node__field_edtf_date_embargo} e ON e.entity_id = field_media_of_target_id AND field_edtf_date_embargo_value > NOW()
+    WHERE uri = :uri", [
+      ':uri' => $uri,
+    ])->fetchAllKeyed();
+  $access = FALSE;
+  foreach ($nodes as $nid => $embargoed) {
+    if ($embargoed) {
+      return -1;
+    }
+    $node = Node::load($nid);
+    if ($node && $node->access()) {
+      $access = TRUE;
+    }
+  }
+  if (!$access) {
+    return NULL;
+  }
+
+  // Fix incorrect mimetypes.
+  $ext = substr($uri, -4);
+  if ($ext == '.pdf') {
+    return ['Content-Type' => 'application/pdf'];
+  }
+  elseif ($ext == '.jp2') {
+    return ['Content-Type' => 'image/jp2'];
+  }
+
+  return 1;
+}

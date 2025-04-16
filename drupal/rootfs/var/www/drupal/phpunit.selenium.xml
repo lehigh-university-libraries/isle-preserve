@@ -12,6 +12,7 @@
     <testsuites>
         <testsuite name="existing-site-javascript">
             <directory>./web/modules/custom/lehigh_islandora/tests/src/ExistingSiteJavascript</directory>
+            <directory>./web/modules/custom/lehigh_embargo/tests/src/ExistingSiteJavascript</directory>
         </testsuite>
     </testsuites>
 </phpunit>

@@ -104,6 +104,7 @@ module:
   ldap_query: 0
   ldap_servers: 0
   ldap_user: 0
+  lehigh_embargo: 0
   lehigh_islandora: 0
   libraries: 0
   link: 0

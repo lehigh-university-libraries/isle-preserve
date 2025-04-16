@@ -195,19 +195,6 @@ function lehigh_preprocess_breadcrumb(&$variables) {
   }
 }
 
-function lehigh_preprocess_block(&$vars) {
-  lehigh_add_path_variables($vars);
-  if (!empty($vars['plugin_id']) && $vars['plugin_id'] == 'views_block:downloads-block_1') {
-    $route_match = \Drupal::routeMatch();
-    $node = $route_match->getParameter('node');
-    if (lehigh_islandora_node_is_embargoed($node)) {
-      $vars['content'] = [];
-      $vars['label'] = '';
-      return;
-    }
-  }
-}
-
 function lehigh_preprocess_region(&$vars) {
   lehigh_add_path_variables($vars);
 }
@@ -338,7 +325,7 @@ function lehigh_preprocess_views_view(&$variables) {
   $params['_format'] = 'csv';
   unset($params['cache-warmer']);
   $url = Url::fromRoute('<current>', [], ['query' => $params])->toString();
-  
+
   $variables['attachment_after'][] = [
     '#type' => "inline_template",
     '#template' => <<< EOT
@@ -414,27 +401,13 @@ function lehigh_preprocess_media(&$vars) {
   if ($vars['view_mode'] !== 'default_islandora_display') {
     return;
   }
+
   $media = $vars['media'];
   // always use mirador for images
   $mirador = $media->bundle() == 'image';
 
   // decide if we use a single manifest or book manifest based on model
   $node = $media->get('field_media_of')->entity;
-
-  if ($d = lehigh_islandora_node_is_embargoed($node)) {
-    $date = is_null($d) ? '2999-12-31' : $d->format('Y-m-d');
-    $embargo_suffix = 'until ' . $date;
-    if ($date == '2999-12-31') {
-      $embargo_suffix = 'indefinitely';
-    }
-    $vars['content'] = [
-      '#markup' => '<div class="alert alert-warning" role="alert">
-        This file is embargoed '
-        . $embargo_suffix
-        . '</div>',
-    ];
-    return;
-  }
 
   $model = !is_null($node->field_model->entity) ? $node->field_model->entity->label() : '';
   $iiif_url = "[node:url:unaliased:absolute]/manifest";

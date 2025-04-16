@@ -8,3 +8,4 @@ dependencies:
   - token:token
   - redirect:redirect
   - lehigh_site_support:lehigh_site_support
+  - lehigh_embargo:lehigh_embargo
