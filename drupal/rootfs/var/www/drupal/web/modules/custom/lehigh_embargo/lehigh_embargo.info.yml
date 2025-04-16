@@ -1,0 +1,5 @@
+name: "Lehigh Embargo"
+type: module
+description: "Embargo functionality needed for Lehigh Preserve"
+core_version_requirement: ^11
+package: "Custom"

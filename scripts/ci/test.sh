@@ -13,6 +13,8 @@ docker exec lehigh-d10-drupal-1 \
   su nginx -s /bin/bash -c \
     "DTT_BASE_URL='http://drupal' php vendor/bin/phpunit -c phpunit.selenium.xml"
 
+./scripts/ci/cleanup.sh
+
 echo -e "\n\n============================================="
 echo "running tests against live site config"
 echo -e "=============================================\n\n"
