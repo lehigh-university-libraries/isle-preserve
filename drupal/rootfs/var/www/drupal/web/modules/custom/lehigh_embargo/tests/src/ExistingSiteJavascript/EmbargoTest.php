@@ -81,7 +81,10 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
     $web_assert->pageTextContains('This file is embargoed indefinitely');
 
     $uri = $this->file->createFileUrl();
-    $web_assert->pageTextNotContains($uri);
+    $html = $this->getSession()->getPage()->getContent();
+    $this->assertStringNotContainsString($uri, $html);
+    $this->assertStringNotContainsString(urlencode($uri), $html);
+
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
@@ -116,7 +119,9 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
     $web_assert->pageTextContains('This file is embargoed until 2099-12-30');
 
     $uri = $this->file->createFileUrl();
-    $web_assert->pageTextNotContains($uri);
+    $html = $this->getSession()->getPage()->getContent();
+    $this->assertStringNotContainsString($uri, $html);
+    $this->assertStringNotContainsString(urlencode($uri), $html);
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
@@ -150,7 +155,8 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet($node->toUrl()->toString());
 
     $uri = $this->file->createFileUrl();
-    $web_assert->pageTextContains($uri);
+    $html = $this->getSession()->getPage()->getContent();
+    $this->assertStringContainsString($uri, $html);
     $web_assert->pageTextNotContains('This file is embargoed');
 
     $this->drupalGet($uri, [
