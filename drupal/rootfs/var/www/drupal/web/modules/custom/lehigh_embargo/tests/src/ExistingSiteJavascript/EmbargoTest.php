@@ -79,13 +79,13 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
     $web_assert = $this->assertSession();
     $this->drupalGet($node->toUrl()->toString());
     $web_assert->pageTextContains('This file is embargoed indefinitely');
-    $web_assert->pageTextNotContains($media->label());
 
     $uri = $this->file->createFileUrl();
+    $web_assert->pageTextNotContains($uri);
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
-    $this->assertSession()->statusCodeEquals(403);
+    $web_assert->pageTextContains("You are not authorized to access this page.");
   }
 
   /**
@@ -114,13 +114,13 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
     $web_assert = $this->assertSession();
     $this->drupalGet($node->toUrl()->toString());
     $web_assert->pageTextContains('This file is embargoed until 2099-12-30');
-    $web_assert->pageTextNotContains($media->label());
 
     $uri = $this->file->createFileUrl();
+    $web_assert->pageTextNotContains($uri);
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
-    $this->assertSession()->statusCodeEquals(403);
+    $web_assert->pageTextContains("You are not authorized to access this page.");
   }
 
   /**
@@ -148,14 +148,15 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
 
     $web_assert = $this->assertSession();
     $this->drupalGet($node->toUrl()->toString());
-    $web_assert->pageTextContains($media->label());
-    $web_assert->pageTextNotContains('This file is embargoed');
 
     $uri = $this->file->createFileUrl();
+    $web_assert->pageTextContains($uri);
+    $web_assert->pageTextNotContains('This file is embargoed');
+
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
-    $this->assertSession()->statusCodeEquals(200);
+    $web_assert->pageTextNotContains("You are not authorized to access this page.");
   }
 
 }
