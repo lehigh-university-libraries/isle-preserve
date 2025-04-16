@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ec136038410525eb731fff567b0bf877",
+    "content-hash": "d98d1b6fb4844c3f7059b577169590ef",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4319,17 +4319,13 @@
         },
         {
             "name": "drupal/flysystem_gcs",
-            "version": "dev-project-update-bot-only",
+            "version": "dev-3430646",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/issue/flysystem_gcs-3430646",
                 "reference": "73a5f35e63bd4db65089209f6bae2ce55a77d59d"
             },
-            "require": {
-                "superbalist/flysystem-google-storage": "^7.2.2"
-            },
-            "type": "library",
-            "time": "2025-02-26T12:32:25+00:00"
+            "type": "drupal-module"
         },
         {
             "name": "drupal/flysystem_gcs_cors",
@@ -5765,17 +5761,17 @@
         },
         {
             "name": "drupal/jsonld",
-            "version": "3.0.3",
+            "version": "3.0.4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/jsonld.git",
-                "reference": "3.0.3"
+                "reference": "3.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/jsonld-3.0.3.zip",
-                "reference": "3.0.3",
-                "shasum": "ec8076c7b03006ff08321cf80ad2cdefb62d7a1b"
+                "url": "https://ftp.drupal.org/files/projects/jsonld-3.0.4.zip",
+                "reference": "3.0.4",
+                "shasum": "b81bc704db7a9e4103fa44138e76cb2c89ac96f3"
             },
             "require": {
                 "drupal/core": "^10.3 || ^11",
@@ -5794,8 +5790,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.0.3",
-                    "datestamp": "1738775625",
+                    "version": "3.0.4",
+                    "datestamp": "1744839421",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
