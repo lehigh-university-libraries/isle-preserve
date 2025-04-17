@@ -65,7 +65,10 @@
       ],
     },
     {
-      fileMatch: ['^composer\\.json$'],
+      customType: 'regex',
+      fileMatch: [
+        '^composer\\.json$',
+      ],
       matchStrings: [
         '\\s+"url":\\s"https:\\/\\/github.com\\/mozilla\\/pdf\\.js\\/releases\\/download\\/v(?<currentValue>\\d+\\.\\d+\\.\\d+)\\/pdfjs-(?<fullVersion>\\d+\\.\\d+\\.\\d+)-dist\\.zip"',
       ],
