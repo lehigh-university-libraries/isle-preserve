@@ -109,9 +109,7 @@ if [ "$HOST" = "islandora-prod" ]; then
   docker compose exec drupal find /var/www/drupal/private/canonical/preserve.lehigh.edu -maxdepth 1 -type d -regex '.*/[1-9]\([0-9]*\)' -exec rm -rf {} \;
   docker compose exec drupal drush scr scripts/performance/cache-warmer.php
 else
-  docker compose exec drupal drush cim -y
-  docker compose exec drupal rm -rf /var/www/drupal/private/canonical/islandora-stage.lib.lehigh.edu || echo "No dir"
-  curl -ksf "https://${DOMAIN}/?cache-warmer=1"
+  docker compose exec drupal drush cim -y || echo "drush cim failed"
   if [ "$(( RANDOM % 10 ))" -eq 0 ]; then
     docker system prune -af
   fi
