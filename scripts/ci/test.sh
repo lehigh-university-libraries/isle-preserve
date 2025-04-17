@@ -7,15 +7,6 @@ docker exec lehigh-d10-drupal-1 \
   timeout 600 bash -c "while ! test -f /installed; do sleep 5; done"
 
 echo -e "\n\n============================================="
-echo "running selenium tests"
-echo -e "=============================================\n\n"
-docker exec lehigh-d10-drupal-1 \
-  su nginx -s /bin/bash -c \
-    "DTT_BASE_URL='http://drupal' php vendor/bin/phpunit -c phpunit.selenium.xml"
-
-./scripts/ci/cleanup.sh
-
-echo -e "\n\n============================================="
 echo "running tests against live site config"
 echo -e "=============================================\n\n"
 docker exec lehigh-d10-drupal-1 \
@@ -23,6 +14,7 @@ docker exec lehigh-d10-drupal-1 \
     "php vendor/bin/phpunit -c phpunit.unit.xml"
 
 exit 0
+
 echo -e "\n\n============================================="
 echo "testing HA setup"
 echo -e "=============================================\n\n"

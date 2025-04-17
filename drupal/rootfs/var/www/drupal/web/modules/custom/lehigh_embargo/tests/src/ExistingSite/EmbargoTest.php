@@ -1,17 +1,17 @@
 <?php
 
-namespace Drupal\Tests\lehigh_embargo\ExistingSiteJavascript;
+namespace Drupal\Tests\lehigh_embargo\ExistingSite;
 
 use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\Entity\NodeCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Tests around The Preserve's embargo functionality.
  */
-class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
+class EmbargoTest extends ExistingSiteBase {
 
   use MediaCreationTrait;
   use NodeCreationTrait;
@@ -88,7 +88,7 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
-    $web_assert->pageTextContains("You are not authorized to access this page.");
+    $this->assertSession()->statusCodeEquals(403);
   }
 
   /**
@@ -125,7 +125,7 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
-    $web_assert->pageTextContains("You are not authorized to access this page.");
+    $this->assertSession()->statusCodeEquals(403);
   }
 
   /**
@@ -162,7 +162,7 @@ class EmbargoTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
-    $web_assert->pageTextNotContains("You are not authorized to access this page.");
+    $this->assertSession()->statusCodeEquals(200);
   }
 
 }

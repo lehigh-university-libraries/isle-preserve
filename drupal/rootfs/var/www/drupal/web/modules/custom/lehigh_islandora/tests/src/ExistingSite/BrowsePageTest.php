@@ -1,13 +1,13 @@
 <?php
 
-namespace Drupal\Tests\lehigh_islandora\ExistingSiteJavascript;
+namespace Drupal\Tests\lehigh_islandora\ExistingSite;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Tests around the browse page.
  */
-class BrowsePageTest extends ExistingSiteSelenium2DriverTestBase {
+class BrowsePageTest extends ExistingSiteBase {
 
   /**
    * Make sure /browse renders.

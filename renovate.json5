@@ -13,15 +13,6 @@
   packageRules: [
     {
       matchDatasources: [
-        'docker',
-      ],
-      matchPackageNames: [
-        'standalone-firefox',
-      ],
-      enabled: false,
-    },
-    {
-      matchDatasources: [
         'repology',
       ],
       versioning: 'loose',

@@ -25,7 +25,7 @@ class Uriports extends ReportingHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function getForm(array $form) {
+  public function getForm(array $form): array {
 
     $form['subdomain'] = [
       '#type' => 'textfield',
@@ -52,7 +52,7 @@ class Uriports extends ReportingHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state) : void {
     $subdomain = $form_state->getValue($form['subdomain']['#parents']);
     // Custom domains must be 4-30 characters, but generated domains are 32.
     if (!preg_match('/^[a-z\d]{4,32}$/i', $subdomain)) {
@@ -63,7 +63,7 @@ class Uriports extends ReportingHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function alterPolicy(Csp $policy) {
+  public function alterPolicy(Csp $policy) : void {
     $type = $this->configuration['type'] == 'report-only' ? 'report' : 'enforce';
 
     $policy->setDirective(
