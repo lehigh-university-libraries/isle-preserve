@@ -7,9 +7,6 @@
   "support": {
     "issues": "https://github.com/lehigh-university-libraries/lehigh_islandora/issues"
   },
-  "require": {
-    "drupal/token" : "^1.13"
-  },
   "authors": [
     {
       "name": "Joe Corall",

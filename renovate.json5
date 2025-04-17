@@ -64,6 +64,15 @@
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION="(?<currentValue>.*)"\\s',
       ],
     },
+    {
+      fileMatch: ['^composer\\.json$'],
+      matchStrings: [
+        '\\s+"url":\\s"https:\\/\\/github.com\\/mozilla\\/pdf\\.js\\/releases\\/download\\/v(?<currentValue>\\d+\\.\\d+\\.\\d+)\\/pdfjs-(?<fullVersion>\\d+\\.\\d+\\.\\d+)-dist\\.zip"',
+      ],
+      depNameTemplate: 'mozilla/pdf.js',
+      datasourceTemplate: 'github-releases',
+      versioningTemplate: 'semver-coerced',
+    },
   ],
   labels: [
     'dependencies',
