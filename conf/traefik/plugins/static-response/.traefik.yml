@@ -1,6 +1,6 @@
-displayName: Return a 429 HTTP status
+displayName: Return a HTTP status code
 type: middleware
 import: github.com/lehigh-university-libraries/static-response
-summary: Return a 429 HTTP status
+summary: Quickly return an HTTP status based on traefik rules
 testData:
-  ResponseCode: 429
+  ResponseCode: 400
