@@ -105,23 +105,6 @@ services:
       MAX_THREADS: 3
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
-  xhgui-mongodb:
-    image: percona/percona-server-mongodb:3.6@sha256:364ac99e61ec8d15a7ca89dfbf809156d6fbab51e45cb4f2540daeaaf7b8e7e7
-    command: --storageEngine=wiredTiger
-    environment:
-      - MONGO_INITDB_DATABASE=xhprof
-    volumes:
-      - xhgui-data:/data/db
-  xhgui:
-    image: xhgui/xhgui@sha256:cbeb3709a847f551e5144bd07699c92f5985130241797044cf7e0aa1e6b75c57
-    volumes:
-      - ./conf/xhgui/config:/var/www/xhgui/config
-      - ./conf/xhgui/nginx.conf:/etc/nginx/http.d/default.conf:ro
-    environment:
-      - XHGUI_MONGO_HOSTNAME=xhgui-mongodb
-      - XHGUI_MONGO_DATABASE=xhprof
-    depends_on:
-      - xhgui-mongodb
   rollout:
     profiles: [donotstart]
   traefik:
