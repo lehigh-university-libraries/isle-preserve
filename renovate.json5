@@ -39,10 +39,8 @@
       ],
       matchPackageNames: [
         '*',
-      ],
-      excludePackageNames: [
-        'traefik',
-        'nginx',
+        '!traefik',
+        '!nginx',
       ],
     },
     {
