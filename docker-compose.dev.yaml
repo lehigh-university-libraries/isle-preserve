@@ -38,68 +38,68 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   fits:
-    image: islandora/fits:4.0.7@sha256:3d3e4ac7d2c7b6c5a83cac8656d825a773e84f2be3c7f2e55cee28e97f2d98f1
+    image: islandora/fits:4.0.8@sha256:5beff1f8d64c8148ba84309c0cabffebc512f684e565ffb0d31c8bc05147210b
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
-    image: lehighlts/scyllaridae-fits:main@sha256:1a7ebcbb8fb5b07f8ea0e6cf63ab870e0a040c8c1caa968ff48f132683b0d211
+    image: lehighlts/scyllaridae-fits:main@sha256:7a3c21ab42048a5a61fe9659de562b33ba3c204393c41e2bb8063925ccf7400b
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/crayfits:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
-    image: lehighlts/scyllaridae-hls:main@sha256:428fe47b55f603a0195abbdb02b0b62f9e2f7036fa0b4e06d41223c8463d1c89
+    image: lehighlts/scyllaridae-hls:main@sha256:8039a2b12b5101e261d295abe9be481ed0ce82ef5c2f21890af0f731c9e2d407
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   homarus:
-    image: lehighlts/scyllaridae-ffmpeg:main@sha256:24e1253415bcad53ff1d807a9dcc291c8f18210d5c7e98aba7d23ad358d859aa
+    image: lehighlts/scyllaridae-ffmpeg:main@sha256:7451573fcf8867fa4e09e6895afdcdd87bbfebae233ed45b523c276ac2fb72ea
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: lehighlts/scyllaridae-imagemagick:main@sha256:406cf7b5e1097d898bb0ce6717f3640f1690fbee40824c513937475c5898d9f6
+    image: lehighlts/scyllaridae-imagemagick:main@sha256:13fac8f8f6ce13146813a6d36fb716f6d51ae08a898ee373040e4f215618618d
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: lehighlts/scyllaridae-tesseract:main@sha256:e409ca39bd63837bc82ba1ea049a588d1f897ff792672881d4b26ad4d48af3b5
+    image: lehighlts/scyllaridae-tesseract:main@sha256:bfb09c85f7b148e3e9e204d809ecb71c2b39c23a192c854771f2ee1c6588bc1d
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: lehighlts/scyllaridae-ocrpdf:main@sha256:e296aedfb8936443a5f179089dd3b509487c1e3fda05a15403b64187551d84bf
+    image: lehighlts/scyllaridae-ocrpdf:main@sha256:90d0a3fa39d81a1ef0f4bac1b74a46dc0ab6d98ad5bb8e7923e61880271568de
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
-    image: lehighlts/scyllaridae-libreoffice:main@sha256:4d8b3481279d7a9365656382ecbe8cc4ec1eaee074dfc4cfce8a714dcbeea69c
+    image: lehighlts/scyllaridae-libreoffice:main@sha256:4aef5561dcfb4e51ac66c0a845891c904c0b5cf8a3c18581c53caf6964f0dc20
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   coverpage:
-    image: lehighlts/scyllaridae-coverpage:main@sha256:96ae58b654c313f1820795f65627dc06a6c7b9c7fc9346ca79fa4fd1fd1833e5
+    image: lehighlts/scyllaridae-coverpage:main@sha256:cf1e8cfb92e9dd1749bd3a7d310a81efe5cda0edb91d94476f789b9ec93a41b9
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   cache-warmer:
-    image: lehighlts/scyllaridae-cache-warmer:main@sha256:12e8e31ddbc82afa4ea8a631cf27aab109ede15c92e5286a08909b30e4f5d2fb
+    image: lehighlts/scyllaridae-cache-warmer:main@sha256:651426b723c2d95914ecb6b020328c64a7164e23104d811158d57ce8a1f2b3da
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       DRUPAL_URL: "https://${DOMAIN}"
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: lehighlts/scyllaridae-mergepdf:main@sha256:973b4741a0cb293d4fdf964423bd01ed8bf184970263611cae2abde2753b5a38
+    image: lehighlts/scyllaridae-mergepdf:main@sha256:99a47944c8eac109b00a79f079fba5200b10d3a4335d59f5e92418d5b80d33d3
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
