@@ -18,26 +18,14 @@
       versioning: 'loose',
     },
     {
-      matchDatasources: [
-        'docker',
-      ],
       matchPackageNames: [
         'traefik',
         'nginx',
       ],
+      groupName: 'monthly-ingress',
       schedule: [
         '* 12 1-7 * 4',
       ],
-    },
-    {
-      matchDatasources: [
-        'docker',
-      ],
-      matchPackageNames: [
-        'us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner',
-      ],
-      pinDigests: false,
-      rangeStrategy: 'replace',
     },
     {
       matchUpdateTypes: [
@@ -51,6 +39,10 @@
       ],
       matchPackageNames: [
         '*',
+      ],
+      excludePackageNames: [
+        'traefik',
+        'nginx',
       ],
     },
     {
