@@ -13,6 +13,15 @@
   packageRules: [
     {
       matchDatasources: [
+        'docker-compose',
+      ],
+      matchPackageNames: [
+        'selenium/standalone-firefox',
+      ],
+      enabled: false,
+    },
+    {
+      matchDatasources: [
         'repology',
       ],
       versioning: 'loose',
