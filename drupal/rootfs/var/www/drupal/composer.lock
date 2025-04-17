@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "df455376b0ab3c14c496fd6046e3e282",
+    "content-hash": "0dc595eab037c5bcc8c94c5bcbbcec61",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -10770,7 +10770,7 @@
         },
         {
             "name": "library/pdf.js",
-            "version": "4.10.38",
+            "version": "4",
             "dist": {
                 "type": "zip",
                 "url": "https://github.com/mozilla/pdf.js/releases/download/v4.10.38/pdfjs-4.10.38-dist.zip"

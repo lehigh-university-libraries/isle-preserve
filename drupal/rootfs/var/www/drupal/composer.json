@@ -30,7 +30,7 @@
             "type": "package",
             "package": {
                 "name": "library/pdf.js",
-                "version": "4.10.38",
+                "version": "4",
                 "type": "drupal-library",
                 "dist": {
                     "url": "https://github.com/mozilla/pdf.js/releases/download/v4.10.38/pdfjs-4.10.38-dist.zip",

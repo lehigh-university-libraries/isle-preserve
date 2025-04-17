@@ -18,6 +18,15 @@
       versioning: 'loose',
     },
     {
+      matchDatasources: [
+        'packagist',
+      ],
+      matchPackageNames: [
+        'library/pdf.js',
+      ],
+      enabled: false,
+    },
+    {
       matchPackageNames: [
         'traefik',
         'nginx',
@@ -63,6 +72,18 @@
       matchStrings: [
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION="(?<currentValue>.*)"\\s',
       ],
+    },
+    {
+      customType: 'regex',
+      fileMatch: [
+        'drupal/rootfs/var/www/drupal/composer.json',
+      ],
+      matchStrings: [
+        '\\s+"url":\\s"https:\\/\\/github.com\\/mozilla\\/pdf\\.js\\/releases\\/download\\/v(?<currentValue>.*)\\/(?:pdfjs-[^\\/]+)-dist\\.zip"',
+      ],
+      depNameTemplate: 'mozilla/pdf.js',
+      datasourceTemplate: 'github-releases',
+      versioningTemplate: 'semver-coerced',
     },
   ],
   labels: [
