@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-libreoffice
-          image: lehighlts/scyllaridae-libreoffice:main@sha256:4d8b3481279d7a9365656382ecbe8cc4ec1eaee074dfc4cfce8a714dcbeea69c
+          image: lehighlts/scyllaridae-libreoffice:main@sha256:4aef5561dcfb4e51ac66c0a845891c904c0b5cf8a3c18581c53caf6964f0dc20
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
