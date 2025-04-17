@@ -3,11 +3,15 @@
 set -eou pipefail
 
 ENV_FILES=(
-    .env
+    /opt/islandora/d10_lehigh_agile/.env
     /home/rollout/.env
 )
+
 for ENV in "${ENV_FILES[@]}"; do
-    export $(grep -Ev '^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG)' "$ENV" | xargs)
+    while IFS='=' read -r key val; do
+        [[ "$key" =~ ^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG) ]] && continue
+        export "$key"="$val"
+    done < <(grep -Ev '^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG)' "$ENV")
 done
 
 GIT_BRANCH=${GIT_BRANCH:-main}
