@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ab3f65d13999a8a38889942c6728df72",
+    "content-hash": "df455376b0ab3c14c496fd6046e3e282",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1775,111 +1775,6 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/admin_toolbar",
                 "issues": "https://www.drupal.org/project/issues/admin_toolbar"
-            }
-        },
-        {
-            "name": "drupal/advanced_search",
-            "version": "2.1.4",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/advanced_search.git",
-                "reference": "2.1.4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/advanced_search-2.1.4.zip",
-                "reference": "2.1.4",
-                "shasum": "640976489783a3bde516c9cdb17f0f1e17ce49a2"
-            },
-            "require": {
-                "drupal/core": "^8.8 || ^9 || ^10 || ^11",
-                "drupal/facets": "^2.0",
-                "drupal/facets_summary": "*",
-                "drupal/search_api_solr": "^4.2"
-            },
-            "replace": {
-                "islandora/advanced_search": "self.version"
-            },
-            "require-dev": {
-                "drupal/coder": "*",
-                "phpunit/phpunit": "^8",
-                "sebastian/phpcpd": "*",
-                "squizlabs/php_codesniffer": "^3"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.4",
-                    "datestamp": "1739396459",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "scripts": {
-                "post-install-cmd": [
-                    "./vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer"
-                ],
-                "post-update-cmd": [
-                    "./vendor/bin/phpcs --config-set installed_paths ~/.composer/vendor/drupal/coder/coder_sniffer"
-                ],
-                "check": [
-                    "./vendor/bin/phpcs --standard=Drupal --ignore=*.md,vendor --extensions=php,module,inc,install,test,profile,theme,css,info .",
-                    "./vendor/bin/phpcpd --names='*.module,*.inc,*.test,*.php' --exclude=vendor ."
-                ]
-            },
-            "license": [
-                "GPL-2.0-only"
-            ],
-            "authors": [
-                {
-                    "name": "adam-vessey",
-                    "homepage": "https://www.drupal.org/user/1911868"
-                },
-                {
-                    "name": "annieoelschlager",
-                    "homepage": "https://www.drupal.org/user/3831676"
-                },
-                {
-                    "name": "community-islandora",
-                    "homepage": "https://www.drupal.org/user/3441437"
-                },
-                {
-                    "name": "donrichards",
-                    "homepage": "https://www.drupal.org/user/3519850"
-                },
-                {
-                    "name": "joecorall",
-                    "homepage": "https://www.drupal.org/user/1144790"
-                },
-                {
-                    "name": "kylehuynh",
-                    "homepage": "https://www.drupal.org/user/3255474"
-                },
-                {
-                    "name": "rosiel",
-                    "homepage": "https://www.drupal.org/user/3263030"
-                },
-                {
-                    "name": "seth.e.shaw",
-                    "homepage": "https://www.drupal.org/user/50620"
-                },
-                {
-                    "name": "wgillingham",
-                    "homepage": "https://www.drupal.org/user/112955"
-                }
-            ],
-            "description": "This module creates several blocks to support searching. It also enables the use of Ajax with search blocks, facets, and search results.",
-            "homepage": "https://github.com/digitalutsc/advanced_search",
-            "keywords": [
-                "Advanced Search",
-                "Islandora"
-            ],
-            "support": {
-                "source": "https://github.com/digitalutsc/advanced_search/tree/islandora_lite",
-                "issues": "https://github.com/digitalutsc/advanced_search/issues"
             }
         },
         {
@@ -3845,59 +3740,6 @@
                 "source": "https://git.drupalcode.org/project/facets",
                 "issues": "https://www.drupal.org/project/issues/facets",
                 "irc": "irc://irc.freenode.org/drupal-search-api"
-            }
-        },
-        {
-            "name": "drupal/facets_summary",
-            "version": "3.0.0",
-            "require": {
-                "drupal/core": "^10.1 || ^11",
-                "drupal/facets": "*"
-            },
-            "require-dev": {
-                "drupal/search_api": "*"
-            },
-            "type": "metapackage",
-            "extra": {
-                "drupal": {
-                    "version": "3.0.0",
-                    "datestamp": "1735915197",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "borisson_",
-                    "homepage": "https://www.drupal.org/user/2393360"
-                },
-                {
-                    "name": "drunken monkey",
-                    "homepage": "https://www.drupal.org/user/205582"
-                },
-                {
-                    "name": "mkalkbrenner",
-                    "homepage": "https://www.drupal.org/user/124705"
-                },
-                {
-                    "name": "nick_vh",
-                    "homepage": "https://www.drupal.org/user/122682"
-                },
-                {
-                    "name": "strykaizer",
-                    "homepage": "https://www.drupal.org/user/462700"
-                }
-            ],
-            "description": "Exposes a Facets block summary showing the current search.",
-            "homepage": "https://www.drupal.org/project/facets",
-            "support": {
-                "source": "https://git.drupalcode.org/project/facets"
             }
         },
         {
@@ -22318,7 +22160,6 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
-        "drupal/advanced_search": 10,
         "drupal/config_update": 15,
         "drupal/context": 5,
         "drupal/entity_metrics": 10,
