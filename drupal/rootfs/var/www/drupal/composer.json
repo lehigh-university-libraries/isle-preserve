@@ -58,7 +58,7 @@
         "drupal/controlled_access_terms": "^2.4",
         "drupal/core-composer-scaffold": "^11.1",
         "drupal/core-recommended": "^11.1",
-        "drupal/csp": "^1.30",
+        "drupal/csp": "^2.0",
         "drupal/csv_serialization": "^4.0",
         "drupal/diff": "^1.1",
         "drupal/entity": "^1.4",
