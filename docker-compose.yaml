@@ -367,6 +367,7 @@ services:
       --providers.docker.exposedByDefault=false
       --experimental.plugins.captcha-protect.modulename=github.com/libops/captcha-protect
       --experimental.plugins.captcha-protect.version=v1.8.1
+      --experimental.localPlugins.static-response.moduleName=github.com/lehigh-university-libraries/static-response
     environment:
       DOMAIN: ${DOMAIN}
       INTERNAL_DOMAIN: ${INTERNAL_DOMAIN}
@@ -374,12 +375,14 @@ services:
       TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
       EXEMPT_USER_AGENTS: "${EXEMPT_USER_AGENTS}"
+      BAD_USER_AGENTS: "${BAD_USER_AGENTS}"
     ports:
       - "80:80"
       - "443:443"
     security_opt:
       - label=type:container_runtime_t # Required for selinux to access the docker socket.
     volumes:
+      - ./conf/traefik/plugins/static-response:/plugins-local/src/github.com/lehigh-university-libraries/static-response:r
       - ./certs:/etc/ssl/traefik:Z,ro
       - ./conf/traefik/config.tmpl:/etc/traefik/config.yaml:ro
       - ./tmp/traefik:/tmp:rw
