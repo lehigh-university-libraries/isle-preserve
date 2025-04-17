@@ -13,10 +13,10 @@
   packageRules: [
     {
       matchDatasources: [
-        'docker-compose',
+        'docker',
       ],
       matchPackageNames: [
-        'selenium/standalone-firefox',
+        'standalone-firefox',
       ],
       enabled: false,
     },
@@ -28,7 +28,7 @@
     },
     {
       matchDatasources: [
-        'docker-compose',
+        'docker',
       ],
       matchPackageNames: [
         'traefik',
