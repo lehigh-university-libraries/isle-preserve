@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-crayfits
-          image: lehighlts/scyllaridae-fits:main@sha256:7a3c21ab42048a5a61fe9659de562b33ba3c204393c41e2bb8063925ccf7400b
+          image: lehighlts/scyllaridae-fits:main@sha256:747e2ad82d60cab15199c50d1eec3addcb9744b4bd5c66e2d5e64e61347ed700
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
