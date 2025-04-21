@@ -62,7 +62,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:4.0.8@sha256:21c27dd6df68a6a9ecc2ef8790918e4151b3ef4a64c83039e1fb27264c149757
+    image: islandora/alpaca:4.0.9@sha256:bbf779ed3d08f1eab8e68a13ec016aaee4deb69bef5ab178ad57150a7fdbdd55
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -103,7 +103,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:4.0.8@sha256:5bee7540c26eefcfa349a8ad8758a666e4f02ffafb3f4a8ac318510e85e63e52
+    image: islandora/mariadb:4.0.9@sha256:167e81e130c22e4ca1c828d09f2eca47ddb24c26b57afdcd8ee2386222996925
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -124,7 +124,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:4.0.8@sha256:c80f5e956a8872c63d0b1b09be452b004a9f2e36fcf36e28d3f1ef153ec84edf
+    image: islandora/activemq:4.0.9@sha256:2747aaa875535b94e3ef51fb9db131184985fb34d84004838fff145742ee1a41
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -294,7 +294,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:4.0.8@sha256:14692731a515600ea5ebfb2158936d22e7af5ed5c8a7487b8ca3c6866075c681
+    image: islandora/fcrepo6:4.0.9@sha256:5d02997d9cdca99435f500eb995fa9f8ae1aad34e096a2eddd567884d9bb5cef
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -316,7 +316,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:4.0.8@sha256:b7954927de6eac4884406fc741fdc3237fc9315aeb598df6d6b27df5d21ca4e1
+    image: islandora/solr:4.0.9@sha256:01615003f1ebbd6c83f95b60d8c3e77e03e19305369a556921468be8ab3c4530
     environment:
       SOLR_MODULES: extraction,langid,ltr,analysis-extras
     volumes:

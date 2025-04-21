@@ -89,6 +89,7 @@ foreach ($envs as $env) {
     'config' => [
       'bucket' => 'lehigh-preserve-isle-' . $env . '-uploads',
       'projectId' => 'lehigh-preserve-isle',
+      'public' => TRUE,
     ]
   ];
 }

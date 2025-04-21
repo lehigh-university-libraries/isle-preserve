@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0dc595eab037c5bcc8c94c5bcbbcec61",
+    "content-hash": "ef6c0c26dab1b44e8239c921314886a9",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -461,16 +461,16 @@
         },
         {
             "name": "citation-style-language/styles",
-            "version": "v0.0.646",
+            "version": "v0.0.654",
             "source": {
                 "type": "git",
                 "url": "https://github.com/citation-style-language/styles.git",
-                "reference": "8c5439ee7e0689c5afb44e2fff9694eb9d36ec7b"
+                "reference": "23a28ea6b352d09de37f1ab70b8a983b44d1a0cf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/citation-style-language/styles/zipball/8c5439ee7e0689c5afb44e2fff9694eb9d36ec7b",
-                "reference": "8c5439ee7e0689c5afb44e2fff9694eb9d36ec7b",
+                "url": "https://api.github.com/repos/citation-style-language/styles/zipball/23a28ea6b352d09de37f1ab70b8a983b44d1a0cf",
+                "reference": "23a28ea6b352d09de37f1ab70b8a983b44d1a0cf",
                 "shasum": ""
             },
             "type": "library",
@@ -488,7 +488,7 @@
             "homepage": "http://citationstyles.org/",
             "support": {
                 "issues": "https://github.com/citation-style-language/styles/issues",
-                "source": "https://github.com/citation-style-language/styles/tree/v0.0.646"
+                "source": "https://github.com/citation-style-language/styles/tree/v0.0.654"
             },
             "funding": [
                 {
@@ -496,7 +496,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-03-22T21:28:52+00:00"
+            "time": "2025-04-18T15:53:02+00:00"
         },
         {
             "name": "codementality/flysystem-stream-wrapper",
@@ -4160,13 +4160,73 @@
         },
         {
             "name": "drupal/flysystem_gcs",
-            "version": "dev-3430646",
+            "version": "1.0.0-beta3",
             "source": {
                 "type": "git",
-                "url": "https://git.drupalcode.org/issue/flysystem_gcs-3430646",
-                "reference": "73a5f35e63bd4db65089209f6bae2ce55a77d59d"
+                "url": "https://git.drupalcode.org/project/flysystem_gcs.git",
+                "reference": "8.x-1.0-beta3"
             },
-            "type": "drupal-module"
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/flysystem_gcs-8.x-1.0-beta3.zip",
+                "reference": "8.x-1.0-beta3",
+                "shasum": "ad8bfabb3841532bf43af255d84bcc08636882cd"
+            },
+            "require": {
+                "drupal/core": "^8 || ^9 || ^10 || ^11",
+                "drupal/flysystem": "*",
+                "superbalist/flysystem-google-storage": "^7.2.2"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.0-beta3",
+                    "datestamp": "1744880466",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Beta releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "dieterholvoet",
+                    "homepage": "https://www.drupal.org/user/3567222"
+                },
+                {
+                    "name": "driverok",
+                    "homepage": "https://www.drupal.org/user/3551610"
+                },
+                {
+                    "name": "garphy",
+                    "homepage": "https://www.drupal.org/user/59864"
+                },
+                {
+                    "name": "jefuri",
+                    "homepage": "https://www.drupal.org/user/2733365"
+                },
+                {
+                    "name": "longwave",
+                    "homepage": "https://www.drupal.org/user/246492"
+                },
+                {
+                    "name": "skrug",
+                    "homepage": "https://www.drupal.org/user/3630044"
+                },
+                {
+                    "name": "wesselvdl",
+                    "homepage": "https://www.drupal.org/user/1332940"
+                }
+            ],
+            "description": "Provides a Google Cloud Storage plugin for Flysystem.",
+            "homepage": "https://www.drupal.org/project/flysystem_gcs",
+            "support": {
+                "source": "https://git.drupalcode.org/project/flysystem_gcs"
+            }
         },
         {
             "name": "drupal/flysystem_gcs_cors",
@@ -9235,16 +9295,16 @@
         },
         {
             "name": "google/cloud-storage",
-            "version": "v1.47.0",
+            "version": "v1.48.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-storage.git",
-                "reference": "c8f130fab6a48dad9c486e93a07cd26123d006bb"
+                "reference": "e2d7a59290ab7fb69208c45058efa3946edbb793"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/c8f130fab6a48dad9c486e93a07cd26123d006bb",
-                "reference": "c8f130fab6a48dad9c486e93a07cd26123d006bb",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-storage/zipball/e2d7a59290ab7fb69208c45058efa3946edbb793",
+                "reference": "e2d7a59290ab7fb69208c45058efa3946edbb793",
                 "shasum": ""
             },
             "require": {
@@ -9286,22 +9346,22 @@
             ],
             "description": "Cloud Storage Client for PHP",
             "support": {
-                "source": "https://github.com/googleapis/google-cloud-php-storage/tree/v1.47.0"
+                "source": "https://github.com/googleapis/google-cloud-php-storage/tree/v1.48.0"
             },
-            "time": "2025-03-21T22:19:41+00:00"
+            "time": "2025-04-18T20:49:28+00:00"
         },
         {
             "name": "google/common-protos",
-            "version": "4.11.0",
+            "version": "4.12.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/common-protos-php.git",
-                "reference": "2554ed1f09aa20faae7b71b590e7063df97ff670"
+                "reference": "96f6873c65fb0289fcdb6ac3d5239f9c9e5750b0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/2554ed1f09aa20faae7b71b590e7063df97ff670",
-                "reference": "2554ed1f09aa20faae7b71b590e7063df97ff670",
+                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/96f6873c65fb0289fcdb6ac3d5239f9c9e5750b0",
+                "reference": "96f6873c65fb0289fcdb6ac3d5239f9c9e5750b0",
                 "shasum": ""
             },
             "require": {
@@ -9345,9 +9405,9 @@
                 "google"
             ],
             "support": {
-                "source": "https://github.com/googleapis/common-protos-php/tree/v4.11.0"
+                "source": "https://github.com/googleapis/common-protos-php/tree/v4.12.0"
             },
-            "time": "2025-02-18T19:46:55+00:00"
+            "time": "2025-04-18T20:49:28+00:00"
         },
         {
             "name": "google/gax",
@@ -10773,7 +10833,7 @@
             "version": "4",
             "dist": {
                 "type": "zip",
-                "url": "https://github.com/mozilla/pdf.js/releases/download/v4.10.38/pdfjs-4.10.38-dist.zip"
+                "url": "https://github.com/mozilla/pdf.js/releases/download/v5.1.91/pdfjs-5.1.91-dist.zip"
             },
             "type": "drupal-library"
         },
@@ -11136,13 +11196,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/mjordan/islandora_workbench_integration.git",
-                "reference": "954d812cb6f7d089e29e5679eb81c67bb2772b14"
+                "reference": "c3e4de9b9ab20d6866a0f54de2e9855c797f357c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mjordan/islandora_workbench_integration/zipball/954d812cb6f7d089e29e5679eb81c67bb2772b14",
-                "reference": "954d812cb6f7d089e29e5679eb81c67bb2772b14",
+                "url": "https://api.github.com/repos/mjordan/islandora_workbench_integration/zipball/c3e4de9b9ab20d6866a0f54de2e9855c797f357c",
+                "reference": "c3e4de9b9ab20d6866a0f54de2e9855c797f357c",
                 "shasum": ""
+            },
+            "require": {
+                "drupal/islandora": "^2"
             },
             "default-branch": true,
             "type": "drupal-module",
@@ -11165,9 +11228,9 @@
             ],
             "support": {
                 "issues": "https://github.com/mjordan/islandora_workbench_integration/issues",
-                "source": "https://github.com/mjordan/islandora_workbench_integration/tree/main"
+                "source": "https://github.com/mjordan/islandora_workbench_integration/tree/v1.1.0"
             },
-            "time": "2024-09-06T13:39:28+00:00"
+            "time": "2025-04-20T16:49:33+00:00"
         },
         {
             "name": "mkalkbrenner/php-htmldiff-advanced",
@@ -22164,7 +22227,7 @@
         "drupal/context": 5,
         "drupal/entity_metrics": 10,
         "drupal/flysystem": 20,
-        "drupal/flysystem_gcs": 20,
+        "drupal/flysystem_gcs": 10,
         "drupal/flysystem_gcs_cors": 15,
         "drupal/inline_entity_form": 5,
         "drupal/islandora_csl": 10,
