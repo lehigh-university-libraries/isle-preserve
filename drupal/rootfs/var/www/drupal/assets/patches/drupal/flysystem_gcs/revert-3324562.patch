@@ -1,0 +1,29 @@
+diff --git a/src/Flysystem/Adapter/GoogleCloudStorageAdapter.php b/src/Flysystem/Adapter/GoogleCloudStorageAdapter.php
+index a370e1c..2236a03 100644
+--- a/src/Flysystem/Adapter/GoogleCloudStorageAdapter.php
++++ b/src/Flysystem/Adapter/GoogleCloudStorageAdapter.php
+@@ -22,13 +22,7 @@ class GoogleCloudStorageAdapter extends GoogleStorageAdapter {
+    *   Returns true if the object or directory exists or otherwise false.
+    */
+   public function has($path) {
+-    $directory = pathinfo($path, PATHINFO_DIRNAME);
+-    $contents = array_filter(
+-      $this->listContents($directory),
+-      function ($item) use ($path) { return $item['path'] === $path; }
+-    );
+-
+-    return count($contents) === 1;
++    return parent::has($path) || $this->hasDirectory($path);
+   }
+ 
+   /**
+@@ -41,9 +35,7 @@ class GoogleCloudStorageAdapter extends GoogleStorageAdapter {
+    *   Returns true if the directory exists or false if it doesn't exist.
+    */
+   public function hasDirectory($path) {
+-    return count(array_filter($this->listContents($path), function ($item) use ($path) {
+-      return $item['path'] === $path && $item['type'] === 'dir';
+-    })) === 1;
++    return parent::has($path . '/');
+   }
+

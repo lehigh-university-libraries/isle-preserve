@@ -217,6 +217,9 @@
             },
             "drupal/context": {
                 "Fix str_replace warning": "assets/patches/drupal/context/str_replace.patch"
+            },
+            "drupal/flysystem_gcs": {
+                "revert https://www.drupal.org/project/flysystem_gcs/issues/3324562": "assets/patches/drupal/flysystem_gcs/revert-3324562.patch"
             }
         },
         "merge-plugin": {
