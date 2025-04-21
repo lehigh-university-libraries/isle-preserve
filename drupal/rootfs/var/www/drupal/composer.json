@@ -10,19 +10,6 @@
     },
     "repositories": [
         {
-            "type": "package",
-            "package": {
-                "name": "drupal/flysystem_gcs",
-                "version": "dev-3430646",
-                "type": "drupal-module",
-                "source": {
-                    "type": "git",
-                    "url": "https://git.drupalcode.org/issue/flysystem_gcs-3430646",
-                    "reference": "73a5f35e63bd4db65089209f6bae2ce55a77d59d"
-                }
-            }
-        },
-        {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
@@ -71,7 +58,7 @@
         "drupal/file_download_link": "^2.0",
         "drupal/file_download_link_media": "^2.0",
         "drupal/flysystem": "^2.3.x-dev",
-        "drupal/flysystem_gcs": "dev-3430646",
+        "drupal/flysystem_gcs": "^1.0@beta",
         "drupal/flysystem_gcs_cors": "^1.0@alpha",
         "drupal/focal_point": "^2.0",
         "drupal/form_mode_control": "^2.4",
