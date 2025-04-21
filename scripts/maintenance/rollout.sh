@@ -90,9 +90,9 @@ docker_compose up \
   --quiet-pull \
   -d
 
-docker compose exec drupal drush updb -y
+docker compose exec drupal drush updb -y || echo "db update failed"
 docker compose exec drupal drush state:set system.maintenance_mode 0 --input-format=integer
-docker compose exec drupal drush cr
+docker compose exec drupal drush cr || echo "cache rebuild failed"
 
 # ensure drupal nginx user owns drupal config folder
 chown -R 100:101 drupal/rootfs/var/www/drupal/config
