@@ -59,7 +59,6 @@ class CollectionTasks extends BlockBase implements ContainerFactoryPluginInterfa
    * {@inheritdoc}
    */
   public function build() {
-    $config = $this->configuration;
     $cacheability = new CacheableMetadata();
     $cacheability->addCacheableDependency($this->localTaskManager);
     $tabs = [

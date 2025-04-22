@@ -59,7 +59,7 @@ class MicrosoftDocumentTest extends DerivativeTestBase {
     ]);
 
     $pdfCreated = FALSE;
-    foreach (range(0, 20) as $i) {
+    foreach (range(0, 20) as _) {
       $mid = \Drupal::database()->query('SELECT m.entity_id
         FROM media__field_media_of m
         INNER JOIN media__field_media_use mu ON mu.entity_id = m.entity_id
