@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-cleanpdf
-          image: lehighlts/scyllaridae-cleanpdf:main@sha256:5b919485125f6bffe1097c5844c9493365d9a64b1cceea14dc662cf4496663ba
+          image: lehighlts/scyllaridae-cleanpdf:main@sha256:df1f29a1282aa9916a519bd9f99c2774f8011732f0ec2951b6354f4c4f27b621
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
