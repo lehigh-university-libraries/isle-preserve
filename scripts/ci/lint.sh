@@ -41,6 +41,7 @@ php_codesniff() {
     cd codebase
     cp web/core/phpcs.xml.dist .
     php vendor/bin/phpcs \
+        -n \
         --standard=Drupal,DrupalPractice \
         --extensions=module,php,inc \
         web/modules/custom && echo "PHP codesniff passed"
