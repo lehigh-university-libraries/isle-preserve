@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\lehigh_site_support\Plugin\search_api\processor\Property;
+namespace Drupal\lehigh_islandora\Plugin\search_api\processor\Property;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\TypedData\ComplexDataDefinitionBase;
