@@ -139,7 +139,6 @@ function stop14_tools_theme() {
 function stop14_tools_preprocess_views_view_themed_grid(&$vars) {
   // Get view options.
   $view = $vars['view'];
-  $rows = $vars['rows'];
   $style = $view->style_plugin;
   $options = $style->options;
 

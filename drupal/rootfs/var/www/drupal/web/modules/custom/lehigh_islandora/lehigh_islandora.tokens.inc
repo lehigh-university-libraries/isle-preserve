@@ -50,10 +50,6 @@ function lehigh_islandora_tokens($type, $tokens, array $data, array $options, Bu
   if (isset($options['langcode'])) {
     $url_options['language'] = \Drupal::languageManager()
       ->getLanguage($options['langcode']);
-    $langcode = $options['langcode'];
-  }
-  else {
-    $langcode = NULL;
   }
 
   $replacements = [];

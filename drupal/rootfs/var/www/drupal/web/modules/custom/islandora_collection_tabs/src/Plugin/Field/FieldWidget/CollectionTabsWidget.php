@@ -28,7 +28,7 @@ final class CollectionTabsWidget extends WidgetBase {
       '#type' => 'checkbox',
       '#title' => $this->t('Default tab'),
       '#default_value' => $items[$delta]->default ?? NULL,
-      '#description' => 'If no default tab is selected, the default collection tab will be displayed',
+      '#description' => $this->t('If no default tab is selected, the default collection tab will be displayed'),
     ];
 
     $element['label'] = [

@@ -1,11 +1,11 @@
 <?php
 
-namespace Drupal\lehigh_site_support\Plugin\search_api\processor;
+namespace Drupal\lehigh_islandora\Plugin\search_api\processor;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\file\FileInterface;
-use Drupal\lehigh_site_support\Plugin\search_api\processor\Property\OcrFieldProperty;
+use Drupal\lehigh_islandora\Plugin\search_api\processor\Property\OcrFieldProperty;
 use Drupal\media\Plugin\media\Source\File;
 use Drupal\node\NodeInterface;
 use Drupal\search_api\Datasource\DatasourceInterface;

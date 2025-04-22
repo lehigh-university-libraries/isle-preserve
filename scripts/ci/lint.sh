@@ -41,7 +41,8 @@ php_codesniff() {
     cd codebase
     cp web/core/phpcs.xml.dist .
     php vendor/bin/phpcs \
-        --standard=Drupal \
+        -n \
+        --standard=Drupal,DrupalPractice \
         --extensions=module,php,inc \
         web/modules/custom && echo "PHP codesniff passed"
 
@@ -51,4 +52,4 @@ echo "Checking YML files"
 ls -l ./*.yaml ./conf/**/*.yml "$TRAEFIK_CONFIG"
 yq . ./*.yaml ./conf/**/*.yml "$TRAEFIK_CONFIG" > /dev/null
 check_traefik
-#php_codesniff
+php_codesniff

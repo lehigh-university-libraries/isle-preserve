@@ -1,40 +1,32 @@
 services:
-  encoder.mods:
-    class: Drupal\lehigh_islandora\Encoder\ModsEncoder
-    tags:
-      - { name: 'encoder', format: 'mods' }
-  encoder.workbench_csv:
-    class: Drupal\lehigh_islandora\Encoder\WorkbenchCsvEncoder
-    tags:
-      - { name: 'encoder', format: 'workbench_csv' }
   lehigh_islandora.cache_book_manifests:
     class: Drupal\lehigh_islandora\EventSubscriber\CacheBookManifests
-    arguments: ['@config.factory']
+    arguments: ["@config.factory"]
     tags:
       - { name: event_subscriber }
   lehigh_islandora.cache_node_canonical:
     class: Drupal\lehigh_islandora\EventSubscriber\CacheNodeCanonical
-    arguments: ['@config.factory']
+    arguments: ["@config.factory"]
     tags:
       - { name: event_subscriber }
   lehigh_islandora.redirect_collections:
     class: Drupal\lehigh_islandora\EventSubscriber\RedirectCollections
-    arguments: ['@config.factory']
+    arguments: ["@config.factory"]
     tags:
       - { name: event_subscriber }
   lehigh_islandora.uriports:
     class: Drupal\lehigh_islandora\EventSubscriber\Uriports
-    arguments: ['@config.factory']
+    arguments: ["@config.factory"]
     tags:
       - { name: event_subscriber }
   lehigh_islandora.pdf_canonical:
     class: Drupal\lehigh_islandora\EventSubscriber\PdfCanonicalLink
-    arguments: ['@config.factory']
+    arguments: ["@config.factory"]
     tags:
       - { name: event_subscriber }
   lehigh_islandora.redirect_terms:
     class: Drupal\lehigh_islandora\EventSubscriber\RabbitHoleTerms
-    arguments: ['@config.factory']
+    arguments: ["@config.factory"]
     tags:
       - { name: event_subscriber }
   lehigh_islandora.facet_query_string_subscriber:
