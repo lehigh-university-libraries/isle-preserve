@@ -116,8 +116,9 @@ function lehigh_embargo_file_download($uri) {
       ':uri' => $uri,
     ])->fetchAllKeyed();
   $access = FALSE;
+  $admin = \Drupal::currentUser()->hasPermission('administer media');
   foreach ($nodes as $nid => $embargoed) {
-    if ($embargoed) {
+    if (!$admin && $embargoed) {
       return -1;
     }
     $node = Node::load($nid);
