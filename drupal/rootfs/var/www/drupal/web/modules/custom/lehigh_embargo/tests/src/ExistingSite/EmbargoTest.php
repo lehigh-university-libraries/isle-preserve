@@ -66,7 +66,7 @@ class EmbargoTest extends ExistingSiteBase {
       'field_edtf_date_embargo' => LEHIGH_EMBARGO_INDEFINITE,
     ]);
 
-    $media = $this->createMedia([
+    $this->createMedia([
       'name' => $node->id() . '.pdf',
       'bundle' => 'document',
       'uid' => 1,
@@ -104,7 +104,7 @@ class EmbargoTest extends ExistingSiteBase {
       'field_edtf_date_embargo' => '2099-12-30',
     ]);
 
-    $media = $this->createMedia([
+    $this->createMedia([
       'name' => $node->id() . '.pdf',
       'bundle' => 'document',
       'uid' => 1,
@@ -141,7 +141,7 @@ class EmbargoTest extends ExistingSiteBase {
       'field_edtf_date_embargo' => '1865-07-27',
     ]);
 
-    $media = $this->createMedia([
+    $this->createMedia([
       'name' => $node->id() . '.pdf',
       'bundle' => 'document',
       'uid' => 1,

@@ -5,6 +5,7 @@ namespace Drupal\stop14_tools\Services;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManager;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Theme\ThemeManagerInterface;
 
 /**
@@ -13,6 +14,8 @@ use Drupal\Core\Theme\ThemeManagerInterface;
  * @ingroup themed_grid
  */
 class ThemedGridService {
+
+  use StringTranslationTrait;
 
   /**
    * The module handler service.
@@ -149,13 +152,13 @@ class ThemedGridService {
 
     $form['breakpoints'] = [
       '#type' => 'fieldset',
-      '#title' => t('Breakpoint columns'),
+      '#title' => $this->t('Breakpoint columns'),
     ];
 
     $form['breakpoints']['sml'] = [
       '#type' => 'textfield',
-      '#title' => t('Small'),
-      '#description' => t("Number of grid columns for handheld mobile devices ('sml' breakpoint)."),
+      '#title' => $this->t('Small'),
+      '#description' => $this->t("Number of grid columns for handheld mobile devices ('sml' breakpoint)."),
       '#default_value' => $default_values['sml'],
       '#size' => 2,
       '#maxlength' => 2,
@@ -163,8 +166,8 @@ class ThemedGridService {
 
     $form['breakpoints']['med'] = [
       '#type' => 'textfield',
-      '#title' => t('Medium'),
-      '#description' => t("Number of grid columns for tablet and narrow-viewport devices ('med' breakpoint)."),
+      '#title' => $this->t('Medium'),
+      '#description' => $this->t("Number of grid columns for tablet and narrow-viewport devices ('med' breakpoint)."),
       '#default_value' => $default_values['med'],
       '#size' => 2,
       '#maxlength' => 2,
@@ -172,8 +175,8 @@ class ThemedGridService {
 
     $form['breakpoints']['lrg'] = [
       '#type' => 'textfield',
-      '#title' => t('Large'),
-      '#description' => t("Number of grid columns for desktop devices ('lrg' breakpoint)."),
+      '#title' => $this->t('Large'),
+      '#description' => $this->t("Number of grid columns for desktop devices ('lrg' breakpoint)."),
       '#default_value' => $default_values['lrg'],
       '#size' => 2,
       '#maxlength' => 2,
@@ -181,8 +184,8 @@ class ThemedGridService {
 
     $form['breakpoints']['xlrg'] = [
       '#type' => 'textfield',
-      '#title' => t('Extra-Large'),
-      '#description' => t("Number of grid columns for wide viewports ('xlrg' breakpoint)."),
+      '#title' => $this->t('Extra-Large'),
+      '#description' => $this->t("Number of grid columns for wide viewports ('xlrg' breakpoint)."),
       '#default_value' => $default_values['xlrg'],
       '#size' => 2,
       '#maxlength' => 2,

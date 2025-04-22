@@ -34,24 +34,24 @@ class SettingsForm extends ConfigFormBase {
 
     $form['lehigh_site_support_settings'] = [
       '#type' => 'vertical_tabs',
-      '#title' => t('Lehigh Digital Collections Site Settings'),
+      '#title' => $this->t('Lehigh Digital Collections Site Settings'),
     ];
 
     $form['general'] = [
       '#type' => 'details',
-      '#title' => t('General Settings'),
+      '#title' => $this->t('General Settings'),
       '#group' => 'lehigh_site_support_settings',
     ];
 
     $form['rights'] = [
       '#type' => 'details',
-      '#title' => t('Rights and reproductions'),
+      '#title' => $this->t('Rights and reproductions'),
       '#group' => 'lehigh_site_support_settings',
     ];
 
     $form['site_copy'] = [
       '#type' => 'fieldset',
-      '#title' => t('Site Copy'),
+      '#title' => $this->t('Site Copy'),
       '#group' => 'general',
     ];
 
@@ -87,7 +87,7 @@ class SettingsForm extends ConfigFormBase {
 
     $form['collections'] = [
       '#type' => 'fieldset',
-      '#title' => t('Collections settings'),
+      '#title' => $this->t('Collections settings'),
       '#group' => 'general',
     ];
 
