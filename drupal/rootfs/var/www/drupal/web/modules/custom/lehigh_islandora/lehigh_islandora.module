@@ -7,6 +7,7 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\islandora\Event\StompHeaderEvent;
 use Drupal\islandora\Event\StompHeaderEventException;
 use Drupal\node\Entity\Node;
@@ -737,4 +738,33 @@ function lehigh_islandora_fcrepo_realpath($uri) {
   }
 
   return "";
+}
+
+/**
+ * Implements hook_file_download().
+ */
+function lehigh_islandora_file_download($uri) {
+  // Make sure OCR is viewable for published node/media.
+  $scheme = StreamWrapperManager::getScheme($uri);
+  if ($scheme == 'private') {
+    $mid = \Drupal::database()->query('SELECT mf.entity_id from file_managed f
+      INNER JOIN media__field_media_file mf ON field_media_file_target_id = f.fid
+      INNER JOIN media__field_media_use mu ON mu.entity_id = mf.entity_id
+      INNER JOIN media__field_media_of mo ON mo.entity_id = mf.entity_id
+      INNER JOIN media_field_data m ON m.mid = mf.entity_id
+      INNER JOIN node_field_data n ON n.nid = field_media_of_target_id
+      WHERE m.status = 1
+        AND n.status = 1
+        AND field_media_use_target_id = 14
+        AND uri = :uri', [
+          ':uri' => $uri,
+        ])->fetchField();
+    if ($mid) {
+      return [
+        'Content-Type' => 'text/plain',
+      ];
+    }
+  }
+
+  return NULL;
 }
