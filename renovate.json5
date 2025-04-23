@@ -44,7 +44,7 @@
       ],
       groupName: 'all non-major dependencies',
       schedule: [
-        'after 10pm on Friday',
+        '* 22 * * 3',
       ],
       matchPackageNames: [
         '*',
