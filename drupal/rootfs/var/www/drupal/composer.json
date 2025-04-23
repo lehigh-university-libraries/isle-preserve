@@ -53,7 +53,7 @@
         "drupal/entity_reference_facet_link": "^2.0",
         "drupal/entity_reference_revisions": "^1.10",
         "drupal/facets": "^2",
-        "drupal/field_group": "^3.4",
+        "drupal/field_group": "^4.0",
         "drupal/field_permissions": "^1",
         "drupal/file_download_link": "^2.0",
         "drupal/file_download_link_media": "^2.0",
