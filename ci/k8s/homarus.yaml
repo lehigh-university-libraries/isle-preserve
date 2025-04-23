@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-ffmpeg
-          image: lehighlts/scyllaridae-ffmpeg:main@sha256:cd7c1b40fc6bdb11d5e113630adb8d2625f4d39f7ebb0347d4c2d23c65c2296d
+          image: lehighlts/scyllaridae-ffmpeg:main@sha256:ac43f464c472305bb1f376918d9462afa4384edcc69d349de958a4bdbeefc268
           imagePullPolicy: IfNotPresent
           env:
           - name: "JWKS_URI"
