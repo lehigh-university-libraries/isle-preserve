@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-tesseract
-          image: lehighlts/scyllaridae-tesseract:main@sha256:9fe5bed3f83775ffc808fe20fe1a63753613ef11023d1cee3beefd99db0ca834
+          image: lehighlts/scyllaridae-tesseract:main@sha256:c3543adde351166ffb9deba61be8e8eb5ab00db4117a219035f2c9e387d15f89
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
