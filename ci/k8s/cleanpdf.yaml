@@ -34,7 +34,7 @@ spec:
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
           resources:
             requests:
-              memory: "128Mi"
+              memory: "1Gi"
               cpu: "500m"
             limits:
               memory: "1Gi"

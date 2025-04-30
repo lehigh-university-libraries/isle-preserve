@@ -36,10 +36,10 @@ spec:
               value: "100000"
           resources:
             requests:
-              memory: "256Mi"
+              memory: "8Gi"
               cpu: "250m"
             limits:
-              memory: "4Gi"
+              memory: "8Gi"
           ports:
             - containerPort: 8080
               hostPort: 8084

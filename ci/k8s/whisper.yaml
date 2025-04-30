@@ -34,10 +34,10 @@ spec:
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
           resources:
             requests:
-              memory: "2Gi"
+              memory: "16Gi"
               cpu: "500m"
             limits:
-              memory: "10Gi"
+              memory: "16Gi"
           ports:
             - containerPort: 8080
               hostPort: 8093
