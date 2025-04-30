@@ -92,7 +92,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: us-docker.pkg.dev/lehigh-lts-images/public/fabricator:main@sha256:3a5bc6b14b50b34001083cacdaf1614ff98ec9358555e7e04c05384fbc885e8c
+    image: us-docker.pkg.dev/lehigh-lts-images/public/fabricator:main@sha256:c6e5b46663a54a0a83da18fb25ce43453026ead48ca3423b55d75cf788e925a7
     entrypoint:
       - /app/fabricator
       - --server
@@ -101,6 +101,16 @@ services:
       SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
     healthcheck:
       test: curl -s http://localhost:8080/healthcheck | grep OK
+      start_period: 1s
+  fcrepo-ro:
+    image: ghcr.io/lehigh-university-libraries/isle-fcrepo-fs:main@sha256:12c648723298703e6ded8bb86adcfd0629b456f4f35a8aca3a564d041dfab54c
+    environment:
+      OCFL_ROOT: /data
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - /opt/islandora/volumes/fcrepo-data/home/data/ocfl-root:/data:r
+      - ./certs/rootCA.pem:/app/ca.pem:r
+    healthcheck:
       start_period: 1s
   mariadb:
     image: islandora/mariadb:4.0.9@sha256:167e81e130c22e4ca1c828d09f2eca47ddb24c26b57afdcd8ee2386222996925
