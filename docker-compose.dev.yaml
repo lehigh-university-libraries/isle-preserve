@@ -38,7 +38,7 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   fits:
-    image: islandora/fits:4.0.9@sha256:7df70e7068922d4a2f852c09f0e90643ab6fe410e17f73be96812050d501645e
+    image: islandora/fits:4.0.12@sha256:a730f2998c53a32600359c853d45ab97209c0ebaf3d405e5165b180289d87f36
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:

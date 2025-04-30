@@ -62,7 +62,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:4.0.9@sha256:bbf779ed3d08f1eab8e68a13ec016aaee4deb69bef5ab178ad57150a7fdbdd55
+    image: islandora/alpaca:4.0.12@sha256:4b167108622eaec2027444479cb1194c0c2882ba220ba85cd7eed8268d094f2f
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -113,7 +113,7 @@ services:
     healthcheck:
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:4.0.9@sha256:167e81e130c22e4ca1c828d09f2eca47ddb24c26b57afdcd8ee2386222996925
+    image: islandora/mariadb:4.0.12@sha256:83d9ee3aeb530783b47995fb963985cfc0383ba17730647830e269b9df3fd1a3
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -134,7 +134,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:4.0.9@sha256:2747aaa875535b94e3ef51fb9db131184985fb34d84004838fff145742ee1a41
+    image: islandora/activemq:4.0.12@sha256:ada085aa54bd0bf5c768de9e38ac9478f5d71342aad82c13d4667baf88b04faa
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -167,7 +167,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - ./tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.38@sha256:d507e44415954bce3186ddf56353d4a68f1b77ef5a11626870b838731e0abaf0
+    image: memcached:1.6.38@sha256:a36147332a0febce5f484d48991e9a3b3aee62cd826f8e037f584d434c648712
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -305,7 +305,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:4.0.9@sha256:5d02997d9cdca99435f500eb995fa9f8ae1aad34e096a2eddd567884d9bb5cef
+    image: islandora/fcrepo6:4.0.12@sha256:fa959301a908d7a9190f96504ba303826e59e980860b4d092cd40aef40462095
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -327,7 +327,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:4.0.9@sha256:01615003f1ebbd6c83f95b60d8c3e77e03e19305369a556921468be8ab3c4530
+    image: islandora/solr:4.0.12@sha256:16fce51cdb42fa8016d796cd31a27f28e9d528a655664d500199bbe50a04c5db
     environment:
       SOLR_MODULES: extraction,langid,ltr,analysis-extras
     volumes:
