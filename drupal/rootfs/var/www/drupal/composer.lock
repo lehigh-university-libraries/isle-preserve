@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "af2e8b429775c7f8f6e820e7f6cd3320",
+    "content-hash": "d0433aa5fb78323997a7399286612dd6",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2113,17 +2113,17 @@
         },
         {
             "name": "drupal/colorbox",
-            "version": "2.1.3",
+            "version": "2.1.4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/colorbox.git",
-                "reference": "2.1.3"
+                "reference": "2.1.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/colorbox-2.1.3.zip",
-                "reference": "2.1.3",
-                "shasum": "de371a1617672869d41f1d207654216b757a755c"
+                "url": "https://ftp.drupal.org/files/projects/colorbox-2.1.4.zip",
+                "reference": "2.1.4",
+                "shasum": "a06e2ed6ab9b41a448aaa6a621560e9706564c76"
             },
             "require": {
                 "drupal/core": "^10 || ^11"
@@ -2134,8 +2134,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1745427356",
+                    "version": "2.1.4",
+                    "datestamp": "1745856815",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7674,17 +7674,17 @@
         },
         {
             "name": "drupal/taxonomy_manager",
-            "version": "2.0.19",
+            "version": "2.0.20",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/taxonomy_manager.git",
-                "reference": "2.0.19"
+                "reference": "2.0.20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/taxonomy_manager-2.0.19.zip",
-                "reference": "2.0.19",
-                "shasum": "e82649940e4a35f5ce3d702dc800ec9b0c1f4e79"
+                "url": "https://ftp.drupal.org/files/projects/taxonomy_manager-2.0.20.zip",
+                "reference": "2.0.20",
+                "shasum": "69079226ff05c19087829319c99c06714759cfac"
             },
             "require": {
                 "drupal/core": "^10.3 || ^11.0",
@@ -7700,8 +7700,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.0.19",
-                    "datestamp": "1741177395",
+                    "version": "2.0.20",
+                    "datestamp": "1745967696",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -8610,17 +8610,17 @@
         },
         {
             "name": "drupal/xmlsitemap",
-            "version": "2.0.0-beta1",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/xmlsitemap.git",
-                "reference": "2.0.0-beta1"
+                "reference": "2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/xmlsitemap-2.0.0-beta1.zip",
-                "reference": "2.0.0-beta1",
-                "shasum": "83fe21b87952dce131b0fbebff24313ca0b75cdf"
+                "url": "https://ftp.drupal.org/files/projects/xmlsitemap-2.0.0.zip",
+                "reference": "2.0.0",
+                "shasum": "5ffa171f2e86311dd0142bab25ea48b142927ec0"
             },
             "require": {
                 "drupal/core": "^10.3 || ^11",
@@ -8637,11 +8637,11 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.0.0-beta1",
-                    "datestamp": "1732973050",
+                    "version": "2.0.0",
+                    "datestamp": "1745611162",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 },
                 "drush": {
