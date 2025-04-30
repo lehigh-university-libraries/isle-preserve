@@ -25,6 +25,13 @@ spec:
       labels:
         app: islandora-crayfits
     spec:
+      volumes:
+        - name: islandora-prod-ca
+          configMap:
+            name: islandora-prod-ca
+            items:
+              - key: islandora-prod.pem
+                path: ca.pem
       containers:
         - name: scyllaridae-crayfits
           image: lehighlts/scyllaridae-fits:main@sha256:16582988071d07c1e47bd8e6f529584baf1deb6465f9cfd6eb77317a01f620d4
@@ -41,6 +48,10 @@ spec:
           ports:
             - containerPort: 8080
               hostPort: 8083
+          volumeMounts:
+            - name: islandora-prod-ca
+              mountPath: /app/ca.pem
+              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck

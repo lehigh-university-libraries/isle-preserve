@@ -25,6 +25,13 @@ spec:
       labels:
         app: islandora-ffmpeg
     spec:
+      volumes:
+        - name: islandora-prod-ca
+          configMap:
+            name: islandora-prod-ca
+            items:
+              - key: islandora-prod.pem
+                path: ca.pem
       containers:
         - name: scyllaridae-ffmpeg
           image: lehighlts/scyllaridae-ffmpeg:main@sha256:ac43f464c472305bb1f376918d9462afa4384edcc69d349de958a4bdbeefc268
@@ -41,6 +48,10 @@ spec:
           ports:
             - hostPort: 8086
               containerPort: 8080
+          volumeMounts:
+            - name: islandora-prod-ca
+              mountPath: /app/ca.pem
+              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck

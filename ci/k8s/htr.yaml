@@ -25,6 +25,13 @@ spec:
       labels:
         app: islandora-openai-htr
     spec:
+      volumes:
+        - name: islandora-prod-ca
+          configMap:
+            name: islandora-prod-ca
+            items:
+              - key: islandora-prod.pem
+                path: ca.pem
       containers:
         - name: scyllaridae-htr
           image: lehighlts/scyllaridae-openai-htr:main@sha256:a30ab4e487c9fea46ccd54f6f9dc61aff9ffe392e9a59d3b6f13401833d3b4a7
@@ -46,6 +53,10 @@ spec:
           ports:
             - hostPort: 8088
               containerPort: 8080
+          volumeMounts:
+            - name: islandora-prod-ca
+              mountPath: /app/ca.pem
+              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck

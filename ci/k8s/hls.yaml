@@ -25,6 +25,13 @@ spec:
       labels:
         app: islandora-hls
     spec:
+      volumes:
+        - name: islandora-prod-ca
+          configMap:
+            name: islandora-prod-ca
+            items:
+              - key: islandora-prod.pem
+                path: ca.pem
       containers:
         - name: scyllaridae-hls
           image: lehighlts/scyllaridae-hls:main@sha256:bb517bcfc60e00bb1a1d6f5d43527884f2715f98bd5cd44ab2675a7e733e3c84
@@ -41,6 +48,10 @@ spec:
           ports:
             - hostPort: 8085
               containerPort: 8080
+          volumeMounts:
+            - name: islandora-prod-ca
+              mountPath: /app/ca.pem
+              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck

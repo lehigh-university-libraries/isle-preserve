@@ -25,6 +25,13 @@ spec:
       labels:
         app: islandora-libreoffice
     spec:
+      volumes:
+        - name: islandora-prod-ca
+          configMap:
+            name: islandora-prod-ca
+            items:
+              - key: islandora-prod.pem
+                path: ca.pem
       containers:
         - name: scyllaridae-libreoffice
           image: lehighlts/scyllaridae-libreoffice:main@sha256:3546f2add2a5a0911a245273cae7c736ea845d242afc13fa37262116b6c7f39d
@@ -41,6 +48,10 @@ spec:
           ports:
             - hostPort: 8090
               containerPort: 8080
+          volumeMounts:
+            - name: islandora-prod-ca
+              mountPath: /app/ca.pem
+              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck

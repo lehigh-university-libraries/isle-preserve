@@ -25,6 +25,13 @@ spec:
       labels:
         app: islandora-imagemagick
     spec:
+      volumes:
+        - name: islandora-prod-ca
+          configMap:
+            name: islandora-prod-ca
+            items:
+              - key: islandora-prod.pem
+                path: ca.pem
       containers:
         - name: scyllaridae-imagemagick
           image: lehighlts/scyllaridae-imagemagick:main@sha256:190cc7f5a4da0c010ecf1ab447e63281f663f639b97663c003494e1d402eb802
@@ -41,6 +48,10 @@ spec:
           ports:
             - containerPort: 8080
               hostPort: 8087
+          volumeMounts:
+            - name: islandora-prod-ca
+              mountPath: /app/ca.pem
+              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck
