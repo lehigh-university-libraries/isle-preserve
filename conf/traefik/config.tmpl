@@ -18,7 +18,7 @@ http:
         - redirect-sans
       service: drupal
     fcrepo-ro:
-      rule: PathPrefix(`/_flysystem/fedora`) && HeaderRegexp(`Authorization`, `^(b|B)earer .*`)
+      rule: PathPrefix(`/_flysystem/fedora`) && Method(`GET`)
       entryPoints:
         - https
       service: fcrepo-ro
