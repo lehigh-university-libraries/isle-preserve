@@ -103,10 +103,10 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   fcrepo-ro:
-    image: ghcr.io/lehigh-university-libraries/isle-fcrepo-fs:main@sha256:a5270f6cbf2ac909e7bf0a5dbdfbb4e6a92ce8af28bd7bac46d1c43fcbd0d344
+    image: ghcr.io/lehigh-university-libraries/isle-fcrepo-fs:main@sha256:6870f73d0a5e43f33a5043c84e4b5dff90cf4598e4ae7ee221c568043b776a8e
     environment:
       OCFL_ROOT: /data
-      JWKS_URI: https://${INTERNAL_DOMAIN}/oauth/discovery/keys
+      DOMAIN: ${DOMAIN}
     volumes:
       - /opt/islandora/volumes/fcrepo-data/home/data/ocfl-root:/data:r
       - ./certs/rootCA.pem:/app/ca.pem:r
