@@ -52,7 +52,7 @@
         "drupal/entity_metrics": "^1.0@beta",
         "drupal/entity_reference_facet_link": "^2.0",
         "drupal/entity_reference_revisions": "^1.10",
-        "drupal/facets": "^2",
+        "drupal/facets": "^3",
         "drupal/field_group": "^4.0",
         "drupal/field_permissions": "^1",
         "drupal/file_download_link": "^2.0",
@@ -196,11 +196,6 @@
         "patches": {
             "discoverygarden/islandora_hocr": {
                 "Only read hocr file when indexing": "assets/patches/discoverygarden/islandora_hocr/index-only.patch"
-            },
-            "drupal/facets": {
-                "Allow exposed filters to work with AJAX Facets": "https://www.drupal.org/files/issues/2021-12-05/3168241-8.patch",
-                "Allow views attachments to reflect search parameters (still not working)": "https://www.drupal.org/files/issues/2022-12-12/facets-attachments-3116236-16.patch",
-                "Show label on summary": "assets/patches/drupal/facets/summary-label.patch"
             },
             "drupal/drupal_slider": {
                 "jquery once": "https://www.drupal.org/files/issues/2024-02-16/jquery_once_fix_0.patch",
