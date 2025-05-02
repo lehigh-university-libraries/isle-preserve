@@ -17,15 +17,6 @@ http:
       middlewares:
         - redirect-sans
       service: drupal
-    fcrepo-ro:
-      rule: PathPrefix(`/_flysystem/fedora`) && Method(`GET`)
-      entryPoints:
-        - https
-      service: fcrepo-ro
-      middlewares:
-        - fcrepo-ro-strip-prefix
-      priority: 50
-      tls: {}
     # send prod requests for fabricator to staging
     fabricator-proxy:
       rule: Host(`preserve.lehigh.edu`) && PathPrefix(`/workbench`)
@@ -97,10 +88,6 @@ http:
         - captcha-protect
       service: drupal
   services:
-    fcrepo-ro:
-      loadBalancer:
-        servers:
-          - url: http://fcrepo-ro:8080
     fabricator:
       loadBalancer:
         servers:
@@ -155,10 +142,6 @@ http:
       stripPrefix:
         prefixes:
           - /cantaloupe
-    fcrepo-ro-strip-prefix:
-      stripPrefix:
-        prefixes:
-          - /_flysystem/fedora
     captcha-protect:
       plugin:
         captcha-protect:
