@@ -220,6 +220,9 @@
             },
             "drupal/flysystem_gcs": {
                 "revert https://www.drupal.org/project/flysystem_gcs/issues/3324562": "assets/patches/drupal/flysystem_gcs/revert-3324562.patch"
+            },
+            "islandora/chullo": {
+                "stream GET calls": "https://github.com/Islandora/chullo/pull/101.patch"
             }
         },
         "merge-plugin": {

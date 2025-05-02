@@ -102,16 +102,6 @@ services:
     healthcheck:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
-  fcrepo-ro:
-    image: ghcr.io/lehigh-university-libraries/isle-fcrepo-fs:main@sha256:6870f73d0a5e43f33a5043c84e4b5dff90cf4598e4ae7ee221c568043b776a8e
-    environment:
-      OCFL_ROOT: /data
-      DOMAIN: ${DOMAIN}
-    volumes:
-      - /opt/islandora/volumes/fcrepo-data/home/data/ocfl-root:/data:r
-      - ./certs/rootCA.pem:/app/ca.pem:r
-    healthcheck:
-      start_period: 1s
   mariadb:
     image: islandora/mariadb:4.0.12@sha256:83d9ee3aeb530783b47995fb963985cfc0383ba17730647830e269b9df3fd1a3
     environment:
