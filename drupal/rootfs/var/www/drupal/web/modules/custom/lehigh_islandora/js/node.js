@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(() => console.error("Failed to load access request form."));
         },
-        { once: TRUE },
+        { once: true },
       );
     });
 });
