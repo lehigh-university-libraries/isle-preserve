@@ -140,7 +140,7 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: islandora/cantaloupe:4.1.0
+    image: islandora/cantaloupe:4.1.0@sha256:2d37e578ab84ff8d761fab7f75b5f7a665d904a6df06d3191f416a9469da6a2f
     environment:
       CANTALOUPE_PROCESSOR_SELECTION_STRATEGY: "ManualSelectionStrategy"
       CANTALOUPE_PROCESSOR_MANUALSELECTIONSTRATEGY_JPG: "Java2dProcessor"
