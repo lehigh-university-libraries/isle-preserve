@@ -140,11 +140,10 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: us-docker.pkg.dev/lehigh-lts-images/internal/cantaloupe:main
+    image: islandora/cantaloupe:4.1.0
     environment:
       CANTALOUPE_PROCESSOR_SELECTION_STRATEGY: "ManualSelectionStrategy"
       CANTALOUPE_PROCESSOR_MANUALSELECTIONSTRATEGY_JPG: "Java2dProcessor"
-      CANTALOUPE_PROCESSOR_MANUALSELECTIONSTRATEGY_JP2: "GrokProcessor"
       CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
       CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
       CANTALOUPE_MAX_PIXELS: 0
