@@ -729,7 +729,6 @@ function lehigh_islandora_fcrepo_realpath($uri) {
 
   $components = explode('/', $uri);
   $filename = array_pop($components);
-  $filename = rawurlencode($filename);
   foreach ($state as $digest => $files) {
     if (!in_array($filename, $files)) {
       continue;
