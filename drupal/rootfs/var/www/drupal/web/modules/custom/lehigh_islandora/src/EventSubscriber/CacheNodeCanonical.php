@@ -136,6 +136,10 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
       return FALSE;
     }
 
+    if (\Drupal::currentUser()->isAuthenticated()) {
+      return FALSE;
+    }
+
     // Only apply on the node canonical view or our collections/browse views.
     $route_name = $request->attributes->get('_route');
     if (!in_array($route_name, ["view.homepage.page_1", "view.browse.main", "entity.node.canonical"])) {
@@ -164,6 +168,7 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
 
     // Another dir based on the current path
     // unless it's the homepage node - keep that at the root dir.
+    // @todo just check on <front>.
     if ($path !== 'home') {
       $base_dir .= '/' . $path;
     }

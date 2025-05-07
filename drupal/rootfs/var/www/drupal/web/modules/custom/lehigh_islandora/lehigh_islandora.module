@@ -426,6 +426,7 @@ function lehigh_islandora_clear_disk_cache(EntityInterface $node) {
   // Remove cached IIIF manifests from disk
   // for this node and its parent.
   $base_dir = $filesystem->realpath("private://iiif/$current_domain");
+  $canonical_dir = $filesystem->realpath("private://canonical/$current_domain/0");
   $nids = [$node->id()];
   if ($node->hasField('field_member_of')) {
     foreach ($node->field_member_of as $parent) {
@@ -438,6 +439,15 @@ function lehigh_islandora_clear_disk_cache(EntityInterface $node) {
   foreach ($nids as $nid) {
     $pattern = $base_dir . '/*/node/' . $nid . '/*.*';
     array_map('unlink', glob($pattern));
+
+    $pattern = "$canonical_dir/node/$nid/*.html";
+    array_map('unlink', glob($pattern));
+
+    foreach (['node', 'browse-items'] as $arg0) {
+      $alias = \Drupal::service('path_alias.manager')->getAliasByPath("/$arg0/$nid");
+      $pattern = $canonical_dir . $alias . "/*.html";
+      array_map('unlink', glob($pattern));
+    }
     lehigh_islandora_warm_cache($nid);
   }
 }
