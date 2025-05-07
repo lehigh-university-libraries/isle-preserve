@@ -207,7 +207,6 @@
                 "Issues 3209755": "assets/patches/drupal/drupal_slider/3209755.patch"
             },
             "drupal/islandora": {
-                "add range support": "https://github.com/Islandora/islandora/pull/1077.patch",
                 "override domain": "assets/patches/drupal/islandora/event-overwrite.patch"
             },
             "islandora-rdm/islandora_fits": {
@@ -221,9 +220,6 @@
             },
             "drupal/flysystem_gcs": {
                 "revert https://www.drupal.org/project/flysystem_gcs/issues/3324562": "assets/patches/drupal/flysystem_gcs/revert-3324562.patch"
-            },
-            "islandora/chullo": {
-                "stream GET calls": "https://github.com/Islandora/chullo/pull/101.patch"
             }
         },
         "merge-plugin": {
