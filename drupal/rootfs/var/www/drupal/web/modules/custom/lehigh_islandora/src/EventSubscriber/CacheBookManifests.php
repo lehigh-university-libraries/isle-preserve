@@ -121,20 +121,18 @@ final class CacheBookManifests implements EventSubscriberInterface {
    */
   protected static function getCachedFilePath(Request $request, string $path): string {
     $filesystem = \Drupal::service('file_system');
-    $base_dir = 'private://iiif';
-    $base_dir .= '/' . $request->getHost();
+    $filepath = 'private://iiif';
+    $filepath .= '/' . $request->getHost();
 
     // Make a subdirectory based on the current user's role IDs.
     $role_ids = \Drupal::currentUser()->getRoles();
     $role_ids = implode('', $role_ids);
-    $base_dir .= '/' . md5($role_ids);
-
+    $filepath .= '/' . md5($role_ids);
+    $filepath .= $path . '.json';
+    $base_dir = dirname($filepath);
     $filesystem->prepareDirectory($base_dir, FileSystemInterface::CREATE_DIRECTORY);
 
-    $base_dir = $filesystem->realpath($base_dir);
-    $file_path = $base_dir . $path . '.json';
-
-    return $file_path;
+    return $filesystem->realpath($filepath);
   }
 
 }
