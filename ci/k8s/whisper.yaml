@@ -9,7 +9,7 @@ spec:
   ports:
     - protocol: TCP
       targetPort: 8080
-      port: 8093
+      port: 8888
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -45,9 +45,10 @@ spec:
               cpu: "500m"
             limits:
               memory: "16Gi"
+              nvidia.com/gpu: 2
           ports:
             - containerPort: 8080
-              hostPort: 8093
+              hostPort: 8888
           volumeMounts:
             - name: islandora-prod-ca
               mountPath: /app/ca.pem
