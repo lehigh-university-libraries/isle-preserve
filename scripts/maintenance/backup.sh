@@ -34,7 +34,9 @@ find /opt/islandora/backups -type d -empty -exec rm -rf {} \; || echo "No non em
 # so lets go ahead and keep the filesystem trim from old images
 docker system prune -af
 
-docker exec lehigh-d10-drupal-prod-1 drush cr
+docker exec lehigh-d10-drupal-1 drush cr || echo "continuing"
+
+rm -rf /opt/islandora/d10_lehigh_agile/tmp/drupal/* /opt/islandora/d10_lehigh_agile/tmp/cantaloupe/*
 
 # clear out all bad cached manifests
 for JSON in /opt/islandora/volumes/drupal-private-files/iiif/preserve.lehigh.edu/*/node/*/book-manifest.json; do
@@ -53,4 +55,4 @@ for JSON in /opt/islandora/volumes/drupal-private-files/iiif/preserve.lehigh.edu
   rm "$JSON" || echo "File doesn't exist"
 done
 
-docker exec lehigh-d10-drupal-prod-1 scripts/cron.daily/run.sh
+docker exec lehigh-d10-drupal-1 scripts/cron.daily/run.sh
