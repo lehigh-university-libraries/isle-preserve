@@ -139,22 +139,6 @@ services:
       options:
         max-size: "100m"
         max-file: "3"
-  cantaloupe:
-    image: islandora/cantaloupe:4.1.0@sha256:2d37e578ab84ff8d761fab7f75b5f7a665d904a6df06d3191f416a9469da6a2f
-    environment:
-      CANTALOUPE_PROCESSOR_SELECTION_STRATEGY: "ManualSelectionStrategy"
-      CANTALOUPE_PROCESSOR_MANUALSELECTIONSTRATEGY_JPG: "Java2dProcessor"
-      CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
-      CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
-      CANTALOUPE_MAX_PIXELS: 0
-    secrets:
-      - source: CERT_AUTHORITY
-        target: CERT_PUBLIC_KEY
-    healthcheck:
-      start_period: 5s
-    volumes:
-      - /opt/islandora/volumes/cantaloupe-data:/data:rw
-      - ./tmp/cantaloupe:/tmp:rw
   memcached:
     image: memcached:1.6.38@sha256:a36147332a0febce5f484d48991e9a3b3aee62cd826f8e037f584d434c648712
     command: memcached -m 2048 -I 5m
@@ -395,3 +379,5 @@ services:
       default:
         aliases:
           - ${DOMAIN}
+    extra_hosts:
+      - "isle-cantaloupe.cc.lehigh.edu:128.180.2.28"

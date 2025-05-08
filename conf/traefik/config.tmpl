@@ -95,7 +95,12 @@ http:
     cantaloupe:
       loadBalancer:
         servers:
-          - url: http://cantaloupe:8182
+          - url: https://isle-cantaloupe.cc.lehigh.edu
+        healthCheck:
+            path: /health
+            scheme: http
+            interval: 10s
+            timeout: 3s
     drupal-static:
       loadBalancer:
         servers:

@@ -1,0 +1,93 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: islandora-cantaloupe
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "1800"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "1800"
+spec:
+  tls:
+    - hosts:
+        - isle-cantaloupe.cc.lehigh.edu
+      secretName: cc-tls
+  ingressClassName: nginx
+  rules:
+    - host: isle-cantaloupe.cc.lehigh.edu
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: islandora-cantaloupe
+                port:
+                  number: 8182
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: islandora-cantaloupe
+spec:
+  selector:
+    app: islandora-cantaloupe
+  ports:
+    - protocol: TCP
+      port: 8182
+      targetPort: 8182
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: islandora-cantaloupe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: islandora-cantaloupe
+  template:
+    metadata:
+      labels:
+        app: islandora-cantaloupe
+    spec:
+      containers:
+        - name: islandora-cantaloupe
+          image: islandora/cantaloupe:4.1.0@sha256:2d37e578ab84ff8d761fab7f75b5f7a665d904a6df06d3191f416a9469da6a2f
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: CANTALOUPE_PROCESSOR_SELECTION_STRATEGY
+              value: "ManualSelectionStrategy"
+            - name: CANTALOUPE_PROCESSOR_MANUALSELECTIONSTRATEGY_JPG
+              value: "Java2dProcessor"
+            - name: CANTALOUPE_MAX_PIXELS
+              value: "0"
+            - name: CANTALOUPE_LOG_APPLICATION_LEVEL
+              value: "debug"
+          resources:
+            requests:
+              memory: "16Gi"
+              cpu: "2000m"
+            limits:
+              memory: "16Gi"
+          volumeMounts:
+            - name: islandora-prod-ca
+              mountPath: /usr/local/share/ca-certificates/ca.pem
+              subPath: ca.pem
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "curl -s http://localhost:8182/health | jq -r .color | grep -q GREEN"
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+      volumes:
+        - name: islandora-prod-ca
+          configMap:
+            name: islandora-prod-ca
+            items:
+              - key: islandora-prod.pem
+                path: ca.pem
