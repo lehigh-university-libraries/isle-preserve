@@ -79,7 +79,7 @@ final class AttrWidget extends WidgetBase {
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state): array {
     foreach ($values as $delta => $value) {
       if (isset($value['value']['format'])) {
-        $values[$delta]['format'] = $value['value']['format'];
+        $values[$delta]['format'] = $value['value']['format'] ?? 'full_html';
         $values[$delta]['value'] = $value['value']['value'];
       }
 

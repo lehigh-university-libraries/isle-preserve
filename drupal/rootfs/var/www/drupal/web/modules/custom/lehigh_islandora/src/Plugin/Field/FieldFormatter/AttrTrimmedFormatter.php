@@ -2,6 +2,7 @@
 
 namespace Drupal\lehigh_islandora\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\text\Plugin\Field\FieldFormatter\TextTrimmedFormatter;
 
 /**
@@ -15,4 +16,19 @@ use Drupal\text\Plugin\Field\FieldFormatter\TextTrimmedFormatter;
  *   }
  * )
  */
-class AttrTrimmedFormatter extends TextTrimmedFormatter {}
+class AttrTrimmedFormatter extends TextTrimmedFormatter {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function viewElements(FieldItemListInterface $items, $langcode) {
+    foreach ($items as &$item) {
+      if (empty($item->format)) {
+        $item->format = 'full_html';
+      }
+    }
+
+    return parent::viewElements($items, $langcode);
+  }
+
+}
