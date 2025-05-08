@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-whisper
-          image: lehighlts/scyllaridae-whisper:main@sha256:d15e8a7180ddbb538b758b70c5257dae1f29ddad9845bcc2b5776eecd5cdd3fa
+          image: lehighlts/scyllaridae-whisper:main@sha256:9cc29e4eb509e0252a3ed3a4c8ffa78edd16427790154746f45fb5d31a91e822
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
@@ -45,7 +45,7 @@ spec:
               cpu: "500m"
             limits:
               memory: "16Gi"
-              nvidia.com/gpu: 2
+              nvidia.com/gpu: 4
           ports:
             - containerPort: 8080
               hostPort: 8888
