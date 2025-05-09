@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-cache-warmer
-          image: lehighlts/scyllaridae-cache-warmer:main@sha256:06cd0de9d5e54f2cead94613bad58d3202439a947e6026534d38326c8869dbf3
+          image: lehighlts/scyllaridae-cache-warmer:main@sha256:48045324c8fda7edb0390cd3cfdcd7774f9c57e45a197406166be30b07fd1aa0
           imagePullPolicy: IfNotPresent
           env:
             - name: "DRUPAL_URL"
