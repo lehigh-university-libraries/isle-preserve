@@ -6,20 +6,20 @@ services:
       ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
   mergepdf:
-    image: lehighlts/scyllaridae-mergepdf:main@sha256:bc4c91efc03ae9ddf90b48fe00183bf0ce7e3e819c2c9ad4c63310189ea4634b
+    image: lehighlts/scyllaridae-mergepdf:main@sha256:e7164a4d44ace6de3597fd8e759d17fe96bb0f270e4b96723f152529455efc08
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
-    image: lehighlts/scyllaridae-libreoffice:main@sha256:3546f2add2a5a0911a245273cae7c736ea845d242afc13fa37262116b6c7f39d
+    image: lehighlts/scyllaridae-libreoffice:main@sha256:1aa91bb98c25e5a49b1e76e61e8ea184ff4352e0ce304cfe725b3cc890aa03b4
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: lehighlts/scyllaridae-imagemagick:main@sha256:190cc7f5a4da0c010ecf1ab447e63281f663f639b97663c003494e1d402eb802
+    image: lehighlts/scyllaridae-imagemagick:main@sha256:d89070f5a39431c5ea2a1f176ed82bcc853553d0d5cd7dfa96a2905b2305da9a
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -29,7 +29,7 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   mariadb:
-    image: mariadb:11.7.2-noble@sha256:81e893032978c4bf8ad43710b7a979774ed90787fa32d199162148ce28fe3b76
+    image: mariadb:11.7.2-noble@sha256:11706a6fd276c2eada52d0d69b1a2aa1f1484cbe78137678e02cca8f7a0ae502
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD

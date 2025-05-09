@@ -24,7 +24,7 @@ services:
   transformer:
     image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:437edcded417070068e06c6bfde597c5319c36721647f8427345e7d8b3c247e0
   mariadb:
-    image: mariadb:11.7.2-noble@sha256:81e893032978c4bf8ad43710b7a979774ed90787fa32d199162148ce28fe3b76
+    image: mariadb:11.7.2-noble@sha256:11706a6fd276c2eada52d0d69b1a2aa1f1484cbe78137678e02cca8f7a0ae502
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
@@ -38,68 +38,68 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   fits:
-    image: islandora/fits:4.0.12@sha256:a730f2998c53a32600359c853d45ab97209c0ebaf3d405e5165b180289d87f36
+    image: islandora/fits:4.1.0@sha256:18cdb6012acb31da5d801e238a0d9dc207ba43db7e23d66250874d74f81390e6
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
-    image: lehighlts/scyllaridae-fits:main@sha256:16582988071d07c1e47bd8e6f529584baf1deb6465f9cfd6eb77317a01f620d4
+    image: lehighlts/scyllaridae-fits:main@sha256:6f98aa2f942cf605caa2f6beac660b13a0e0b38bd5708788645edda93e724150
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/crayfits:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
-    image: lehighlts/scyllaridae-hls:main@sha256:bb517bcfc60e00bb1a1d6f5d43527884f2715f98bd5cd44ab2675a7e733e3c84
+    image: lehighlts/scyllaridae-hls:main@sha256:650d8fa3ef86f79c1ecc1df82c6ee476b4245cb05ea7187ffb72d7bb2453c7c1
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   homarus:
-    image: lehighlts/scyllaridae-ffmpeg:main@sha256:ac43f464c472305bb1f376918d9462afa4384edcc69d349de958a4bdbeefc268
+    image: lehighlts/scyllaridae-ffmpeg:main@sha256:7212f0e7488559080b091a8f435e26f142edbc7de5315b7838e3b472186c460b
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: lehighlts/scyllaridae-imagemagick:main@sha256:190cc7f5a4da0c010ecf1ab447e63281f663f639b97663c003494e1d402eb802
+    image: lehighlts/scyllaridae-imagemagick:main@sha256:d89070f5a39431c5ea2a1f176ed82bcc853553d0d5cd7dfa96a2905b2305da9a
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: lehighlts/scyllaridae-tesseract:main@sha256:c3543adde351166ffb9deba61be8e8eb5ab00db4117a219035f2c9e387d15f89
+    image: lehighlts/scyllaridae-tesseract:main@sha256:d0091acdc9a44c4b48b752fe101c4b41ac2963a7b8360da5d4a4963bffd49385
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: lehighlts/scyllaridae-ocrpdf:main@sha256:c1ae0cde999ba65730c15ff819fd844ba750dde308575eed60d25283c87aae85
+    image: lehighlts/scyllaridae-ocrpdf:main@sha256:269eace5dfaf99981ef97927b8a90bdb140c9bf416b7a7e140a1c6befb8d5959
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
-    image: lehighlts/scyllaridae-libreoffice:main@sha256:3546f2add2a5a0911a245273cae7c736ea845d242afc13fa37262116b6c7f39d
+    image: lehighlts/scyllaridae-libreoffice:main@sha256:1aa91bb98c25e5a49b1e76e61e8ea184ff4352e0ce304cfe725b3cc890aa03b4
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   coverpage:
-    image: lehighlts/scyllaridae-coverpage:main@sha256:2317c7e0c863e39130ea74cfb52ed7c9d53fe1027ede4e9c8805789dc5439a4e
+    image: lehighlts/scyllaridae-coverpage:main@sha256:0ac23169d3da862590ab97043680b089845b42ffb9a8e92d105075bd728e0dcc
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   cache-warmer:
-    image: lehighlts/scyllaridae-cache-warmer:main@sha256:06cd0de9d5e54f2cead94613bad58d3202439a947e6026534d38326c8869dbf3
+    image: lehighlts/scyllaridae-cache-warmer:main@sha256:48045324c8fda7edb0390cd3cfdcd7774f9c57e45a197406166be30b07fd1aa0
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       DRUPAL_URL: "https://${DOMAIN}"
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: lehighlts/scyllaridae-mergepdf:main@sha256:bc4c91efc03ae9ddf90b48fe00183bf0ce7e3e819c2c9ad4c63310189ea4634b
+    image: lehighlts/scyllaridae-mergepdf:main@sha256:e7164a4d44ace6de3597fd8e759d17fe96bb0f270e4b96723f152529455efc08
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3

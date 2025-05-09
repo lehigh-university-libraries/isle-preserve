@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-crayfits
-          image: lehighlts/scyllaridae-fits:main@sha256:16582988071d07c1e47bd8e6f529584baf1deb6465f9cfd6eb77317a01f620d4
+          image: lehighlts/scyllaridae-fits:main@sha256:6f98aa2f942cf605caa2f6beac660b13a0e0b38bd5708788645edda93e724150
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
