@@ -6,8 +6,8 @@
     'customManagers:dockerfileVersions',
   ],
   kubernetes: {
-    fileMatch: [
-      'ci/k8s/.+\\.yaml$',
+    managerFilePatterns: [
+      '/ci/k8s/.+\\.yaml$/',
     ],
   },
   packageRules: [
@@ -66,8 +66,8 @@
   customManagers: [
     {
       customType: 'regex',
-      fileMatch: [
-        '^Dockerfile$',
+      managerFilePatterns: [
+        '/^Dockerfile$/',
       ],
       matchStrings: [
         '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION="(?<currentValue>.*)"\\s',
@@ -75,8 +75,8 @@
     },
     {
       customType: 'regex',
-      fileMatch: [
-        'drupal/rootfs/var/www/drupal/composer.json',
+      managerFilePatterns: [
+        '/drupal/rootfs/var/www/drupal/composer.json/',
       ],
       matchStrings: [
         '\\s+"url":\\s"https:\\/\\/github.com\\/mozilla\\/pdf\\.js\\/releases\\/download\\/v(?<currentValue>.*)\\/(?:pdfjs-[^\\/]+)-dist\\.zip"',
