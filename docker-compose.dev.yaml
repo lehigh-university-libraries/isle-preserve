@@ -22,7 +22,7 @@ services:
     volumes:
       - fcrepo-data:/data:Z,rw
   transformer:
-    image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:437edcded417070068e06c6bfde597c5319c36721647f8427345e7d8b3c247e0
+    image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:40d05bbce282d29eeaa99b5d4766621d3df74b7ab6a86e81c4ade36ff36c772c
   mariadb:
     image: mariadb:11.7.2-noble@sha256:11706a6fd276c2eada52d0d69b1a2aa1f1484cbe78137678e02cca8f7a0ae502
     secrets:
@@ -38,7 +38,7 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   fits:
-    image: islandora/fits:4.1.0@sha256:18cdb6012acb31da5d801e238a0d9dc207ba43db7e23d66250874d74f81390e6
+    image: islandora/fits:4.1.2@sha256:444139f733c4b5a694246ac59de408a4752ecdef37373f693120078b8e66b89a
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
