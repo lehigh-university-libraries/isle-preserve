@@ -97,6 +97,39 @@ class PagedContentAggregatedPdfTest extends DerivativeTestBase {
       sleep(5);
     }
     $this->assertTrue($pdfCreated, 'PDF was created');
+
+    $this->drupalGet("/node/" . $parent->id() . "/book-manifest");
+    $this->assertSession()->statusCodeEquals(200);
+    $content = $this->getSession()->getPage()->getContent();
+    $json = json_decode($content, true);
+    $this->assertNotNull($json);
+    $this->assertEquals(JSON_ERROR_NONE, json_last_error());
+
+    // now that we loaded the manifest, the width/height of the service files
+    // should be populated, so ensure that's the case
+    $sql = "SELECT field_width_value, f.uri FROM media_field_data m
+      INNER JOIN media__field_media_of mo ON m.mid = mo.entity_id
+      INNER JOIN media__field_media_use mu ON m.mid = mu.entity_id
+      INNER JOIN media__field_media_file mf ON m.mid = mf.entity_id
+      INNER JOIN file_managed f ON f.fid = field_media_file_target_id
+      WHERE mu.field_media_use_target_id = :tid
+        AND field_media_of_target_id IN (:nids[])";
+    $results = \Drupal::database()->query($sql, [
+      ':nids[]' => $nids,
+      ':tid' => lehigh_islandora_get_tid_by_name('Service File', 'islandora_media_use'),
+    ]);
+    $count = 0;
+    foreach ($results as $row) {
+      $uri = $row->uri;
+      $expected_width = (int) $row->field_width_value;
+      $file_path = \Drupal::service('file_system')->realpath($uri);
+      $this->assertFileExists($file_path);
+      [$width] = getimagesize($file_path);
+      $this->assertEquals($expected_width, $width, "File width for {$uri} does not match expected value.");
+      ++$count;
+    }
+    $this->assertEquals($count, count($nids)-1, "Expected the same number of service files as children nodes.");
+
     $ignoreTids = [
       lehigh_islandora_get_tid_by_name('Original File', 'islandora_media_use'),
     ];
