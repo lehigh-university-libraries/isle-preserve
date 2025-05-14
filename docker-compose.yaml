@@ -62,7 +62,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:4.1.1@sha256:2ebf87f5192311bf81fac6503bd3a2b0faae6b7b721929448724ac7dc94d16a3
+    image: islandora/alpaca:4.1.2@sha256:a8e7fa130721b6a6320299e20a84b1ac96d5cf67399dcca9da3594a9ad3bc510
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -103,7 +103,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:4.1.0@sha256:7b54b88ed06d99058dad5242199bfcfa46a86f206bceeec2d0ca169083b50bdb
+    image: islandora/mariadb:4.1.2@sha256:1d7205b303cff6f8763d4c022ff29d2ab3a184aa75f1d35727b07ce4d3ba2282
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -124,7 +124,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:4.1.1@sha256:800c76f630542a7591f37b5175ca407999a6179f87ac9e38ddeac1c48d1242ca
+    image: islandora/activemq:4.1.2@sha256:72846812d2dd0f8decd14aaa51a1b56e87f6e2e78f6a04d20535358bc43c43e6
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -140,7 +140,7 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: islandora/cantaloupe:4.1.1@sha256:7bee77179f39e9cab19522ddb009ab240c7e63adf0a3634af04103666932942c
+    image: islandora/cantaloupe:4.1.2@sha256:cdd1d55b2cb3c6439711daeae03a827a3e588d690b852cee8a7529ae6406cd2c
     environment:
       CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
       CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
@@ -293,7 +293,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:4.1.0@sha256:e28592f0b5a36f5519dfe557038d409d57f386485800c0e24fcb02beb4d1b167
+    image: islandora/fcrepo6:4.1.2@sha256:26ff6fa741e628ac8c44bc0881a3e605229b4c95242dddce71ba77448b402f5c
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -315,7 +315,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:4.1.1@sha256:e8504f75008eba61144c4d4ee0c8e1567a7bef4179cca2ab11ed2dc4264fc5a8
+    image: islandora/solr:4.1.2@sha256:ea0f664203bacb097776022661969a34d0efd3855c45edb8b8f2ec6db1737a91
     environment:
       SOLR_MODULES: extraction,langid,ltr,analysis-extras
     volumes:
