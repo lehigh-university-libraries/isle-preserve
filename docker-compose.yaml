@@ -142,8 +142,6 @@ services:
   cantaloupe:
     image: islandora/cantaloupe:4.1.2@sha256:cdd1d55b2cb3c6439711daeae03a827a3e588d690b852cee8a7529ae6406cd2c
     environment:
-      CANTALOUPE_PROCESSOR_SELECTION_STRATEGY: "ManualSelectionStrategy"
-      CANTALOUPE_PROCESSOR_MANUALSELECTIONSTRATEGY_JPG: "Java2dProcessor"
       CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
       CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
       CANTALOUPE_MAX_PIXELS: 0

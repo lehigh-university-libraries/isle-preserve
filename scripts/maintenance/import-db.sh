@@ -9,10 +9,6 @@ fi
 
 F="./tmp/drupal/drupal.sql"
 
-sudo touch ./drupal.sql.gz ./drupal.sql
-current_user=$(whoami)
-sudo chown "$current_user" ./drupal.sql.gz ./drupal.sql
-
 YEAR=$(date +"%Y")
 MONTH=$(date +"%m")
 DAY=$(date +"%d")
@@ -31,10 +27,10 @@ if [ -f "${F}" ]; then
 fi
 
 if [ ! -f "${F}" ]; then
+  cd ./tmp/drupal
+  rm drupal.sql.gz drupal.sql || echo "Files didn't exist"
   scp islandora-prod.lib.lehigh.edu:"/opt/islandora/backups/$YEAR/$MONTH/$DAY/drupal.sql.gz" .
   gunzip drupal.sql.gz
-  mv drupal.sql ./tmp/drupal/
 fi
-CONTAINER=$(docker container ls --format '{{.Names}}' | grep drupal)
-docker exec $CONTAINER drush sqlq --debug --file /tmp/drupal.sql
-docker exec $CONTAINER drush cr
+docker exec lehigh-d10-drupal-1 drush sqlq --debug --file /tmp/drupal.sql
+docker exec lehigh-d10-drupal-1 drush cr
