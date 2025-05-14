@@ -32,7 +32,7 @@ $sql = "SELECT mo.field_media_of_target_id AS nid, f.uri, pmu.bundle
     AND pmu.field_media_use_target_id = :ptid
   GROUP BY mo.field_media_of_target_id";
 $d_args = [
-  ':tid' => lehigh_islandora_get_tid_by_name("Thumbnail File", "islandora_media_use"),
+  ':tid' => lehigh_islandora_get_tid_by_name("Thumbnail Image", "islandora_media_use"),
   ':ptid' => lehigh_islandora_get_tid_by_name("Original File", "islandora_media_use"),
 
 ];
