@@ -107,9 +107,11 @@ class PagedContentAggregatedPdfTest extends DerivativeTestBase {
 
     // Now that we loaded the manifest, the width/height of the service files
     // should be populated, so ensure that's the case.
-    $sql = "SELECT field_width_value, f.uri FROM media_field_data m
+    $sql = "SELECT field_width_value, f.uri
+      FROM media_field_data m
       INNER JOIN media__field_media_of mo ON m.mid = mo.entity_id
       INNER JOIN media__field_media_use mu ON m.mid = mu.entity_id
+      INNER JOIN media__field_width w ON m.mid = w.entity_id
       INNER JOIN media__field_media_file mf ON m.mid = mf.entity_id
       INNER JOIN file_managed f ON f.fid = field_media_file_target_id
       WHERE mu.field_media_use_target_id = :tid
