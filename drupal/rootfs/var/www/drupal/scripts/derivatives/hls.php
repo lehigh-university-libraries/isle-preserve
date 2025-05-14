@@ -1,19 +1,6 @@
 <?php
 
-use Drupal\Core\Session\UserSession;
-use Drupal\file\Entity\File;
-use Drupal\media\Entity\Media;
-use Drupal\user\Entity\User;
-
-$userid = 1;
-$account = User::load($userid);
-$accountSwitcher = Drupal::service('account_switcher');
-$userSession = new UserSession([
-  'uid'   => $account->id(),
-  'name'  => $account->getDisplayName(),
-  'roles' => $account->getRoles(),
-]);
-$accountSwitcher->switchTo($userSession);
+lehigh_islandora_cron_account_switcher();
 
 $entity_type_manager = \Drupal::entityTypeManager();
 $node_storage   = $entity_type_manager->getStorage('node');

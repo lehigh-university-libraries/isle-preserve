@@ -23,6 +23,7 @@ use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Drupal\lehigh_islandora\Event\MediaInsertEvent;
+use Drupal\Core\Session\UserSession;
 
 /**
  * Implements hook_help().
@@ -779,4 +780,18 @@ function lehigh_islandora_file_download($uri) {
   }
 
   return NULL;
+}
+
+/**
+ * Helper function to login as a user.
+ */
+function lehigh_islandora_cron_account_switcher($userid = 21) {
+  $account = User::load($userid);
+  $accountSwitcher = Drupal::service('account_switcher');
+  $userSession = new UserSession([
+    'uid'   => $account->id(),
+    'name'  => $account->getDisplayName(),
+    'roles' => $account->getRoles(),
+  ]);
+  $accountSwitcher->switchTo($userSession);
 }

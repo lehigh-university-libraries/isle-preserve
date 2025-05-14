@@ -11,6 +11,12 @@ $sql = "SELECT nid, f.uri FROM node_field_data n
   INNER JOIN media__field_media_file mf ON mf.entity_id = mu.entity_id
   INNER JOIN file_managed f ON f.fid = field_media_file_target_id
   WHERE field_model_target_id <> :pc
+    AND nid IN (select COALESCE(gggc.entity_id, ggc.entity_id, gc.entity_id, c.entity_id) from node__field_member_of p
+      left join node__field_member_of c ON c.field_member_of_target_id = p.entity_id
+      left join node__field_member_of gc ON gc.field_member_of_target_id = c.entity_id
+      left join node__field_member_of ggc ON ggc.field_member_of_target_id = gc.entity_id
+      left join node__field_member_of gggc ON gggc.field_member_of_target_id = ggc.entity_id
+      where p.field_member_of_target_id IN (116,128,445975,74,42,150,99))
     AND nid NOT IN (SELECT entity_id from node__embeddings)";
 $d_args = [
   ':pc' => lehigh_islandora_get_tid_by_name("Paged Content", "islandora_models")

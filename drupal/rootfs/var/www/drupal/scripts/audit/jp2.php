@@ -4,18 +4,7 @@
  * Ensure jp2 service files are valid.
  */
 
-use Drupal\Core\Session\UserSession;
-use Drupal\user\Entity\User;
-
-$userid = 21;
-$account = User::load($userid);
-$accountSwitcher = Drupal::service('account_switcher');
-$userSession = new UserSession([
-  'uid'   => $account->id(),
-  'name'  => $account->getDisplayName(),
-  'roles' => $account->getRoles(),
-]);
-$accountSwitcher->switchTo($userSession);
+lehigh_islandora_cron_account_switcher();
 
 $action_name = 'generate_a_jp2_service_file';
 $entity_type_manager = \Drupal::entityTypeManager();
