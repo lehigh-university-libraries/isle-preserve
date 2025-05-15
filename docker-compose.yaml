@@ -316,8 +316,6 @@ services:
         condition: service_started
   solr:
     image: islandora/solr:4.1.2@sha256:ea0f664203bacb097776022661969a34d0efd3855c45edb8b8f2ec6db1737a91
-    environment:
-      SOLR_MODULES: extraction,langid,ltr,analysis-extras
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
