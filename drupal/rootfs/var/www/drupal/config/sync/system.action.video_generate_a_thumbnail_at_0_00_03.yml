@@ -17,4 +17,4 @@ configuration:
   mimetype: image/jpeg
   args: '-ss 00:00:03.000 -frames 1 -vf scale=750:-2'
   scheme: public
-  path: '[date:custom:Y]-[date:custom:m]/[node:nid].jpg'
+  path: 'derivatives/thumbnail/[date:custom:Y]-[date:custom:m]/[node:nid].jpg'
