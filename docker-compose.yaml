@@ -153,7 +153,7 @@ services:
       start_period: 5s
     volumes:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
-      - ./tmp/cantaloupe:/tmp:rw
+      - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   memcached:
     image: memcached:1.6.38@sha256:a36147332a0febce5f484d48991e9a3b3aee62cd826f8e037f584d434c648712
     command: memcached -m 2048 -I 5m
