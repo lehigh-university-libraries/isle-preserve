@@ -72,7 +72,7 @@ jobs:
       url: https://wight.cc.lehigh.edu/_rollout
 
   test:
-    runs-on: self-hosted
+    runs-on: [self-hosted, isle]
     needs: [deploy-test]
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
