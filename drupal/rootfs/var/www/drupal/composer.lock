@@ -1419,16 +1419,16 @@
         },
         {
             "name": "discoverygarden/islandora_hocr",
-            "version": "v1.3.4",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/discoverygarden/islandora_hocr.git",
-                "reference": "7fe3cec5a6f69ebc623f57f7c01801c5154d654d"
+                "reference": "9dd768dc3b777c69d8e4ede78c17f85adad62afe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/discoverygarden/islandora_hocr/zipball/7fe3cec5a6f69ebc623f57f7c01801c5154d654d",
-                "reference": "7fe3cec5a6f69ebc623f57f7c01801c5154d654d",
+                "url": "https://api.github.com/repos/discoverygarden/islandora_hocr/zipball/9dd768dc3b777c69d8e4ede78c17f85adad62afe",
+                "reference": "9dd768dc3b777c69d8e4ede78c17f85adad62afe",
                 "shasum": ""
             },
             "type": "drupal-module",
@@ -1438,9 +1438,9 @@
             ],
             "support": {
                 "issues": "https://github.com/discoverygarden/islandora_hocr/issues",
-                "source": "https://github.com/discoverygarden/islandora_hocr/tree/v1.3.4"
+                "source": "https://github.com/discoverygarden/islandora_hocr/tree/v1.4.0"
             },
-            "time": "2024-07-11T12:04:05+00:00"
+            "time": "2025-05-22T16:40:03+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1690,17 +1690,17 @@
         },
         {
             "name": "drupal/admin_toolbar",
-            "version": "3.5.3",
+            "version": "3.6.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/admin_toolbar.git",
-                "reference": "3.5.3"
+                "reference": "3.6.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/admin_toolbar-3.5.3.zip",
-                "reference": "3.5.3",
-                "shasum": "363cdd6e6ca47983900f40793edf9a8b26f132bb"
+                "url": "https://ftp.drupal.org/files/projects/admin_toolbar-3.6.0.zip",
+                "reference": "3.6.0",
+                "shasum": "ee03fd8e5394525f6e0aaf19db75624fbefc5b5d"
             },
             "require": {
                 "drupal/core": "^9.5 || ^10 || ^11"
@@ -1711,8 +1711,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.5.3",
-                    "datestamp": "1740156799",
+                    "version": "3.6.0",
+                    "datestamp": "1747871747",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2454,17 +2454,17 @@
         },
         {
             "name": "drupal/controlled_access_terms",
-            "version": "2.4.4",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/controlled_access_terms.git",
-                "reference": "2.4.4"
+                "reference": "2.5.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/controlled_access_terms-2.4.4.zip",
-                "reference": "2.4.4",
-                "shasum": "47c01998bda2ebe67ff576ee78b1490e0e69b8fc"
+                "url": "https://ftp.drupal.org/files/projects/controlled_access_terms-2.5.0.zip",
+                "reference": "2.5.0",
+                "shasum": "16eb3c63a9deb69b04e21e526d2ba8ca0f5a2030"
             },
             "require": {
                 "drupal/core": "^10.2 || ^11",
@@ -2493,8 +2493,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.4.4",
-                    "datestamp": "1727894783",
+                    "version": "2.5.0",
+                    "datestamp": "1747259319",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -19489,22 +19489,22 @@
         },
         {
             "name": "phpspec/prophecy-phpunit",
-            "version": "v2.3.0",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpspec/prophecy-phpunit.git",
-                "reference": "8819516c1b489ecee4c60db5f5432fac1ea8ac6f"
+                "reference": "d3c28041d9390c9bca325a08c5b2993ac855bded"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpspec/prophecy-phpunit/zipball/8819516c1b489ecee4c60db5f5432fac1ea8ac6f",
-                "reference": "8819516c1b489ecee4c60db5f5432fac1ea8ac6f",
+                "url": "https://api.github.com/repos/phpspec/prophecy-phpunit/zipball/d3c28041d9390c9bca325a08c5b2993ac855bded",
+                "reference": "d3c28041d9390c9bca325a08c5b2993ac855bded",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.3 || ^8",
                 "phpspec/prophecy": "^1.18",
-                "phpunit/phpunit": "^9.1 || ^10.1 || ^11.0"
+                "phpunit/phpunit": "^9.1 || ^10.1 || ^11.0 || ^12.0"
             },
             "require-dev": {
                 "phpstan/phpstan": "^1.10"
@@ -19538,9 +19538,9 @@
             ],
             "support": {
                 "issues": "https://github.com/phpspec/prophecy-phpunit/issues",
-                "source": "https://github.com/phpspec/prophecy-phpunit/tree/v2.3.0"
+                "source": "https://github.com/phpspec/prophecy-phpunit/tree/v2.4.0"
             },
-            "time": "2024-11-19T13:24:17+00:00"
+            "time": "2025-05-13T13:52:32+00:00"
         },
         {
             "name": "phpstan/extension-installer",
