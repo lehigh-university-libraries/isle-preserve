@@ -162,7 +162,7 @@ services:
         bash -c "echo stats | (exec 3<>/dev/tcp/localhost/11211; cat >&3; timeout 0.1 cat <&3; exec 3<&-) | grep pid"
       start_period: 3s
   drupal: &drupal
-    image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${DRUPAL_DOCKER_TAG}
+    image: ghcr.io/lehigh-university-libraries/isle-preserve:${DRUPAL_DOCKER_TAG}
     environment: &drupal-environment
       DEVELOPMENT_ENVIRONMENT: false
       DRUPAL_DEFAULT_BROKER_URL: "tcp://activemq:61613"
@@ -264,7 +264,7 @@ services:
       test: curl -sfo /dev/null http://localhost/themes/custom/lehigh/favicon.ico
       start_period: 5s
   drupal-cron:
-    image: us-docker.pkg.dev/lehigh-preserve-isle/isle/drupal:${DRUPAL_DOCKER_TAG}
+    image: ghcr.io/lehigh-university-libraries/isle-preserve:${DRUPAL_DOCKER_TAG}
     entrypoint: /bin/bash
     command: /var/www/drupal/scripts/cron.sh
     environment:
