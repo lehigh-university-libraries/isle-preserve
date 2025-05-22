@@ -92,7 +92,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: us-docker.pkg.dev/lehigh-lts-images/public/fabricator:main
+    image: us-docker.pkg.dev/lehigh-lts-images/public/fabricator:main@sha256:6b31372a0692c01dc4ed0f0b6430f2897b2df8990d617b459c67f3fc0760a20f
     entrypoint:
       - /app/fabricator
       - --server
