@@ -385,6 +385,11 @@ services:
       - ./tmp/traefik:/tmp:rw
       - /var/run/docker.sock:/var/run/docker.sock:z
       - ./conf/traefik/challenge.tmpl.html:/challenge.tmpl.html:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+        max-file: "3"
     healthcheck:
       test: traefik healthcheck --ping
       start_period: 5s
