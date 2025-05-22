@@ -62,6 +62,16 @@
       ],
       prConcurrentLimit: 1,
     },
+    {
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackageNames: [
+        'ghcr.io/lehigh-university-libraries/docker-builds/*',
+        'us-docker.pkg.dev/lehigh-lts-images/public/fabricator',
+      ],
+      pinDigests: false,
+    }
   ],
   customManagers: [
     {
