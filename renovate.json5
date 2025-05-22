@@ -71,7 +71,7 @@
         'us-docker.pkg.dev/lehigh-lts-images/public/fabricator',
       ],
       pinDigests: false,
-    }
+    },
   ],
   customManagers: [
     {
