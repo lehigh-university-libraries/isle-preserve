@@ -362,8 +362,7 @@ services:
       --providers.docker=true
       --providers.docker.network=default
       --providers.docker.exposedByDefault=false
-      --experimental.plugins.captcha-protect.modulename=github.com/libops/captcha-protect
-      --experimental.plugins.captcha-protect.version=v1.9.2
+      --experimental.localPlugins.captcha-protect.modulename=github.com/libops/captcha-protect
       --experimental.localPlugins.static-response.moduleName=github.com/lehigh-university-libraries/static-response
     environment:
       DOMAIN: ${DOMAIN}
@@ -379,6 +378,7 @@ services:
     security_opt:
       - label=type:container_runtime_t # Required for selinux to access the docker socket.
     volumes:
+      - ./conf/traefik/plugins/captcha-protect:/plugins-local/src/github.com/libops/captcha-protect:r
       - ./conf/traefik/plugins/static-response:/plugins-local/src/github.com/lehigh-university-libraries/static-response:r
       - ./certs:/etc/ssl/traefik:Z,ro
       - ./conf/traefik/config.tmpl:/etc/traefik/config.yaml:ro
