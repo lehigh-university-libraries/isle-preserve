@@ -363,7 +363,7 @@ services:
       --providers.docker.network=default
       --providers.docker.exposedByDefault=false
       --experimental.plugins.captcha-protect.modulename=github.com/libops/captcha-protect
-      --experimental.plugins.captcha-protect.version=v1.9.1
+      --experimental.plugins.captcha-protect.version=v1.9.2
       --experimental.localPlugins.static-response.moduleName=github.com/lehigh-university-libraries/static-response
     environment:
       DOMAIN: ${DOMAIN}
