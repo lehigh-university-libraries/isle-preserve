@@ -20,7 +20,7 @@
                 "version": "4",
                 "type": "drupal-library",
                 "dist": {
-                    "url": "https://github.com/mozilla/pdf.js/releases/download/v5.2.133/pdfjs-5.2.133-dist.zip",
+                    "url": "https://github.com/mozilla/pdf.js/releases/download/v5.3.31/pdfjs-5.3.31-dist.zip",
                     "type": "zip"
                 }
             }
@@ -239,7 +239,7 @@
         "drupal/core-dev": "^11.1",
         "drupal/devel": "^5.0",
         "drupal/restui": "^1.21",
-        "palantirnet/drupal-rector": "^0.20.3",
+        "palantirnet/drupal-rector": "^0.21.0",
         "phpspec/prophecy-phpunit": "^2.1",
         "weitzman/drupal-test-traits": "^2.5"
     },
