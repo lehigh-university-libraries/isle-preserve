@@ -2,20 +2,31 @@
 
 set -eou pipefail
 
-ENV_FILES=(
-    /opt/islandora/d10_lehigh_agile/.env
-    /home/rollout/.env
-)
 
-for ENV in "${ENV_FILES[@]}"; do
-    while IFS='=' read -r key val; do
-        [[ "$key" =~ ^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG) ]] && continue
-        export "$key"="$val"
-    done < <(grep -Ev '^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG)' "$ENV")
-done
+# update .env variables
+# this is so we can shell into the dev VM
+# which may have a git branch checked out
+# and use docker compose commands
+# and not worry about overriding the current rollout
+update_env() {
+    VAR_NAME="$1"
+    VALUE="$2"
+    if grep -Eq "^${VAR_NAME}=" .env; then
+        sed -i "s/^$VAR_NAME=.*/$VAR_NAME=$VALUE/" .env
+    else
+        echo "${VAR_NAME}=${VALUE}" | tee -a .env
+    fi
+}
+
+while IFS='=' read -r key val; do
+    export "$key"="$val"
+done < <(grep -Ev '^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG)' /opt/islandora/d10_lehigh_agile/.env)
 
 GIT_BRANCH=${GIT_BRANCH:-main}
 DRUPAL_DOCKER_TAG=${DOCKER_TAG:-main}
+
+update_env "GIT_BRANCH" "${GIT_BRANCH}"
+update_env "DRUPAL_DOCKER_TAG" "${DRUPAL_DOCKER_TAG}"
 
 if [ "$HOST" = "islandora-prod" ]; then
   # safeguard to main for prod
@@ -42,10 +53,8 @@ trap 'handle_error' ERR
 
 docker_compose() {
     docker compose \
-      --env-file .env \
-      --env-file /home/rollout/.env \
       -f docker-compose.yaml \
-      -f docker-compose.$HOST.yaml \
+      -f "docker-compose.$HOST.yaml" \
       "$@"
 }
 
@@ -59,7 +68,7 @@ JIRA_TICKETS=$(git log --format="%s" HEAD..origin/main | grep -E "^IS-[0-9]+" | 
 if [ "$JIRA_TICKETS" != "" ]; then
   MSG="Changes include:\n"
   MSG+=$(echo "$JIRA_TICKETS"| sed 's/^/https:\/\/lehigh.atlassian.net\/browse\//; s/$/\\n/')
-  ESC_MSG=$(echo "$MSG" | sed 's/"/\\"/g')
+  ESC_MSG="${MSG//\"/\\\"}"
   # slack webhooks have a rate limit of 1s
   # and we already called the webhook to alert on the rollout
   # also, sometimes they are out of order so fix that

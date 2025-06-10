@@ -335,7 +335,6 @@ services:
       - /home/rollout/.ssh:/root/.ssh
       - /home/rollout/.gitconfig:/root/.gitconfig
       - /home/rollout/.docker:/root/.docker
-      - /home/rollout/.env:/home/rollout/.env
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       JWKS_URI: "https://token.actions.githubusercontent.com/.well-known/jwks"

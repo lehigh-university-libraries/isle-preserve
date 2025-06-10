@@ -10,7 +10,6 @@ Requires=rbdmap.service
 User=root
 Group=root
 Type=oneshot
-EnvironmentFile=/home/rollout/.env
 WorkingDirectory=/opt/islandora/d10_lehigh_agile
 ExecStartPre=touch /opt/islandora/d10_lehigh_agile/rollout.lock
 ExecStart=/usr/bin/docker compose -f docker-compose.yaml -f docker-compose.$HOST.yaml up -d
