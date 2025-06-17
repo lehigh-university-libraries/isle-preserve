@@ -92,6 +92,18 @@ lehigh_islandora.lehigh_islandora_vanity_fair:
       child:
         type: integer
 
+lehigh_islandora.gunn_bepress:
+  path: "/pfaffs/gunn/{id}"
+  defaults:
+    _title: "Gunn Diaries Redirect"
+    _controller: '\Drupal\lehigh_islandora\Controller\PfaffsBepressRedirects::perform'
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      id:
+        type: integer
+
 lehigh_islandora.transform_search:
   path: "/tsearch"
   defaults:
