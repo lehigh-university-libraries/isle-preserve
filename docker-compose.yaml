@@ -92,7 +92,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:5f62d8ea80a871faf641a503fe16f71464642ad2ffb279546dc9d044492fed80
+    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:b81e232616ef54215ffd8e2049179718d8fdcc7b4d1cfd943bf902a6c5c498bb
     entrypoint:
       - /app/fabricator
       - --server
