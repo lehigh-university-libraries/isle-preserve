@@ -34,19 +34,23 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-whisper
-          image: lehighlts/scyllaridae-whisper:main@sha256:1db27c1dda38463c25b57bd94709b882620e4aabb23734b054581c20c006f0e4
+          image: lehighlts/scyllaridae-whisper:main@sha256:340c4ab635f699ebd20eac639bb5fa65d0d00fdef45b5e49e1b7cd3232171036
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
             - name: "SCYLLARIDAE_YML_PATH"
               value: "/app/scyllaridae.yml"
+            - name: "WHISPER_PROCESSORS"
+              value: "2"
+            - name: "WHISPER_THREADS"
+              value: "8"
           resources:
             requests:
-              memory: "16Gi"
+              memory: "32Gi"
               cpu: "500m"
             limits:
-              memory: "16Gi"
+              memory: "32Gi"
               nvidia.com/gpu: 4
           ports:
             - containerPort: 8080
