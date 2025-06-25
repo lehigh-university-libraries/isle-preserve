@@ -6,9 +6,8 @@ services:
       ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
   coverpage:
-    image: lehighlts/scyllaridae-coverpage:main@sha256:b8eaec58603ca0cf7d7f58d12252c65f0500abd2a6446f819c3df0b8656774cc
+    image: lehighlts/scyllaridae-coverpage:main@sha256:14a444a74d5e1a3899fa2fefcb8e938570f5498b28b5f24d50aeda2796880f6e
     environment:
-      SCYLLARIDAE_YML_PATH: /app/scyllaridae.yml
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
