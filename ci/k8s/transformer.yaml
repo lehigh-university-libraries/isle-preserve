@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: sentence-transformer
-          image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:40d05bbce282d29eeaa99b5d4766621d3df74b7ab6a86e81c4ade36ff36c772c
+          image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:b1c14bf4f593ef48329ebd1a11d58f5cf32b4cda6ee64ff161db7c2025416dfc
           imagePullPolicy: IfNotPresent
           resources:
             requests:

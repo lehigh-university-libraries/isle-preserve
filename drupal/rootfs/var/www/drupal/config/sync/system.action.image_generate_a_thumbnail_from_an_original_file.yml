@@ -19,4 +19,4 @@ configuration:
   mimetype: image/jpeg
   args: '-resize 750x'
   scheme: public
-  path: '[date:custom:Y]-[date:custom:m]/[node:nid]-[term:name].jpg'
+  path: 'derivatives/thumbnail/[date:custom:Y]-[date:custom:m]/[node:nid].jpg'

@@ -74,7 +74,7 @@ final class PfaffsCdmRedirects extends ControllerBase {
         $iiif = json_decode($manifest, TRUE);
         foreach ($iiif['sequences'][0]['canvases'] as $i => $canvas) {
           if ($canvas['@id'] == $canvas_id) {
-            $options['query']['pageNumber'] = $i;
+            $options['query']['pageNumber'] = $i + 1;
             break;
           }
         }

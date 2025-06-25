@@ -69,7 +69,7 @@ http:
       priority: 20
       service: drupal-lehigh
     drupal-static:
-      rule: (Method(`POST`) && Path(`/challenge`)) || (Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`_format`, `^.*$`))
+      rule: (Method(`POST`) && Query(`challenge`, `true`)) || (Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`_format`, `^.*$`))
       entryPoints:
         - https
       tls: {}
@@ -145,11 +145,14 @@ http:
     captcha-protect:
       plugin:
         captcha-protect:
-          rateLimit: 20
+          rateLimit: 1
+          ipv4subnetMask: 8
           protectRoutes: /
           protectParameters: "true"
           exemptIps: 128.180.0.0/16
           challengeTmpl: /challenge.tmpl.html
+          challengeURL: ""
+          challengeStatusCode: 429
           captchaProvider: turnstile
           siteKey: {{ env "TURNSTILE_SITE_KEY" }}
           secretKey: {{ env "TURNSTILE_SECRET_KEY" }}
@@ -173,7 +176,6 @@ http:
             - twitter.com
             - x.com
           exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
-          ipv4subnetMask: 8
           persistentStateFile: /tmp/state.json
           protectFileExtensions: jp2,tiff,php,html
     redirect-sans:

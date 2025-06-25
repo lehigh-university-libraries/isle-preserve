@@ -64,12 +64,6 @@ usermod -aG docker rollout
 The `rollout` account also needs from files used by the islandora docker compose stack
 
 ```
-$ cat /home/rollout/.env
-PROFILE=prod
-DOMAIN=islandora-stage.lib.lehigh.edu
-SLACK_WEBHOOK="https://hooks.slack.com/triggers/**SCRUBBED**"
-HOST=islandora-test
-
 $ cat /home/rollout/.gitconfig
 [safe]
 	directory = /opt/islandora/d10_lehigh_agile
@@ -123,7 +117,7 @@ SET manages a grafana and telegraf stack to collect system level metrics on the 
 
 ## CI/CD
 
-We use a self-hosted runner to deploy into our infrastructure. The runner is on the dev server, and is running via our [github-actions-runner docker image](https://github.com/lehigh-university-libraries/docker-builds/tree/main/actions-runner). The runner docker image should only need a valid runner registration token one time during initial setup, which has already been done. If it ever needs done again, you can edit `/home/rollout/.env` on `wight.cc.lehigh.edu` and set the `--token XXX` value found at https://github.com/lehigh-university-libraries/isle-preserve/settings/actions/runners/new into the `GITHUB_RUNNER_TOKEN` variable.
+We use a self-hosted runner to deploy into our infrastructure. The runner is on the dev server, and is running via our [github-actions-runner docker image](https://github.com/lehigh-university-libraries/docker-builds/tree/main/actions-runner). The runner docker image should only need a valid runner registration token one time during initial setup, which has already been done. If it ever needs done again, you can edit `.env` on `wight.cc.lehigh.edu` and set the `--token XXX` value found at https://github.com/lehigh-university-libraries/isle-preserve/settings/actions/runners/new into the `GITHUB_RUNNER_TOKEN` variable.
 
 The dev/stage/prod servers have a deploy key set at https://github.com/lehigh-university-libraries/isle-preserve/settings/keys to allow a `git pull`. It's the SSH public key at `/home/rollout/.ssh/id_rsa.pub`. That user also needs to have GitHub in its `/home/rollout/.ssh/known_hosts` file to allow `git pull`
 

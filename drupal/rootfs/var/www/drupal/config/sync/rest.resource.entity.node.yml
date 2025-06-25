@@ -19,7 +19,10 @@ granularity: method
 configuration:
   GET:
     supported_formats:
+      - csv
       - jsonld
+      - mods
+      - workbench_csv
       - json
     supported_auth:
       - jwt_auth

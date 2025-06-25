@@ -28,7 +28,7 @@ content:
     type: image
     label: visually_hidden
     settings:
-      image_link: content
+      image_link: ''
       image_style: medium
       image_loading:
         attribute: lazy

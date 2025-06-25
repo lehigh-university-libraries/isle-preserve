@@ -132,6 +132,7 @@ field_settings:
 
 
 
+
       fields: {  }
   author:
     label: 'Author name'

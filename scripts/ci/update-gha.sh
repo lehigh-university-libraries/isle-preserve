@@ -6,7 +6,7 @@ set -eou pipefail
 /app/scripts/ci/k8s/token.sh
 
 RUNNER_CONTAINER="github-actions-runner"
-RUNNER_IMAGE="us-docker.pkg.dev/lehigh-lts-images/internal/actions-runner:main"
+RUNNER_IMAGE="ghcr.io/lehigh-university-libraries/docker-builds/actions-runner:main"
 
 docker_compose() {
     docker compose \
