@@ -5,6 +5,13 @@ services:
       ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 3
       ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
+  coverpage:
+    image: lehighlts/scyllaridae-coverpage:main@sha256:b8eaec58603ca0cf7d7f58d12252c65f0500abd2a6446f819c3df0b8656774cc
+    environment:
+      SCYLLARIDAE_YML_PATH: /app/scyllaridae.yml
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
     image: lehighlts/scyllaridae-mergepdf:main@sha256:bd6b81c2d5be1b28f77925eafcf1941b87e947d57307d66916b75eb95abf9375
     environment:
