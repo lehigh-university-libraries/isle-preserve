@@ -34,13 +34,11 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-whisper
-          image: lehighlts/scyllaridae-whisper:main@sha256:340c4ab635f699ebd20eac639bb5fa65d0d00fdef45b5e49e1b7cd3232171036
+          image: lehighlts/scyllaridae-whisper:main@sha256:e38b3a04008399475d94d68c841c7efe8a1ad9eae4c04727df5b7310a2d3dc1c
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
-            - name: "SCYLLARIDAE_YML_PATH"
-              value: "/app/scyllaridae.yml"
             - name: "WHISPER_PROCESSORS"
               value: "2"
             - name: "WHISPER_THREADS"

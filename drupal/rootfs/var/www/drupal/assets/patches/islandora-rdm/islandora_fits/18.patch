@@ -1,0 +1,22 @@
+From 651f8cfb14fca7ad7c37f885ffa7007e38f9e9ea Mon Sep 17 00:00:00 2001
+From: Joe Corall <jjc223@lehigh.edu>
+Date: Wed, 10 Apr 2024 09:55:26 -0400
+Subject: [PATCH] Remove deprecated call to utf8_encode
+
+---
+ src/Plugin/Field/FieldFormatter/FitsFormatter.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Plugin/Field/FieldFormatter/FitsFormatter.php b/src/Plugin/Field/FieldFormatter/FitsFormatter.php
+index 2a02443..93e4083 100644
+--- a/src/Plugin/Field/FieldFormatter/FitsFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/FitsFormatter.php
+@@ -81,7 +81,7 @@ protected function viewValue(FieldItemInterface $item) {
+     $link = $link->toRenderable();
+     $contents = file_get_contents($file->getFileUri());
+     if (mb_detect_encoding($contents) != 'UTF-8') {
+-      $contents = utf8_encode($contents);
++      $contents = mb_convert_encoding($contents, 'UTF-8');
+     }
+     $output = $transformer->transformFits($contents);
+     $output['#link'] = $link;
