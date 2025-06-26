@@ -1,4 +1,8 @@
 queueMiddlewares:
+  - queueName: islandora-pdf-coverpage
+    url: http://coverpage:8080
+    consumers: 1
+    forwardAuth: true
   - queueName: islandora-merge-pdf
     url: http://mergepdf:8080
     consumers: 1

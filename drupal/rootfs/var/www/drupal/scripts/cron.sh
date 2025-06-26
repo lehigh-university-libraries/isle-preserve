@@ -50,6 +50,11 @@ while true; do
   time drush --uri "$DRUPAL_DRUSH_URI/" queue:run lehigh_islandora_events
   time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/paged-content-pdf.php
   time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/jp2.php
-
+  for FILE in scripts/derivatives/*.php; do
+    if [ "$FILE" = "scripts/derivatives/action.php" ] || [ "$FILE" = "scripts/derivatives/action-rerun.php" ]; then
+      continue;
+    fi
+    time drush --uri "$DRUPAL_DRUSH_URI/" scr "$FILE" || echo "Nothing to run for $FILE"
+  done
   sleep "$DURATION"
 done
