@@ -12,20 +12,20 @@ services:
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: lehighlts/scyllaridae-mergepdf:main@sha256:bd6b81c2d5be1b28f77925eafcf1941b87e947d57307d66916b75eb95abf9375
+    image: lehighlts/scyllaridae-mergepdf:main@sha256:1e60f8d2c9bc48f93c9a6ef9cdbc853eb090e2327ef71cb217cc6d18ba9d3f59
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
-    image: lehighlts/scyllaridae-libreoffice:main@sha256:4e80a66f52bd8da2c291101f81795889e9d01fcb8211782b84b3a250067e142a
+    image: lehighlts/scyllaridae-libreoffice:main@sha256:0742a4cf76f7d9a0548060c3a5f125033b3349c5a20862d864404182d40d1794
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: lehighlts/scyllaridae-imagemagick:main@sha256:e145313e11b24b3b86066941b7eeb59cff4ebdee393dd74fdb786def3b71ab0c
+    image: lehighlts/scyllaridae-imagemagick:main@sha256:28b1b11d9788aa2e54dffe05b69a7c56e9a16574fe6ed084c827f9289d814077
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -35,7 +35,7 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   mariadb:
-    image: mariadb:11.7.2-noble@sha256:11706a6fd276c2eada52d0d69b1a2aa1f1484cbe78137678e02cca8f7a0ae502
+    image: mariadb:11.8.2-noble@sha256:1e669024fc94f626b9dc48bf47b29b5339cec203c28e61a3dc372991a345daf5
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD

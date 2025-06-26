@@ -1,0 +1,34 @@
+diff --git a/drupal_slider.libraries.yml b/drupal_slider.libraries.yml
+index bf3f258..296ea7f 100644
+--- a/drupal_slider.libraries.yml
++++ b/drupal_slider.libraries.yml
+@@ -17,6 +17,6 @@ drupal_slider.load:
+     js/ds-slider-pro-load.js: {}
+   dependencies:
+     - core/jquery
+-    - core/jquery.once
++    - core/once
+     - core/drupalSettings
+     - drupal_slider/slider.pro
+diff --git a/js/ds-slider-pro-load.js b/js/ds-slider-pro-load.js
+index 247d923..4914457 100644
+--- a/js/ds-slider-pro-load.js
++++ b/js/ds-slider-pro-load.js
+@@ -13,7 +13,7 @@
+       var orientation = values.orientation ? 'vertical' : 'horizontal';
+       var thumbnails_position = values.thumbnails_position;
+       if (values.carousel) {
+-        $('#'+values.id, context).once('drupalSliderBehavior').sliderPro({     
++        $(once('drupalSliderBehavior','#'+values.id, context)).sliderPro({    
+           arrows: arrows,
+           buttons: buttons,
+           loop: loop,
+@@ -29,7 +29,7 @@
+           visibleSize: '100%',    
+         });
+       } else {
+-        $('#'+values.id, context).once('drupalSliderBehavior').sliderPro({
++        $(once('drupalSliderBehavior','#'+values.id, context)).sliderPro({
+           width: values.width,
+           height: values.height,       
+           orientation: orientation,

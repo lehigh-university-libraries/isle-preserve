@@ -198,22 +198,22 @@
                 "Only read hocr file when indexing": "assets/patches/discoverygarden/islandora_hocr/index-only.patch"
             },
             "drupal/facets": {
-                "Allow exposed filters to work with AJAX Facets": "https://www.drupal.org/files/issues/2021-12-05/3168241-8.patch",
-                "Allow views attachments to reflect search parameters (still not working)": "https://www.drupal.org/files/issues/2022-12-12/facets-attachments-3116236-16.patch",
+                "Allow exposed filters to work with AJAX Facets": "assets/patches/drupal/facets/3168241-8.patch",
+                "Allow views attachments to reflect search parameters (still not working)": "assets/patches/drupal/facets/facets-attachments-3116236-16.patch",
                 "Show label on summary": "assets/patches/drupal/facets/summary-label.patch"
             },
             "drupal/drupal_slider": {
-                "jquery once": "https://www.drupal.org/files/issues/2024-02-16/jquery_once_fix_0.patch",
+                "jquery once": "assets/patches/drupal/drupal_slider/jquery_once_fix_0.patch",
                 "Issues 3209755": "assets/patches/drupal/drupal_slider/3209755.patch"
             },
             "drupal/islandora": {
                 "override domain": "assets/patches/drupal/islandora/event-overwrite.patch"
             },
             "islandora-rdm/islandora_fits": {
-                "Remove deprecated function call": "https://github.com/roblib/islandora_fits/pull/18.patch"
+                "Remove deprecated function call": "assets/patches/islandora-rdm/islandora_fits/18.patch"
             },
             "twistor/flysystem-stream-wrapper": {
-                "Fix php82 warning": "https://github.com/twistor/flysystem-stream-wrapper/pull/28.patch"
+                "Fix php82 warning": "assets/patches/twistor/flysystem-stream-wrapper/28.patch"
             },
             "drupal/context": {
                 "Fix str_replace warning": "assets/patches/drupal/context/str_replace.patch"
