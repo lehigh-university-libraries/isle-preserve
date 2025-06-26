@@ -39,8 +39,6 @@ spec:
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
-            - name: "SCYLLARIDAE_YML_PATH"
-              value: "/app/scyllaridae.yml"
             - name: "WHISPER_PROCESSORS"
               value: "2"
             - name: "WHISPER_THREADS"

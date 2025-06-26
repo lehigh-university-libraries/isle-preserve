@@ -38,8 +38,6 @@ spec:
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
-            - name: "SCYLLARIDAE_YML_PATH"
-              value: "/app/scyllaridae.yml"
           imagePullPolicy: IfNotPresent
           resources:
             requests:
