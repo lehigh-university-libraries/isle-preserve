@@ -13,6 +13,39 @@ if (count($nids) == 0) {
 }
 
 foreach ($nids as $nid) {
+  $queue_name = $action_name . '_' . $nid;
+
+  $insert = TRUE;
+  $data = \Drupal::database()->query('SELECT `data`
+    FROM {queue}
+    WHERE name = :name', [
+    ':name' => $queue_name,
+  ])->fetchField() ?? ['count' => 1];
+  if (is_string($data)) {
+    $insert = FALSE;
+    $data = unserialize($data);
+  }
+
+  if ($data['count'] > 3) {
+    continue;
+  }
+
+  if ($insert) {
+    \Drupal::database()->query("INSERT INTO {queue} (`name`, `data`, `expire`, `created`) VALUES
+      (:name, :data, :expires, :created)", [
+        ':name' => $queue_name,
+        ':data' => serialize($data),
+        ':expire' => 0,
+        ':created' => time(),
+      ]);
+  }
+  else {
+    \Drupal::database()->query("UPDATE {queue} SET `data` = :data WHERE name = :name", [
+        ':name' => $queue_name,
+        ':data' => serialize($data),
+      ]);
+  }
+
   try {
     $nodes = $node_storage->loadMultiple([$nid]);
   } catch (Exception $e) {
@@ -20,3 +53,9 @@ foreach ($nids as $nid) {
   }
   $action->execute(array_values($nodes));
 }
+
+// splay how long we sleep so our cron derivative replay
+// won't overwhelm the server
+$t = rand(5, 300);
+echo "Sleeping for $t\n";
+sleep($t);

@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
+
 lehigh_islandora_cron_account_switcher();
 
 $entity_type_manager = \Drupal::entityTypeManager();
@@ -67,4 +70,10 @@ foreach($rows as $nid => $mid) {
     'field_mime_type' => 'application/vnd.apple.mpegurl',
   ]);
   $media->save();
+
+  // splay how long we sleep so our cron derivative event replay
+  // won't overwhelm the server
+  $t = rand(5, 300);
+  echo "Sleeping for $t\n";
+  sleep($t);
 }
