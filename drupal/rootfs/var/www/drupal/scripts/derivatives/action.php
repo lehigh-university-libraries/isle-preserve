@@ -20,7 +20,7 @@ foreach ($nids as $nid) {
     FROM {queue}
     WHERE name = :name', [
     ':name' => $queue_name,
-  ])->fetchField() ?? ['count' => 1];
+  ])->fetchField() ?? ['count' => 0];
   if (is_string($data)) {
     $insert = FALSE;
     $data = unserialize($data);
@@ -29,6 +29,8 @@ foreach ($nids as $nid) {
   if ($data['count'] > 3) {
     continue;
   }
+
+  $data['count'] += 1;
 
   if ($insert) {
     \Drupal::database()->query("INSERT INTO {queue} (`name`, `data`, `expire`, `created`) VALUES
