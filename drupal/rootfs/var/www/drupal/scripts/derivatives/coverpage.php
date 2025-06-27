@@ -1,6 +1,10 @@
 <?php
 
 $action_name = 'digital_document_add_coverpage';
+
+// digital document items
+// that have the "add coverpage" field set to true
+// that do not have a service file
 $sql = "SELECT nmo.entity_id
   FROM node__field_member_of nmo
   INNER JOIN node__field_add_coverpage c ON c.entity_id = nmo.entity_id

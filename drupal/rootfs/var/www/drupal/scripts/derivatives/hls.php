@@ -10,12 +10,13 @@ $node_storage   = $entity_type_manager->getStorage('node');
 $file_system = \Drupal::service('file_system');
 $base_url = \Drupal::request()->getSchemeAndHttpHost();
 
+
+// audio and video items
+// that do not have a service file
 $rows = \Drupal::database()->query("SELECT field_media_of_target_id, media_of.entity_id
   FROM media__field_media_of media_of
   INNER JOIN media__field_media_use u ON u.entity_id = media_of.entity_id
-  INNER JOIN node_field_data n ON n.nid = field_media_of_target_id
-  WHERE n.status = 1
-    AND media_of.bundle IN ('audio', 'video')
+  WHERE media_of.bundle IN ('audio', 'video')
     AND field_media_use_target_id = 16
     AND field_media_of_target_id NOT IN (
       SELECT mo.field_media_of_target_id FROM media_field_data m
@@ -25,6 +26,9 @@ $rows = \Drupal::database()->query("SELECT field_media_of_target_id, media_of.en
     )
   ORDER BY media_of.entity_id")->fetchAllKeyed();
 
+if (count($rows) == 0) {
+  exit(1);
+}
 
 foreach($rows as $nid => $mid) {
   $media = Media::load($mid);
@@ -70,10 +74,4 @@ foreach($rows as $nid => $mid) {
     'field_mime_type' => 'application/vnd.apple.mpegurl',
   ]);
   $media->save();
-
-  // splay how long we sleep so our cron derivative event replay
-  // won't overwhelm the server
-  $t = rand(5, 300);
-  echo "Sleeping for $t\n";
-  sleep($t);
 }
