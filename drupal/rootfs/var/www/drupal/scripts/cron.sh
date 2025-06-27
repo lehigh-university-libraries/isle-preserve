@@ -47,6 +47,7 @@ cd /var/www/drupal || exit 1
 echo "Starting cron"
 DURATION=${DURATION:-900}
 while true; do
+  echo "$(date +"%Y-%m-%dT%H:%M:%S%z") Starting cron loop"
   time drush --uri "$DRUPAL_DRUSH_URI/" queue:run lehigh_islandora_events
   time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/paged-content-pdf.php
   time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/jp2.php
@@ -54,7 +55,18 @@ while true; do
     if [ "$FILE" = "scripts/derivatives/action.php" ] || [ "$FILE" = "scripts/derivatives/action-rerun.php" ]; then
       continue;
     fi
-    time drush --uri "$DRUPAL_DRUSH_URI/" scr "$FILE" || echo "Nothing to run for $FILE"
+    echo "$(date +"%Y-%m-%dT%H:%M:%S%z") Processing $FILE"
+    # when a derivative script has nothing to process
+    # it has a non-zero exit code. So when that happens just continue
+    # to avoid sleeping
+    time drush --uri "$DRUPAL_DRUSH_URI/" scr "$FILE" || continue
+
+    # splay how long we sleep so our cron derivative replay
+    # won't overwhelm the server
+    T=$(shuf -i 5-300 -n 1)
+    echo "Sleeping for $T";
+    sleep "$T"
   done
+  echo "$(date +"%Y-%m-%dT%H:%M:%S%z") End cron loop. Sleeping for $DURATION"
   sleep "$DURATION"
 done
