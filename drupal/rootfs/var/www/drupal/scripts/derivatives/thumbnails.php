@@ -1,6 +1,10 @@
 <?php
 
 $action_name = 'image_generate_a_thumbnail_from_an_original_file';
+
+// Media that are not audio or videos
+// i.e. mostly pdfs and images
+// that do not have a thumbnail
 $sql = "SELECT mo.field_media_of_target_id
   FROM media_field_data m
   INNER JOIN media__field_media_of mo ON m.mid = mo.entity_id

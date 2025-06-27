@@ -1,6 +1,9 @@
 <?php
 
 $action_name = 'get_vtt_from_audio';
+
+// audio or video items
+// that do not have an ocr derivative file (tid=14)
 $sql = "SELECT field_media_of_target_id
   FROM media__field_media_of media_of
   INNER JOIN media__field_media_use u ON u.entity_id = media_of.entity_id

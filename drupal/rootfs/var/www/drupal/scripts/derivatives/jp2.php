@@ -1,6 +1,9 @@
 <?php
 
 $action_name = 'generate_a_jp2_service_file';
+
+// TIFF and JP2s original files
+// that do not have a service file
 $sql = "SELECT mo.field_media_of_target_id
   FROM media_field_data m
   INNER JOIN media__field_media_of mo ON m.mid = mo.entity_id

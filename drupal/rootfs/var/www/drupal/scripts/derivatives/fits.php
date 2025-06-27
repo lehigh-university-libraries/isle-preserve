@@ -1,6 +1,10 @@
 <?php
 
 $action_name = 'generate_a_technical_metadata_derivative';
+
+// any item
+// that has original field media
+// that does not have a a FITS file
 $sql = "SELECT DISTINCT mo.field_media_of_target_id
 FROM media__field_media_of mo
 JOIN media__field_media_use mu ON mo.entity_id = mu.entity_id
