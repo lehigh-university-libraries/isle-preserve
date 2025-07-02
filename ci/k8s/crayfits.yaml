@@ -34,11 +34,13 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-crayfits
-          image: lehighlts/scyllaridae-fits:main@sha256:466ec490a22c141eb4431f26d5d02e01bcf1dc69cd6a9b997c54fa39570bc002
+          image: lehighlts/scyllaridae-fits:main@sha256:ae5e323a22fddbdd3a0fcf0d4b849f5bb8d583920056aefa41a9de918c3ffc83
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
+            - name: "FITS_URI"
+              value: "http://fits:8084/fits/examine"
           resources:
             requests:
               memory: "12Gi"
