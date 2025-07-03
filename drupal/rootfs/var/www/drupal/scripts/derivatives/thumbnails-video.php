@@ -1,10 +1,17 @@
 <?php
 
-$action_name = 'video_generate_a_thumbnail_at_0_00_03';
+use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
 
-// Video items
+lehigh_islandora_cron_account_switcher();
+
+$entity_type_manager = \Drupal::entityTypeManager();
+$node_storage   = $entity_type_manager->getStorage('node');
+$file_system = \Drupal::service('file_system');
+
+// video items
 // that do not have a thumbnail
-$sql = "SELECT mo.field_media_of_target_id
+$rows = \Drupal::database()->query("SELECT mo.field_media_of_target_id, mo.entity_id
   FROM media_field_data m
   INNER JOIN media__field_media_of mo ON m.mid = mo.entity_id
   INNER JOIN media__field_media_use mu ON m.mid = mu.entity_id
@@ -17,6 +24,56 @@ $sql = "SELECT mo.field_media_of_target_id
       INNER JOIN media__field_media_use mu ON m.mid = mu.entity_id
       WHERE mu.field_media_use_target_id = 19
     )
-  GROUP BY n.nid";
+  GROUP BY n.nid")->fetchAllKeyed();
 
-require_once __DIR__ . "/action.php";
+if (count($rows) == 0) {
+  exit(1);
+}
+
+$year = date('Y');
+$month = date('m');
+foreach($rows as $nid => $mid) {
+  $media = Media::load($mid);
+  if (!$media) {
+    continue;
+  }
+  $fileEntity = $media->get('field_media_video_file')->entity;
+  if (is_null($fileEntity)) {
+    continue;
+  }
+
+  $file = lehigh_islandora_fcrepo_realpath($fileEntity->uri->value);
+  if (!file_exists($file) || is_dir($file)) {
+    continue;
+  }
+
+  $uri = "public://derivatives/thumbnail/node/$year-$month/$nid.jpg";
+  $dir = dirname($uri);
+  $file_system->prepareDirectory($dir, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
+  $base_dir = $file_system->realpath($dir);
+
+  $escapedFile = str_replace("\$", "\\$", $file);
+  $cmd = "ffmpeg -i \"$escapedFile\" -ss 00:00:03.000 -frames 1 -vf scale=750:-2 -f image2pipe -vcodec mjpeg $base_dir/$nid.jpg";
+  exec($cmd);
+  if (!file_exists("$base_dir/$nid.jpg")) {
+    continue;
+  }
+
+  $file = File::create([
+    'filename' => "$nid.jpg",
+    'uri' => $uri,
+    'status' => 1,
+    'filemime' => 'image/jpeg',
+  ]);
+  $file->save();
+  $media = Media::create([
+    'name' => "$nid - thumbnail",
+    'bundle' => $media->bundle(),
+    'field_media_video_file' => $file->id(),
+    'field_media_of' => $nid,
+    'field_media_use' => 19,
+    'status' => 1,
+    'field_mime_type' => 'image/jpeg',
+  ]);
+  $media->save();
+}

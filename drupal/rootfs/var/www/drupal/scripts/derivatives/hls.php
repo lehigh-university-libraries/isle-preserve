@@ -51,8 +51,7 @@ foreach($rows as $nid => $mid) {
   $file_system->prepareDirectory($dir, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
   $base_dir = $file_system->realpath($dir);
 
-  $escapedFile = escapeshellarg($file);
-  $escapedFile = str_replace("\$", "\\$", $escapedFile);
+  $escapedFile = str_replace("\$", "\\$", $file);
   $cmd = "ffmpeg -i \"$escapedFile\" -vf \"format=yuv420p\" -profile:v baseline -level 3.0 -s 640x360 -start_number 0 -hls_time 10 -hls_list_size 0 -f hls -b:v 800k -maxrate 800k -bufsize 1200k -b:a 96k $base_dir/$mid.m3u8";
   exec($cmd);
   if (!file_exists("$base_dir/$mid.m3u8")) {
