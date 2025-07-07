@@ -18,6 +18,13 @@ services:
     volumes:
       - fcrepo-data:/fcrepo:r
       - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
+  drupal-lehigh:
+    environment:
+      LEHIGH_TRANSFORM_SERVICE_URI: "http://transformer:8080"
+    volumes:
+      - fcrepo-data:/fcrepo:r
+      - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
+
   fcrepo:
     volumes:
       - fcrepo-data:/data:Z,rw
