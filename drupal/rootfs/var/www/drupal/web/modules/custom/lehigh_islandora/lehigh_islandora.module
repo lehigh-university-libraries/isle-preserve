@@ -917,8 +917,7 @@ function lehigh_islandora_file_download($uri) {
         return NULL;
       }
       $ip = \Drupal::request()->getClientIp();
-      $onCampus = getenv("LEHIGH_LOCAL_RESTRICTION_ONCAMPUS") ?? '128.180.';
-      if (str_starts_with($ip, $onCampus)) {
+      if (str_starts_with($ip, '128.180.')) {
         return NULL;
       }
 

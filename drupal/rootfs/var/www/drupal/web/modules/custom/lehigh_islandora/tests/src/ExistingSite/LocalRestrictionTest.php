@@ -51,7 +51,6 @@ class LocalRestrictionTest extends ExistingSiteBase {
 
     $this->failOnPhpWatchdogMessages = FALSE;
     $this->ignoreLoggedErrors();
-    putenv('LEHIGH_LOCAL_RESTRICTION_ONCAMPUS=foo');
   }
 
   /**
