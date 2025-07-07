@@ -901,7 +901,10 @@ function lehigh_islandora_node_is_locally_restricted($node) {
 function lehigh_islandora_file_download($uri) {
   $extension = pathinfo($uri, PATHINFO_EXTENSION);
   if ($extension == 'ts') {
-    $uri = str_replace('.ts', '.m3u8', $uri);
+    $dir = dirname($uri);
+    $uri = \Drupal::database()->query("SELECT uri FROM {file_managed} WHERE uri LIKE :uri", [
+      ':uri' => $dir . '%.m3u8',
+    ])->fetchField();
   }
 
   $nids = \Drupal::database()->query("SELECT field_media_of_target_id
@@ -923,14 +926,9 @@ function lehigh_islandora_file_download($uri) {
   foreach ($nids as $nid) {
     $node = Node::load($nid);
     $restricted = lehigh_islandora_node_is_locally_restricted($node);
-    if ($restricted) {
-      if (\Drupal::currentUser()->hasPermission('administer media')) {
-        return NULL;
-      }
-      if (lehigh_islandora_on_campus()) {
-        return NULL;
-      }
-
+    if ($restricted &&
+      !\Drupal::currentUser()->hasPermission('administer media') &&
+      !lehigh_islandora_on_campus()) {
       // @todo check user field on node if current user is granted access
       return -1;
     }
@@ -959,6 +957,12 @@ function lehigh_islandora_file_download($uri) {
         ];
       }
     }
+  }
+
+  if ($extension == 'ts') {
+    return [
+      'Content-Type' => 'video/mp2t',
+    ];
   }
 
   return NULL;
