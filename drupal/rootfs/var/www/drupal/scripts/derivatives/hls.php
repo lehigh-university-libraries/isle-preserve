@@ -46,7 +46,7 @@ foreach($rows as $nid => $mid) {
     continue;
   }
 
-  $uri = "public://derivatives/hls/node/$nid/$mid.m3u8";
+  $uri = "private://derivatives/hls/node/$nid/$mid.m3u8";
   $dir = dirname($uri);
   $file_system->prepareDirectory($dir, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
   $base_dir = $file_system->realpath($dir);
