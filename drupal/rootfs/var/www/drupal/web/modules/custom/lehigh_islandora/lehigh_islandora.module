@@ -168,7 +168,6 @@ function lehigh_islandora_theme_registry_alter(array &$theme_registry) {
   $theme_registry['node_edit_form']['path'] = $module_path . '/templates';
 }
 
-
 /**
  * Implements hook_preprocess_media().
  */
@@ -925,8 +924,7 @@ function lehigh_islandora_file_download($uri) {
         return NULL;
       }
 
-      // TODO check user field on node if current user is granted access
-
+      // @todo check user field on node if current user is granted access
       return -1;
     }
   }
