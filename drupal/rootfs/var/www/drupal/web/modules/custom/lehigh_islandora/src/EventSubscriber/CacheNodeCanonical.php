@@ -142,18 +142,13 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
 
     // Only apply on the node canonical view or our collections/browse views.
     $route_name = $request->attributes->get('_route');
-    if (!in_array($route_name, ["view.homepage.page_1", "view.browse.main", "entity.node.canonical"])) {
+    if (!in_array($route_name, ["view.homepage.page_1", "view.browse.main"])) {
       return FALSE;
     }
     if ($request->attributes->has('node')) {
       $node = $request->attributes->get('node');
       if ($node instanceof NodeInterface) {
         if ($node->bundle() !== 'islandora_object') {
-          return FALSE;
-        }
-
-        // We can not cache locally restricted node views.
-        if (lehigh_islandora_node_is_locally_restricted($node)) {
           return FALSE;
         }
       }
