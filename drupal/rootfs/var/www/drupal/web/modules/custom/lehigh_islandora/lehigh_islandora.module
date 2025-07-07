@@ -175,6 +175,10 @@ function lehigh_islandora_preprocess_media(&$vars) {
   if ($vars['view_mode'] !== 'default_islandora_display') {
     return;
   }
+  if (lehigh_islandora_on_campus()) {
+    return;
+  }
+
   $media = $vars['media'];
   $node = $media->get('field_media_of')->entity;
   if (!lehigh_islandora_node_is_locally_restricted($node)) {
@@ -192,6 +196,10 @@ function lehigh_islandora_preprocess_media(&$vars) {
  * Implements hook_preprocess_block().
  */
 function lehigh_islandora_preprocess_block(&$vars) {
+  if (lehigh_islandora_on_campus()) {
+    return;
+  }
+
   if (!empty($vars['plugin_id']) && $vars['plugin_id'] == 'views_block:downloads-block_1') {
     $route_match = \Drupal::routeMatch();
     $node = $route_match->getParameter('node');
@@ -243,6 +251,9 @@ function lehigh_islandora_metatags_attachments_alter(array &$metatag_attachments
   }
 
   if (!lehigh_islandora_node_is_locally_restricted($node)) {
+    return;
+  }
+  if (lehigh_islandora_on_campus()) {
     return;
   }
 
@@ -916,8 +927,7 @@ function lehigh_islandora_file_download($uri) {
       if (\Drupal::currentUser()->hasPermission('administer media')) {
         return NULL;
       }
-      $ip = \Drupal::request()->getClientIp();
-      if (str_starts_with($ip, '128.180.')) {
+      if (lehigh_islandora_on_campus()) {
         return NULL;
       }
 
@@ -997,4 +1007,12 @@ function lehigh_islandora_get_queue_depth($name = "*") {
   }
 
   return $queues;
+}
+
+/**
+ * Check if request is coming from on-campus.
+ */
+function lehigh_islandora_on_campus() {
+  $ip = \Drupal::request()->getClientIp();
+  return str_starts_with($ip, '128.180.');
 }
