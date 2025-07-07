@@ -861,14 +861,12 @@ function lehigh_islandora_fcrepo_realpath($uri) {
  * Check if a node is locally restricted.
  */
 function lehigh_islandora_node_is_locally_restricted($node) {
-  $restricted = FALSE;
   $depth = 0;
   while ($depth < 20) {
     if (is_object($node) &&
       $node->hasField('field_local_restriction') &&
-      !$node->field_local_restriction->isEmpty()) {
-      $restricted = TRUE;
-      break;
+      $node->field_local_restriction->value) {
+      return TRUE;
     }
     // Avoid circular references causing infinite loops.
     ++$depth;
@@ -883,7 +881,7 @@ function lehigh_islandora_node_is_locally_restricted($node) {
     }
   }
 
-  return $restricted;
+  return FALSE;
 }
 
 /**
