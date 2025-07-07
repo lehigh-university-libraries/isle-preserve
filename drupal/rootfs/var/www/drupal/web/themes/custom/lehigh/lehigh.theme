@@ -403,6 +403,17 @@ function lehigh_preprocess_media(&$vars) {
   }
 
   $media = $vars['media'];
+  $node = $media->get('field_media_of')->entity;
+  if (!lehigh_islandora_on_campus() && lehigh_islandora_node_is_locally_restricted($node)) {
+    return;
+  }
+
+  if (lehigh_embargo_node_is_embargoed($node)) {
+    return;
+  }
+
+
+  $media = $vars['media'];
   // always use mirador for images
   $mirador = $media->bundle() == 'image';
 
