@@ -795,3 +795,34 @@ function lehigh_islandora_cron_account_switcher($userid = 21) {
   ]);
   $accountSwitcher->switchTo($userSession);
 }
+
+/**
+ *
+ */
+function lehigh_islandora_get_queue_depth($name = "*") {
+  $queues = [];
+  $pass = file_get_contents("/run/secrets/ACTIVEMQ_WEB_ADMIN_PASSWORD");
+  $client = new Client([
+    'base_uri' => 'http://activemq:8161',
+    'auth' => ['admin', $pass],
+  ]);
+
+  try {
+    $response = $client->get('/api/jolokia/search/org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=' . $name);
+    $searchData = json_decode($response->getBody()->getContents(), TRUE);
+    $mbeans = $searchData['value'] ?? [];
+    foreach ($mbeans as $mbean) {
+      $readResponse = $client->get('/api/jolokia/read/' . urlencode($mbean));
+      $readData = json_decode($readResponse->getBody()->getContents(), TRUE);
+
+      $queueName = explode('destinationName=', $mbean)[1];
+      $queueName = explode(',', $queueName)[0];
+      $queues[$queueName] = $readData['value']['QueueSize'] ?? NULL;
+    }
+  }
+  catch (RequestException $e) {
+    \Drupal::logger('lehigh_islandora')->error("HTTP Request failed: @err", ['@err' => $e->getMessage()]);
+  }
+
+  return $queues;
+}
