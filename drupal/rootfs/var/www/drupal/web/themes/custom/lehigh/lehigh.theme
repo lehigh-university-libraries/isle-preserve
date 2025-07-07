@@ -402,6 +402,8 @@ function lehigh_preprocess_media(&$vars) {
     return;
   }
 
+  $vars['#cache']['contexts'][] = 'on-campus';
+
   $media = $vars['media'];
   $node = $media->get('field_media_of')->entity;
   if (!lehigh_islandora_on_campus() && lehigh_islandora_node_is_locally_restricted($node)) {
