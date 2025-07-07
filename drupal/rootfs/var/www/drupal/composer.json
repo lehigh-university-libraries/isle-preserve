@@ -207,7 +207,8 @@
                 "Issues 3209755": "assets/patches/drupal/drupal_slider/3209755.patch"
             },
             "drupal/islandora": {
-                "override domain": "assets/patches/drupal/islandora/event-overwrite.patch"
+                "override domain": "assets/patches/drupal/islandora/event-overwrite.patch",
+                "ensure rel key exists": "assets/patches/drupal/islandora/1083.patch"
             },
             "islandora-rdm/islandora_fits": {
                 "Remove deprecated function call": "assets/patches/islandora-rdm/islandora_fits/18.patch"

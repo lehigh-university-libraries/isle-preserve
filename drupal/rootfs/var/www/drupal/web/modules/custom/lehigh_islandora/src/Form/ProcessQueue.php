@@ -7,12 +7,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\Queue\QueueWorkerManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Utility\Error;
-use Drupal\Core\Url;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\Core\Queue\SuspendQueueException;
-use Drupal\lehigh_islandora\Plugin\QueueWorker\IslandoraEventsCron;
 
 /**
  * Process items in the queue.
@@ -89,16 +85,77 @@ class ProcessQueue extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['info'] = [
-      '#type' => 'markup',
-      '#markup' => $this->t('<p>Submitting this form will process all events in the queue.</p>
-      <p>This will automatically be done on cron, but you can perform it manually here.</p>'),
+    $queues = lehigh_islandora_get_queue_depth();
+    $labels = [
+      'islandora-connector-whisper' => 'VTT Transcripts',
+      'islandora-merge-pdf' => 'Paged Content PDFs',
+      'islandora-openai-htr' => 'Handwritten Text OCR',
+      'islandora-connector-houdini' => 'Image derivative (e.g. thumbnails, TIFF->JP2)',
+      'islandora-pdf-coverpage' => 'Add Coverpage to PDF',
+      'islandora-connector-libreoffice' => 'Microsoft Document to PDF',
+      'islandora-connector-homarus' => 'Video thumbnail',
+      'islandora-connector-fits' => 'FITS XML generation',
+      'islandora-connector-ocr' => 'Extract OCR from image or PDF',
     ];
+    $header = [
+      'Derivative Type',
+      'Items in queue',
+    ];
+    $rows = [];
+    foreach ($labels as $queue => $label) {
+      if (empty($queues[$queue])) {
+        continue;
+      }
+      $rows[] = [
+        $label,
+        $queues[$queue],
+      ];
+    }
+    $form['information'] = [
+      '#type' => 'table',
+      '#prefix' => '<h3>Queue</h3>Items that are currently being processed',
+      '#header' => $header,
+      '#rows' => $rows,
+      '#empty' => $this->t('No items currently being processed.'),
+    ];
+
+    $results = \Drupal::database()->query('SELECT SUBSTRING(`name`, 1, LENGTH(`name`) - LENGTH(SUBSTRING_INDEX(`name`, \'_\', -1)) - 1) AS `action_name`,
+      COUNT(*) AS count
+      FROM `queue`
+      GROUP BY `action_name`');
+    $options = [];
+    $entity_type_manager = \Drupal::entityTypeManager();
+    $action_storage = $entity_type_manager->getStorage('action');
+
+    foreach ($results as $row) {
+      $action = $action_storage->load($row->action_name);
+      if (empty($action)) {
+        continue;
+      }
+      $options[] = [
+        'action' => $action->label(),
+        'count' => $row->count,
+      ];
+    }
+    $form['islandora_actions'] = [
+      '#type' => 'tableselect',
+      '#prefix' => '<br><br><h3>Deadletter queue</h3>
+      <p>Items that have been attempted before, but have failed at least once.</p>
+      <p>These likely need manual intervention/troubleshooting to resolve</p>',
+      '#header' => [
+        'action' => $this->t('Action'),
+        'count' => $this->t('Events'),
+      ],
+      '#options' => $options,
+      '#empty' => $this->t('No items in dead letter queue'),
+    ];
+
     $form['actions']['#type'] = 'actions';
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Process events'),
+      '#value' => $this->t('Process events (To be implemented)'),
       '#button_type' => 'primary',
+      '#disabled' => TRUE,
     ];
 
     return $form;
@@ -108,73 +165,6 @@ class ProcessQueue extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $queue = $this->queueFactory->get(IslandoraEventsCron::QUEUENAME);
-    $operations = [];
-    while ($event = $queue->claimItem()) {
-      $operations[] = [
-        'Drupal\lehigh_islandora\Form\ProcessQueue::processQueue',
-        [$event],
-      ];
-    }
-    $batch = [
-      'operations' => $operations,
-      'finished' => 'Drupal\lehigh_islandora\Form\ProcessQueue::batchFinished',
-      'title' => $this->t('Emitting events'),
-      'init_message' => $this->t('Event emit process is starting.'),
-      'progress_message' => $this->t('Processed @current events out of @total.'),
-      'error_message' => $this->t('Event emission has encountered an error.'),
-    ];
-
-    batch_set($batch);
-  }
-
-  /**
-   * Processes an individual queue item.
-   *
-   * @param object $event
-   *   The queue item.
-   */
-  public static function processQueue($event) {
-    $queue = \Drupal::service('queue')->get('lehigh_islandora_events');
-    $queue_worker = \Drupal::service('plugin.manager.queue_worker')->createInstance('lehigh_islandora_events');
-    try {
-      $queue_worker->processItem($event->data);
-      $queue->deleteItem($event);
-    }
-    catch (SuspendQueueException $e) {
-      $queue->releaseItem($event);
-      $logger = \Drupal::logger('lehigh_islandora');
-      Error::logException($logger, $e);
-    }
-    catch (\Exception $e) {
-      $logger = \Drupal::logger('lehigh_islandora');
-      Error::logException($logger, $e);
-    }
-  }
-
-  /**
-   * Called when the batch processing is finished.
-   *
-   * @param bool $success
-   *   Whether the batch completed successfully.
-   * @param array $results
-   *   An array of results from the batch operations.
-   * @param array $operations
-   *   An array of operations that were run.
-   */
-  public static function batchFinished($success, $results, $operations) {
-    if ($success) {
-      \Drupal::messenger()->addStatus('Successfully processed all events in the queue.');
-      return;
-    }
-
-    $url_options = [
-      'absolute' => TRUE,
-    ];
-    $t_args = [
-      ':link' => Url::fromRoute('dblog.overview', [], $url_options)->toString(),
-    ];
-    \Drupal::messenger()->addError(t('Could not emit events. Check your <a href=":link">Recent log messages</a>', $t_args));
   }
 
 }

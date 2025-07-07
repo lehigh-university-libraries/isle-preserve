@@ -1,0 +1,22 @@
+From 9b73fc769f5d041a3135624959881d72673b912f Mon Sep 17 00:00:00 2001
+From: Joe Corall <jjc223@lehigh.edu>
+Date: Thu, 3 Jul 2025 07:31:06 -0400
+Subject: [PATCH] Ensure rel key exists
+
+---
+ src/Flysystem/Adapter/FedoraAdapter.php | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/Flysystem/Adapter/FedoraAdapter.php b/src/Flysystem/Adapter/FedoraAdapter.php
+index 70997f789..4836d44e2 100644
+--- a/src/Flysystem/Adapter/FedoraAdapter.php
++++ b/src/Flysystem/Adapter/FedoraAdapter.php
+@@ -189,7 +189,7 @@ protected function getMetadataFromHeaders(Response $response) {
+     $links = Header::parse($response->getHeader('Link'));
+ 
+     foreach ($links as $link) {
+-      if ($link['rel'] == 'type' && $link[0] == '<http://www.w3.org/ns/ldp#NonRDFSource>') {
++      if (isset($link['rel']) && $link['rel'] == 'type' && $link[0] == '<http://www.w3.org/ns/ldp#NonRDFSource>') {
+         $type = 'file';
+         break;
+       }

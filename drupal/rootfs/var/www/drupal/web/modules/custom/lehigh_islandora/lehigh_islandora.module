@@ -42,6 +42,61 @@ function lehigh_islandora_help($route_name, RouteMatchInterface $route_match) {
 }
 
 /**
+ * Implements hook_cron().
+ */
+function lehigh_islandora_cron() {
+  $lock = \Drupal::lock();
+
+  $lock_id = 'lehigh_islandora_deadletter';
+
+  $results = \Drupal::database()->query('SELECT SUBSTRING(`name`, 1, LENGTH(`name`) - LENGTH(SUBSTRING_INDEX(`name`, \'_\', -1)) - 1) AS `action_name`,
+      COUNT(*) AS count
+      FROM `queue`
+      GROUP BY `action_name`');
+
+  $action_storage = \Drupal::entityTypeManager()->getStorage('action');
+  foreach ($results as $row) {
+    $action = $action_storage->load($row->action_name);
+
+    // This isn't an action we know about, continue looking.
+    if (empty($action)) {
+      continue;
+    }
+
+    // If we can't acquire a lock, it means we've already alerted the channel
+    // so bail.
+    if (!$lock->acquire($lock_id, 864000.0)) {
+      return;
+    }
+
+    $webhook_url = getenv('SLACK_WEBHOOK_LIBTECH');
+    if (!$webhook_url) {
+      return;
+    }
+
+    $payload = [
+      'msg' => 'Dead letter queue needs investigation: https://' . getenv('DRUPAL_DEFAULT_SITE_URL') . '/admin/reports/queue',
+    ];
+    try {
+      \Drupal::httpClient()->post($webhook_url, [
+        'headers' => ['Content-Type' => 'application/json'],
+        'body' => Json::encode($payload),
+      ]);
+    }
+    catch (RequestException $e) {
+      \Drupal::logger('lehigh_islandora')->error('Failed to send message to Slack: @message', ['@message' => $e->getMessage()]);
+    }
+
+    // Stop processing.
+    return;
+  }
+
+  // No items in queue
+  // release the lock so if an item is added to the queue we get an alert.
+  $lock->release($lock_id);
+}
+
+/**
  * Implements hook_xmlsitemap_link_alter().
  */
 function lehigh_islandora_xmlsitemap_link_alter(array &$link, array $context) {
@@ -794,4 +849,35 @@ function lehigh_islandora_cron_account_switcher($userid = 21) {
     'roles' => $account->getRoles(),
   ]);
   $accountSwitcher->switchTo($userSession);
+}
+
+/**
+ * Get activemq queue depth for all queues or a specific queue.
+ */
+function lehigh_islandora_get_queue_depth($name = "*") {
+  $queues = [];
+  $pass = file_get_contents("/run/secrets/ACTIVEMQ_WEB_ADMIN_PASSWORD");
+  $client = new Client([
+    'base_uri' => 'http://activemq:8161',
+    'auth' => ['admin', $pass],
+  ]);
+
+  try {
+    $response = $client->get('/api/jolokia/search/org.apache.activemq:type=Broker,brokerName=localhost,destinationType=Queue,destinationName=' . $name);
+    $searchData = json_decode($response->getBody()->getContents(), TRUE);
+    $mbeans = $searchData['value'] ?? [];
+    foreach ($mbeans as $mbean) {
+      $readResponse = $client->get('/api/jolokia/read/' . urlencode($mbean));
+      $readData = json_decode($readResponse->getBody()->getContents(), TRUE);
+
+      $queueName = explode('destinationName=', $mbean)[1];
+      $queueName = explode(',', $queueName)[0];
+      $queues[$queueName] = $readData['value']['QueueSize'] ?? NULL;
+    }
+  }
+  catch (RequestException $e) {
+    \Drupal::logger('lehigh_islandora')->error("HTTP Request failed: @err", ['@err' => $e->getMessage()]);
+  }
+
+  return $queues;
 }
