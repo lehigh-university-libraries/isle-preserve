@@ -168,6 +168,42 @@ function lehigh_islandora_theme_registry_alter(array &$theme_registry) {
   $theme_registry['node_edit_form']['path'] = $module_path . '/templates';
 }
 
+
+/**
+ * Implements hook_preprocess_media().
+ */
+function lehigh_islandora_preprocess_media(&$vars) {
+  if ($vars['view_mode'] !== 'default_islandora_display') {
+    return;
+  }
+  $media = $vars['media'];
+  $node = $media->get('field_media_of')->entity;
+  if (!lehigh_islandora_node_is_locally_restricted($node)) {
+    return;
+  }
+
+  $vars['content'] = [
+    '#markup' => '<div class="alert alert-warning" role="alert">
+      This file is locally restricted to on-campus only. Please <a href="/contact-support">contact us</a> for access.
+    </div>',
+  ];
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function lehigh_islandora_preprocess_block(&$vars) {
+  if (!empty($vars['plugin_id']) && $vars['plugin_id'] == 'views_block:downloads-block_1') {
+    $route_match = \Drupal::routeMatch();
+    $node = $route_match->getParameter('node');
+    if (lehigh_islandora_node_is_locally_restricted($node)) {
+      $vars['content'] = [];
+      $vars['label'] = '';
+      return;
+    }
+  }
+}
+
 /**
  * Implements hook_metatags_attachments_alter().
  */
@@ -175,6 +211,10 @@ function lehigh_islandora_metatags_attachments_alter(array &$metatag_attachments
   // See if the node, or one of the parents in the hierarchy,
   // have google scholar metatags set to be hidden.
   $node = \Drupal::routeMatch()->getParameter('node');
+  if (!$node || !is_object($node) || $node->bundle() !== 'islandora_object') {
+    return;
+  }
+
   if ($node && is_object($node) && $node->bundle() === 'islandora_object') {
     $depth = 0;
     while ($depth < 20 && $node->hasField('field_hide_gscholar_metatags')) {
@@ -200,6 +240,16 @@ function lehigh_islandora_metatags_attachments_alter(array &$metatag_attachments
       else {
         break;
       }
+    }
+  }
+
+  if (!lehigh_islandora_node_is_locally_restricted($node)) {
+    return;
+  }
+
+  foreach ($metatag_attachments['#attached']['html_head'] as $id => $attachment) {
+    if ($attachment[1] == 'citation_pdf_url') {
+      unset($metatag_attachments['#attached']['html_head'][$id]);
     }
   }
 }
@@ -809,13 +859,82 @@ function lehigh_islandora_fcrepo_realpath($uri) {
 }
 
 /**
+ * Check if a node is locally restricted.
+ */
+function lehigh_islandora_node_is_locally_restricted($node) {
+  $restricted = FALSE;
+  $depth = 0;
+  while ($depth < 20) {
+    if (is_object($node) &&
+      $node->hasField('field_local_restriction') &&
+      !$node->field_local_restriction->isEmpty()) {
+      $restricted = TRUE;
+      break;
+    }
+    // Avoid circular references causing infinite loops.
+    ++$depth;
+
+    // @todo use recursion for multi-valued field_member_of
+    // right now that isn't a thing here at Lehigh.
+    if ($node->hasField('field_member_of') && !$node->field_member_of->isEmpty()) {
+      $node = $node->field_member_of->entity;
+    }
+    else {
+      break;
+    }
+  }
+
+  return $restricted;
+}
+
+/**
  * Implements hook_file_download().
  */
 function lehigh_islandora_file_download($uri) {
+  $extension = pathinfo($uri, PATHINFO_EXTENSION);
+  if ($extension == 'ts') {
+    $uri = str_replace('.ts', '.m3u8', $uri);
+  }
+
+  $nids = \Drupal::database()->query("SELECT field_media_of_target_id
+    FROM {file_managed} f
+    LEFT JOIN {media__field_media_audio_file} a ON field_media_audio_file_target_id = f.fid
+    LEFT JOIN {media__field_media_document} d ON field_media_document_target_id = f.fid
+    LEFT JOIN {media__field_media_file} mf ON field_media_file_target_id = f.fid
+    LEFT JOIN {media__field_media_image} i ON field_media_image_target_id = f.fid
+    LEFT JOIN {media__field_media_video_file} v ON field_media_video_file_target_id = f.fid
+    INNER JOIN {media__field_media_of} m ON
+      m.entity_id = a.entity_id OR
+      m.entity_id = d.entity_id OR
+      m.entity_id = mf.entity_id OR
+      m.entity_id = i.entity_id OR
+      m.entity_id = v.entity_id
+    WHERE uri = :uri", [
+      ':uri' => $uri,
+    ])->fetchCol();
+  foreach ($nids as $nid) {
+    $node = Node::load($nid);
+    $restricted = lehigh_islandora_node_is_locally_restricted($node);
+    if ($restricted) {
+      if (\Drupal::currentUser()->hasPermission('administer media')) {
+        return NULL;
+      }
+      $ip = \Drupal::request()->getClientIp();
+      $onCampus = getenv("LEHIGH_LOCAL_RESTRICTION_ONCAMPUS") ?? '128.180.';
+      if (str_starts_with($ip, $onCampus)) {
+        return NULL;
+      }
+
+      // TODO check user field on node if current user is granted access
+
+      return -1;
+    }
+  }
+
   // Make sure OCR is viewable for published node/media.
   $scheme = StreamWrapperManager::getScheme($uri);
   if ($scheme == 'private') {
-    $mid = \Drupal::database()->query('SELECT mf.entity_id from file_managed f
+    $nid = \Drupal::database()->query('SELECT field_media_of_target_id from file_managed f
       INNER JOIN media__field_media_file mf ON field_media_file_target_id = f.fid
       INNER JOIN media__field_media_use mu ON mu.entity_id = mf.entity_id
       INNER JOIN media__field_media_of mo ON mo.entity_id = mf.entity_id
@@ -827,10 +946,13 @@ function lehigh_islandora_file_download($uri) {
         AND uri = :uri', [
           ':uri' => $uri,
         ])->fetchField();
-    if ($mid) {
-      return [
-        'Content-Type' => 'text/plain',
-      ];
+    if ($nid) {
+      $node = Node::load($nid);
+      if (!lehigh_embargo_node_is_embargoed($node)) {
+        return [
+          'Content-Type' => 'text/plain',
+        ];
+      }
     }
   }
 

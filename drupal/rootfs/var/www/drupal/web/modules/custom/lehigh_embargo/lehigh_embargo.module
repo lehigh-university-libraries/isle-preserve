@@ -98,6 +98,10 @@ function lehigh_embargo_node_is_embargoed($node) {
  * Implements hook_file_download().
  */
 function lehigh_embargo_file_download($uri) {
+  $extension = pathinfo($uri, PATHINFO_EXTENSION);
+  if ($extension == 'ts') {
+    $uri = str_replace('.ts', '.m3u8', $uri);
+  }
   $nodes = \Drupal::database()->query("SELECT field_media_of_target_id, field_edtf_date_embargo_value
     FROM {file_managed} f
     LEFT JOIN {media__field_media_audio_file} a ON field_media_audio_file_target_id = f.fid
