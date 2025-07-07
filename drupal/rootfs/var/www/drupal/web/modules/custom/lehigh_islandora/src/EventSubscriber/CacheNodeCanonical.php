@@ -147,8 +147,15 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
     }
     if ($request->attributes->has('node')) {
       $node = $request->attributes->get('node');
-      if ($node instanceof NodeInterface && $node->bundle() !== 'islandora_object') {
-        return FALSE;
+      if ($node instanceof NodeInterface) {
+        if ($node->bundle() !== 'islandora_object') {
+          return FALSE;
+        }
+
+        // We can not cache locally restricted node views.
+        if (lehigh_islandora_node_is_locally_restricted($node)) {
+          return FALSE;
+        }
       }
     }
 
