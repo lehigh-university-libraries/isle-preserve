@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\lehigh_embargo\ExistingSite;
+namespace Drupal\Tests\lehigh_islandora\ExistingSite;
 
 use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
@@ -17,7 +17,7 @@ class LocalRestrictionTest extends ExistingSiteBase {
   use NodeCreationTrait;
 
   /**
-   * The embargoes file.
+   * The pdf file.
    *
    * @var \Drupal\file\FileInterface
    */
