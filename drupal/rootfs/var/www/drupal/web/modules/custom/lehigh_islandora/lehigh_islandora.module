@@ -927,7 +927,6 @@ function lehigh_islandora_file_download($uri) {
     $node = Node::load($nid);
     $restricted = lehigh_islandora_node_is_locally_restricted($node);
     if ($restricted &&
-      !\Drupal::currentUser()->hasPermission('administer media') &&
       !lehigh_islandora_on_campus()) {
       // @todo check user field on node if current user is granted access
       return -1;
@@ -1018,5 +1017,5 @@ function lehigh_islandora_get_queue_depth($name = "*") {
  */
 function lehigh_islandora_on_campus() {
   $ip = \Drupal::request()->getClientIp();
-  return str_starts_with($ip, '128.180.');
+  return \Drupal::currentUser()->hasPermission('administer media') || str_starts_with($ip, '128.180.');
 }
