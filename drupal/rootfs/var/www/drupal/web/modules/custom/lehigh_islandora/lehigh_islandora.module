@@ -797,7 +797,7 @@ function lehigh_islandora_cron_account_switcher($userid = 21) {
 }
 
 /**
- *
+ * Get activemq queue depth for all queues or a specific queue.
  */
 function lehigh_islandora_get_queue_depth($name = "*") {
   $queues = [];
