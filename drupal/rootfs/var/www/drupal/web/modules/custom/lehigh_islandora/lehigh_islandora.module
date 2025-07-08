@@ -804,6 +804,7 @@ function lehigh_islandora_node_is_locally_restricted($node) {
  */
 function lehigh_islandora_file_download($uri) {
   $admin = \Drupal::currentUser()->hasPermission('administer media');
+  $anon = \Drupal::currentUser()->isAnonymous();
 
   // We store HLS files in private://derivatives/hls/node/{nid}/{mid}.m3u8
   // and we do not create file/media entities for ts files
@@ -816,10 +817,10 @@ function lehigh_islandora_file_download($uri) {
     $uri = \Drupal::database()->query("SELECT uri FROM {file_managed} WHERE uri LIKE :uri", [
       ':uri' => $dir . '%.m3u8',
     ])->fetchField();
-    if ($uri) {
+    if ($uri && $anon) {
       $cache_key = "islandora_hls_" . md5($uri);
       $c = $cache->get($cache_key);
-      if (!$admin && $c && !empty($c->data)) {
+      if ($c && !empty($c->data)) {
         return $c->data;
       }
       $cache->set($cache_key, -1);
@@ -873,9 +874,11 @@ function lehigh_islandora_file_download($uri) {
   // so it's up to this logic to grant access
   // since we are not creating media/files for these file types.
   if ($access && $extension == 'ts') {
-    $cache->set($cache_key, [
-      'Content-Type' => 'video/mp2t',
-    ]);
+    if ($anon) {
+      $cache->set($cache_key, [
+        'Content-Type' => 'video/mp2t',
+      ]);
+    }
     return [
       'Content-Type' => 'video/mp2t',
     ];
