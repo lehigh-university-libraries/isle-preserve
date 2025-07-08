@@ -98,13 +98,6 @@ services:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
-  cache-warmer:
-    image: lehighlts/scyllaridae-cache-warmer:main@sha256:555fef4fd3bccdd8bc45640facc2712b2b57b4cabc0a1e735c0161c52d261f0f
-    environment:
-      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
-      DRUPAL_URL: "https://${DOMAIN}"
-    volumes:
-      - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
     image: lehighlts/scyllaridae-mergepdf:main@sha256:1e60f8d2c9bc48f93c9a6ef9cdbc853eb090e2327ef71cb217cc6d18ba9d3f59
     environment:
