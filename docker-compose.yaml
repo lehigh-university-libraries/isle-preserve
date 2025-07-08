@@ -79,6 +79,7 @@ services:
       ALPACA_DERIVATIVE_OCRPDF_URL: https://isle-microservices.cc.lehigh.edu/ocrpdf
       ALPACA_DERIVATIVE_HTR_URL: https://isle-microservices.cc.lehigh.edu/openai-htr
       ALPACA_DERIVATIVE_CLEAN_PDF_URL: https://isle-microservices.cc.lehigh.edu/cleanpdf
+      ROLLOUT: 20250708
     secrets:
       - source: ALPACA_JMS_PASSWORD
       - source: CERT_AUTHORITY
@@ -117,6 +118,8 @@ services:
       - mariadb-data:/var/lib/mysql:Z,rZ
   parry:
     image: lehighlts/scyllaridae-parry:main@sha256:99feb59b3fb16795fa0342dbb39ca610513d14db3935eb42c15f642b8f90313a
+    environment:
+      ROLLOUT: 20250708
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
       - ./conf/parry/scyllaridae.yml:/app/scyllaridae.yml:r
