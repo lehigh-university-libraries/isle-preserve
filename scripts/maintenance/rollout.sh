@@ -116,13 +116,15 @@ docker_compose up \
 
 send_slack_message "Roll out complete 🎉"
 
-if [ "$HOST" = "islandora-prod" ]; then
-  sleep 10
-  # flush the cache for all authenticated users (everything except /var/www/drupal/private/canonical/0)
-  docker compose exec drupal find /var/www/drupal/private/canonical/preserve.lehigh.edu -maxdepth 1 -type d -regex '.*/[1-9]\([0-9]*\)' -exec rm -rf {} \;
-  docker compose exec drupal drush scr scripts/performance/cache-warmer.php
-else
-  docker compose exec drupal drush cim -y || echo "drush cim failed"
+if [ "$HOST" != "islandora-prod" ]; then
+  docker compose exec drupal drush cim -y || echo "drush config import failed"
+
+  # remove dangling branches
+  if [ "$GIT_BRANCH" = "main" ]; then
+    git branch | grep -v "main" | xargs git branch -D
+  fi
+
+  # splay a docker system prune to keep filesystem clean
   if [ "$(( RANDOM % 10 ))" -eq 0 ]; then
     docker system prune -af
   fi

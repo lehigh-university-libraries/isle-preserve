@@ -5,20 +5,15 @@
  * Contains lehigh_islandora.module.
  */
 
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
-use Drupal\islandora\Event\StompHeaderEvent;
-use Drupal\islandora\Event\StompHeaderEventException;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\user\Entity\User;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
-use Stomp\Exception\StompException;
-use Stomp\Transport\Message;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Client;
@@ -565,98 +560,6 @@ function lehigh_islandora_clear_disk_cache(EntityInterface $node) {
       $pattern = $canonical_dir . $alias . "/*.html";
       array_map('unlink', glob($pattern));
     }
-    lehigh_islandora_warm_cache($nid);
-  }
-}
-
-/**
- * Warm cache for a node.
- */
-function lehigh_islandora_warm_cache($nid) {
-  $node = Node::load($nid);
-  if (!$node) {
-    return;
-  }
-
-  $eventGenerator = \Drupal::service('islandora.eventgenerator');
-  $stomp = \Drupal::service('islandora.stomp');
-  $logger = \Drupal::logger('lehigh_islandora');
-  $eventDispatcher = Drupal::service('event_dispatcher');
-
-  try {
-    $account = User::load(\Drupal::currentUser()->id());
-    $data = [
-      'queue' => 'islandora-cache-warmer',
-      'event' => 'Create',
-    ];
-
-    $event = $eventDispatcher->dispatch(
-      new StompHeaderEvent($node, $account, $data, $data),
-      StompHeaderEvent::EVENT_NAME
-    );
-
-    $json = $eventGenerator->generateEvent($node, $account, $data);
-    $eventMessage = json_decode($json);
-    // Add the special target to crawl this node.
-    $eventMessage->target = $node->toUrl()->setAbsolute()->toString();
-    $json = json_encode($eventMessage);
-    $message = new Message(
-      $json,
-      $event->getHeaders()->all()
-    );
-  }
-  catch (StompHeaderEventException $e) {
-    $logger->error($e->getMessage());
-    return;
-  }
-  catch (StompException $e) {
-    $logger->error("Unable to connect to JMS Broker: @msg", ["@msg" => $e->getMessage()]);
-    return;
-  }
-  catch (\RuntimeException $e) {
-    $logger->error('Error generating event: @msg', ['@msg' => $e->getMessage()]);
-    return;
-  }
-
-  // Send the message.
-  try {
-    $stomp->begin();
-    $stomp->send("islandora-cache-warmer", $message);
-    $stomp->commit();
-  }
-  catch (StompException $e) {
-    // Log it.
-    $logger->error(
-      'Error publishing message: @msg',
-      ['@msg' => $e->getMessage()]
-    );
-  }
-
-  // Also cache the IIIF manifest.
-  if ($node->hasField('field_model') && !$node->field_model->isEmpty()
-    && !is_null($node->field_model->entity)) {
-    $model = $node->field_model->entity->label();
-    $iiif_url = "[node:url:unaliased:absolute]/manifest";
-    if (in_array($model, ['Publication Issue', 'Paged Content'])) {
-      $iiif_url = "[node:url:unaliased:absolute]/book-manifest";
-    }
-    $eventMessage->target = \Drupal::service('token')->replace($iiif_url, ['node' => $node]);
-    $json = json_encode($eventMessage);
-    $message = new Message(
-      $json,
-      $event->getHeaders()->all()
-    );
-    try {
-      $stomp->begin();
-      $stomp->send("islandora-cache-warmer", $message);
-      $stomp->commit();
-    }
-    catch (StompException $e) {
-      $logger->error(
-        'Error publishing message: @msg',
-        ['@msg' => $e->getMessage()]
-      );
-    }
   }
 }
 
@@ -900,6 +803,9 @@ function lehigh_islandora_node_is_locally_restricted($node) {
  * Implements hook_file_download().
  */
 function lehigh_islandora_file_download($uri) {
+  // We store HLS files in private://derivatives/hls/node/{nid}/{mid}.m3u8
+  // and we do not create file/media entities for ts files
+  // so map the ts files to their parent m3u8 file for access lookups.
   $extension = pathinfo($uri, PATHINFO_EXTENSION);
   if ($extension == 'ts') {
     $dir = dirname($uri);
@@ -924,14 +830,41 @@ function lehigh_islandora_file_download($uri) {
     WHERE uri = :uri", [
       ':uri' => $uri,
     ])->fetchCol();
+  $admin = \Drupal::currentUser()->hasPermission('administer media');
+  $access = TRUE;
   foreach ($nids as $nid) {
     $node = Node::load($nid);
-    $restricted = lehigh_islandora_node_is_locally_restricted($node);
-    if ($restricted &&
+    if (!$node) {
+      \Drupal::logger('lehigh_islandora')->notice('Bad field_media_of for nid=@nid uri=@uri', [
+        '@nid' => $nid,
+        '@uri' => $uri,
+      ]);
+      continue;
+    }
+
+    if (!$admin && lehigh_embargo_node_is_embargoed($node)) {
+      return -1;
+    }
+
+    if (lehigh_islandora_node_is_locally_restricted($node) &&
       !lehigh_islandora_on_campus()) {
       // @todo check user field on node if current user is granted access
       return -1;
     }
+
+    if (!$node->access()) {
+      $access = FALSE;
+    }
+  }
+
+  // This TS file is not embargoed or locally restricted
+  // and none of the nodes it's a media of are unpublished
+  // so it's up to this logic to grant access
+  // since we are not creating media/files for these file types.
+  if ($access && $extension == 'ts') {
+    return [
+      'Content-Type' => 'video/mp2t',
+    ];
   }
 
   // Make sure OCR is viewable for published node/media.
@@ -951,18 +884,10 @@ function lehigh_islandora_file_download($uri) {
         ])->fetchField();
     if ($nid) {
       $node = Node::load($nid);
-      if (!lehigh_embargo_node_is_embargoed($node)) {
-        return [
-          'Content-Type' => 'text/plain',
-        ];
-      }
+      return [
+        'Content-Type' => 'text/plain',
+      ];
     }
-  }
-
-  if ($extension == 'ts') {
-    return [
-      'Content-Type' => 'video/mp2t',
-    ];
   }
 
   return NULL;

@@ -48,9 +48,9 @@ echo "Starting cron"
 DURATION=${DURATION:-900}
 while true; do
   echo "$(date +"%Y-%m-%dT%H:%M:%S%z") Starting cron loop"
-  time drush --uri "$DRUPAL_DRUSH_URI/" queue:run lehigh_islandora_events
-  time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/paged-content-pdf.php
-  time drush --uri "$DRUPAL_DRUSH_URI/" scr scripts/audit/jp2.php
+  time drush queue:run lehigh_islandora_events
+  time drush scr scripts/audit/paged-content-pdf.php
+  time drush scr scripts/audit/jp2.php
   for FILE in scripts/derivatives/*.php; do
     if [ "$FILE" = "scripts/derivatives/action.php" ] || [ "$FILE" = "scripts/derivatives/action-rerun.php" ]; then
       continue;
@@ -59,7 +59,7 @@ while true; do
     # when a derivative script has nothing to process
     # it has a non-zero exit code. So when that happens just continue
     # to avoid sleeping
-    time drush --uri "$DRUPAL_DRUSH_URI/" scr "$FILE" || continue
+    time drush scr "$FILE" || continue
 
     # splay how long we sleep so our cron derivative replay
     # won't overwhelm the server

@@ -37,6 +37,11 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
     $path = $request->getPathInfo();
     $file_path = self::getCachedFilePath($request, $path);
     if (file_exists($file_path)) {
+      // Mark the cached response as stale after 1d.
+      if ((time() - filemtime($file_path)) > 86400) {
+        return;
+      }
+
       $file_contents = file_get_contents($file_path);
       $response = new Response($file_contents, Response::HTTP_OK);
       $response->headers->set('Link', '<https://preserve.lehigh.edu/' . $path . '>; rel="canonical"');
@@ -140,15 +145,18 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
       return FALSE;
     }
 
-    // Only apply on the node canonical view or our collections/browse views.
+    // Only apply on the the homepage, collections/browse Views, and canonical node URIs.
     $route_name = $request->attributes->get('_route');
-    if (!in_array($route_name, ["view.homepage.page_1", "view.browse.main"])) {
+    if (!in_array($route_name, ["view.homepage.page_1", "view.browse.main", "entity.node.canonical"])) {
       return FALSE;
     }
     if ($request->attributes->has('node')) {
       $node = $request->attributes->get('node');
       if ($node instanceof NodeInterface) {
         if ($node->bundle() !== 'islandora_object') {
+          return FALSE;
+        }
+        if (lehigh_islandora_node_is_locally_restricted($node)) {
           return FALSE;
         }
       }

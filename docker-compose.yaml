@@ -79,6 +79,7 @@ services:
       ALPACA_DERIVATIVE_OCRPDF_URL: https://isle-microservices.cc.lehigh.edu/ocrpdf
       ALPACA_DERIVATIVE_HTR_URL: https://isle-microservices.cc.lehigh.edu/openai-htr
       ALPACA_DERIVATIVE_CLEAN_PDF_URL: https://isle-microservices.cc.lehigh.edu/cleanpdf
+      ROLLOUT: 20250708
     secrets:
       - source: ALPACA_JMS_PASSWORD
       - source: CERT_AUTHORITY
@@ -117,6 +118,8 @@ services:
       - mariadb-data:/var/lib/mysql:Z,rZ
   parry:
     image: lehighlts/scyllaridae-parry:main@sha256:99feb59b3fb16795fa0342dbb39ca610513d14db3935eb42c15f642b8f90313a
+    environment:
+      ROLLOUT: 20250708
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
       - ./conf/parry/scyllaridae.yml:/app/scyllaridae.yml:r
@@ -175,7 +178,6 @@ services:
       DRUPAL_DEFAULT_NAME: "Islandora Digital Collections"
       DRUPAL_DEFAULT_PROFILE: "minimal"
       DRUPAL_DEFAULT_SITE_URL: "${DOMAIN}"
-      DRUPAL_DRUSH_URI: "https://${DOMAIN}"
       DRUSH_OPTIONS_URI: "https://${DOMAIN}"
       NGINX_REAL_IP_RECURSIVE: ${REVERSE_PROXY}
       NGINX_SET_REAL_IP_FROM: ${FRONTEND_IP_1}
@@ -252,12 +254,13 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.28.0@sha256:eaa7e36decc3421fc04478c586dfea0d931cebe47d5bc0b15d758a32ba51126f
+    image: nginx:1.29.0@sha256:93230cd54060f497430c7a120e2347894846a81b6a5dd2110f7362c5423b4abc
     restart: always
     environment:
       ROLLOUT: 20250423
     volumes:
       - /opt/islandora/volumes/drupal-private-files/canonical/$DOMAIN/0:/usr/share/nginx/drupal:ro
+      - /opt/islandora/volumes/drupal-private-files/iiif/$DOMAIN/294de3557d9d00b3d2d8a1e6aab028cf:/usr/share/nginx/iiif:ro
       - ./tmp/drupal/web:/var/www/drupal/web:rw
       - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:ro
       - ./conf/nginx/static.conf:/etc/nginx/conf.d/default.conf:ro
@@ -345,7 +348,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.4.1@sha256:cd40ab7bc1f047731d5b22595203812343efcb6538014c4e93221cfc3a77217a
+    image: traefik:v3.4.3@sha256:f3de2b96ec6b1cc987619c4d1d65d7e8140862eb0bbfc5f0e2e563691e8787d8
     restart: always
     command: >-
       --api.insecure=true

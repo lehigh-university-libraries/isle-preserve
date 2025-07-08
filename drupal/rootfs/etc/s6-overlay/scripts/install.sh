@@ -9,13 +9,13 @@ readonly SITE="default"
 
 function configure {
     # Starter site post install steps.
-    drush --root=/var/www/drupal --uri="${DRUPAL_DRUSH_URI}" cache:rebuild
-    drush --root=/var/www/drupal --uri="${DRUPAL_DRUSH_URI}" user:role:add fedoraadmin admin
-    drush --root=/var/www/drupal --uri="${DRUPAL_DRUSH_URI}" pm:uninstall pgsql sqlite
-    drush --root=/var/www/drupal --uri="${DRUPAL_DRUSH_URI}" migrate:import --userid=1 islandora_tags,islandora_defaults_tags,islandora_fits_tags
-    drush --root=/var/www/drupal --uri="${DRUPAL_DRUSH_URI}" cron || true
-    drush --root=/var/www/drupal --uri="${DRUPAL_DRUSH_URI}" search-api:index || true
-    drush --root=/var/www/drupal --uri="${DRUPAL_DRUSH_URI}" cache:rebuild
+    drush --root=/var/www/drupal cache:rebuild
+    drush --root=/var/www/drupal user:role:add fedoraadmin admin
+    drush --root=/var/www/drupal pm:uninstall pgsql sqlite
+    drush --root=/var/www/drupal migrate:import --userid=1 islandora_tags,islandora_defaults_tags,islandora_fits_tags
+    drush --root=/var/www/drupal cron || true
+    drush --root=/var/www/drupal search-api:index || true
+    drush --root=/var/www/drupal cache:rebuild
 }
 
 function install {

@@ -1,6 +1,3 @@
-# @file
-# Drupal information about the Agile Theme
-# Replace “themename” in property values with theme key name
 name: "Lehigh Digital Collections Theme"
 type: theme
 description: "Based on the Stop14 Theme Builder."

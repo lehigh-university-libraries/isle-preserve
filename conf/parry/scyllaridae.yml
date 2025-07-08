@@ -3,10 +3,6 @@ queueMiddlewares:
     url: https://isle-microservices.cc.lehigh.edu/coverpage
     consumers: 3
     forwardAuth: true
-  - queueName: islandora-cache-warmer
-    url: https://isle-microservices.cc.lehigh.edu/cache-warmer
-    consumers: 3
-    noPut: true
   - queueName: islandora-merge-pdf
     url: https://isle-microservices.cc.lehigh.edu/mergepdf
     consumers: 3
