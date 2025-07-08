@@ -258,6 +258,7 @@ services:
       ROLLOUT: 20250423
     volumes:
       - /opt/islandora/volumes/drupal-private-files/canonical/$DOMAIN/0:/usr/share/nginx/drupal:ro
+      - /opt/islandora/volumes/drupal-private-files/iiif/$DOMAIN/294de3557d9d00b3d2d8a1e6aab028cf:/usr/share/nginx/iiif:ro
       - ./tmp/drupal/web:/var/www/drupal/web:rw
       - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:ro
       - ./conf/nginx/static.conf:/etc/nginx/conf.d/default.conf:ro
