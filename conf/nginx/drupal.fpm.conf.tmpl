@@ -1,15 +1,3 @@
-location ^~ /sites/default/files/styles/islandora_imagecache_image_style {
-    return 404;
-}
-location ^~ /sites/preserve/files/styles/islandora_imagecache_image_style {
-    return 404;
-}
-
-# block bad bots
-if ($http_user_agent ~ (Scrapy|ImagesiftBot|YandexBot|Bytespider|Sogou|SemrushBot|AcademicBotRTU|PetalBot|GPTBot|DataForSeoBot|test-bot) ) {
-  return 403;
-}
-
 # In Drupal 8, we must also match new paths where the '.php' appears in
 # the middle, such as update.php/selection. The rule we use is strict,
 # and only allows this pattern with the update.php front controller.
