@@ -10,7 +10,7 @@ fi
 while [ true ]; do
   job_ids=()
   for i in $(seq 1 5); do
-    drush scr $1 --uri ${DRUPAL_DRUSH_URI}/ &
+    drush scr $1 &
     job_ids+=($!)
   done
   for job_id in "${job_ids[@]}"; do

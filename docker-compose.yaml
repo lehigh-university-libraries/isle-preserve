@@ -178,7 +178,6 @@ services:
       DRUPAL_DEFAULT_NAME: "Islandora Digital Collections"
       DRUPAL_DEFAULT_PROFILE: "minimal"
       DRUPAL_DEFAULT_SITE_URL: "${DOMAIN}"
-      DRUPAL_DRUSH_URI: "https://${DOMAIN}"
       DRUSH_OPTIONS_URI: "https://${DOMAIN}"
       NGINX_REAL_IP_RECURSIVE: ${REVERSE_PROXY}
       NGINX_SET_REAL_IP_FROM: ${FRONTEND_IP_1}
