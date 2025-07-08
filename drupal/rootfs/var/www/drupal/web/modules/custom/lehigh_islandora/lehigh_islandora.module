@@ -5,20 +5,15 @@
  * Contains lehigh_islandora.module.
  */
 
-use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
-use Drupal\islandora\Event\StompHeaderEvent;
-use Drupal\islandora\Event\StompHeaderEventException;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\user\Entity\User;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Views;
-use Stomp\Exception\StompException;
-use Stomp\Transport\Message;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Serialization\Json;
 use GuzzleHttp\Client;
