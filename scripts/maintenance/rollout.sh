@@ -121,7 +121,10 @@ if [ "$HOST" != "islandora-prod" ]; then
 
   # remove dangling branches
   if [ "$GIT_BRANCH" = "main" ]; then
-    git branch | grep -v "main" | xargs git branch -D
+    branches=$(git branch | grep -v "main" || echo "")
+    if [ -n "$branches" ]; then
+      echo "$branches" | xargs git branch -D
+    fi
   fi
 
   # splay a docker system prune to keep filesystem clean
