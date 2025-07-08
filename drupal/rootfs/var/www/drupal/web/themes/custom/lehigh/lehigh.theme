@@ -404,7 +404,7 @@ function lehigh_preprocess_media(&$vars) {
 
   $media = $vars['media'];
   $node = $media->get('field_media_of')->entity;
-
+  $admin = \Drupal::currentUser()->hasPermission('administer media');
   if (lehigh_islandora_node_is_locally_restricted($node)) {
     $vars['#cache']['contexts'][] = 'on-campus';
     // we're not displaying media for locally restricted nodes
@@ -412,6 +412,9 @@ function lehigh_preprocess_media(&$vars) {
     // so just bail at this point
     if (!lehigh_islandora_on_campus()) {
       return;
+    }
+    if ($admin) {
+      \Drupal::messenger()->addWarning("This media is only viewable from on-campus. You're seeing this warning as a courtesy since you're an admin.");
     }
   }
 
