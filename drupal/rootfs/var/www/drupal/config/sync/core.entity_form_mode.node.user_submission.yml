@@ -6,6 +6,6 @@ dependencies:
     - node
 id: node.user_submission
 label: 'User submission'
-description: ''
+description: null
 targetEntityType: node
 cache: true

@@ -2,9 +2,12 @@ uuid: 93bf8c82-8519-470b-ac79-87620b2a39d4
 langcode: en
 status: true
 dependencies:
+  config:
+    - views.view.solr_search_content
   module:
     - context
     - islandora
+    - views
   theme:
     - olivero
 id: views_block__solr_search_content_block_1
@@ -19,7 +22,8 @@ settings:
   label_display: '0'
   provider: views
   views_label: ''
-  items_per_page: none
+  items_per_page: null
+  exposed: {  }
 visibility:
   context_all:
     id: context_all
