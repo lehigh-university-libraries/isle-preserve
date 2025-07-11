@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-libreoffice
-          image: lehighlts/scyllaridae-libreoffice:main@sha256:0742a4cf76f7d9a0548060c3a5f125033b3349c5a20862d864404182d40d1794
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
