@@ -1,4 +1,4 @@
-FROM ghcr.io/lehigh-university-libraries/docker-builds/drupal:main@sha256:a719be4c4a5d7a1d1321f6a2243aaa81ad9f8849d3d0166aeedb32ee06f70078
+FROM ghcr.io/lehigh-university-libraries/drupal:main
 
 COPY --link rootfs /
 

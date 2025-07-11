@@ -67,7 +67,7 @@
         'docker',
       ],
       matchPackageNames: [
-        'ghcr.io/lehigh-university-libraries/docker-builds/*',
+        'ghcr.io/lehigh-university-libraries/actions-runner',
         'us-docker.pkg.dev/lehigh-lts-images/public/fabricator',
       ],
       pinDigests: false,
