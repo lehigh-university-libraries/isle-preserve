@@ -14,7 +14,7 @@ services:
     healthcheck:
       test: test /run/mysqld/mysqld.sock
   github-actions-runner:
-    image: ghcr.io/lehigh-university-libraries/docker-builds/actions-runner:main
+    image: ghcr.io/lehigh-university-libraries/actions-runner:main
     environment:
       GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
       GITHUB_REPO: "https://github.com/lehigh-university-libraries/fabricator"
@@ -23,4 +23,3 @@ services:
       - actions-runner-data:/app:rw
       - /mnt/islandora_staging:/mnt/islandora_staging:ro
       - /home/runner:/home/runner:rw
-
