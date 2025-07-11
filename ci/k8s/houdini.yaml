@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-imagemagick
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:dadf879da1cdc582826227d36f18abef3debd3e23c09ef9b3c7837a14d05535d
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"

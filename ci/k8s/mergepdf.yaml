@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-mergepdf
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:934359604eab9560ff2d4da32be210d9d9fb61be9d185d45c5aa7a4efb37ccff
           imagePullPolicy: IfNotPresent
           env:
             - name: MAX_THREADS
