@@ -42,7 +42,7 @@ services:
     healthcheck:
       test: test /run/mysqld/mysqld.sock
   github-actions-runner:
-    image: ghcr.io/lehigh-university-libraries/docker-builds/actions-runner:main
+    image: ghcr.io/lehigh-university-libraries/actions-runner:main
     environment:
       GITHUB_RUNNER_TOKEN: ${GITHUB_RUNNER_TOKEN}
       GITHUB_REPO: "https://github.com/lehigh-university-libraries/isle-preserve"
@@ -53,7 +53,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
       - ./conf/kubeconfigs:/etc/kubeconfigs:r
   gha-runner-updater:
-    image: ghcr.io/lehigh-university-libraries/docker-builds/actions-runner:main
+    image: ghcr.io/lehigh-university-libraries/actions-runner:main
     working_dir: /app
     entrypoint: /bin/sh
     command: -c "while true; do /app/scripts/ci/update-gha.sh; sleep 600; done"
