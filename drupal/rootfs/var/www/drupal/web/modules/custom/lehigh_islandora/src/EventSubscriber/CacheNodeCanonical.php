@@ -37,8 +37,8 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
     $path = $request->getPathInfo();
     $file_path = self::getCachedFilePath($request, $path);
     if (file_exists($file_path)) {
-      // Mark the cached response as stale after 1d.
-      if ((time() - filemtime($file_path)) > 86400) {
+      // Mark the cached response as stale after 10d.
+      if ((time() - filemtime($file_path)) > 864000) {
         return;
       }
 
