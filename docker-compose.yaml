@@ -233,8 +233,8 @@ services:
       - /opt/islandora/volumes/drupal-private-files:/var/www/drupal/private:rw
       - /opt/islandora/volumes/fcrepo-data/home/data/ocfl-root:/fcrepo:r
       - drupal-solr-config:/opt/solr/server/solr/default:z,rw
-      - ./tmp/drupal:/tmp:rw
-      - ./tmp/nginx:/var/lib/nginx/tmp:rw
+      - /opt/islandora/volumes/tmp/drupal:/tmp:rw
+      - /opt/islandora/volumes/tmp/nginx:/var/lib/nginx/tmp:rw
       - ./conf/php-fpm/www.conf:/etc/confd/templates/www.conf.tmpl:r
       - ./conf/nginx/drupal.fpm.conf.tmpl:/etc/confd/templates/drupal.fpm.conf.tmpl:r
       - ./conf/nginx/drupal.defaults.conf:/etc/nginx/shared/drupal.defaults.conf:r
@@ -265,6 +265,8 @@ services:
       - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:ro
       - ./conf/nginx/static.conf:/etc/nginx/conf.d/default.conf:ro
       - ./conf/nginx/types.conf:/etc/nginx/conf.d/types.conf:ro
+      - /opt/islandora/volumes/tmp/drupal-static:/tmp:rw
+      - /opt/islandora/volumes/tmp/nginx-static:/var/lib/nginx/tmp:rw
     healthcheck:
       test: curl -sfo /dev/null http://localhost/themes/custom/lehigh/favicon.ico
       start_period: 5s
