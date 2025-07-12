@@ -1,4 +1,6 @@
 services:
   drupal:
+    environment:
+        DRUPAL_DEFAULT_CANTALOUPE_URL: https://cantaloupe.libops.io/iiif/2
     volumes:
       - ./drupal/rootfs/var/www/drupal/config:/var/www/drupal/config:z,rw,${CONSISTENCY}

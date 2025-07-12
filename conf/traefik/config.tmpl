@@ -177,7 +177,7 @@ http:
             - x.com
           exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
           persistentStateFile: /tmp/state.json
-          protectFileExtensions: jp2,tiff,php,html
+          protectFileExtensions: php,html
     redirect-sans:
       redirectRegex:
         regex: ^https?://([^/]+)(/.*)?
