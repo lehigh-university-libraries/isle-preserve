@@ -36,9 +36,8 @@ docker system prune -af
 
 docker exec lehigh-d10-drupal-1 drush cr || echo "continuing"
 
-pushd /opt/islandora/volumes/tmp
-rm -rf drupal/* drupal-static/* cantaloupe/* nginx/* nginx-static/*
-popd
+# cleanup old temp files
+find "/opt/islandora/volumes/tmp" -type f -mtime +1 -exec rm -f {} \;
 
 # clear out all bad cached manifests
 for JSON in /opt/islandora/volumes/drupal-private-files/iiif/preserve.lehigh.edu/*/node/*/book-manifest.json; do
