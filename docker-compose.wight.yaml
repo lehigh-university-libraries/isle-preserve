@@ -6,26 +6,26 @@ services:
       ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
   coverpage:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:058ea1733f4faae8e98a9520a28d72dc0af74252f06a0eef4e6a369d8b7c9396
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:0b58170638a5e538909789b1ccddfca226462e39b85b998cad71c7ca2cbefcbb
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:8a798f2aee91e6917f0607655fd216f01fe4307b9bc3b15a11ee6b0a633b8eab
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:0137d2749b6ddbe7406814ddc29ab0d1a1c964630182098db7633088eaecac97
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
