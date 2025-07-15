@@ -49,57 +49,57 @@ services:
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
-    image: lehighlts/scyllaridae-fits:main@sha256:466ec490a22c141eb4431f26d5d02e01bcf1dc69cd6a9b997c54fa39570bc002
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-fits:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/crayfits:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
-    image: lehighlts/scyllaridae-hls:main@sha256:2cdb290750a6561f3fec49d5983f29153019152785f8827aa5cfd995256a453a
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   homarus:
-    image: lehighlts/scyllaridae-ffmpeg:main@sha256:381d02df16eabd753a0e949cfa2c1cbfde4378927093c4f09307f3e50f03d53a
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ffmpeg:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: lehighlts/scyllaridae-imagemagick:main@sha256:28b1b11d9788aa2e54dffe05b69a7c56e9a16574fe6ed084c827f9289d814077
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: lehighlts/scyllaridae-tesseract:main@sha256:cedf9f6328172ce93bf0b113e77bbba7591546ec4accbe2feed162d0a6357c9f
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-tesseract:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: lehighlts/scyllaridae-ocrpdf:main@sha256:92354cb185ed1e9be308755c103f348eac9be147893c6fa1ed2629763bace7c5
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
-    image: lehighlts/scyllaridae-libreoffice:main@sha256:0742a4cf76f7d9a0548060c3a5f125033b3349c5a20862d864404182d40d1794
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   coverpage:
-    image: lehighlts/scyllaridae-coverpage:main@sha256:8fe78a2f93f524d5057caf39031ea745cd847ec9454b6488aba9c6c5dcf6abd3
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: lehighlts/scyllaridae-mergepdf:main@sha256:1e60f8d2c9bc48f93c9a6ef9cdbc853eb090e2327ef71cb217cc6d18ba9d3f59
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
