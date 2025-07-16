@@ -143,8 +143,10 @@ http:
     captcha-protect:
       plugin:
         captcha-protect:
-          rateLimit: 1
+          rateLimit: 0
           ipv4subnetMask: 8
+          # 10d
+          window: 864000
           protectRoutes: /
           protectParameters: "true"
           exemptIps:
