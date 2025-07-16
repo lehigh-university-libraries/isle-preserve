@@ -334,7 +334,7 @@ services:
     healthcheck:
       start_period: 5s
   rollout:
-    image: us-docker.pkg.dev/lehigh-lts-images/internal/rollout:main
+    image: ghcr.io/lehigh-university-libraries/rollout:main:main@sha256:92d958f5192432e19984907079b787517ac20eba007e1d6b6c5e0dfd02db5f91
     restart: always
     volumes:
       - /opt/islandora/d10_lehigh_agile:/opt/islandora/d10_lehigh_agile
