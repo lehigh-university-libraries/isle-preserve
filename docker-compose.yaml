@@ -62,7 +62,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:4.1.7@sha256:835abf0e536f6868320176214006cac88a04fbe8eb7b2b1ff3a9bcfb3ad41b16
+    image: islandora/alpaca:4.3.7@sha256:007f48332639fd58f6590d52bea93a95ad739efafaba2fd2c56432a37019d290
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -93,7 +93,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:c2ec03d6337caec6742a20612587546201c357f5cb4ebe35d39843f6fc8f6e0f
+    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:4356a1874115aa7bdff06304c76d4b1dc0f0cd51b8de79bc08797d30600b6fd3
     entrypoint:
       - /app/fabricator
       - --server
@@ -104,7 +104,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:4.1.7@sha256:cd539d5a166b0c9a66e7411376f5207085504e29706b67916333428a465e058e
+    image: islandora/mariadb:4.3.7@sha256:c05a2e4223097d23517f4633b5a6b2f99108b507a5f3beed01e22daab071012b
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -127,7 +127,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:4.1.7@sha256:aa3aedf3b76323a47c3e47babdd97bfb6ab50e132b4c03129965e3388eb5b660
+    image: islandora/activemq:4.3.7@sha256:7611a392b259905c64f9e8e80507bcdf9f03a0c796b7ee352982350511b3bd43
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -143,7 +143,7 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: islandora/cantaloupe:4.1.7@sha256:6898a4d00ef45b73ffc6c3392e88318884e1410a730ceaa332e26359088a54fe
+    image: islandora/cantaloupe:4.3.7@sha256:79737618351aa1c8c2080c77732d80a6657b2b962b04d78f199955f7274bcb6a
     environment:
       CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
       CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
@@ -158,7 +158,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.38@sha256:89b2dfa7e55e5fd1986e22210cdf89f0a5e5d6c913101e2bcfdfb4d1d73de7ec
+    image: memcached:1.6.38@sha256:9e9f3552a5a42058c9138ce66e61f9b3e0737e17122c461ab3d004e5556a2129
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -300,7 +300,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:4.1.7@sha256:9fad63b0c4c72588f730e2824d426fb1fbf4f8e80eeeb8db3f29ba4394687569
+    image: islandora/fcrepo6:4.3.7@sha256:c21840f3bc2c51b1a60cf1ee4c65117dd84eddae84b0c97c80909415ff11a41b
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -322,7 +322,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:4.1.7@sha256:862e44f25fd04a1e507bf259a57468a13fc7f2f1276fc261b81bf3dbb6993f57
+    image: islandora/solr:4.3.7@sha256:d218d2ecb87e4727ce15d663ee6cd7b21cd08da1a4771c94b2e9e8b6cb6fc0c1
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
