@@ -7,6 +7,7 @@ queueMiddlewares:
     url: http://mergepdf:8080
     consumers: 1
     forwardAuth: true
+    noPut: true
   - queueName: islandora-hls
     url: http://hls:8080
     consumers: 3
