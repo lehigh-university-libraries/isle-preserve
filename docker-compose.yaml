@@ -145,9 +145,6 @@ services:
   cantaloupe:
     image: islandora/cantaloupe:4.3.7@sha256:79737618351aa1c8c2080c77732d80a6657b2b962b04d78f199955f7274bcb6a
     environment:
-      CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
-      CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
-      CANTALOUPE_MAX_PIXELS: 0
       CANTALOUPE_LOG_APPLICATION_LEVEL: info
     secrets:
       - source: CERT_AUTHORITY
