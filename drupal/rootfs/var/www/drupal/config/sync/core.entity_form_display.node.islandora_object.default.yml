@@ -95,14 +95,12 @@ dependencies:
     - geolocation
     - islandora_collection_tabs
     - lehigh_islandora
-    - path
     - text
 third_party_settings:
   field_group:
     group_structure:
       children:
         - field_thumbnail
-        - url_redirects
         - field_sort_by
         - field_hide_gscholar_metatags
         - field_site_disposition
@@ -110,7 +108,6 @@ third_party_settings:
         - langcode
         - field_weight
         - translation
-        - path
         - status
         - promote
         - uid
@@ -1086,12 +1083,6 @@ content:
     settings:
       include_locked: true
     third_party_settings: {  }
-  path:
-    type: path
-    weight: 46
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   promote:
     type: boolean_checkbox
     weight: 48
@@ -1137,7 +1128,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   url_redirects:
-    weight: 23
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -1149,3 +1140,4 @@ hidden:
   field_lcsh_topic: true
   field_self_submission_creator: true
   field_subject: true
+  path: true
