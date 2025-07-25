@@ -2,6 +2,7 @@ _core:
   default_config_hash: XgeYJpPmZIOwE_nA73tYvFw-Rcj-HtlbNwfktqSVsaQ
 broker_url: 'tcp://activemq:61613'
 jwt_expiry: '86400 secs'
+allow_header_links: false
 delete_media_and_files: true
 fast_term_queries: true
 redirect_after_media_save: false
@@ -9,8 +10,9 @@ upload_form_location: ''
 upload_form_allowed_mimetypes: ''
 gemini_pseudo_bundles:
   'islandora_object:node': 'islandora_object:node'
-  'file:media': 'file:media'
   'audio:media': 'audio:media'
+  'file:media': 'file:media'
   'image:media': 'image:media'
   'video:media': 'video:media'
+fedora_root: /fcrepo
 gemini_url: ''

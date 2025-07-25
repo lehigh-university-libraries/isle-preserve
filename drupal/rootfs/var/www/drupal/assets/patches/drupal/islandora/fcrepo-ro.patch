@@ -1,0 +1,345 @@
+From 4504e6c665adf99da0301707ce7ef511f8f9bf6b Mon Sep 17 00:00:00 2001
+From: Joe Corall <jjc223@lehigh.edu>
+Date: Fri, 25 Jul 2025 12:22:38 -0400
+Subject: [PATCH] Allow reading from fedora from OCFL dir
+
+---
+ config/install/islandora.settings.yml   |   1 +
+ config/schema/islandora.schema.yml      |   3 +
+ src/Flysystem/Adapter/FedoraAdapter.php | 140 +++++++++++++++++++++++-
+ src/Flysystem/Fedora.php                |  20 +++-
+ src/Form/IslandoraSettingsForm.php      |  11 ++
+ 5 files changed, 171 insertions(+), 4 deletions(-)
+
+diff --git a/config/install/islandora.settings.yml b/config/install/islandora.settings.yml
+index fa6b2f4ca..821a11620 100644
+--- a/config/install/islandora.settings.yml
++++ b/config/install/islandora.settings.yml
+@@ -4,3 +4,4 @@ delete_media_and_files: TRUE
+ gemini_pseudo_bundles: []
+ allow_header_links: TRUE
+ fast_term_queries: TRUE
++fedora_root: ''
+diff --git a/config/schema/islandora.schema.yml b/config/schema/islandora.schema.yml
+index a2b20a0fc..2cc071cbe 100644
+--- a/config/schema/islandora.schema.yml
++++ b/config/schema/islandora.schema.yml
+@@ -37,6 +37,9 @@ islandora.settings:
+       label: 'List of node, media and taxonomy terms that should include the linked Fedora URI'
+       sequence:
+         type: string
++    fedora_root:
++      type: string
++      label: 'Fedora Root Path'
+ 
+ 
+ action.configuration.emit_node_event:
+diff --git a/src/Flysystem/Adapter/FedoraAdapter.php b/src/Flysystem/Adapter/FedoraAdapter.php
+index 70997f789..b01d99bf4 100644
+--- a/src/Flysystem/Adapter/FedoraAdapter.php
++++ b/src/Flysystem/Adapter/FedoraAdapter.php
+@@ -50,6 +50,13 @@ class FedoraAdapter implements AdapterInterface {
+    */
+   protected $request;
+ 
++  /**
++   * The path to fedora OCFL root.
++   *
++   * @var string
++   */
++  protected $fedoraRoot;
++
+   /**
+    * Constructs a Fedora adapter for Flysystem.
+    *
+@@ -61,23 +68,109 @@ class FedoraAdapter implements AdapterInterface {
+    *   The fedora adapter logger channel.
+    * @param \Symfony\Component\HttpFoundation\Request $request
+    *   The current request.
++   * @param string $fedora_root
++   *   The path to fedora's OCFL root directory.
+    */
+   public function __construct(
+     IFedoraApi $fedora,
+     MimeTypeGuesserInterface $mime_type_guesser,
+     LoggerChannelInterface $logger,
+     Request $request,
++    string $fedora_root,
+   ) {
+     $this->fedora = $fedora;
+     $this->mimeTypeGuesser = $mime_type_guesser;
+     $this->logger = $logger;
+     $this->request = $request;
++    $this->fedoraRoot = $fedora_root;
++  }
++
++  /**
++   * Check if we should read from disk.
++   *
++   * @return bool
++   *   TRUE if fedoraRoot is configured and not empty.
++   */
++  protected function useDiskReading($path) {
++    // If we're setting up a directory in fedora
++    // do not attempt to read from disk.
++    $info = pathinfo($path);
++    if (empty($info['extension'])) {
++      return FALSE;
++    }
++
++    return !empty($this->fedoraRoot);
++  }
++
++  /**
++   * Convert Fedora path to disk path.
++   *
++   * @param string $path
++   *   Fedora resource path.
++   *
++   * @return string
++   *   Full disk path to the file.
++   */
++  protected function getDiskPath(string $path) : string {
++    // Remove leading slash if present.
++    $path = ltrim($path, '/');
++    $fedora_id = 'info:fedora/' . $path;
++    $ocfl_dir = $this->getOcflDir($fedora_id);
++    $inventory = $ocfl_dir . '/extensions/0005-mutable-head/head/inventory.json';
++    if (!file_exists($inventory)) {
++      return "";
++    }
++
++    $inventory_json = file_get_contents($inventory);
++    $inventory = json_decode($inventory_json, TRUE);
++    $head = $inventory['head'];
++    $state = $inventory['versions'][$head]['state'];
++    $manifest = $inventory['manifest'];
++
++    $components = explode('/', $path);
++    $filename = array_pop($components);
++    foreach ($state as $digest => $files) {
++      if (!in_array($filename, $files)) {
++        continue;
++      }
++      if (empty($manifest[$digest][0])) {
++        continue;
++      }
++
++      return $ocfl_dir . '/' . $manifest[$digest][0];
++    }
++
++    return "";
++  }
++
++  /**
++   * Helper function to get the OCFL directory of a fcrepo object ID.
++   */
++  protected function getOcflDir(string $objectId) : string {
++    $digest = hash('sha256', $objectId);
++    $tupleSize = 3;
++    $numberOfTuples = 3;
++    $path = rtrim($this->fedoraRoot, '/') . '/';
++    for ($i = 0; $i < $numberOfTuples * $tupleSize; $i += $tupleSize) {
++      $tuple = substr($digest, $i, $tupleSize);
++      $path .= $tuple . "/";
++    }
++
++    $path .= $digest;
++
++    return $path;
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function has($path) {
++    if ($this->useDiskReading($path)) {
++      $diskPath = $this->getDiskPath($path);
++
++      return $diskPath != "" && file_exists($diskPath);
++    }
++
+     $response = $this->fedora->getResourceHeaders($path, ['Connection' => 'close']);
+     return $response->getStatusCode() == 200;
+   }
+@@ -92,7 +185,7 @@ public function read($path) {
+       return FALSE;
+     }
+ 
+-    if (isset($meta['stream'])) {
++    if (!$this->useDiskReading($path) && isset($meta['stream'])) {
+       $meta['contents'] = stream_get_contents($meta['stream']);
+       fclose($meta['stream']);
+       unset($meta['stream']);
+@@ -105,6 +198,28 @@ public function read($path) {
+    * {@inheritdoc}
+    */
+   public function readStream($path) {
++    if ($this->useDiskReading($path)) {
++      $diskPath = $this->getDiskPath($path);
++
++      if (!file_exists($diskPath)) {
++        return FALSE;
++      }
++
++      $stream = fopen($diskPath, 'r');
++      if ($stream === FALSE) {
++        return FALSE;
++      }
++
++      $meta = $this->getMetadata($path);
++      if ($meta === FALSE) {
++        fclose($stream);
++        return FALSE;
++      }
++
++      $meta['stream'] = $stream;
++      return $meta;
++    }
++
+     $headers = ['Connection' => 'close'];
+ 
+     // If the request is for a range
+@@ -139,6 +254,29 @@ public function readStream($path) {
+    * {@inheritdoc}
+    */
+   public function getMetadata($path) {
++    if ($this->useDiskReading($path)) {
++      $diskPath = $this->getDiskPath($path);
++
++      if (!file_exists($diskPath)) {
++        return FALSE;
++      }
++
++      $stat = stat($diskPath);
++      if ($stat === FALSE) {
++        return FALSE;
++      }
++
++      $meta = [
++        'type' => 'file',
++        'path' => $path,
++        'timestamp' => $stat['mtime'],
++        'size' => $stat['size'],
++        'mimetype' => $this->mimeTypeGuesser->guessMimeType($diskPath),
++      ];
++
++      return $meta;
++    }
++
+     $response = $this->fedora->getResourceHeaders($path, ['Connection' => 'close']);
+ 
+     if ($response->getStatusCode() != 200) {
+diff --git a/src/Flysystem/Fedora.php b/src/Flysystem/Fedora.php
+index f9d3cc68a..11893906e 100644
+--- a/src/Flysystem/Fedora.php
++++ b/src/Flysystem/Fedora.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\islandora\Flysystem;
+ 
++use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Language\LanguageManagerInterface;
+ use Drupal\Core\Logger\LoggerChannelInterface;
+ use Drupal\Core\Logger\RfcLogLevel;
+@@ -64,6 +65,13 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
+    */
+   protected $request;
+ 
++  /**
++   * The path to fedora OCFL root.
++   *
++   * @var string
++   */
++  protected $fedoraRoot;
++
+   /**
+    * Constructs a Fedora plugin for Flysystem.
+    *
+@@ -77,6 +85,8 @@ class Fedora implements FlysystemPluginInterface, ContainerFactoryPluginInterfac
+    *   The fedora adapter logger channel.
+    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
+    *   The request stack.
++   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
++   *   The config factory.
+    */
+   public function __construct(
+     IFedoraApi $fedora,
+@@ -84,12 +94,16 @@ public function __construct(
+     LanguageManagerInterface $language_manager,
+     LoggerChannelInterface $logger,
+     RequestStack $request_stack,
++    ConfigFactoryInterface $config_factory,
+   ) {
+     $this->fedora = $fedora;
+     $this->mimeTypeGuesser = $mime_type_guesser;
+     $this->languageManager = $language_manager;
+     $this->logger = $logger;
+     $this->request = $request_stack->getCurrentRequest();
++
++    $config = $config_factory->get('islandora.settings');
++    $this->fedoraRoot = $config->get('fedora_root') ?: '';
+   }
+ 
+   /**
+@@ -102,13 +116,13 @@ public static function create(ContainerInterface $container, array $configuratio
+     $stack->push(static::addJwt($container->get('jwt.authentication.jwt')));
+     $fedora = FedoraApi::createWithHandler($configuration['root'], $stack);
+ 
+-    // Return it.
+     return new static(
+       $fedora,
+       $container->get('file.mime_type.guesser'),
+       $container->get('language_manager'),
+       $container->get('logger.channel.fedora_flysystem'),
+-      $container->get('request_stack')
++      $container->get('request_stack'),
++      $container->get('config.factory')
+     );
+   }
+ 
+@@ -137,7 +151,7 @@ public static function addJwt(JwtAuth $jwt) {
+    * {@inheritdoc}
+    */
+   public function getAdapter() {
+-    return new FedoraAdapter($this->fedora, $this->mimeTypeGuesser, $this->logger, $this->request);
++    return new FedoraAdapter($this->fedora, $this->mimeTypeGuesser, $this->logger, $this->request,  $this->fedoraRoot);
+   }
+ 
+   /**
+diff --git a/src/Form/IslandoraSettingsForm.php b/src/Form/IslandoraSettingsForm.php
+index e132700d4..874a2c1de 100644
+--- a/src/Form/IslandoraSettingsForm.php
++++ b/src/Form/IslandoraSettingsForm.php
+@@ -29,6 +29,7 @@ class IslandoraSettingsForm extends ConfigFormBase {
+   const UPLOAD_FORM_LOCATION = 'upload_form_location';
+   const UPLOAD_FORM_ALLOWED_MIMETYPES = 'upload_form_allowed_mimetypes';
+   const GEMINI_PSEUDO = 'gemini_pseudo_bundles';
++  const FEDORA_ROOT = 'fedora_root';
+   const FEDORA_URL = 'fedora_url';
+   const TIME_INTERVALS = [
+     'sec',
+@@ -237,6 +238,15 @@ public function buildForm(array $form, FormStateInterface $form_state) {
+       '#default_value' => (bool) $config->get(self::FAST_TERM_QUERIES),
+     ];
+ 
++
++    $form[self::FEDORA_ROOT] = [
++      '#type' => 'textfield',
++      '#title' => $this->t('Fedora Root'),
++      '#description' => $this->t("The absolute path to fedora's root OCFL dir. e.g. /fcrepo/home/data/ocfl-root.
++      Setting this value will read binaries off disk from the OCFL directory when access them through flysystem, rather than going through fedora's API"),
++      '#default_value' => $config->get(self::FEDORA_ROOT),
++    ];
++
+     $form[self::FEDORA_URL] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('Fedora URL'),
+@@ -395,6 +405,7 @@ public function submitForm(array &$form, FormStateInterface $form_state) {
+     $config
+       ->set(self::BROKER_URL, $form_state->getValue(self::BROKER_URL))
+       ->set(self::JWT_EXPIRY, $form_state->getValue(self::JWT_EXPIRY))
++      ->set(self::FEDORA_ROOT, $form_state->getValue(self::FEDORA_ROOT))
+       ->set(self::UPLOAD_FORM_LOCATION, $form_state->getValue(self::UPLOAD_FORM_LOCATION))
+       ->set(self::UPLOAD_FORM_ALLOWED_MIMETYPES, $form_state->getValue(self::UPLOAD_FORM_ALLOWED_MIMETYPES))
+       ->set(self::GEMINI_PSEUDO, $new_pseudo_types)
