@@ -38,7 +38,6 @@ http:
       entryPoints:
         - https
       middlewares:
-        - cantaloupe-captcha-protect
         - cantaloupe-strip-prefix
         - cantaloupe-custom-request-headers
       tls: {}
@@ -183,22 +182,7 @@ http:
             - x.com
           exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
           persistentStateFile: /tmp/state.json
-          protectFileExtensions: php,html
-    cantaloupe-captcha-protect:
-      plugin:
-        captcha-protect:
-          rateLimit: 0
-          ipv4subnetMask: 8
-          protectRoutes: /
-          challengeTmpl: /challenge.tmpl.html
-          challengeURL: ""
-          challengeStatusCode: 429
-          captchaProvider: turnstile
-          siteKey: {{ env "TURNSTILE_SITE_KEY" }}
-          secretKey: {{ env "TURNSTILE_SECRET_KEY" }}
-          enableStatsPage: "true"
-          ipForwardedHeader: X-Forwarded-For
-          protectFileExtensions: jpg,json
+          protectFileExtensions: php,html,jp2,tif,tiff
     redirect-sans:
       redirectRegex:
         regex: ^https?://([^/]+)(/.*)?
