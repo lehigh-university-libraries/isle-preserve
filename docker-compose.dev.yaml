@@ -16,18 +16,12 @@ services:
     environment:
       LEHIGH_TRANSFORM_SERVICE_URI: "http://transformer:8080"
     volumes:
-      - fcrepo-data:/fcrepo:r
       - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
   drupal-lehigh:
     environment:
       LEHIGH_TRANSFORM_SERVICE_URI: "http://transformer:8080"
     volumes:
-      - fcrepo-data:/fcrepo:r
       - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
-
-  fcrepo:
-    volumes:
-      - fcrepo-data:/data:Z,rw
   transformer:
     image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:3463cf1178c367079970a8916b2671b0701dc80733126d799033851232723c18
   mariadb:
