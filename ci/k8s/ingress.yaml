@@ -109,3 +109,17 @@ spec:
                 name: sentence-transformer
                 port:
                   number: 8080
+          - path: /warc
+            pathType: Prefix
+            backend:
+              service:
+                name: islandora-tn-warc
+                port:
+                  number: 8080
+          - path: /zip
+            pathType: Prefix
+            backend:
+              service:
+                name: islandora-tn-zip
+                port:
+                  number: 8080

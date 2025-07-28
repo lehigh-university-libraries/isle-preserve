@@ -46,7 +46,7 @@ triplestore.indexer.max-concurrent-consumers={{ getenv "ALPACA_TRIPLESTORE_INDEX
 triplestore.indexer.async-consumer={{ getenv "ALPACA_TRIPLESTORE_INDEXER_ASYNC_CONSUMER" }}
 
 # Derivative services
-derivative.systems.installed={{ getenv "ALPACA_DERIVATIVE_SYSTEMS" }} fits,homarus,houdini,ocr,libreoffice,whisper,ocrpdf,htr,cleanpdf
+derivative.systems.installed={{ getenv "ALPACA_DERIVATIVE_SYSTEMS" }} fits,homarus,houdini,ocr,libreoffice,whisper,ocrpdf,htr,cleanpdf,warc,zip
 
 derivative.fits.enabled={{ getenv "ALPACA_DERIVATIVE_FITS_ENABLED" }}
 derivative.fits.in.stream={{ getenv "ALPACA_DERIVATIVE_FITS_QUEUE" }}
@@ -110,3 +110,18 @@ derivative.cleanpdf.service.url={{ getenv "ALPACA_DERIVATIVE_CLEAN_PDF_URL" }}
 derivative.cleanpdf.concurrent-consumers=3
 derivative.cleanpdf.max-concurrent-consumers=-1
 derivative.cleanpdf.async-consumer=true
+
+
+derivative.warc.enabled=true
+derivative.warc.in.stream=queue:islandora-tn-warc
+derivative.warc.service.url={{ getenv "ALPACA_DERIVATIVE_TN_WARC_URL" }}
+derivative.warc.concurrent-consumers=3
+derivative.warc.max-concurrent-consumers=-1
+derivative.warc.async-consumer=true
+
+derivative.zip.enabled=true
+derivative.zip.in.stream=queue:islandora-tn-zip
+derivative.zip.service.url={{ getenv "ALPACA_DERIVATIVE_TN_ZIP_URL" }}
+derivative.zip.concurrent-consumers=3
+derivative.zip.max-concurrent-consumers=-1
+derivative.zip.async-consumer=true
