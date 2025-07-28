@@ -6,14 +6,13 @@ dependencies:
     - views.view.media_evas
   module:
     - context
-    - islandora
     - views
   theme:
     - lehigh
 id: views_block_media_evas_full_width_block
 theme: lehigh
 region: title
-weight: -20
+weight: -21
 provider: null
 plugin: 'views_block:media_evas-full_width_block'
 settings:
@@ -21,18 +20,13 @@ settings:
   label: ''
   label_display: '0'
   provider: views
+  context_mapping: {  }
   views_label: ''
   items_per_page: null
   exposed: {  }
-  context_mapping: {  }
 visibility:
   view_inclusion:
     id: view_inclusion
     negate: false
     view_inclusion:
       view-browse-main: view-browse-main
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''

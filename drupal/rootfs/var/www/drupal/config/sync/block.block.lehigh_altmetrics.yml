@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   module:
-    - islandora
     - lehigh_islandora
     - node
     - system
@@ -12,7 +11,7 @@ dependencies:
 id: lehigh_altmetrics
 theme: lehigh
 region: main_sidebar
-weight: 25
+weight: -25
 provider: null
 plugin: altmetrics
 settings:
@@ -21,11 +20,6 @@ settings:
   label_display: '0'
   provider: lehigh_islandora
 visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
   request_path:
     id: request_path
     negate: false

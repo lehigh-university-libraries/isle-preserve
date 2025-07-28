@@ -5,7 +5,6 @@ dependencies:
   module:
     - context
     - entity_metrics
-    - islandora
     - node
     - system
   theme:
@@ -13,7 +12,7 @@ dependencies:
 id: lehigh_nodehistoryblock
 theme: lehigh
 region: main_sidebar
-weight: 26
+weight: -24
 provider: null
 plugin: entity_metrics_node_history
 settings:
@@ -22,11 +21,6 @@ settings:
   label_display: visible
   provider: entity_metrics
 visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
   request_path:
     id: request_path
     negate: false

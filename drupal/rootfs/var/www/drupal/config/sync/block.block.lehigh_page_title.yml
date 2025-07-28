@@ -3,7 +3,6 @@ langcode: en
 status: false
 dependencies:
   module:
-    - islandora
     - node
     - system
   theme:
@@ -13,7 +12,7 @@ _core:
 id: lehigh_page_title
 theme: lehigh
 region: title
-weight: -16
+weight: -17
 provider: null
 plugin: page_title_block
 settings:
@@ -22,11 +21,6 @@ settings:
   label_display: '0'
   provider: core
 visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
   request_path:
     id: request_path
     negate: true

@@ -5,7 +5,6 @@ dependencies:
   config:
     - views.view.landing_features
   module:
-    - islandora
     - system
     - views
   theme:
@@ -13,7 +12,7 @@ dependencies:
 id: lehigh_views_block__landing_features_block_3
 theme: lehigh
 region: title
-weight: -23
+weight: -24
 provider: null
 plugin: 'views_block:landing_features-block_3'
 settings:
@@ -25,11 +24,6 @@ settings:
   items_per_page: null
   exposed: {  }
 visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
   request_path:
     id: request_path
     negate: false

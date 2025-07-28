@@ -4,14 +4,13 @@ status: true
 dependencies:
   module:
     - context
-    - islandora
     - lehigh_islandora
   theme:
     - lehigh
 id: lehigh_collectiontasksblock
 theme: lehigh
 region: content
-weight: -22
+weight: -24
 provider: null
 plugin: collection_tasks
 settings:
@@ -25,8 +24,3 @@ visibility:
     negate: false
     view_inclusion:
       view-browse-main: view-browse-main
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''

@@ -5,7 +5,6 @@ dependencies:
   config:
     - views.view.featured_resources
   module:
-    - islandora
     - system
     - views
   theme:
@@ -25,11 +24,6 @@ settings:
   items_per_page: null
   exposed: {  }
 visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
   request_path:
     id: request_path
     negate: false

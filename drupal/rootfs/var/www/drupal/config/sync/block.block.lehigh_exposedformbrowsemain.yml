@@ -6,7 +6,6 @@ dependencies:
     - views.view.browse
   module:
     - context
-    - islandora
     - views
   theme:
     - lehigh
@@ -28,8 +27,3 @@ visibility:
     negate: false
     view_inclusion:
       view-browse-main: view-browse-main
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''

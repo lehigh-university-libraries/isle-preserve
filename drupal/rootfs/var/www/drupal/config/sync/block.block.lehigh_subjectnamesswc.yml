@@ -7,7 +7,6 @@ dependencies:
   module:
     - context
     - facets
-    - islandora
   theme:
     - lehigh
 id: lehigh_subjectnamesswc
@@ -28,8 +27,3 @@ visibility:
     id: context_all
     negate: null
     values: collection
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''

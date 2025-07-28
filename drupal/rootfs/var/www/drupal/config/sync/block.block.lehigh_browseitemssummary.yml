@@ -7,13 +7,12 @@ dependencies:
   module:
     - context
     - facets_summary
-    - islandora
   theme:
     - lehigh
 id: lehigh_browseitemssummary
 theme: lehigh
 region: title
-weight: -17
+weight: -18
 provider: null
 plugin: 'facets_summary_block:browse_items_summary'
 settings:
@@ -28,8 +27,3 @@ visibility:
     negate: false
     view_inclusion:
       view-browse-main: view-browse-main
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''

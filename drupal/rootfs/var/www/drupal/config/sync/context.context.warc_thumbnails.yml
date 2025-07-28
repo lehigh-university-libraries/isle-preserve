@@ -1,0 +1,34 @@
+uuid: 0b2f307e-3e4a-4d9b-aeeb-815d4b926a89
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+label: 'WARC Thumbnails'
+name: warc_thumbnails
+group: Derivatives
+description: ''
+requireAllConditions: true
+disabled: false
+conditions:
+  media_has_term:
+    id: media_has_term
+    negate: false
+    uuid: da697c49-6123-470b-b7d3-19dea5ca64aa
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    uri: 'http://pcdm.org/use#OriginalFile'
+    logic: and
+  media_source_mimetype:
+    id: media_source_mimetype
+    negate: false
+    uuid: bfced71e-8623-44a0-b14b-8e7e86e0f4a7
+    context_mapping: {  }
+    mimetype: application/warc
+reactions:
+  derivative:
+    id: derivative
+    saved: false
+    actions:
+      warc_generate_a_thumbnail_from_an_original_file: warc_generate_a_thumbnail_from_an_original_file
+weight: 0

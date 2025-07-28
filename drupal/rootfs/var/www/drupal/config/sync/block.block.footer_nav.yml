@@ -5,7 +5,6 @@ dependencies:
   config:
     - system.menu.footer-nav
   module:
-    - islandora
     - system
   theme:
     - lehigh
@@ -23,9 +22,4 @@ settings:
   level: 1
   depth: null
   expand_all_items: false
-visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
+visibility: {  }

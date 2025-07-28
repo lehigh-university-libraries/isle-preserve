@@ -6,14 +6,13 @@ dependencies:
     - 'block_content:basic:dec313b4-9499-4f3e-b8de-9c7ac5822b8d'
   module:
     - block_content
-    - islandora
     - system
   theme:
     - lehigh
 id: lehigh_contactsupport
 theme: lehigh
 region: content
-weight: -20
+weight: -22
 provider: null
 plugin: 'block_content:dec313b4-9499-4f3e-b8de-9c7ac5822b8d'
 settings:
@@ -25,11 +24,6 @@ settings:
   info: ''
   view_mode: full
 visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
   request_path:
     id: request_path
     negate: false

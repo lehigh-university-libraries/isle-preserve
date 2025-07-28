@@ -6,7 +6,6 @@ dependencies:
     - 'block_content:basic:84f18874-12ac-4772-9c80-a418ad1e6878'
   module:
     - block_content
-    - islandora
   theme:
     - lehigh
 id: footer_info
@@ -23,9 +22,4 @@ settings:
   status: true
   info: ''
   view_mode: full
-visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
+visibility: {  }

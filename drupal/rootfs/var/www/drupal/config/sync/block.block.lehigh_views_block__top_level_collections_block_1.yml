@@ -5,7 +5,6 @@ dependencies:
   config:
     - views.view.top_level_collections
   module:
-    - islandora
     - system
     - views
   theme:
@@ -13,7 +12,7 @@ dependencies:
 id: lehigh_views_block__top_level_collections_block_1
 theme: lehigh
 region: content
-weight: -21
+weight: -23
 provider: null
 plugin: 'views_block:top_level_collections-block_1'
 settings:
@@ -25,11 +24,6 @@ settings:
   items_per_page: null
   exposed: {  }
 visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
   request_path:
     id: request_path
     negate: false

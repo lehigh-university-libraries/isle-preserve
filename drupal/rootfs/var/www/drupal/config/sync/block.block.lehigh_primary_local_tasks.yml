@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   module:
-    - islandora
     - system
   theme:
     - lehigh
@@ -23,11 +22,6 @@ settings:
   primary: true
   secondary: false
 visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
   request_path:
     id: request_path
     negate: true

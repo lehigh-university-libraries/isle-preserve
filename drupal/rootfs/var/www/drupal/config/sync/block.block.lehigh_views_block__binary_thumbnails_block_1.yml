@@ -1,0 +1,42 @@
+uuid: 4d6fba64-5a8b-4826-aed2-289ba03aece5
+langcode: en
+status: false
+dependencies:
+  config:
+    - views.view.binary_thumbnails
+  module:
+    - islandora
+    - node
+    - views
+  theme:
+    - lehigh
+id: lehigh_views_block__binary_thumbnails_block_1
+theme: lehigh
+region: content
+weight: -21
+provider: null
+plugin: 'views_block:binary_thumbnails-block_1'
+settings:
+  id: 'views_block:binary_thumbnails-block_1'
+  label: ''
+  label_display: '0'
+  provider: views
+  context_mapping: {  }
+  views_label: ''
+  items_per_page: null
+  exposed: {  }
+visibility:
+  node_has_term:
+    id: node_has_term
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    uri: 'http://purl.org/coar/resource_type/c_1843'
+    logic: and
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      islandora_object: islandora_object

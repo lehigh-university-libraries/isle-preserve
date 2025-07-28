@@ -6,7 +6,6 @@ dependencies:
     - 'block_content:basic:eadccf7e-aede-4f1e-bacc-7d32750b3eb3'
   module:
     - block_content
-    - islandora
   theme:
     - lehigh
 id: lehigh_upperfooterlegend
@@ -23,9 +22,4 @@ settings:
   status: true
   info: ''
   view_mode: full
-visibility:
-  media_source_mimetype:
-    id: media_source_mimetype
-    negate: false
-    context_mapping: {  }
-    mimetype: ''
+visibility: {  }
