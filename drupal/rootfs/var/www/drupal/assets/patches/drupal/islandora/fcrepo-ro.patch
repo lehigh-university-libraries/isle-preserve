@@ -1,7 +1,7 @@
 From 4504e6c665adf99da0301707ce7ef511f8f9bf6b Mon Sep 17 00:00:00 2001
 From: Joe Corall <jjc223@lehigh.edu>
 Date: Fri, 25 Jul 2025 12:22:38 -0400
-Subject: [PATCH 1/7] Allow reading from fedora from OCFL dir
+Subject: [PATCH 1/8] Allow reading from fedora from OCFL dir
 
 ---
  config/install/islandora.settings.yml   |   1 +
@@ -347,7 +347,7 @@ index e132700d4..874a2c1de 100644
 From 10f6ecee589a4d840b78cf40338ea2ae6705eadc Mon Sep 17 00:00:00 2001
 From: Joe Corall <joe@libops.io>
 Date: Fri, 25 Jul 2025 12:34:54 -0400
-Subject: [PATCH 2/7] lint
+Subject: [PATCH 2/8] lint
 
 ---
  src/Flysystem/Fedora.php           | 2 +-
@@ -383,7 +383,7 @@ index 874a2c1de..72de944f7 100644
 From ec9722100c87669948bd4311f520d638fdd5ddf6 Mon Sep 17 00:00:00 2001
 From: Joe Corall <joe@libops.io>
 Date: Fri, 25 Jul 2025 14:22:16 -0400
-Subject: [PATCH 3/7] fixup tests
+Subject: [PATCH 3/8] fixup tests
 
 ---
  src/Flysystem/Adapter/FedoraAdapter.php | 2 +-
@@ -422,7 +422,7 @@ index 45d69ba73..db05f59b6 100644
 From 8fed564f24ab850fbe355592101d1558cf6fb08b Mon Sep 17 00:00:00 2001
 From: Joe Corall <jjc223@lehigh.edu>
 Date: Tue, 29 Jul 2025 13:42:19 -0400
-Subject: [PATCH 4/7] logging and security hardening
+Subject: [PATCH 4/8] logging and security hardening
 
 ---
  src/Flysystem/Adapter/FedoraAdapter.php | 21 ++++++++++++++++-----
@@ -479,7 +479,7 @@ index d8b2d6e43..94d3d04a2 100644
 From b8061a228a9bf1bb064b04792c76dc59967f2d07 Mon Sep 17 00:00:00 2001
 From: Joe Corall <jjc223@lehigh.edu>
 Date: Tue, 29 Jul 2025 13:46:26 -0400
-Subject: [PATCH 5/7] lint
+Subject: [PATCH 5/8] lint
 
 ---
  src/Flysystem/Adapter/FedoraAdapter.php | 10 +++++-----
@@ -521,7 +521,7 @@ index 94d3d04a2..499a6d025 100644
 From 62b3ebf6358750b714351b8eb33f8994d36d6df4 Mon Sep 17 00:00:00 2001
 From: Joe Corall <jjc223@lehigh.edu>
 Date: Tue, 29 Jul 2025 13:48:16 -0400
-Subject: [PATCH 6/7] better description
+Subject: [PATCH 6/8] better description
 
 ---
  src/Form/IslandoraSettingsForm.php | 2 +-
@@ -544,7 +544,7 @@ index 72de944f7..311deb642 100644
 From 333af0111f24e5b8b4be419ce29eb831ca1f54ef Mon Sep 17 00:00:00 2001
 From: Joe Corall <jjc223@lehigh.edu>
 Date: Tue, 29 Jul 2025 14:18:32 -0400
-Subject: [PATCH 7/7] simply disk metadata
+Subject: [PATCH 7/8] simply disk metadata
 
 ---
  src/Flysystem/Adapter/FedoraAdapter.php | 88 +++++++++++++++++--------
@@ -681,3 +681,27 @@ index 499a6d025..454680e89 100644
  
      $response = $this->fedora->getResourceHeaders($path, ['Connection' => 'close']);
 
+From d163bcb0e1c84e17ecf1a222cde12de02ac7a495 Mon Sep 17 00:00:00 2001
+From: Joe Corall <jjc223@lehigh.edu>
+Date: Thu, 31 Jul 2025 13:28:37 -0400
+Subject: [PATCH 8/8] If no mutable head inventory fall back to root inventory
+
+---
+ src/Flysystem/Adapter/FedoraAdapter.php | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/src/Flysystem/Adapter/FedoraAdapter.php b/src/Flysystem/Adapter/FedoraAdapter.php
+index 454680e89..94f1c6277 100644
+--- a/src/Flysystem/Adapter/FedoraAdapter.php
++++ b/src/Flysystem/Adapter/FedoraAdapter.php
+@@ -118,6 +118,10 @@ protected function getDiskPath(string $path) : string {
+     $fedora_id = 'info:fedora/' . $path;
+     $ocfl_dir = $this->getOcflDir($fedora_id);
+     $inventory = $ocfl_dir . '/extensions/0005-mutable-head/head/inventory.json';
++    // If no mutable head inventory fall back to root inventory.
++    if (!file_exists($inventory)) {
++      $inventory = $ocfl_dir . '/inventory.json';
++    }
+     if (!file_exists($inventory)) {
+       $this->logger->warning('OCFL inventory not found: @path', ['@path' => $inventory]);
+       return "";
