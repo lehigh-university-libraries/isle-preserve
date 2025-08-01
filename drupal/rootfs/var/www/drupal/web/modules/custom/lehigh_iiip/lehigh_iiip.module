@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Lehigh IIIP module.
+ */
+
+use Drupal\node\NodeForm;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function lehigh_iiip_views_pre_render(ViewExecutable $view) {
+  if ($view->id() !== 'collection_tabs') {
+    return;
+  }
+  foreach ($view->result as $row) {
+    if (isset($row->nid) && $row->nid == 453222) {
+      if (isset($view->field['field_collection_tabs'])) {
+        $field_handler = $view->field['field_collection_tabs'];
+        $field_handler->options['type'] = 'lehigh_iiip_collection_formatter';
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function lehigh_iiip_entity_type_alter(array &$entity_types) {
+  if (isset($entity_types['node'])) {
+    $entity_types['node']->setFormClass('iiip_submission', NodeForm::class);
+  }
+}

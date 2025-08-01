@@ -1,0 +1,7 @@
+name: 'Lehigh Iacocca International Internship Program'
+type: module
+description: 'Custom functionality to collect student submissions for IIIP'
+package: Custom
+core_version_requirement: ^10 || ^11
+dependencies:
+  - geolocation:geolocation

@@ -16,7 +16,7 @@ use Drupal\Core\Field\FormatterBase;
  *   field_types = {"islandora_collection_tabs"},
  * )
  */
-final class CollectionTabsDefaultFormatter extends FormatterBase {
+class CollectionTabsDefaultFormatter extends FormatterBase {
 
   /**
    * {@inheritdoc}
