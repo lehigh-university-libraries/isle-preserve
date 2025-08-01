@@ -156,6 +156,9 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
         if ($node->bundle() !== 'islandora_object') {
           return FALSE;
         }
+        if (in_array($node->id(), [453222])) {
+          return FALSE;
+        }
         if (lehigh_islandora_node_is_locally_restricted($node)) {
           return FALSE;
         }
