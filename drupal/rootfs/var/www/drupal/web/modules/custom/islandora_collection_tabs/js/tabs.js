@@ -21,6 +21,18 @@
             });
           }
         });
+        function activateTabWhenReady() {
+          const targetTab = $('a[data-bs-target="' + window.location.hash + '"]');
+
+          if (targetTab.length && typeof targetTab.tab === 'function') {
+            targetTab.tab('show');
+          } else if (targetTab.length) {
+            setTimeout(activateTabWhenReady, 50);
+          }
+        }
+
+        activateTabWhenReady();
+
       });
     }
   };
