@@ -9,7 +9,6 @@ use Drupal\islandora_collection_tabs\Plugin\Field\FieldFormatter\CollectionTabsD
 use Drupal\Core\Form\FormBuilderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\node\Entity\Node;
 
 /**
  * Plugin implementation of the 'islandora_collection_tabs_default' formatter.
@@ -76,17 +75,7 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
         $content[$id]['login'] = $loginForm;
       }
       else {
-        $node = Node::create([
-          'type' => 'islandora_object',
-          'field_member_of' => 453222,
-        ]);
-
-        $form_object = \Drupal::entityTypeManager()
-          ->getFormObject('node', 'iiip_submission')
-          ->setEntity($node);
-
-        $content[$id]['node_form'] = \Drupal::formBuilder()->getForm($form_object);
-
+        $content[$id]['node_form'] = $this->formBuilder->getForm('Drupal\lehigh_iiip\Form\SubmissionForm');
       }
     }
 
