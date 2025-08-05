@@ -16,7 +16,7 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "hierarchical_geographic",
  *   label = @Translation("Hierarchical Geographic"),
- *   category = @Translation("General"),
+ *   category = "General",
  *   default_widget = "hierarchical_geographic",
  *   default_formatter = "hierarchical_geographic_default",
  * )

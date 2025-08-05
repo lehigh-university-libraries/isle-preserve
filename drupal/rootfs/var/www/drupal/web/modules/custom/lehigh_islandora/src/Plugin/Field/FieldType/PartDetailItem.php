@@ -16,7 +16,8 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "part_detail",
  *   label = @Translation("PartDetail"),
- *   category = @Translation("General"),
+ *   description = @Translation("A reference field with a configurable type selector."),
+ *   category = "General",
  *   default_widget = "part_detail",
  *   default_formatter = "part_detail_default",
  * )

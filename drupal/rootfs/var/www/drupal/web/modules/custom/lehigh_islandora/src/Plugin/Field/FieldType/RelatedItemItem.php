@@ -16,7 +16,7 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "related_item",
  *   label = @Translation("Related Item"),
- *   category = @Translation("General"),
+ *   category = "General",
  *   default_widget = "related_item",
  *   default_formatter = "related_item_default",
  * )

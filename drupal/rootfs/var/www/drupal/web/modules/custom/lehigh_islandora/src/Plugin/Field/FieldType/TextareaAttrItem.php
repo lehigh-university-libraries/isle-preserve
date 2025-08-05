@@ -13,7 +13,7 @@ use Drupal\Core\TypedData\DataDefinition;
  * @FieldType(
  *   id = "textarea_attr",
  *   label = @Translation("Textarea with attributes"),
- *   category = @Translation("General"),
+ *   category = "General",
  *   default_widget = "attr_default",
  *   default_formatter = "attr_default",
  * )
