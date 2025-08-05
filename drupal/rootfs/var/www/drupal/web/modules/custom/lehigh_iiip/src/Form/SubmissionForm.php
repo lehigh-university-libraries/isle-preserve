@@ -499,6 +499,7 @@ final class SubmissionForm extends FormBase {
       'field_genre' => lehigh_islandora_get_tid_by_name('summaries', 'genre'),
       'field_resource_type' => lehigh_islandora_get_tid_by_name('Text', 'resource_types'),
       'field_edtf_date_issued' => $values['internship_year'],
+      'field_affiliated_institution' => lehigh_islandora_get_tid_by_name($values['company'], 'corporate_body'),
       'field_linked_agent' => [
         'rel_type' => 'relators:cre',
         'target_id' => $person,
