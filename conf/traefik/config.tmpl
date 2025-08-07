@@ -183,6 +183,7 @@ http:
           exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
           persistentStateFile: /tmp/state.json
           protectFileExtensions: php,html,jp2,tif,tiff
+          excludeRoutes: /oai/request
     redirect-sans:
       redirectRegex:
         regex: ^https?://([^/]+)(/.*)?
