@@ -238,6 +238,7 @@ services:
       - drupal-solr-config:/opt/solr/server/solr/default:z,rw
       - /opt/islandora/volumes/tmp/drupal:/tmp:rw
       - /opt/islandora/volumes/tmp/nginx:/var/lib/nginx/tmp:rw
+      - /opt/islandora/volumes/tmp/nginx-cache:/var/cache/nginx:rw
       - ./conf/php-fpm/www.conf:/etc/confd/templates/www.conf.tmpl:r
       - ./conf/nginx/drupal.fpm.conf.tmpl:/etc/confd/templates/drupal.fpm.conf.tmpl:r
       - ./conf/nginx/drupal.defaults.conf:/etc/nginx/shared/drupal.defaults.conf:r
@@ -270,6 +271,7 @@ services:
       - ./conf/nginx/types.conf:/etc/nginx/conf.d/types.conf:ro
       - /opt/islandora/volumes/tmp/drupal-static:/tmp:rw
       - /opt/islandora/volumes/tmp/nginx-static:/var/lib/nginx/tmp:rw
+      - /opt/islandora/volumes/tmp/nginx-static-cache:/var/cache/nginx:rw
     healthcheck:
       test: curl -sfo /dev/null http://localhost/themes/custom/lehigh/favicon.ico
       start_period: 5s
