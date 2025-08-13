@@ -148,6 +148,9 @@ services:
     image: islandora/cantaloupe:4.3.11@sha256:6e2e446fd147007f948f09c07a76cfdfda011b15cc4e03e487a6ae8d80972f8b
     environment:
       CANTALOUPE_LOG_APPLICATION_LEVEL: info
+      CANTALOUPE_HTTPSOURCE_CHUNKING_ENABLED: "false"
+      CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
+      CANTALOUPE_CACHE_SERVER_DERIVATIVE:  "FilesystemCache"
     secrets:
       - source: CERT_AUTHORITY
         target: CERT_PUBLIC_KEY
