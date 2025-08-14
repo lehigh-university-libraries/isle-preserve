@@ -68,6 +68,7 @@
         "drupal/honeypot": "^2.2",
         "drupal/inline_entity_form": "^3.0@RC",
         "drupal/islandora": "^2.16",
+        "drupal/islandora_access": "^1.0@dev",
         "drupal/islandora_csl": "^1.0@beta",
         "drupal/islandora_jwks": "^1.0@beta",
         "drupal/islandora_mirador": "2.x-dev",

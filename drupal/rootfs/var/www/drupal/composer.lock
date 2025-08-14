@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e363329b7ec9db763a95cdd4330e99f0",
+    "content-hash": "d1428fdb75a153dd19add35e2581839d",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4881,6 +4881,47 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/islandora",
                 "issues": "https://github.com/Islandora/documentation/issues"
+            }
+        },
+        {
+            "name": "drupal/islandora_access",
+            "version": "dev-1.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/islandora_access.git",
+                "reference": "44001cbcd16f4e5d06b7fd460623fdf3a800a2c7"
+            },
+            "require": {
+                "drupal/core": "^11.1"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.x": "1.x-dev"
+                },
+                "drupal": {
+                    "version": "1.0.0-alpha1+0-dev",
+                    "datestamp": "1755187314",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "joecorall",
+                    "homepage": "https://www.drupal.org/user/1144790"
+                }
+            ],
+            "description": "Assign administrators to parent items to easily assign editors to islandora objects",
+            "homepage": "https://www.drupal.org/project/islandora_access",
+            "support": {
+                "source": "https://git.drupalcode.org/project/islandora_access"
             }
         },
         {
@@ -22585,6 +22626,7 @@
         "drupal/flysystem_gcs": 10,
         "drupal/flysystem_gcs_cors": 15,
         "drupal/inline_entity_form": 5,
+        "drupal/islandora_access": 20,
         "drupal/islandora_csl": 10,
         "drupal/islandora_jwks": 10,
         "drupal/islandora_mirador": 20,
