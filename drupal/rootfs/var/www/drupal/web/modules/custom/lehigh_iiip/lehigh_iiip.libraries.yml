@@ -1,4 +1,7 @@
 google_places_autocomplete:
+  css:
+    component:
+      css/iiip.css: {}
   js:
     js/google-places-autocomplete.js: {}
   dependencies:

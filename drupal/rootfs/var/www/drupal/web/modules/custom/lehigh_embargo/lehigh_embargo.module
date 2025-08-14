@@ -6,7 +6,6 @@
  */
 
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\node\Entity\Node;
 
 define('LEHIGH_EMBARGO_INDEFINITE', '2999-12-31');
 

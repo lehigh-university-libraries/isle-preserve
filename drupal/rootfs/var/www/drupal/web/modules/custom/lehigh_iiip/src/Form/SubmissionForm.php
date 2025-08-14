@@ -64,7 +64,7 @@ final class SubmissionForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
-    $required = FALSE;
+    $required = TRUE;
     $key = getenv('GOOGLE_MAPS_API_KEY');
     $form['#attached']['html_head'][] = [
       [
@@ -474,6 +474,10 @@ final class SubmissionForm extends FormBase {
       $form_state->setErrorByName('file_uploads', $this->t('Please upload at least one file.'));
     }
 
+    if (empty($values['student_photo'])) {
+      $form_state->setErrorByName('student_photo', $this->t('Please upload your photo.'));
+    }
+
     $coordinates = explode(',', $values['latitude_longitude']);
     if (count($coordinates) !== 2 || !is_numeric($coordinates[0]) || !is_numeric($coordinates[1])) {
       $form_state->setErrorByName('latitude_longitude',
@@ -489,6 +493,7 @@ final class SubmissionForm extends FormBase {
     $uid = $this->currentUser->id();
     $coordinates = explode(',', $values['latitude_longitude']);
     $person = lehigh_islandora_get_tid_by_name($values['student_name'] . ' - IIIP', 'person', TRUE);
+
     $student = Node::create([
       'type' => 'islandora_object',
       'field_member_of' => 453222,
@@ -499,7 +504,7 @@ final class SubmissionForm extends FormBase {
       'field_genre' => lehigh_islandora_get_tid_by_name('summaries', 'genre'),
       'field_resource_type' => lehigh_islandora_get_tid_by_name('Text', 'resource_types'),
       'field_edtf_date_issued' => $values['internship_year'],
-      'field_affiliated_institution' => lehigh_islandora_get_tid_by_name($values['company'], 'corporate_body'),
+      'field_affiliated_institution' => lehigh_islandora_get_tid_by_name($values['company'], 'corporate_body', TRUE),
       'field_linked_agent' => [
         'rel_type' => 'relators:cre',
         'target_id' => $person,
@@ -603,7 +608,9 @@ final class SubmissionForm extends FormBase {
           [
             'attr0' => 'description',
             'format' => 'basic_html',
-            'value' => '<p>Company and Position Description:</p>' . $values["description_$i"],
+            'value' => '<p>Company and Position Description:</p>'
+            . '<p>' . $values['position_title'] . '</p>'
+            . '<p>' . $values["description_$i"] . '</p>',
           ],
         ],
       ]);
@@ -620,6 +627,8 @@ final class SubmissionForm extends FormBase {
       $media->save();
     }
 
+    // Save the values just in case as we roll this out.
+    \Drupal::logger('islandora_iiip')->notice("Submission received @values", ['@values' => json_encode($values)]);
     $form_state->setRedirect('entity.node.canonical', ['node' => $student->id()]);
   }
 

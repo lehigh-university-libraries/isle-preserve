@@ -6,6 +6,8 @@
           $('#primary-content, #block-lehigh-browseitemssummary').each(function () {
             $(this).addClass('d-none');
           });
+          $('.messages.messages--error').prependTo('.tab-pane.active');
+
         }
 
         $('#block-lehigh-views-block-collection-tabs-block-1 .nav-tabs a').on('click', function() {

@@ -75,8 +75,18 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
         $content[$id]['login'] = $loginForm;
       }
       else {
-        $content[$id]['node_form'] = $this->formBuilder->getForm('Drupal\lehigh_iiip\Form\SubmissionForm');
+        $nodeForm = $this->formBuilder->getForm('Drupal\lehigh_iiip\Form\SubmissionForm');
+        $content[$id]['node_form'] = $nodeForm;
       }
+      if (!empty(\Drupal::messenger()->messagesByType('error'))) {
+        $tabs = &$element[0]['tabs'];
+        $collectionId = 'tab-0';
+        $tabs[$collectionId]['anchor']['#attributes']['class'] = ['nav-link', 'fs-5', 'pt-3', 'fw-medium', 'text-dark'];
+        $tabs[$collectionId]['anchor']['#attributes']['aria-selected'] = "false";
+        $content[$collectionId]['#attributes']['class'] = ['tab-pane', 'fade'];
+        $this->setDefault($id, $tabs, $content);
+      }
+
     }
 
     return $element;

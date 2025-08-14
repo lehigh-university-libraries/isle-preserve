@@ -136,7 +136,7 @@ class CollectionTabsDefaultFormatter extends FormatterBase {
   /**
    * Set a tab/content pair as the default on page load.
    */
-  private function setDefault($id, &$tabs, &$content) {
+  protected function setDefault($id, &$tabs, &$content) {
     $tabs[$id]['anchor']['#attributes']['class'][] = 'active';
     $tabs[$id]['anchor']['#attributes']['aria-selected'] = "true";
     $content[$id]['#attributes']['class'][] = 'show active';
