@@ -51,7 +51,7 @@ $config['search_api.server.default_solr_server']['backend_config']['connector_co
 $config['search_api.server.default_solr_server']['backend_config']['connector_config']['port'] = getenv('DRUPAL_DEFAULT_SOLR_PORT');
 $config['search_api.server.default_solr_server']['backend_config']['connector_config']['core'] = getenv('DRUPAL_DEFAULT_SOLR_CORE');
 $config['islandora_repository_reports_activemq.settings']['islandora_repository_reports_activemq_admin_password'] = getenv('ACTIVEMQ_WEB_ADMIN_PASSWORD');
-
+$config['geolocation_google_maps.settings']['google_map_api_key'] = getenv('GOOGLE_MAPS_API_KEY');
 $config['turnstile.settings']['site_key'] = getenv("TURNSTILE_SITE_KEY");
 $config['turnstile.settings']['secret_key'] = getenv("TURNSTILE_SECRET_KEY");
 $settings['hash_salt'] = getenv('DRUPAL_DEFAULT_SALT');

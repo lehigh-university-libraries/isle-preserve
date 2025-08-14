@@ -9,6 +9,7 @@ use Drupal\islandora_collection_tabs\Plugin\Field\FieldFormatter\CollectionTabsD
 use Drupal\Core\Form\FormBuilderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\views\Views;
 
 /**
  * Plugin implementation of the 'islandora_collection_tabs_default' formatter.
@@ -55,6 +56,13 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
   public function viewElements(FieldItemListInterface $items, $langcode): array {
     $element = parent::viewElements($items, $langcode);
     $content = &$element[0]['content'];
+
+    $view = Views::getView('map');
+    if ($view) {
+      $view->setDisplay('default');
+      $view->execute();
+      $content['tab-0']['view'] = $view->render();
+    }
 
     foreach ($items as $delta => $item) {
       $label = strtolower($item->label);

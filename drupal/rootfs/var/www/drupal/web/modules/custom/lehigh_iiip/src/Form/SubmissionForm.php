@@ -65,19 +65,21 @@ final class SubmissionForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $required = TRUE;
-    $key = getenv('GOOGLE_MAPS_API_KEY');
-    $form['#attached']['html_head'][] = [
-      [
-        '#type' => 'html_tag',
-        '#tag' => 'script',
-        '#attributes' => [
-          'src' => "https://maps.googleapis.com/maps/api/js?key=$key&libraries=places&loading=async",
-          'async' => TRUE,
-          'defer' => TRUE,
+    if (\Drupal::currentUser()->isAnonymous()) {
+      $key = getenv('GOOGLE_MAPS_API_KEY');
+      $form['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#attributes' => [
+            'src' => "https://maps.googleapis.com/maps/api/js?key=$key&libraries=places&loading=async",
+            'async' => TRUE,
+            'defer' => TRUE,
+          ],
         ],
-      ],
-      'google_maps_api',
-    ];
+        'google_maps_api',
+      ];
+    }
     $form['student_details'] = [
       '#type' => 'html_tag',
       '#tag' => 'div',
