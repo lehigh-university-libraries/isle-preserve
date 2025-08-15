@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-ffmpeg
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-ffmpeg:main@sha256:93cfd49e031dd02cfc0ddc497ffc5fcb1053c4812eb58897e0929c2d4b79c0a5
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-ffmpeg:main@sha256:9fa508d61b3a33405d9f3c693e78b4a5b718170a1da24c9286669cf829f11c41
           imagePullPolicy: IfNotPresent
           env:
           - name: "JWKS_URI"
