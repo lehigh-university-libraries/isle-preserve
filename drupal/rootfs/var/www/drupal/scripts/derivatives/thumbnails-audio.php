@@ -9,7 +9,7 @@ $entity_type_manager = \Drupal::entityTypeManager();
 $node_storage   = $entity_type_manager->getStorage('node');
 $file_system = \Drupal::service('file_system');
 
-// video items
+// audio items
 // that do not have a thumbnail
 $rows = \Drupal::database()->query("SELECT mo.field_media_of_target_id, mo.entity_id
   FROM media_field_data m
@@ -17,7 +17,7 @@ $rows = \Drupal::database()->query("SELECT mo.field_media_of_target_id, mo.entit
   INNER JOIN media__field_media_use mu ON m.mid = mu.entity_id
   INNER JOIN node_field_data n ON n.nid = field_media_of_target_id
   WHERE mu.field_media_use_target_id = 16
-    AND mo.bundle IN ('video')
+    AND mo.bundle IN ('audio')
     AND mo.field_media_of_target_id NOT IN (
       SELECT mo.field_media_of_target_id FROM media_field_data m
       INNER JOIN media__field_media_of mo ON m.mid = mo.entity_id
@@ -37,7 +37,7 @@ foreach($rows as $nid => $mid) {
   if (!$media) {
     continue;
   }
-  $fileEntity = $media->get('field_media_video_file')->entity;
+  $fileEntity = $media->get('field_media_audio_file')->entity;
   if (is_null($fileEntity)) {
     continue;
   }
@@ -47,13 +47,13 @@ foreach($rows as $nid => $mid) {
     continue;
   }
 
-  $uri = "public://derivatives/thumbnail/node/$year-$month/$nid.jpg";
+  $uri = "public://derivatives/audio/node/$year/$month/$nid.jpg";
   $dir = dirname($uri);
   $file_system->prepareDirectory($dir, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY);
   $base_dir = $file_system->realpath($dir);
 
   $escapedFile = str_replace("\$", "\\$", $file);
-  $cmd = "ffmpeg -i \"$escapedFile\" -ss 00:00:03.000 -frames 1 -vf scale=750:-2 -f image2pipe -vcodec mjpeg $base_dir/$nid.jpg";
+  $cmd = "ffmpeg -i \"$escapedFile\" -filter_complex \"showwavespic=colors=#FFC627\" -frames:v 1 -f image2pipe -vcodec mjpeg $base_dir/$nid.jpg";
   exec($cmd);
   if (!file_exists("$base_dir/$nid.jpg")) {
     continue;
