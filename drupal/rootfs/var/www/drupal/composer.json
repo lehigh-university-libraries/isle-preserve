@@ -209,7 +209,6 @@
             },
             "drupal/islandora": {
                 "override domain": "assets/patches/drupal/islandora/event-overwrite.patch",
-                "ensure rel key exists": "assets/patches/drupal/islandora/1083.patch",
                 "read from OCFL root": "assets/patches/drupal/islandora/fcrepo-ro.patch"
             },
             "islandora-rdm/islandora_fits": {
