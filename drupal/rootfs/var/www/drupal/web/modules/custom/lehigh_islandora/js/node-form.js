@@ -42,7 +42,7 @@
           "#field-self-submission-creator-add-more-wrapper .field-add-more-submit",
         ).val("Add another person");
         const published = document.getElementById("edit-status-value");
-        published.checked = FALSE;
+        published.checked = false;
         const options = {
           "": "- Select",
           "http://rightsstatements.org/vocab/InC/1.0/": "IN COPYRIGHT",
