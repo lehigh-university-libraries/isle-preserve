@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-cleanpdf
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-cleanpdf:main@sha256:c5bcac230e0a80af0cf2212c67400980b9576e065ec3ced897a2675df8f16ad9
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-cleanpdf:main@sha256:66e829c17037c8649c6576b9600851b73a82cf700e03a5b337bbc83da560b77a
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"

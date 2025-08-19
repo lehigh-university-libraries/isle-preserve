@@ -6,26 +6,26 @@ services:
       ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
   coverpage:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:81cf2edb43c7b07bf63c3a2b17ec9528b959bd573fa216f6e7321def3bebf1c9
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:1717fcd66dc640bba059386764f8c67151a5861438f6ce68041d900f5088cd71
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:805df1307b75227d2e943431113e3abd00de657c429bdd7e52af013af8d8bc6d
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:cea4780e53ce12056580eda436dee0a737c856b0cd7fd278ac0b1663592a8b6e
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:bcc9c4ca45f465faf596bbf5211015a818de01fa6195cc3d0d2ff9533aaad3b5
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:2fdd97905302e66f70d4f5d2804529e548493590b0905b1dd962f2ca8cbcd56d
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:a9af6f56878cbc1c283cce1d54a6c2f9cb471dfcfa99425c54593fc9a12e042a
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:0c21149791ad6db345b312c4ec38859101abf61c05613aa1a8f67241ef23512c
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -35,7 +35,7 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   mariadb:
-    image: mariadb:11.8.2-noble@sha256:2bcbaec92bd9d4f6591bc8103d3a8e6d0512ee2235506e47a2e129d190444405
+    image: mariadb:11.8.3-noble@sha256:272084c2dec70619714df329c4ffcb336e3f8c723072c3f56f2e4015997bbf2c
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
