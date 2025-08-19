@@ -56,7 +56,7 @@ class GcsTest extends ExistingSiteBase {
     $this->drupalGet($uri, [
       'query' => ['foo' => rand()],
     ]);
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertSession()->statusCodeEquals(404);
   }
 
 }
