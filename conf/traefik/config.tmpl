@@ -33,6 +33,15 @@ http:
         - https
       tls: {}
       service: fabricator
+    hocr-edit:
+      rule: (PathPrefix(`/hocr`) || PathPrefix(`/static/`)) && (HeaderRegexp(`X-Forwarded-For`, `^128\.180\.`) || ClientIP(`192.168.0.0/16`))
+      entryPoints:
+        - https
+      middlewares:
+        - hocr-edit-strip-prefix
+      tls: {}
+      service: hocr-edit
+      priority: 100
     cantaloupe:
       rule: PathPrefix(`/cantaloupe`)
       entryPoints:
@@ -90,6 +99,10 @@ http:
       loadBalancer:
         servers:
           - url: http://fabricator:8080
+    hocr-edit:
+      loadBalancer:
+        servers:
+          - url: http://hocr-edit:8888
     cantaloupe:
       loadBalancer:
         servers:
@@ -140,6 +153,10 @@ http:
       stripPrefix:
         prefixes:
           - /cantaloupe
+    hocr-edit-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - /hocr
     captcha-protect:
       plugin:
         captcha-protect:
