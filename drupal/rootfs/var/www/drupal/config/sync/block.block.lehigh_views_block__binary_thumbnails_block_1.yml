@@ -33,6 +33,7 @@ visibility:
       node: '@node.node_route_context:node'
     uri: 'http://purl.org/coar/resource_type/c_1843'
     logic: and
+    naive_references: false
   'entity_bundle:node':
     id: 'entity_bundle:node'
     negate: false

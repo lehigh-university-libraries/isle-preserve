@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.islandora_object.field_abstract
     - field.field.node.islandora_object.field_access
     - field.field.node.islandora_object.field_add_coverpage
+    - field.field.node.islandora_object.field_administrator
     - field.field.node.islandora_object.field_affiliated_institution
     - field.field.node.islandora_object.field_alt_title
     - field.field.node.islandora_object.field_classification
@@ -125,6 +126,7 @@ hidden:
   field_abstract: true
   field_access: true
   field_add_coverpage: true
+  field_administrator: true
   field_affiliated_institution: true
   field_alt_title: true
   field_classification: true

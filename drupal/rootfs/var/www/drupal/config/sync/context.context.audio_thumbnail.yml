@@ -1,0 +1,38 @@
+uuid: 33645df9-deda-414f-be7a-f5e1dbbcbf2e
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora
+label: 'Audio Thumbnail'
+name: audio_thumbnail
+group: Derivatives
+description: ''
+requireAllConditions: true
+disabled: false
+conditions:
+  media_has_term:
+    id: media_has_term
+    negate: false
+    uuid: fc04e245-9570-4ceb-9fb4-f5914f2ea638
+    context_mapping:
+      media: '@islandora.media_route_context_provider:media'
+    uri: 'http://pcdm.org/use#OriginalFile'
+    logic: and
+    naive_references: 0
+  node_has_term:
+    id: node_has_term
+    negate: false
+    uuid: 6376fd5d-0bcb-41b3-89eb-f0f444b5ac85
+    context_mapping:
+      node: '@node.node_route_context:node'
+    uri: 'http://purl.org/coar/resource_type/c_18cc'
+    logic: and
+    naive_references: 0
+reactions:
+  derivative:
+    id: derivative
+    saved: false
+    actions:
+      generate_an_image_derivative: generate_an_image_derivative
+weight: 0

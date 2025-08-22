@@ -1,0 +1,31 @@
+uuid: 5c92a364-ca77-4e31-bf39-9103dc524b2b
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.submissions
+  module:
+    - system
+    - views
+  theme:
+    - lehigh
+id: lehigh_views_block__submissions_block_1
+theme: lehigh
+region: content
+weight: 0
+provider: null
+plugin: 'views_block:submissions-block_1'
+settings:
+  id: 'views_block:submissions-block_1'
+  label: ''
+  label_display: visible
+  provider: views
+  context_mapping: {  }
+  views_label: ''
+  items_per_page: null
+  exposed: {  }
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: "/user\r\n/user/*"

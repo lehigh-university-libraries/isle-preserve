@@ -14,6 +14,7 @@ report-only:
         - 'https://*.analytics.google.com'
         - 'https://*.googletagmanager.com'
         - 'https://cantaloupe.libops.io'
+        - 'https://maps.googleapis.com'
     font-src:
       base: self
       sources:
@@ -26,6 +27,8 @@ report-only:
         - 'https://*.googletagmanager.com'
         - 'https://www.lehigh.edu'
         - 'https://cantaloupe.libops.io'
+        - 'https://maps.googleapis.com'
+        - 'https://maps.gstatic.com'
     object-src:
       base: none
     script-src:

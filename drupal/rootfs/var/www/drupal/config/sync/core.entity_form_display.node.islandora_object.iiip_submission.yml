@@ -1,10 +1,9 @@
-uuid: 41fb9e40-d524-40ac-a87f-e3d501fae2b0
+uuid: c603bddc-0b7d-4437-8963-ed0bbae06dc5
 langcode: en
 status: true
 dependencies:
   config:
-    - core.entity_form_mode.node.user_submission
-    - core.entity_form_mode.taxonomy_term.create_person
+    - core.entity_form_mode.node.iiip_submission
     - field.field.node.islandora_object.field_abstract
     - field.field.node.islandora_object.field_access
     - field.field.node.islandora_object.field_add_coverpage
@@ -91,31 +90,28 @@ dependencies:
     - field.field.node.islandora_object.field_weight
     - node.type.islandora_object
   module:
-    - autocomplete_deluxe
-    - controlled_access_terms
     - field_group
-    - file
-    - inline_entity_form
-    - lehigh_islandora
+    - flysystem_gcs_cors
+    - geolocation
     - text
 third_party_settings:
   field_group:
     group_structure:
       children:
         - langcode
+        - status
         - uid
         - created
         - promote
         - sticky
-        - path
         - field_hide_gscholar_metatags
         - field_hide_hocr
+        - field_local_restriction
         - field_site_disposition
         - field_sort_by
         - field_thumbnail
         - field_viewer_override
         - field_weight
-        - url_redirects
         - translation
       label: System
       region: hidden
@@ -133,6 +129,7 @@ third_party_settings:
     group_title_details:
       children:
         - field_alt_title
+        - field_full_title
         - field_original_title
         - field_title_part_name
       label: 'Title Details'
@@ -229,7 +226,7 @@ third_party_settings:
       label: 'Specific Subject Types'
       region: hidden
       parent_name: group_vocabularies
-      weight: 8
+      weight: 10
       format_type: details
       format_settings:
         classes: ''
@@ -239,7 +236,6 @@ third_party_settings:
         required_fields: true
     group_geographic_coordinates:
       children:
-        - field_coordinates
         - field_coordinates_text
         - field_physical_location
         - field_place_published
@@ -286,12 +282,12 @@ third_party_settings:
         - group_dissertations
         - group_creator_metadata
         - group_geographic_coordinates
-        - field_edtf_date_created
         - group_other
+        - group_collection_display
       label: Metadata
       region: hidden
       parent_name: ''
-      weight: 30
+      weight: 0
       format_type: tabs
       format_settings:
         classes: ''
@@ -308,6 +304,9 @@ third_party_settings:
         - field_date_valid
         - field_edtf_date
         - field_edtf_date_captured
+        - field_edtf_date_created
+        - field_edtf_date_embargo
+        - field_edtf_date_issued
       label: Dates
       region: hidden
       parent_name: group_metadata_tabs
@@ -322,8 +321,12 @@ third_party_settings:
         required_fields: true
     group_basic:
       children:
+        - field_abstract
+        - field_access
+        - field_linked_agent
         - field_member_of
         - field_model
+        - field_rights
       label: Basic
       region: hidden
       parent_name: group_metadata_tabs
@@ -341,6 +344,7 @@ third_party_settings:
         - field_digital_format
         - field_digital_origin
         - field_genre
+        - field_keywords
         - field_media_type
         - field_physical_form
         - field_resource_type
@@ -360,10 +364,8 @@ third_party_settings:
         required_fields: true
     group_creator_metadata:
       children:
-        - field_creator_description
         - field_creator_role
         - field_degree_level
-        - field_degree_name
       label: 'Creator metadata'
       region: hidden
       parent_name: group_metadata_tabs
@@ -379,14 +381,19 @@ third_party_settings:
     group_other:
       children:
         - field_collection_hierarchy
+        - field_department_name
+        - field_edition
         - field_extent
         - field_language
+        - field_part_detail
+        - field_record_origin
+        - field_related_item
         - field_relation
         - field_source
       label: Other
       region: hidden
       parent_name: group_metadata_tabs
-      weight: 3
+      weight: 2
       format_type: tab
       format_settings:
         classes: ''
@@ -395,178 +402,64 @@ third_party_settings:
         formatter: closed
         description: ''
         required_fields: true
-    group_description:
-      children: {  }
-      label: 'Lehigh Preserve Self Submission'
-      region: content
-      parent_name: ''
-      weight: 0
-      format_type: details
+    group_collection_display:
+      children:
+        - field_collection_tabs
+        - field_crop_thumbnails_top
+      label: 'Collection Display'
+      region: hidden
+      parent_name: group_metadata_tabs
+      weight: 3
+      format_type: tab
       format_settings:
         classes: ''
-        show_empty_fields: true
+        show_empty_fields: false
         id: ''
         label_as_html: false
-        open: true
-        description: "Welcome to the self submission form for The Preserve: Lehigh Library Digital Collections. <br>\r\nUse this form to add your material to Lehigh's institutional repository (IR), where it will be preserved and made accessible to the public. Common submission types include but are not limited to: journal articles, book chapters, white papers, conference presentations, posters, open educational resources (OERs), or datasets. Materials and information submitted using this form will be reviewed by library staff for completeness and appropriateness before being made publicly available. <br>\r\nIf you have any questions regarding this form or if your submission is not accommodated by this form, please reach out to us via our <a href=\"https://preserve.lehigh.edu/contact-support\">contact form</a>."
-        required_fields: false
+        formatter: closed
+        description: ''
+        required_fields: true
 _core:
   default_config_hash: wnUDv31TLzQaxvdHct4EV2lXhhaWUIf_1g_d0fLUWs4
-id: node.islandora_object.user_submission
+id: node.islandora_object.iiip_submission
 targetEntityType: node
 bundle: islandora_object
-mode: user_submission
+mode: iiip_submission
 content:
-  field_abstract:
-    type: attr_default
-    weight: 9
+  field_coordinates:
+    type: geolocation_html5
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_access:
+  field_creator_description:
     type: text_textarea
-    weight: 13
+    weight: 0
     region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-  field_department_name:
-    type: autocomplete_deluxe
-    weight: 4
+  field_degree_name:
+    type: entity_reference_autocomplete
+    weight: 0
     region: content
     settings:
       match_operator: CONTAINS
-      autocomplete_route_name: autocomplete_deluxe.autocomplete
-      size: 60
-      selection_handler: default
       match_limit: 10
-      min_length: 0
-      delimiter: ''
-      not_found_message_allow: false
-      not_found_message: "The term '@term' will be added"
-      new_terms: true
-      no_empty_message: 'No terms could be found. Please type in order to add a new term.'
-    third_party_settings: {  }
-  field_edition:
-    type: string_textfield
-    weight: 8
-    region: content
-    settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_edtf_date_created:
-    type: edtf_default
-    weight: 2
-    region: content
-    settings:
-      strict_dates: false
-      intervals: false
-      sets: false
-    third_party_settings: {  }
-  field_edtf_date_embargo:
-    type: edtf_default
-    weight: 7
-    region: content
-    settings:
-      strict_dates: false
-      intervals: true
-      sets: false
-    third_party_settings: {  }
-  field_edtf_date_issued:
-    type: edtf_default
-    weight: 6
-    region: content
-    settings:
-      strict_dates: false
-      intervals: true
-      sets: false
-    third_party_settings: {  }
   field_file_uploads:
-    type: file_generic
-    weight: 15
+    type: flysystem_gcs_cors_file_widget
+    weight: 0
     region: content
     settings:
       progress_indicator: throbber
     third_party_settings: {  }
-  field_full_title:
-    type: string_textarea
-    weight: 1
-    region: content
-    settings:
-      rows: 1
-      placeholder: 'Title: Subtitle'
-    third_party_settings: {  }
-  field_input_source:
-    type: string_textfield
-    weight: 17
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_keywords:
-    type: entity_reference_autocomplete
-    weight: 10
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_local_restriction:
-    type: boolean_checkbox
-    weight: 14
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
-  field_part_detail:
-    type: part_detail
-    weight: 11
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_rights:
-    type: string_textfield
-    weight: 12
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_self_submission_creator:
-    type: inline_entity_form_simple
-    weight: 3
-    region: content
-    settings:
-      form_mode: create_person
-      override_labels: true
-      label_singular: ''
-      label_plural: ''
-      allow_new: true
-      collapsible: false
-      collapsed: false
-      revision: false
-      hide_fieldset: false
-      hide_title: false
-      config_labels_button: complex_label
-      labels:
-        label_singular_person: person
-        label_plural_person: people
-    third_party_settings: {  }
-  status:
-    type: boolean_checkbox
-    weight: 16
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 2
+    weight: 0
     region: content
     settings:
       size: 60
@@ -574,6 +467,8 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
+  field_abstract: true
+  field_access: true
   field_add_coverpage: true
   field_administrator: true
   field_affiliated_institution: true
@@ -581,11 +476,9 @@ hidden:
   field_classification: true
   field_collection_hierarchy: true
   field_collection_tabs: true
-  field_coordinates: true
   field_coordinates_text: true
   field_copyright_date: true
   field_create_doi: true
-  field_creator_description: true
   field_creator_email: true
   field_creator_role: true
   field_crop_thumbnails_top: true
@@ -594,30 +487,39 @@ hidden:
   field_date_season: true
   field_date_valid: true
   field_degree_level: true
-  field_degree_name: true
+  field_department_name: true
   field_description: true
   field_digital_format: true
   field_digital_origin: true
   field_display_hints: true
+  field_edition: true
   field_edtf_date: true
   field_edtf_date_captured: true
+  field_edtf_date_created: true
+  field_edtf_date_embargo: true
+  field_edtf_date_issued: true
   field_extent: true
   field_frequency: true
+  field_full_title: true
   field_genre: true
   field_geographic_subject: true
   field_hide_gscholar_metatags: true
   field_hide_hocr: true
   field_identifier: true
+  field_input_source: true
+  field_keywords: true
   field_language: true
   field_lcc_classification: true
   field_lcsh_topic: true
   field_linked_agent: true
+  field_local_restriction: true
   field_media_type: true
   field_member_of: true
   field_mode_of_issuance: true
   field_model: true
   field_note: true
   field_original_title: true
+  field_part_detail: true
   field_physical_description: true
   field_physical_form: true
   field_physical_location: true
@@ -629,6 +531,8 @@ hidden:
   field_related_item: true
   field_relation: true
   field_resource_type: true
+  field_rights: true
+  field_self_submission_creator: true
   field_site_disposition: true
   field_sort_by: true
   field_source: true
@@ -646,6 +550,7 @@ hidden:
   langcode: true
   path: true
   promote: true
+  status: true
   sticky: true
   translation: true
   uid: true

@@ -1,0 +1,11 @@
+uuid: aa7d0920-3343-4dec-a89a-8947f7c245dd
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.iiip_submission
+label: 'IIIP Submission'
+description: null
+targetEntityType: node
+cache: true

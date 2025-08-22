@@ -11,8 +11,8 @@ label: Administrator
 weight: 3
 is_admin: true
 permissions:
-  - 'create field_crop_thumbnails_top'
-  - 'edit field_crop_thumbnails_top'
-  - 'edit own field_crop_thumbnails_top'
-  - 'view field_crop_thumbnails_top'
-  - 'view own field_crop_thumbnails_top'
+  - 'create field_administrator'
+  - 'edit field_administrator'
+  - 'edit own field_administrator'
+  - 'view field_administrator'
+  - 'view own field_administrator'

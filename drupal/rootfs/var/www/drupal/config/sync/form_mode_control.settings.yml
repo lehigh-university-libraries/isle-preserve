@@ -47,3 +47,4 @@
 'use  The form mode default linked to  user entity( user )': user.user.default
 'use  The form mode create_person linked to  taxonomy_term entity( person )': taxonomy_term.person.create_person
 'use  The form mode default linked to  block_content entity( contact_form )': block_content.contact_form.default
+'use  The form mode iiip_submission linked to  node entity( islandora_object )': node.islandora_object.iiip_submission

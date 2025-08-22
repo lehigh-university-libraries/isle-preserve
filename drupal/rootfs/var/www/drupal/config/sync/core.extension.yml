@@ -3,6 +3,7 @@ _core:
 module:
   action: 0
   admin_toolbar: 0
+  admin_toolbar_tools: 0
   antibot: 0
   autocomplete_deluxe: 0
   automated_cron: 0
@@ -59,6 +60,7 @@ module:
   focal_point: 0
   form_mode_control: 0
   geolocation: 0
+  geolocation_google_maps: 0
   google_tag: 0
   hal: 0
   help: 0
@@ -66,6 +68,7 @@ module:
   image: 0
   inline_entity_form: 0
   islandora: 0
+  islandora_access: 0
   islandora_audio: 0
   islandora_breadcrumbs: 0
   islandora_collection_tabs: 0
@@ -103,6 +106,7 @@ module:
   ldap_servers: 0
   ldap_user: 0
   lehigh_embargo: 0
+  lehigh_iiip: 0
   lehigh_islandora: 0
   libraries: 0
   link: 0
