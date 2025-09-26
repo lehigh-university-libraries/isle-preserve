@@ -61,7 +61,7 @@
       ],
       groupName: 'islandora-major-update',
       matchPackageNames: [
-        '/^islandora//',
+        'islandora/*',
       ],
     },
     {
