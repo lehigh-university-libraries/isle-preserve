@@ -56,13 +56,13 @@
       matchDatasources: [
         'docker',
       ],
-      matchPackagePatterns: [
-        '^islandora/',
-      ],
       matchUpdateTypes: [
         'major',
       ],
       groupName: 'islandora-major-update',
+      matchPackageNames: [
+        '/^islandora//',
+      ],
     },
     {
       matchUpdateTypes: [
