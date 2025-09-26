@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-htr
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-openai-htr:main@sha256:7d44c5842baa95f983a05a8585d25b68b115e3ad2a048fea40762aaacb48c178
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-openai-htr:main@sha256:43e4d82bc7f4e374887cace9f5588efc62d7f8a3e36db7a68ea23cd08bf0f795
           imagePullPolicy: IfNotPresent
           env:
             - name: OPENAI_API_KEY

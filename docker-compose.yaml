@@ -62,7 +62,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:4.3.13@sha256:eb2dac70a3fe680b4fecb974db3bc20663fb2633049bacff93b553b45c1b9677
+    image: islandora/alpaca:4.3.18@sha256:ba5d687baa6d9c496b46f84a1b8e0e8ccc2d9b36a0a0c534742e96fb6be91379
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -106,7 +106,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:4.3.13@sha256:a556fe2f362af930aba40603f00b7d217d4f444cee2bbdffcca2bca2759dfa0e
+    image: islandora/mariadb:4.3.18@sha256:fd5934a4b8d188ccabb4219c1a0bbd00c8aecec91addba9ab8463838516cc5f2
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -129,7 +129,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:4.3.13@sha256:f20611605a073dceceda4773ebdb6003c776d4f627cdd4a186d363d07bc68306
+    image: islandora/activemq:4.3.18@sha256:c1dd9f3554c612c038d7918c8b05729f384bb549ad75c44103f787c90629f94c
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -145,7 +145,7 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: islandora/cantaloupe:4.3.13@sha256:10ecef0c02f4b866a2b76efb498410bf7bdfbedcd56821159026285cbd5a382a
+    image: islandora/cantaloupe:4.3.18@sha256:c4ce52ad92123f1369890f8021dd30773fb2a705738053b5f1341e6c7d5c79c2
     environment:
       CANTALOUPE_LOG_APPLICATION_LEVEL: info
       CANTALOUPE_HTTPSOURCE_CHUNKING_ENABLED: "false"
@@ -160,7 +160,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.39@sha256:3e4cfa8274fc07f27f040ec994c7506a4438a835e2e229673b3da06c8c3d99b2
+    image: memcached:1.6.39@sha256:68c1185d50600b472705b5a700037f4b8bab28f04a188bdf3a79d38e24dbfb95
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -311,7 +311,7 @@ services:
     volumes:
       - ./secrets/htr.key:/app/svc.json:r
   fcrepo:
-    image: islandora/fcrepo6:4.3.13@sha256:0935fe956b87d2acbf84b98687660cc9065755074a0dd9284c91b228b01e461c
+    image: islandora/fcrepo6:4.3.18@sha256:97876770144ec44ec2d055fb8bcf585aa4e62f40912e5f15034ecdddb65c4f36
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -333,7 +333,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:4.3.13@sha256:be6e7695e5b386a8b4275360faff46be0a0d7712c7167c2921d7cee024893b28
+    image: islandora/solr:4.3.18@sha256:a6cc046cabfc31c41427a8b3199b9969d565b4db03311ec6f9e2cfd47c482864
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
@@ -345,7 +345,7 @@ services:
     healthcheck:
       start_period: 5s
   rollout:
-    image: ghcr.io/lehigh-university-libraries/rollout:main@sha256:b15d460329f0a9ad33239bf8c582b0bdc734bf5b78c3c4c6499c0bb9215ea9d0
+    image: ghcr.io/lehigh-university-libraries/rollout:main@sha256:d29dab04a508933b909d873ca8099f91d7ac43cbd0eb95f386e6645cf4395f3b
     restart: always
     volumes:
       - /opt/islandora/d10_lehigh_agile:/opt/islandora/d10_lehigh_agile

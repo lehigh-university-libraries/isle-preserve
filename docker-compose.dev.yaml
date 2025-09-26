@@ -25,7 +25,7 @@ services:
   transformer:
     image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:3463cf1178c367079970a8916b2671b0701dc80733126d799033851232723c18
   mariadb:
-    image: mariadb:11.8.3-noble@sha256:272084c2dec70619714df329c4ffcb336e3f8c723072c3f56f2e4015997bbf2c
+    image: mariadb:11.8.3-noble@sha256:851a6020c97b9eae7736b6fb275800601d64635222054d3a1b1b3c4abdfa117a
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
@@ -39,7 +39,7 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   fits:
-    image: islandora/fits:4.3.13@sha256:8fd856b07d2e64ae807241ae8f76181d54234d528504a9372c472c66cd5cbcc8
+    image: islandora/fits:4.3.18@sha256:0486d476ee0090ccb46a735ca10c557e7db092fdde76e2f4744f95ca57759469
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
@@ -63,21 +63,21 @@ services:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:0c21149791ad6db345b312c4ec38859101abf61c05613aa1a8f67241ef23512c
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:c2eb606f0dc31c121822c64a2e0f62d6717675325e662afacfc7b5eb9c957989
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-tesseract:main@sha256:ea75ee7c7ab5cc8f31d55e618d100f8f9b46acbe130915767d61355c5832f7be
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-tesseract:main@sha256:d0a889358110d569e8e3dc46d91125abf897854b558613de37c38b7f7879c2c1
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:bdb0c6ba3119f3a42082180bafa304ada02bce557e0e62dd5d85aa29d950ecd1
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:607c3e803677c5681c3f5e75486398b34b7ca2da0b394db8c8c08f5003399ad4
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
@@ -93,7 +93,7 @@ services:
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:cea4780e53ce12056580eda436dee0a737c856b0cd7fd278ac0b1663592a8b6e
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:075f15a9206d9d02d48359a23313475758c8f49d35da40b34fdbec29e5aa68fb
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
