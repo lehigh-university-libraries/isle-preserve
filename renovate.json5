@@ -1,9 +1,8 @@
 {
-  branchPrefix: 'renovate.',
+  $schema: 'https://docs.renovatebot.com/renovate-schema.json',
   extends: [
-    'config:best-practices',
-    ':rebaseStalePrs',
-    'customManagers:dockerfileVersions',
+    'github>lehigh-university-libraries/renovate-config',
+    'github>lehigh-university-libraries/renovate-config:weeklyBump.json5',
   ],
   kubernetes: {
     managerFilePatterns: [
@@ -13,44 +12,12 @@
   packageRules: [
     {
       matchDatasources: [
-        'repology',
-      ],
-      versioning: 'loose',
-    },
-    {
-      matchDatasources: [
         'packagist',
       ],
       matchPackageNames: [
         'library/pdf.js',
       ],
       enabled: false,
-    },
-    {
-      matchPackageNames: [
-        'traefik',
-        'nginx',
-      ],
-      groupName: 'monthly-ingress',
-      schedule: [
-        '* 12 1-7 * 4',
-      ],
-    },
-    {
-      matchUpdateTypes: [
-        'minor',
-        'patch',
-        'digest',
-      ],
-      groupName: 'all non-major dependencies',
-      schedule: [
-        '* 22 * * 3',
-      ],
-      matchPackageNames: [
-        '*',
-        '!traefik',
-        '!nginx',
-      ],
     },
     {
       matchDatasources: [
@@ -63,16 +30,6 @@
       matchPackageNames: [
         'islandora/*',
       ],
-    },
-    {
-      matchUpdateTypes: [
-        'major',
-      ],
-      groupName: null,
-      matchPackageNames: [
-        '*',
-      ],
-      prConcurrentLimit: 1,
     },
     {
       matchDatasources: [
@@ -89,15 +46,6 @@
     {
       customType: 'regex',
       managerFilePatterns: [
-        '/^Dockerfile$/',
-      ],
-      matchStrings: [
-        '#\\s*renovate:\\s*datasource=(?<datasource>.*?) depName=(?<depName>.*?)( versioning=(?<versioning>.*?))?\\sARG .*?_VERSION="(?<currentValue>.*)"\\s',
-      ],
-    },
-    {
-      customType: 'regex',
-      managerFilePatterns: [
         '/drupal/rootfs/var/www/drupal/composer.json/',
       ],
       matchStrings: [
@@ -108,12 +56,4 @@
       versioningTemplate: 'semver-coerced',
     },
   ],
-  labels: [
-    'dependencies',
-  ],
-  osvVulnerabilityAlerts: true,
-  dependencyDashboardOSVVulnerabilitySummary: 'unresolved',
-  vulnerabilityAlerts: {
-    enabled: true,
-  },
 }
