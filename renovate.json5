@@ -53,6 +53,18 @@
       ],
     },
     {
+      matchDatasources: [
+        'docker',
+      ],
+      matchPackagePatterns: [
+        '^islandora/',
+      ],
+      matchUpdateTypes: [
+        'major',
+      ],
+      groupName: 'islandora-major-update',
+    },
+    {
       matchUpdateTypes: [
         'major',
       ],
