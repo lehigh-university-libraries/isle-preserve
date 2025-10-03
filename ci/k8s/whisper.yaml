@@ -39,17 +39,12 @@ spec:
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
-            - name: "WHISPER_PROCESSORS"
-              value: "2"
-            - name: "WHISPER_THREADS"
-              value: "8"
           resources:
             requests:
               memory: "32Gi"
               cpu: "500m"
             limits:
               memory: "32Gi"
-              nvidia.com/gpu: 4
           ports:
             - containerPort: 8080
               hostPort: 8888
