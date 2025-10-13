@@ -150,7 +150,7 @@ services:
       CANTALOUPE_LOG_APPLICATION_LEVEL: info
       CANTALOUPE_HTTPSOURCE_CHUNKING_ENABLED: "false"
       CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
-      CANTALOUPE_CACHE_SERVER_DERIVATIVE:  "FilesystemCache"
+      CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
     secrets:
       - source: CERT_AUTHORITY
         target: CERT_PUBLIC_KEY
@@ -303,11 +303,13 @@ services:
       drupal:
         condition: service_healthy
   hocr-edit:
-    image: ghcr.io/lehigh-university-libraries/hocr-edit:main@sha256:7794937d78595270fcc40305603f2e6996a45adb74a8ce0350600e1b67cbdfda
+    image: ghcr.io/lehigh-university-libraries/hocredit:main
     environment:
       DRUPAL_HOCR_URL: https://${DOMAIN}/node/%s/hocr
       HOUDINI_URL: https://microservices.libops.site/houdini
       GOOGLE_APPLICATION_CREDENTIALS: /app/svc.json
+      OPENAI_API_KEY: ${OPENAI_API_KEY_CATALYST}
+      OLLAMA_URL: ${OLLAMA_URL}
     volumes:
       - ./secrets/htr.key:/app/svc.json:r
   fcrepo:
