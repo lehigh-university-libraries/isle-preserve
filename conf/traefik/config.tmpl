@@ -27,6 +27,12 @@ http:
         - fabricator-proxy-headers
       service: fabricator-proxy-service
       priority: 100
+    ojs:
+      rule: PathPrefix(`/ojs`)
+      entryPoints:
+        - https
+      tls: {}
+      service: ojs
     fabricator:
       rule: PathPrefix(`/workbench`)
       entryPoints:
@@ -99,6 +105,10 @@ http:
       loadBalancer:
         servers:
           - url: http://fabricator:8080
+    ojs:
+      loadBalancer:
+        servers:
+          - url: http://ojs
     hocr-edit:
       loadBalancer:
         servers:

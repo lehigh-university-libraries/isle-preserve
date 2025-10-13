@@ -12,7 +12,7 @@ readonly PROGDIR
 # shellcheck source=/dev/null
 source .env
 
-BASE_IMAGE="islandora/base:${ISLANDORA_TAG}"
+BASE_IMAGE="islandora/base:6"
 readonly BASE_IMAGE
 
 # Drupal salt is a special case, treat it as such.

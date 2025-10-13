@@ -13,6 +13,9 @@ volumes:
   solr-data: {}
   xhgui-data: {}
   actions-runner-data: {}
+  ojs-cache: {}
+  ojs-files: {}
+  ojs-public: {}
 
 secrets:
   CERT_PUBLIC_KEY:
@@ -60,6 +63,14 @@ secrets:
   # openssl genrsa -out ./secrets/JWT_PRIVATE_KEY 2048 &>/dev/null
   JWT_PRIVATE_KEY:
     file: "./secrets/JWT_PRIVATE_KEY"
+  OJS_DB_PASSWORD:
+    file: ./secrets/OJS_DB_PASSWORD
+  OJS_API_KEY_SECRET:
+    file: ./secrets/OJS_API_KEY_SECRET
+  OJS_SALT:
+    file: ./secrets/OJS_SALT
+  OJS_ADMIN_PASSWORD:
+    file: ./secrets/OJS_ADMIN_PASSWORD
 services:
   alpaca:
     image: islandora/alpaca:5.0.1@sha256:5398abc41109ac1d8075fac28d09feeec254a9e1321f6825eccab7eed2f702ff
@@ -362,6 +373,29 @@ services:
       ROLLOUT_LOCK_FILE: /opt/islandora/d10_lehigh_agile/rollout.lock
     healthcheck:
       start_period: 1s
+  ojs:
+    image: ghcr.io/libops/ojs:main@sha256:12c95e250e5eae7ae98b60317fe060b3fc2994032928120b202762c2cb143cc5
+    environment:
+      DB_HOST: mariadb
+      DB_NAME: ojs
+      DB_USER: ojs
+      OJS_ADMIN_USERNAME: admin
+      OJS_ADMIN_EMAIL: admin@example.com
+      OJS_LOCALE: en
+      OJS_TIMEZONE: UTC
+      OJS_FILES_DIR: /var/www/files
+      OJS_OAI_REPOSITORY_ID: ojs.localhost
+      OJS_ENABLE_BEACON: 1
+    secrets:
+      - source: DB_ROOT_PASSWORD
+      - source: OJS_API_KEY_SECRET
+      - source: OJS_DB_PASSWORD
+      - source: OJS_SALT
+      - source: OJS_ADMIN_PASSWORD
+    volumes:
+      - ojs-cache:/var/www/ojs/cache:rw
+      - ojs-files:/var/www/files:rw
+      - ojs-public:/var/www/ojs/public:rw
   traefik:
     image: traefik:v3.4.4@sha256:9b0e9d788816d722703eae57ebf8b4d52ad98e02b76f0362d5a040ef46902ef7
     restart: always
