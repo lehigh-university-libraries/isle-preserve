@@ -314,7 +314,7 @@ services:
       drupal:
         condition: service_healthy
   hocr-edit:
-    image: ghcr.io/lehigh-university-libraries/hocredit:main
+    image: ghcr.io/lehigh-university-libraries/hocredit:main@sha256:56d47ea69daadd10ff66f6e6d393a1340139b36eed426a9ec2d681773989e138
     environment:
       DRUPAL_HOCR_URL: https://${DOMAIN}/node/%s/hocr
       HOUDINI_URL: https://microservices.libops.site/houdini
