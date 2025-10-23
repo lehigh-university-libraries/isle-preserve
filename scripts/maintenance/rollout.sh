@@ -25,6 +25,8 @@ done < <(grep -Ev '^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG)' /opt/islandora/d10_lehig
 GIT_BRANCH=${GIT_BRANCH:-main}
 DRUPAL_DOCKER_TAG=${DOCKER_TAG:-main}
 
+cd /opt/islandora/d10_lehigh_agile
+
 update_env "GIT_BRANCH" "${GIT_BRANCH}"
 update_env "DRUPAL_DOCKER_TAG" "${DRUPAL_DOCKER_TAG}"
 

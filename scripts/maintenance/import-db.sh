@@ -31,6 +31,8 @@ if [ ! -f "${F}" ]; then
   rm drupal.sql.gz drupal.sql || echo "Files didn't exist"
   scp islandora-prod.lib.lehigh.edu:"/opt/islandora/backups/$YEAR/$MONTH/$DAY/drupal.sql.gz" .
   gunzip drupal.sql.gz
+  sudo mv drupal.sql /opt/islandora/volumes/tmp/drupal/
+  touch drupal.sql
 fi
 docker exec lehigh-d10-drupal-1 drush sqlq --debug --file /tmp/drupal.sql
 docker exec lehigh-d10-drupal-1 drush cr
