@@ -6,6 +6,7 @@ namespace Drupal\islandora_collection_tabs\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
+use Drupal\views\Views;
 
 /**
  * Plugin implementation of the 'islandora_collection_tabs_default' formatter.
@@ -79,6 +80,18 @@ class CollectionTabsDefaultFormatter extends FormatterBase {
         $tabs[$collectionId]['anchor']['#attributes']['class'] = ['nav-link', 'fs-5', 'pt-3', 'fw-medium', 'text-dark'];
         $tabs[$collectionId]['anchor']['#attributes']['aria-selected'] = "false";
         $content[$collectionId]['#attributes']['class'] = ['tab-pane', 'fade'];
+      }
+
+      if ($item->map) {
+        $view = Views::getView('map');
+        if ($view) {
+          $view->setDisplay('default');
+          $view->execute();
+
+          if ($view->total_rows > 0) {
+            $content[$id]['view'] = $view->render();
+          }
+        }
       }
     }
 

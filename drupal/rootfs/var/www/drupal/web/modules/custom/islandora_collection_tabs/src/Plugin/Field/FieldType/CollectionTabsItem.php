@@ -42,7 +42,8 @@ final class CollectionTabsItem extends FieldItemBase {
       ->setLabel(t('Tab Content'));
     $properties['default'] = DataDefinition::create('boolean')
       ->setLabel(t('Default'));
-
+    $properties['map'] = DataDefinition::create('boolean')
+      ->setLabel(t('Map'));
     return $properties;
   }
 
@@ -74,6 +75,10 @@ final class CollectionTabsItem extends FieldItemBase {
         'type' => 'int',
         'size' => 'tiny',
       ],
+      'map' => [
+        'type' => 'int',
+        'size' => 'tiny',
+      ],
     ];
 
     $schema = [
@@ -95,6 +100,8 @@ final class CollectionTabsItem extends FieldItemBase {
     $values['value'] = $random->paragraphs(5);
 
     $values['default'] = (bool) mt_rand(0, 1);
+
+    $values['map'] = (bool) mt_rand(0, 1);
 
     return $values;
   }

@@ -31,6 +31,13 @@ final class CollectionTabsWidget extends WidgetBase {
       '#description' => $this->t('If no default tab is selected, the default collection tab will be displayed'),
     ];
 
+    $element['map'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Show map'),
+      '#default_value' => $items[$delta]->map ?? NULL,
+      '#description' => $this->t('If children items have geo coordinates, show them all in a map display on this tab'),
+    ];
+
     $element['label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Tab Label'),
@@ -73,6 +80,9 @@ final class CollectionTabsWidget extends WidgetBase {
 
       if ($value['label'] === '') {
         $values[$delta]['label'] = NULL;
+      }
+      if ($value['map'] === '') {
+        $values[$delta]['map'] = NULL;
       }
       if ($value['value'] === '') {
         $values[$delta]['value'] = NULL;

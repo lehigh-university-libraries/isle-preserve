@@ -57,13 +57,6 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
     $element = parent::viewElements($items, $langcode);
     $content = &$element[0]['content'];
 
-    $view = Views::getView('map');
-    if ($view) {
-      $view->setDisplay('default');
-      $view->execute();
-      $content['tab-0']['view'] = $view->render();
-    }
-
     foreach ($items as $delta => $item) {
       $label = strtolower($item->label);
       $label = trim($label);

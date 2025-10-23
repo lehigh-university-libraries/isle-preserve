@@ -13,3 +13,6 @@ field.value.islandora_collection_tabs:
     default:
       type: boolean
       label: Default
+    map:
+      type: boolean
+      label: Map
