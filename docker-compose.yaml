@@ -302,16 +302,6 @@ services:
     depends_on:
       drupal:
         condition: service_healthy
-  hocr-edit:
-    image: ghcr.io/lehigh-university-libraries/hocredit:main
-    environment:
-      DRUPAL_HOCR_URL: https://${DOMAIN}/node/%s/hocr
-      HOUDINI_URL: https://microservices.libops.site/houdini
-      GOOGLE_APPLICATION_CREDENTIALS: /app/svc.json
-      OPENAI_API_KEY: ${OPENAI_API_KEY_CATALYST}
-      OLLAMA_URL: ${OLLAMA_URL}
-    volumes:
-      - ./secrets/htr.key:/app/svc.json:r
   fcrepo:
     image: islandora/fcrepo6:5.0.1@sha256:e90bf0418c05e7a867519e11845969798c1ca0e40bae1968286cf701d6cd68c6
     environment:
