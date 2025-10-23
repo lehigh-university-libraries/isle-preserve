@@ -44,6 +44,14 @@ function lehigh_preprocess_field(&$vars) {
       ($view_mode == 'card' || $view_mode == 'full')) {
       $vars['attributes']['class'][] = $view_mode == 'card' ? 'col-4' : 'col-3';
     }
+
+    // Only show the first value in an abstract multi value field.
+    if (in_array($view_mode, ['card', 'list'])) {
+      $field_name = $vars['element']['#field_name'] ?? '';
+      if ($field_name === 'field_abstract' && count($vars['items']) > 1) {
+        $vars['items'] = array_slice($vars['items'], 0, 1);
+      }
+    }
   }
 }
 
