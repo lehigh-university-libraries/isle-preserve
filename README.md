@@ -231,8 +231,8 @@ EOF
 
 ## Legacy Redirects
 
-When sites migrate from an old platform into The Preserve, redirects from the old URLs to their new location are maintained in [the nginx static conf](./conf/nginx.static])
+When sites migrate from an old platform into The Preserve, redirects from the old URLs to their new location are maintained in [the nginx static conf](./conf/nginx.static)
 
 We use nginx's map functionality for both code clarity and improved performance.
 
-Adding a new site's redirect can be done by copying an existing `redirect-*.conf`, renaming the `map` variable to a unique name, adding the redirects in the map, and updating the `server` directive to use the map variable.
+Adding a new site's redirect can be done by copying an existing `redirect-*.conf`, renaming the `map` variable to a unique name, adding the redirects in the map, and updating the `server` directive to use the map variable and proper server name(s).
