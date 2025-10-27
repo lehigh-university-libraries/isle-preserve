@@ -373,6 +373,7 @@ services:
       --experimental.localPlugins.captcha-protect.modulename=github.com/libops/captcha-protect
       --experimental.localPlugins.static-response.moduleName=github.com/lehigh-university-libraries/static-response
     environment:
+      rollout: 20251027
       DOMAIN: ${DOMAIN}
       INTERNAL_DOMAIN: ${INTERNAL_DOMAIN}
       ROLLOUT_DEPTH: ${ROLLOUT_DEPTH}

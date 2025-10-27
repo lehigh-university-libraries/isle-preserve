@@ -38,6 +38,7 @@ http:
       entryPoints:
         - https
       middlewares:
+        - captcha-protect-no-robots
         - cantaloupe-strip-prefix
         - cantaloupe-custom-request-headers
       tls: {}
@@ -149,12 +150,14 @@ http:
           window: 864000
           protectRoutes: /
           protectParameters: "true"
+{{- if eq (env "INTERNAL_DOMAIN") "islandora-prod.lib.lehigh.edu" }}
           exemptIps:
             # Lehigh range
             - 128.180.0.0/16
             # Lehigh Guest Network
             - 4.59.138.56/29
             - 162.223.16.248/29
+{{- end }}
           challengeTmpl: /challenge.tmpl.html
           challengeURL: ""
           challengeStatusCode: 429
@@ -184,6 +187,33 @@ http:
           persistentStateFile: /tmp/state.json
           protectFileExtensions: php,html,jp2,tif,tiff
           excludeRoutes: /oai/request
+          enableStateReconciliation: "true"
+    captcha-protect-no-robots:
+      plugin:
+        captcha-protect:
+          rateLimit: 0
+          ipv4subnetMask: 8
+          # 10d
+          window: 864000
+          protectRoutes: /
+{{- if eq (env "INTERNAL_DOMAIN") "islandora-prod.lib.lehigh.edu" }}
+          exemptIps:
+            # Lehigh range
+            - 128.180.0.0/16
+            # Lehigh Guest Network
+            - 4.59.138.56/29
+            - 162.223.16.248/29
+{{- end }}
+          challengeTmpl: /challenge.tmpl.html
+          challengeURL: ""
+          challengeStatusCode: 429
+          captchaProvider: turnstile
+          siteKey: {{ env "TURNSTILE_SITE_KEY" }}
+          secretKey: {{ env "TURNSTILE_SECRET_KEY" }}
+          ipForwardedHeader: X-Forwarded-For
+          persistentStateFile: /tmp/state.json
+          protectFileExtensions: gif,jpg,jp2,png,tif,tiff
+          enableStateReconciliation: "true"
     redirect-sans:
       redirectRegex:
         regex: ^https?://([^/]+)(/.*)?

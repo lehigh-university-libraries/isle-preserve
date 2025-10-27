@@ -1,6 +1,7 @@
 # Captcha Protect
 [![lint-test](https://github.com/libops/captcha-protect/actions/workflows/lint-test.yml/badge.svg)](https://github.com/libops/captcha-protect/actions/workflows/lint-test.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/libops/captcha-protect)](https://goreportcard.com/report/github.com/libops/captcha-protect)
+[![codecov](https://codecov.io/gh/libops/captcha-protect/branch/main/graph/badge.svg)](https://codecov.io/gh/libops/captcha-protect)
 
 Traefik middleware to challenge individual IPs in a subnet when traffic spikes are detected from that subnet, using a captcha of your choice for the challenge (turnstile, recaptcha, or hcaptcha). **Requires traefik `v2.11.1` or above**
 
@@ -50,6 +51,9 @@ services:
             traefik.http.routers.nginx.rule: Host(`${DOMAIN}`)
             traefik.http.services.nginx.loadbalancer.server.port: 80
             traefik.http.routers.nginx.middlewares: captcha-protect@docker
+            traefik.http.middlewares.captcha-protect.plugin.captcha-protect.rateLimit: 0
+            traefik.http.middlewares.captcha-protect.plugin.captcha-protect.ipv4subnetMask: 8
+            traefik.http.middlewares.captcha-protect.plugin.captcha-protect.window: 864000
             traefik.http.middlewares.captcha-protect.plugin.captcha-protect.protectRoutes: "/"
             traefik.http.middlewares.captcha-protect.plugin.captcha-protect.captchaProvider: turnstile
             traefik.http.middlewares.captcha-protect.plugin.captcha-protect.siteKey: ${TURNSTILE_SITE_KEY}
@@ -71,7 +75,7 @@ services:
             --providers.docker=true
             --providers.docker.network=default
             --experimental.plugins.captcha-protect.modulename=github.com/libops/captcha-protect
-            --experimental.plugins.captcha-protect.version=v1.8.2
+            --experimental.plugins.captcha-protect.version=v1.9.4
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock:z
             - /CHANGEME/TO/A/HOST/PATH/FOR/STATE/FILE:/tmp/state.json:rw
@@ -115,6 +119,7 @@ services:
 | `enableStatsPage`       | `string`                | `"false"`                | Allows `exemptIps` to access `/captcha-protect/stats` to monitor the rate limiter.                                                                                                               |
 | `logLevel`              | `string`                | `"INFO"`                 | Log level for the middleware. Options: `ERROR`, `WARNING`, `INFO`, or `DEBUG`.                                                                                                                   |
 | `persistentStateFile`   | `string`                | `""`                     | File path to persist rate limiter state across Traefik restarts. In Docker, mount this file from the host.                                                                                       |
+| `enableStateReconciliation` | `string`            | `"false"`                | When `"true"`, reads and merges disk state before each save to prevent multiple instances from overwriting data. Adds extra I/O overhead. Only enable for multi-instance deployments sharing state. |
 
 
 ### Good Bots
