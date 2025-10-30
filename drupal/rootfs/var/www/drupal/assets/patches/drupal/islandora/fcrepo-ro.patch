@@ -12,28 +12,29 @@ Subject: [PATCH 1/8] Allow reading from fedora from OCFL dir
  5 files changed, 171 insertions(+), 4 deletions(-)
 
 diff --git a/config/install/islandora.settings.yml b/config/install/islandora.settings.yml
-index fa6b2f4ca..821a11620 100644
+index 6c43f05e..f4f0c7e0 100644
 --- a/config/install/islandora.settings.yml
 +++ b/config/install/islandora.settings.yml
-@@ -4,3 +4,4 @@ delete_media_and_files: TRUE
- gemini_pseudo_bundles: []
+@@ -5,3 +5,4 @@ gemini_pseudo_bundles: []
  allow_header_links: TRUE
  fast_term_queries: TRUE
+ microservice_url_rewrites: ''
 +fedora_root: ''
 diff --git a/config/schema/islandora.schema.yml b/config/schema/islandora.schema.yml
-index a2b20a0fc..2cc071cbe 100644
+index 32f877f5..44906614 100644
 --- a/config/schema/islandora.schema.yml
 +++ b/config/schema/islandora.schema.yml
-@@ -37,6 +37,9 @@ islandora.settings:
-       label: 'List of node, media and taxonomy terms that should include the linked Fedora URI'
-       sequence:
-         type: string
+@@ -40,7 +40,9 @@ islandora.settings:
+     microservice_url_rewrites:
+       type: text
+       label: 'URL rewrite rules for microservice events'
+-
 +    fedora_root:
 +      type: string
 +      label: 'Fedora Root Path'
- 
- 
+
  action.configuration.emit_node_event:
+   type: mapping
 diff --git a/src/Flysystem/Adapter/FedoraAdapter.php b/src/Flysystem/Adapter/FedoraAdapter.php
 index 70997f789..b01d99bf4 100644
 --- a/src/Flysystem/Adapter/FedoraAdapter.php

@@ -4757,17 +4757,17 @@
         },
         {
             "name": "drupal/islandora",
-            "version": "2.17.1",
+            "version": "2.17.2",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/islandora.git",
-                "reference": "2.17.1"
+                "reference": "2.17.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/islandora-2.17.1.zip",
-                "reference": "2.17.1",
-                "shasum": "192e635434eca0eead559295d57253d7ba0633c7"
+                "url": "https://ftp.drupal.org/files/projects/islandora-2.17.2.zip",
+                "reference": "2.17.2",
+                "shasum": "cd65590ba61618923deb73deeb47c7f52d6bb5e6"
             },
             "require": {
                 "drupal/action": "^0.2",
@@ -4806,8 +4806,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.17.1",
-                    "datestamp": "1755105598",
+                    "version": "2.17.2",
+                    "datestamp": "1758217798",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
