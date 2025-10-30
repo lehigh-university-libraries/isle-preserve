@@ -10,6 +10,20 @@
           })
         }
       });
+
+      // empty full text field on views exposed forms
+      // causes a search of all descendants in a collection
+      // so things like simply changing the sort order will return all descendants
+      // instead of the default depth of 1
+      // so if search api contains no text, disable it on form submission
+      $(once('remove-empty-params', '.views-exposed-form', context)).on('submit', function(e) {
+        $(this).find('input[type="text"]').each(function() {
+          if ($(this).val() === '') {
+            $(this).prop('disabled', true);
+          }
+        });
+      });
+
       $(once('fix-facet-search', '#main-content a[href*="f%5B0"]', context)).each(function () {
         var href = $(this).attr('href').replace(window.location.pathname, "/browse");
         $(this).attr('href', href);
