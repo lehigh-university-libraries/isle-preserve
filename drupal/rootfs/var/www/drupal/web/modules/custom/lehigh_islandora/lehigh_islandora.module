@@ -962,3 +962,22 @@ function lehigh_islandora_on_campus() {
   $ip = \Drupal::request()->getClientIp();
   return \Drupal::currentUser()->hasPermission('administer media') || str_starts_with($ip, '128.180.');
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function lehigh_islandora_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#submit'][] = 'lehigh_islandora_clean_empty_params';
+}
+
+/**
+ * Custom submit handler to remove empty parameters.
+ */
+function lehigh_islandora_clean_empty_params($form, FormStateInterface $form_state) {
+  $values = $form_state->getValues();
+  foreach ($values as $key => $value) {
+    if ($value === '' || $value === NULL) {
+      $form_state->unsetValue($key);
+    }
+  }
+}
