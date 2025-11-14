@@ -25,12 +25,6 @@ services:
   transformer:
     image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:3463cf1178c367079970a8916b2671b0701dc80733126d799033851232723c18
   mariadb:
-    image: mariadb:11.8.3-noble@sha256:272084c2dec70619714df329c4ffcb336e3f8c723072c3f56f2e4015997bbf2c
-    secrets:
-      - source: DB_ROOT_PASSWORD
-        target: MARIADB_ROOT_PASSWORD
-    healthcheck:
-      test: test /run/mysqld/mysqld.sock
     ports:
       - 3306:3306
   memcached:
@@ -63,7 +57,7 @@ services:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:0c21149791ad6db345b312c4ec38859101abf61c05613aa1a8f67241ef23512c
+    image: islandora/houdini:main
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
