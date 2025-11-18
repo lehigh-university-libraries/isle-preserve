@@ -11,7 +11,7 @@ plugin: generate_ocr_derivative
 configuration:
   queue: islandora-connector-whisper
   event: 'Generate Derivative'
-  source_term_uri: 'http://pcdm.org/use#ServiceFile'
+  source_term_uri: 'http://pcdm.org/use#OriginalFile'
   derivative_term_uri: 'http://pcdm.org/use#ExtractedText'
   mimetype: text/plain
   args: ''

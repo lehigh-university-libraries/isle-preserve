@@ -11,8 +11,8 @@ label: Administrator
 weight: 3
 is_admin: true
 permissions:
-  - 'create field_administrator'
-  - 'edit field_administrator'
-  - 'edit own field_administrator'
-  - 'view field_administrator'
-  - 'view own field_administrator'
+  - 'create field_skip_merge_pdf'
+  - 'edit field_skip_merge_pdf'
+  - 'edit own field_skip_merge_pdf'
+  - 'view field_skip_merge_pdf'
+  - 'view own field_skip_merge_pdf'

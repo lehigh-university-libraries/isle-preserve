@@ -76,6 +76,7 @@ dependencies:
     - field.field.node.islandora_object.field_rights
     - field.field.node.islandora_object.field_self_submission_creator
     - field.field.node.islandora_object.field_site_disposition
+    - field.field.node.islandora_object.field_skip_merge_pdf
     - field.field.node.islandora_object.field_sort_by
     - field.field.node.islandora_object.field_source
     - field.field.node.islandora_object.field_subject
@@ -630,6 +631,7 @@ hidden:
   field_relation: true
   field_resource_type: true
   field_site_disposition: true
+  field_skip_merge_pdf: true
   field_sort_by: true
   field_source: true
   field_subject: true

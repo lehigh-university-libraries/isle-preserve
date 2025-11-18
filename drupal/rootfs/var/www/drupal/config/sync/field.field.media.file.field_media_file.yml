@@ -28,7 +28,7 @@ settings:
   handler: 'default:file'
   handler_settings: {  }
   file_directory: '[date:custom:Y]-[date:custom:m]'
-  file_extensions: 'txt rtf doc docx ppt pptx xls xlsx pdf odf odg odp ods odt fodt fods fodp fodg key numbers pages psd tiff tif jp2 xml zip vtt warc hocr py'
+  file_extensions: 'aux csv dbf doc docx fodg fodp fods fodt hocr html jp2 key log lyr mxd numbers odf odg odp ods odt pages pdf ppt pptx prj psd py rrd rtf sbn sbx sdw shp shx sid text tfw tif tiff txt vtt warc xls xlsx xml zip'
   max_filesize: ''
   description_field: false
 field_type: file

@@ -1,0 +1,21 @@
+uuid: 2a691add-0444-495b-8572-6a0c231b509d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_skip_merge_pdf
+    - node.type.islandora_object
+id: node.islandora_object.field_skip_merge_pdf
+field_name: field_skip_merge_pdf
+entity_type: node
+bundle: islandora_object
+label: 'Skip Merge PDF'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean
