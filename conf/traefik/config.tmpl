@@ -188,6 +188,8 @@ http:
           protectFileExtensions: php,html,jp2,tif,tiff
           excludeRoutes: /oai/request
           enableStateReconciliation: "true"
+          periodSeconds: 30
+          failureThreshold: 3
     captcha-protect-no-robots:
       plugin:
         captcha-protect:
