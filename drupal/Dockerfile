@@ -1,4 +1,4 @@
-FROM ghcr.io/lehigh-university-libraries/drupal:main@sha256:111d99ddcd022f61150803399619178b9fb777b42368a10396631ee2bd8fcb79
+FROM ghcr.io/lehigh-university-libraries/drupal:main@sha256:34e7b9ccf887bd583f64b1214946c5c98de199c421f2937b3d137a27cb967691
 
 COPY --link rootfs /
 

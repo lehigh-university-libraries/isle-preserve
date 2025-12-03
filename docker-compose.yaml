@@ -62,7 +62,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:6.0.4@sha256:8c68136d77674e6d6330be24a0b2000fe0d1bb2e20165908371f41dd94c7e29b
+    image: islandora/alpaca:6.1.3@sha256:c8e3c7c1f4c8d71cc11f2466663db8b5337abb9e578e225dc4d916345253f58b
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -95,7 +95,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:05f3ad8df92fd479fcb0888db632bdd9b7a8d94404fd279546d29eff9217ec0a
+    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:57b8a49fb849a0a2ba1f0a056c6a66da548da800a8a656b362f80d4975baab16
     entrypoint:
       - /app/fabricator
       - --server
@@ -106,7 +106,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:6.0.4@sha256:0394daa3f0d99d8dde5c273da4f55b340b76fc729dfdc8b8466155ecc486235a
+    image: islandora/mariadb:6.1.3@sha256:f9ebb3cd524c35fa2379a9111633e013a3429320cf656fa21334c0a3cda14d8a
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -129,7 +129,7 @@ services:
       activemq:
         condition: service_healthy
   activemq:
-    image: islandora/activemq:6.0.4@sha256:09419233134bfa720387c1e83af95b4e7ff3a7cf6a420ec8b65f4f5981104ff5
+    image: islandora/activemq:6.1.3@sha256:fc24ad56f20bbcd9fca87274c659f81407808c9e7cb4e40e8327f58b9fdb2b5b
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -145,7 +145,7 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: islandora/cantaloupe:6.0.4@sha256:827339b445b42cfd1a62ccbfe30ebf88e999b28cb290b31797a70f16c6feca4a
+    image: islandora/cantaloupe:6.1.3@sha256:8d096381f3abbef8832fdfeef633cf20441c2b22777f95638b4b2229a86c4498
     environment:
       CANTALOUPE_LOG_APPLICATION_LEVEL: info
       CANTALOUPE_HTTPSOURCE_CHUNKING_ENABLED: "false"
@@ -160,7 +160,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.39@sha256:3e4cfa8274fc07f27f040ec994c7506a4438a835e2e229673b3da06c8c3d99b2
+    image: memcached:1.6.39@sha256:4737e17016e4d65ad8007408ec1816096c4ebec04cfa89a5265a3edd3f4ca552
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -257,7 +257,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.29.0@sha256:f5c017fb33c6db484545793ffb67db51cdd7daebee472104612f73a85063f889
+    image: nginx:1.29.3@sha256:553f64aecdc31b5bf944521731cd70e35da4faed96b2b7548a3d8e2598c52a42
     restart: always
     environment:
       ROLLOUT: 20251024
@@ -302,7 +302,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:6.0.4@sha256:7a164e883b3b8a4cc6c67a7251afd7eeb524a14807c1e88f06c414b3ac6e227c
+    image: islandora/fcrepo6:6.1.3@sha256:7fe03ae2e304b53811536c0008643dd11f844047c38d8632fec662d71dc00aa0
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -324,7 +324,7 @@ services:
       activemq:
         condition: service_started
   solr:
-    image: islandora/solr:6.0.4@sha256:5f8cdf936a3c49f1e09d5682840b538808fe81a5d35d7be22218aff0ba1204e3
+    image: islandora/solr:6.1.3@sha256:381a1075da528d6a81f16aa564d2a41e6d042b80b8d4d926646d96c7642681bb
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
@@ -336,7 +336,7 @@ services:
     healthcheck:
       start_period: 5s
   rollout:
-    image: ghcr.io/lehigh-university-libraries/rollout:main@sha256:b15d460329f0a9ad33239bf8c582b0bdc734bf5b78c3c4c6499c0bb9215ea9d0
+    image: ghcr.io/lehigh-university-libraries/rollout:main@sha256:29664d8b36f7f0535dda07e6aabcbec4cd826cf2f5095701414923a13b2147b9
     restart: always
     volumes:
       - /opt/islandora/d10_lehigh_agile:/opt/islandora/d10_lehigh_agile
@@ -352,7 +352,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.4.4@sha256:9b0e9d788816d722703eae57ebf8b4d52ad98e02b76f0362d5a040ef46902ef7
+    image: traefik:v3.6.2@sha256:aaf0f6185419a50c74651448c1a5bf4606bd2d2ddb7b8749eed505d55bf8b8ea
     restart: always
     command: >-
       --api.insecure=true

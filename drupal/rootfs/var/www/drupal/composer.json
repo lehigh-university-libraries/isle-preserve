@@ -20,7 +20,7 @@
                 "version": "4",
                 "type": "drupal-library",
                 "dist": {
-                    "url": "https://github.com/mozilla/pdf.js/releases/download/v5.4.54/pdfjs-5.4.54-dist.zip",
+                    "url": "https://github.com/mozilla/pdf.js/releases/download/v5.4.449/pdfjs-5.4.449-dist.zip",
                     "type": "zip"
                 }
             }
@@ -68,7 +68,7 @@
         "drupal/honeypot": "^2.2",
         "drupal/inline_entity_form": "^3.0@RC",
         "drupal/islandora": "^2.16",
-        "drupal/islandora_access": "^1.0@dev",
+        "drupal/islandora_access": "^1.0.0-beta4@dev",
         "drupal/islandora_csl": "^1.0@beta",
         "drupal/islandora_jwks": "^1.0@beta",
         "drupal/islandora_mirador": "2.x-dev",
