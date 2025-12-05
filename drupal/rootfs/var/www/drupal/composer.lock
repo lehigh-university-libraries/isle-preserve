@@ -4894,17 +4894,17 @@
         },
         {
             "name": "drupal/islandora_access",
-            "version": "1.0.0-beta3",
+            "version": "1.0.0-beta4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/islandora_access.git",
-                "reference": "1.0.0-beta3"
+                "reference": "1.0.0-beta4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/islandora_access-1.0.0-beta3.zip",
-                "reference": "1.0.0-beta3",
-                "shasum": "1f3b4b427ce4bef9ebec351d8d4b7b93444d24a1"
+                "url": "https://ftp.drupal.org/files/projects/islandora_access-1.0.0-beta4.zip",
+                "reference": "1.0.0-beta4",
+                "shasum": "ebbe1896e0891ab80e360cfa0388180fe7d491b7"
             },
             "require": {
                 "drupal/core": "^11.1"
@@ -4912,8 +4912,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "1.0.0-beta3",
-                    "datestamp": "1755287669",
+                    "version": "1.0.0-beta4",
+                    "datestamp": "1764098171",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
