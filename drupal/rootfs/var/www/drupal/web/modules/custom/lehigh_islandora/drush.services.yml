@@ -1,0 +1,7 @@
+services:
+  lehigh_islandora.commands:
+    class: Drupal\lehigh_islandora\Commands\PublishSubmission
+    arguments:
+      - '@file_system'
+    tags:
+      - { name: drush.command }
