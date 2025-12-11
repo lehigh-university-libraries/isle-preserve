@@ -72,6 +72,10 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
     }
 
     $path = $request->getPathInfo();
+    if (substr(ltrim($path, "/"), 0, 5) === "node/") {
+      return;
+    }
+
     $file_path = self::getCachedFilePath($request, $path);
     $response->headers->set('Link', '<https://preserve.lehigh.edu/' . $path . '>; rel="canonical"');
 
