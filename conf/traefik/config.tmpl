@@ -173,9 +173,6 @@ http:
             - duckduckgo.com
             - iframely.com
             - facebook.com
-            - google.com
-            - googlebot.com
-            - googleusercontent.com
             - instagram.com
             - kagibot.org
             - linkedin.com
@@ -190,6 +187,7 @@ http:
           enableStateReconciliation: "true"
           periodSeconds: 30
           failureThreshold: 3
+          enableGooglebotIPCheck: "true"
     captcha-protect-no-robots:
       plugin:
         captcha-protect:
