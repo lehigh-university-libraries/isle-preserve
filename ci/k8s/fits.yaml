@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: fits
-          image: islandora/fits:6.0.4@sha256:2f028647347a1785c984cb0a5880f26146ee61f0041661bfe4388b5b8c7195ad
+          image: islandora/fits:6.2.3@sha256:d14060bf7ca396853fc53d4c8c27b87f6d9dfaf722fc1a9e91738e6ecebf0ee5
           imagePullPolicy: IfNotPresent
           env:
             - name: FITS_MAX_REQUEST_SIZE

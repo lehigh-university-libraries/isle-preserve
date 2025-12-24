@@ -35,7 +35,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-tesseract
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-tesseract:main@sha256:ea75ee7c7ab5cc8f31d55e618d100f8f9b46acbe130915767d61355c5832f7be
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-tesseract:main@sha256:d0a889358110d569e8e3dc46d91125abf897854b558613de37c38b7f7879c2c1
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
