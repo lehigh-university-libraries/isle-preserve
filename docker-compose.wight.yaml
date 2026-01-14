@@ -12,7 +12,7 @@ services:
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:cea4780e53ce12056580eda436dee0a737c856b0cd7fd278ac0b1663592a8b6e
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:a07028e5481d068b7e599f2bb9c0126fcc10a1711a1818b2d2d487a542574f7d
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
@@ -25,7 +25,7 @@ services:
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:0c21149791ad6db345b312c4ec38859101abf61c05613aa1a8f67241ef23512c
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:d085b210070148e00a0605ba653e93bc6c6e6d8cfeea74b092a256203864f757
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -35,7 +35,7 @@ services:
     volumes:
       - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   mariadb:
-    image: mariadb:11.8.3-noble@sha256:272084c2dec70619714df329c4ffcb336e3f8c723072c3f56f2e4015997bbf2c
+    image: mariadb:11.8.5-noble@sha256:1cac8492bd78b1ec693238dc600be173397efd7b55eabc725abc281dc855b482
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
