@@ -46,7 +46,7 @@ triplestore.indexer.max-concurrent-consumers={{ getenv "ALPACA_TRIPLESTORE_INDEX
 triplestore.indexer.async-consumer={{ getenv "ALPACA_TRIPLESTORE_INDEXER_ASYNC_CONSUMER" }}
 
 # Derivative services
-derivative.systems.installed={{ getenv "ALPACA_DERIVATIVE_SYSTEMS" }} fits,homarus,houdini,ocr,libreoffice,whisper,ocrpdf,htr,cleanpdf,warc,zip
+derivative.systems.installed=fits,homarus,houdini,ocr,coverpage,mergepdf,libreoffice,whisper,ocrpdf,htr,cleanpdf,warc,zip
 
 derivative.fits.enabled={{ getenv "ALPACA_DERIVATIVE_FITS_ENABLED" }}
 derivative.fits.in.stream={{ getenv "ALPACA_DERIVATIVE_FITS_QUEUE" }}
@@ -111,7 +111,6 @@ derivative.cleanpdf.concurrent-consumers=3
 derivative.cleanpdf.max-concurrent-consumers=-1
 derivative.cleanpdf.async-consumer=true
 
-
 derivative.warc.enabled=true
 derivative.warc.in.stream=queue:islandora-tn-warc
 derivative.warc.service.url={{ getenv "ALPACA_DERIVATIVE_TN_WARC_URL" }}
@@ -125,3 +124,17 @@ derivative.zip.service.url={{ getenv "ALPACA_DERIVATIVE_TN_ZIP_URL" }}
 derivative.zip.concurrent-consumers=3
 derivative.zip.max-concurrent-consumers=-1
 derivative.zip.async-consumer=true
+
+derivative.mergepdf.enabled=true
+derivative.mergepdf.in.stream=queue:islandora-merge-pdf
+derivative.mergepdf.service.url={{ getenv "ALPACA_DERIVATIVE_MERGEPDF_URL" }}
+derivative.mergepdf.concurrent-consumers={{ getenv "ALPACA_DERIVATIVE_MERGEPDF_CONSUMERS" }}
+derivative.mergepdf.max-concurrent-consumers={{ getenv "ALPACA_DERIVATIVE_MERGEPDF_MAX_CONSUMERS" }}
+derivative.mergepdf.async-consumer={{ getenv "ALPACA_DERIVATIVE_MERGEPDF_ASYNC_CONSUMER" }}
+
+derivative.coverpage.enabled=true
+derivative.coverpage.in.stream=queue:islandora-pdf-coverpage
+derivative.coverpage.service.url={{ getenv "ALPACA_DERIVATIVE_COVERPAGE_URL" }}
+derivative.coverpage.concurrent-consumers=3
+derivative.coverpage.max-concurrent-consumers=-1
+derivative.coverpage.async-consumer=true

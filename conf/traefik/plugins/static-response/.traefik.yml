@@ -1,6 +1,0 @@
-displayName: Return a HTTP status code
-type: middleware
-import: github.com/lehigh-university-libraries/static-response
-summary: Quickly return an HTTP status based on traefik rules
-testData:
-  ResponseCode: 400
