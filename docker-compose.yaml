@@ -352,7 +352,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.4.4@sha256:9b0e9d788816d722703eae57ebf8b4d52ad98e02b76f0362d5a040ef46902ef7
+    image: traefik:v3.6.6@sha256:2979bff651c98e70345dd886186a7a15ee3ce18b636af208d4ccbf2d56dbdddd
     restart: always
     command: >-
       --api.insecure=true
@@ -360,10 +360,18 @@ services:
       --api.debug=true
       --ping=true
       --entryPoints.http.address=:80
-      --entryPoints.https.address=:443
       --entryPoints.http.forwardedHeaders.trustedIPs=${FRONTEND_IP_1},${FRONTEND_IP_2},${FRONTEND_IP_3}
+      --entryPoints.http.http.encodedCharacters.allowEncodedSlash=true
+      --entryPoints.http.http.encodedCharacters.allowEncodedPercent=true
+      --entryPoints.http.http.encodedCharacters.allowEncodedQuestionMark=true
+      --entryPoints.http.http.encodedCharacters.allowEncodedHash=true
+      --entryPoints.http.transport.respondingTimeouts.readTimeout=3600
+      --entryPoints.https.address=:443
       --entryPoints.https.forwardedHeaders.trustedIPs=${FRONTEND_IP_1},${FRONTEND_IP_2},${FRONTEND_IP_3}
-      --entryPoints.ssh.address=:22
+      --entryPoints.https.http.encodedCharacters.allowEncodedSlash=true
+      --entryPoints.https.http.encodedCharacters.allowEncodedPercent=true
+      --entryPoints.https.http.encodedCharacters.allowEncodedQuestionMark=true
+      --entryPoints.https.http.encodedCharacters.allowEncodedHash=true
       --entryPoints.https.transport.respondingTimeouts.readTimeout=3600
       --providers.file.filename=/etc/traefik/config.yaml
       --providers.file.watch=true
