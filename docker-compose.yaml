@@ -62,7 +62,7 @@ secrets:
     file: "./secrets/JWT_PRIVATE_KEY"
 services:
   alpaca:
-    image: islandora/alpaca:6.0.4@sha256:8c68136d77674e6d6330be24a0b2000fe0d1bb2e20165908371f41dd94c7e29b
+    image: islandora/alpaca:6.3.3@sha256:3492bcbba578e49c90f00b16e23cc6f332bb7c9eb0eec6b86895e96663d0f7a8
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -81,7 +81,9 @@ services:
       ALPACA_DERIVATIVE_CLEAN_PDF_URL: https://isle-microservices.cc.lehigh.edu/cleanpdf
       ALPACA_DERIVATIVE_TN_WARC_URL: https://isle-microservices.cc.lehigh.edu/warc
       ALPACA_DERIVATIVE_TN_ZIP_URL: https://isle-microservices.cc.lehigh.edu/zip
-      ROLLOUT: 20250728
+      ALPACA_DERIVATIVE_COVERPAGE_URL: https://isle-microservices.cc.lehigh.edu/coverpage
+      ALPACA_DERIVATIVE_MERGEPDF_URL: https://isle-microservices.cc.lehigh.edu/mergepdf
+      ROLLOUT: 20260207
     secrets:
       - source: ALPACA_JMS_PASSWORD
       - source: CERT_AUTHORITY
@@ -95,7 +97,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:05f3ad8df92fd479fcb0888db632bdd9b7a8d94404fd279546d29eff9217ec0a
+    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:7577d9cd746c56c44dc2561cd8f444eed4301e9abf14fcab2b3b507435dd41de
     entrypoint:
       - /app/fabricator
       - --server
@@ -118,16 +120,6 @@ services:
     volumes:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
-  parry:
-    image: lehighlts/scyllaridae-parry:main@sha256:99feb59b3fb16795fa0342dbb39ca610513d14db3935eb42c15f642b8f90313a
-    environment:
-      ROLLOUT: 20250708
-    volumes:
-      - ./certs/rootCA.pem:/app/ca.pem:r
-      - ./conf/parry/scyllaridae.yml:/app/scyllaridae.yml:r
-    depends_on:
-      activemq:
-        condition: service_healthy
   activemq:
     image: islandora/activemq:6.0.4@sha256:09419233134bfa720387c1e83af95b4e7ff3a7cf6a420ec8b65f4f5981104ff5
     secrets:
@@ -336,7 +328,7 @@ services:
     healthcheck:
       start_period: 5s
   rollout:
-    image: ghcr.io/lehigh-university-libraries/rollout:main@sha256:b15d460329f0a9ad33239bf8c582b0bdc734bf5b78c3c4c6499c0bb9215ea9d0
+    image: ghcr.io/lehigh-university-libraries/rollout:0.5.17@sha256:07ed99b704a06419d60cee01f16a065727237fefc57c0c8e9ca1bcfad7c7ea87
     restart: always
     volumes:
       - /opt/islandora/d10_lehigh_agile:/opt/islandora/d10_lehigh_agile
@@ -352,7 +344,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.4.4@sha256:9b0e9d788816d722703eae57ebf8b4d52ad98e02b76f0362d5a040ef46902ef7
+    image: traefik:v3.6.6@sha256:2979bff651c98e70345dd886186a7a15ee3ce18b636af208d4ccbf2d56dbdddd
     restart: always
     command: >-
       --api.insecure=true
@@ -360,10 +352,18 @@ services:
       --api.debug=true
       --ping=true
       --entryPoints.http.address=:80
-      --entryPoints.https.address=:443
       --entryPoints.http.forwardedHeaders.trustedIPs=${FRONTEND_IP_1},${FRONTEND_IP_2},${FRONTEND_IP_3}
+      --entryPoints.http.http.encodedCharacters.allowEncodedSlash=true
+      --entryPoints.http.http.encodedCharacters.allowEncodedPercent=true
+      --entryPoints.http.http.encodedCharacters.allowEncodedQuestionMark=true
+      --entryPoints.http.http.encodedCharacters.allowEncodedHash=true
+      --entryPoints.http.transport.respondingTimeouts.readTimeout=3600
+      --entryPoints.https.address=:443
       --entryPoints.https.forwardedHeaders.trustedIPs=${FRONTEND_IP_1},${FRONTEND_IP_2},${FRONTEND_IP_3}
-      --entryPoints.ssh.address=:22
+      --entryPoints.https.http.encodedCharacters.allowEncodedSlash=true
+      --entryPoints.https.http.encodedCharacters.allowEncodedPercent=true
+      --entryPoints.https.http.encodedCharacters.allowEncodedQuestionMark=true
+      --entryPoints.https.http.encodedCharacters.allowEncodedHash=true
       --entryPoints.https.transport.respondingTimeouts.readTimeout=3600
       --providers.file.filename=/etc/traefik/config.yaml
       --providers.file.watch=true
@@ -371,7 +371,6 @@ services:
       --providers.docker.network=default
       --providers.docker.exposedByDefault=false
       --experimental.localPlugins.captcha-protect.modulename=github.com/libops/captcha-protect
-      --experimental.localPlugins.static-response.moduleName=github.com/lehigh-university-libraries/static-response
     environment:
       rollout: 20251027
       DOMAIN: ${DOMAIN}
@@ -380,7 +379,6 @@ services:
       TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
       EXEMPT_USER_AGENTS: "${EXEMPT_USER_AGENTS}"
-      BAD_USER_AGENTS: "${BAD_USER_AGENTS}"
     ports:
       - "80:80"
       - "443:443"
@@ -388,7 +386,6 @@ services:
       - label=type:container_runtime_t # Required for selinux to access the docker socket.
     volumes:
       - ./conf/traefik/plugins/captcha-protect:/plugins-local/src/github.com/libops/captcha-protect:r
-      - ./conf/traefik/plugins/static-response:/plugins-local/src/github.com/lehigh-university-libraries/static-response:r
       - ./certs:/etc/ssl/traefik:Z,ro
       - ./conf/traefik/config.tmpl:/etc/traefik/config.yaml:ro
       - ./tmp/traefik:/tmp:rw

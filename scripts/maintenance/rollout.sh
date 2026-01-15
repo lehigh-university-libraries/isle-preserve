@@ -2,6 +2,8 @@
 
 set -eou pipefail
 
+set -x
+exec > >(tee -a /opt/islandora/d10_lehigh_agile/rollout.log) 2>&1
 
 # update .env variables
 # this is so we can shell into the dev VM
@@ -18,6 +20,10 @@ update_env() {
     fi
 }
 
+# export .env vars
+# except those passed to the rollout service payload
+# i.e. GIT_BRANCH|DRUPAL_DOCKER_TAG
+# since those may be a different branch that's being rolled out
 while IFS='=' read -r key val; do
     export "$key"="$val"
 done < <(grep -Ev '^($|#|GIT_BRANCH|DRUPAL_DOCKER_TAG)' /opt/islandora/d10_lehigh_agile/.env)
@@ -79,8 +85,7 @@ if [ "$JIRA_TICKETS" != "" ]; then
 fi
 
 git reset --hard
-git checkout "$GIT_BRANCH"
-git pull origin "$GIT_BRANCH"
+git reset --hard "origin/$GIT_BRANCH"
 
 # make sure drupal is already online
 docker_compose up drupal -d
@@ -117,6 +122,8 @@ docker_compose up \
   -d
 
 send_slack_message "Roll out complete 🎉"
+
+rm /opt/islandora/d10_lehigh_agile/rollout.log || true
 
 if [ "$HOST" != "islandora-prod" ]; then
   docker compose exec drupal drush cim -y || echo "drush config import failed"

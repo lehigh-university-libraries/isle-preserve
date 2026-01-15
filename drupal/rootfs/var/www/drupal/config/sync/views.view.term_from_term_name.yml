@@ -311,6 +311,7 @@ display:
       path: term_from_term_name
       auth:
         - basic_auth
+        - jwt_auth
         - cookie
     cache_metadata:
       max-age: -1

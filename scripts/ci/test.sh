@@ -2,7 +2,9 @@
 
 set -eou pipefail
 
-cp sample.env .env
+if [ ! -f .env ]; then
+  cp sample.env .env
+fi
 
 echo "waiting for drupal to come online"
 docker compose exec drupal \
@@ -13,4 +15,4 @@ echo "running tests against live site config"
 echo -e "=============================================\n\n"
 docker compose exec drupal \
   su nginx -s /bin/bash -c \
-    "php vendor/bin/phpunit -c phpunit.unit.xml"
+    "php vendor/bin/phpunit -c phpunit.unit.xml --debug"

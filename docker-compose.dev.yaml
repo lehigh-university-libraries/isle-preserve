@@ -29,15 +29,12 @@ services:
       - 3306:3306
   memcached:
     command: memcached -m 256 -I 5m
-  parry:
-    volumes:
-      - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   fits:
-    image: islandora/fits:6.0.4@sha256:2f028647347a1785c984cb0a5880f26146ee61f0041661bfe4388b5b8c7195ad
+    image: islandora/fits:6.3.3@sha256:7d9a419253d61d6f4568406423fcb23fb5be6a1ea790f3c5f981d5397c387027
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-fits:main@sha256:9782c1c50f58e0bb36b341b969fd48aa79f15ae25913393e5d2a00ab34ef5abb
+    image: islandora/crayfits:6.3.3@sha256:3fe51f91ec1c4170e8ab5efd7f6d40fb4c42d4a09daa999c41e50b64a63a22ff
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -47,24 +44,26 @@ services:
     image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:3f5c692f7e3427602ca8c6bd6fb76f74bf313aacb69d1abaf38aab82e50bd075
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
-    volumes:
-      - ./certs/rootCA.pem:/app/ca.pem:r
+    secrets:
+      - source: CERT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+      - source: JWT_PUBLIC_KEY
   homarus:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-ffmpeg:main@sha256:9fa508d61b3a33405d9f3c693e78b4a5b718170a1da24c9286669cf829f11c41
+    image: islandora/homarus:6.3.3@sha256:5dc1152dad3f9ca91aa1743d0c3a825ce7e6107ec8aadf2ec6b457b75b1a9039
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: islandora/houdini:main
+    image: islandora/houdini:6.3.3@sha256:b42fffae44fe1ef5d2f0c1f6344573ff111c3490d57a8dca8423db16ef348f18
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-tesseract:main@sha256:ea75ee7c7ab5cc8f31d55e618d100f8f9b46acbe130915767d61355c5832f7be
+    image: islandora/hypercube:6.3.3@sha256:fd4144ec1adbb4897b8e198857bd8c2fc11c98438dfb96f379a62900d67245ba
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -75,24 +74,30 @@ services:
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:2fdd97905302e66f70d4f5d2804529e548493590b0905b1dd962f2ca8cbcd56d
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:2714be39483a38b5a5d6bb07bd87f58b10b7cc9416836c869c3e3f2198731001
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
-    volumes:
-      - ./certs/rootCA.pem:/app/ca.pem:r
+    secrets:
+      - source: CERT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+      - source: JWT_PUBLIC_KEY
   coverpage:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:1717fcd66dc640bba059386764f8c67151a5861438f6ce68041d900f5088cd71
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:ffeaa66ff20c497f642e774089381c081cd22795e3e61eed6b703d9d5eaff824
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
-    volumes:
-      - ./certs/rootCA.pem:/app/ca.pem:r
+    secrets:
+      - source: CERT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+      - source: JWT_PUBLIC_KEY
   mergepdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:cea4780e53ce12056580eda436dee0a737c856b0cd7fd278ac0b1663592a8b6e
+    image: islandora/mergepdf:6.3.3@sha256:b338684982d46c2a00215f7b70fd7a37cae5619da097fddc72d251ebb125716f
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
-    volumes:
-      - ./certs/rootCA.pem:/app/ca.pem:r
+    secrets:
+      - source: CERT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+      - source: JWT_PUBLIC_KEY
   rollout:
     profiles: [donotstart]
   traefik:

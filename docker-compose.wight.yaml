@@ -5,35 +5,41 @@ services:
       ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 3
       ALPACA_DERIVATIVE_HOUDINI_URL: http://houdini:8080
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: http://libreoffice:8080
+      ALPACA_DERIVATIVE_MERGEPDF_URL: http://mergepdf:8080
+      ALPACA_DERIVATIVE_COVERPAGE_URL: http://coverpage:8080
   coverpage:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:1717fcd66dc640bba059386764f8c67151a5861438f6ce68041d900f5088cd71
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:ffeaa66ff20c497f642e774089381c081cd22795e3e61eed6b703d9d5eaff824
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-mergepdf:main@sha256:cea4780e53ce12056580eda436dee0a737c856b0cd7fd278ac0b1663592a8b6e
+    image: islandora/mergepdf:6.3.3@sha256:b338684982d46c2a00215f7b70fd7a37cae5619da097fddc72d251ebb125716f
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
-    volumes:
-      - ./certs/rootCA.pem:/app/ca.pem:r
+    secrets:
+      - source: CERT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+      - source: JWT_PUBLIC_KEY
   libreoffice:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:2fdd97905302e66f70d4f5d2804529e548493590b0905b1dd962f2ca8cbcd56d
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:2714be39483a38b5a5d6bb07bd87f58b10b7cc9416836c869c3e3f2198731001
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
-    volumes:
-      - ./certs/rootCA.pem:/app/ca.pem:r
+    secrets:
+      - source: CERT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+      - source: JWT_PUBLIC_KEY
   houdini:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-imagemagick:main@sha256:0c21149791ad6db345b312c4ec38859101abf61c05613aa1a8f67241ef23512c
+    image: islandora/houdini:6.3.3@sha256:b42fffae44fe1ef5d2f0c1f6344573ff111c3490d57a8dca8423db16ef348f18
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+    secrets:
+      - source: CERT_PUBLIC_KEY
+      - source: CERT_AUTHORITY
+      - source: JWT_PUBLIC_KEY
     volumes:
       - ./tmp/houdini:/tmp:rw
-      - ./certs/rootCA.pem:/app/ca.pem:r
-  parry:
-    volumes:
-      - ./conf/parry/scyllaridae.ci.yml:/app/scyllaridae.yml:r
   mariadb:
     image: mariadb:11.8.3-noble@sha256:272084c2dec70619714df329c4ffcb336e3f8c723072c3f56f2e4015997bbf2c
     secrets:
