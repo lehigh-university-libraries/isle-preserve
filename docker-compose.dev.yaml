@@ -57,7 +57,7 @@ services:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: islandora/houdini:main
+    image: islandora/houdini:main@sha256:e60c173160d1967ae11387e2a2f2695a285b407e4733226abce25109db7f93d8
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
