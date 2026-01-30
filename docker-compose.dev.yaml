@@ -44,7 +44,7 @@ services:
       - ./tmp/crayfits:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:3f5c692f7e3427602ca8c6bd6fb76f74bf313aacb69d1abaf38aab82e50bd075
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:fe211ca1ba3defed54f1cdc86ccf51553fe72c25ab285b6134750aa612fabf6f
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -71,7 +71,7 @@ services:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:bdb0c6ba3119f3a42082180bafa304ada02bce557e0e62dd5d85aa29d950ecd1
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:ed29dd24b5a9bcd372964d03816b70d81dc7c357d19e052d65798181d66076eb
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
