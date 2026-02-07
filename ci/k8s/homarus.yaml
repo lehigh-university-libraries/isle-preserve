@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-ffmpeg
-          image: islandora/homarus:6.3.3@sha256:5dc1152dad3f9ca91aa1743d0c3a825ce7e6107ec8aadf2ec6b457b75b1a9039
+          image: islandora/homarus:6.3.5@sha256:b24cac88d04ef6982e97cc921f71d529500c2171efb0114823c8847702dc87b4
           imagePullPolicy: IfNotPresent
           env:
           - name: "JWKS_URI"

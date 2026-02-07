@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-crayfits
-          image: islandora/crayfits:6.3.3@sha256:3fe51f91ec1c4170e8ab5efd7f6d40fb4c42d4a09daa999c41e50b64a63a22ff
+          image: islandora/crayfits:6.3.5@sha256:1e4a8e402a578b7b1e2d0fcdc573537d129e46be9942cd5720bf3d4dc082e2c6
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
