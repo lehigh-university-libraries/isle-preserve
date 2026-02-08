@@ -25,13 +25,6 @@ spec:
       labels:
         app: islandora-tn-zip
     spec:
-      volumes:
-        - name: islandora-prod-ca
-          configMap:
-            name: islandora-prod-ca
-            items:
-              - key: islandora-prod.pem
-                path: ca.pem
       containers:
         - name: scyllaridae-tn-zip
           image: ghcr.io/lehigh-university-libraries/scyllaridae-tn-zip:main@sha256:c9b19e21ce5a110b20b5964d4f19f822a1afb734c630e518945b552b75a173c9
@@ -39,6 +32,11 @@ spec:
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
+            - name: CERT_PUBLIC_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: islandora-prod-ca
+                  key: islandora-prod.pem
           resources:
             requests:
               memory: "2Gi"
@@ -48,10 +46,6 @@ spec:
           ports:
             - containerPort: 8080
               hostPort: 8096
-          volumeMounts:
-            - name: islandora-prod-ca
-              mountPath: /app/ca.pem
-              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck

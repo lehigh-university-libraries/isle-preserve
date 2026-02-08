@@ -26,13 +26,6 @@ spec:
       labels:
         app: islandora-tesseract
     spec:
-      volumes:
-        - name: islandora-prod-ca
-          configMap:
-            name: islandora-prod-ca
-            items:
-              - key: islandora-prod.pem
-                path: ca.pem
       containers:
         - name: scyllaridae-tesseract
           image: islandora/hypercube:6.3.5@sha256:4f8faf17bfdedab720bac6055771b810c2d3a1cd748c366ac2b1c14441271b67
@@ -40,6 +33,11 @@ spec:
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
+            - name: CERT_PUBLIC_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: islandora-prod-ca
+                  key: islandora-prod.pem
           resources:
             requests:
               memory: "4Gi"
@@ -49,10 +47,6 @@ spec:
           ports:
             - hostPort: 8089
               containerPort: 8080
-          volumeMounts:
-            - name: islandora-prod-ca
-              mountPath: /app/ca.pem
-              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck

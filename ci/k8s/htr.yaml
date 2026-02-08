@@ -25,13 +25,6 @@ spec:
       labels:
         app: islandora-openai-htr
     spec:
-      volumes:
-        - name: islandora-prod-ca
-          configMap:
-            name: islandora-prod-ca
-            items:
-              - key: islandora-prod.pem
-                path: ca.pem
       containers:
         - name: scyllaridae-htr
           image: ghcr.io/lehigh-university-libraries/scyllaridae-openai-htr:main@sha256:00f00c3e4eb62f677a57a79e81b8c25733f859a3303fd200ec76c35127de50a8
@@ -44,6 +37,11 @@ spec:
                   key: api-key
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
+            - name: CERT_PUBLIC_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: islandora-prod-ca
+                  key: islandora-prod.pem
           resources:
             requests:
               memory: "2Gi"
@@ -53,10 +51,6 @@ spec:
           ports:
             - hostPort: 8088
               containerPort: 8080
-          volumeMounts:
-            - name: islandora-prod-ca
-              mountPath: /app/ca.pem
-              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck

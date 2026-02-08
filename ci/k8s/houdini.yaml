@@ -25,13 +25,6 @@ spec:
       labels:
         app: islandora-imagemagick
     spec:
-      volumes:
-        - name: islandora-prod-ca
-          configMap:
-            name: islandora-prod-ca
-            items:
-              - key: islandora-prod.pem
-                path: ca.pem
       containers:
         - name: scyllaridae-imagemagick
           image: islandora/houdini:6.3.5@sha256:bfb1228c9eb5f294f22c7c1b58db0897ac1b9bd7b95480f263e276ebe2bce1bc
@@ -39,6 +32,11 @@ spec:
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
+            - name: CERT_PUBLIC_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: islandora-prod-ca
+                  key: islandora-prod.pem
           resources:
             requests:
               memory: "32Gi"
@@ -48,10 +46,6 @@ spec:
           ports:
             - containerPort: 8080
               hostPort: 8087
-          volumeMounts:
-            - name: islandora-prod-ca
-              mountPath: /app/ca.pem
-              subPath: ca.pem
           readinessProbe:
             httpGet:
               path: /healthcheck
