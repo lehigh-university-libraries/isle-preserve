@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-imagemagick
-          image: islandora/houdini:6.3.3@sha256:b42fffae44fe1ef5d2f0c1f6344573ff111c3490d57a8dca8423db16ef348f18
+          image: islandora/houdini:6.3.5@sha256:bfb1228c9eb5f294f22c7c1b58db0897ac1b9bd7b95480f263e276ebe2bce1bc
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"

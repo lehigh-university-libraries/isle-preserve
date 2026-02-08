@@ -35,7 +35,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-tesseract
-          image: islandora/hypercube:6.3.3@sha256:fd4144ec1adbb4897b8e198857bd8c2fc11c98438dfb96f379a62900d67245ba
+          image: islandora/hypercube:6.3.5@sha256:4f8faf17bfdedab720bac6055771b810c2d3a1cd748c366ac2b1c14441271b67
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
