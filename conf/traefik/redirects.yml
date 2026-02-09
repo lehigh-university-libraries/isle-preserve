@@ -1,0 +1,15 @@
+http:
+  routers:
+    redirect_i7:
+      rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
+      service: drupal
+
+      middlewares:
+        - redirect-sans
+      tls: {}
+  middlewares:
+    redirect-sans:
+      redirectRegex:
+        regex: ^https?://([^/]+)(/.*)?
+        replacement: https://{{ env "DOMAIN" }}${2}
+        permanent: true

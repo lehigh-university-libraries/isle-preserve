@@ -1,0 +1,49 @@
+http:
+  services:
+    fabricator:
+      loadBalancer:
+        servers:
+          - url: http://fabricator:8080
+    fabricator-proxy-service:
+      loadBalancer:
+        servers:
+          - url: https://islandora-stage.lib.lehigh.edu/workbench
+
+  middlewares:
+    rollout-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - /_rollout
+    rollout-ip:
+      ipWhiteList:
+        sourceRange:
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+          - 127.0.0.1/32
+          - 128.180.2.69/32
+        ipStrategy:
+          depth: {{ env "ROLLOUT_DEPTH" }}
+    fabricator-proxy-headers:
+      headers:
+        customRequestHeaders:
+          Host: islandora-stage.lib.lehigh.edu
+
+  routers:
+    # send prod requests for fabricator to staging
+    fabricator-proxy:
+      rule: Host(`preserve.lehigh.edu`) && PathPrefix(`/workbench`)
+
+{{- if (eq (env "URI_SCHEME") "https") }}
+      tls: {}
+{{- end }}
+      middlewares:
+        - fabricator-proxy-headers
+      service: fabricator-proxy-service
+      priority: 100
+    fabricator:
+      rule: PathPrefix(`/workbench`)
+
+{{- if (eq (env "URI_SCHEME") "https") }}
+      tls: {}
+{{- end }}
+      service: fabricator

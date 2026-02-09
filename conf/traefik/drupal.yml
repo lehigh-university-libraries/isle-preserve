@@ -1,0 +1,101 @@
+http:
+  services:
+    drupal:
+      loadBalancer:
+        servers:
+          - url: http://drupal:80
+    drupal-static:
+      loadBalancer:
+        servers:
+          - url: http://drupal-static:80
+            weight: 99
+          - url: http://drupal:80
+            weight: 1
+        healthCheck:
+            path: /healthcheck
+            scheme: http
+            interval: 10s
+            timeout: 3s
+    drupal-lehigh:
+      loadBalancer:
+        servers:
+          - url: http://drupal-lehigh:80
+  routers:
+{{- if (eq (env "DEVELOPMENT_ENVIRONMENT") "false") }}
+    # special drupal container reserved for workbench jobs
+    # which we have configured to use the internal domain
+    drupal-lehigh:
+      rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Path(`/`)
+{{- if (eq (env "URI_SCHEME") "https") }}
+      tls: {}
+{{- end }}
+      priority: 20
+      service: drupal-lehigh
+{{- end }}
+    drupal-static:
+      rule: (Method(`POST`) && Query(`challenge`, `true`)) || (Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`_format`, `^.*$`))
+{{- if (eq (env "URI_SCHEME") "https") }}
+      tls: {}
+{{- end }}
+      priority: 15
+      middlewares:
+        - captcha-protect
+      service: drupal-static
+    # if none of the other rules apply, serve drupal
+    drupal:
+      rule: Host(`{{ env "DOMAIN" }}`) || Host(`{{ env "INTERNAL_DOMAIN" }}`)
+{{- if (eq (env "URI_SCHEME") "https") }}
+      tls: {}
+{{- end }}
+      priority: 10
+      service: drupal
+  middlewares:
+    captcha-protect:
+      plugin:
+        captcha-protect:
+          rateLimit: 0
+          ipv4subnetMask: 8
+          # 10d
+          window: 864000
+          protectRoutes: /
+          protectParameters: "true"
+# Allow testing the captcha protection on staging server
+# if we exempt on staging we can't tell if the captcha will work for non-Lehigh visitors
+{{- if eq (env "INTERNAL_DOMAIN") "islandora-prod.lib.lehigh.edu" }}
+          exemptIps:
+            # Lehigh range
+            - 128.180.0.0/16
+            # Lehigh Guest Network
+            - 4.59.138.56/29
+            - 162.223.16.248/29
+{{- end }}
+          challengeTmpl: /challenge.tmpl.html
+          challengeURL: ""
+          challengeStatusCode: 429
+          captchaProvider: turnstile
+          siteKey: {{ env "TURNSTILE_SITE_KEY" }}
+          secretKey: {{ env "TURNSTILE_SECRET_KEY" }}
+          enableStatsPage: "true"
+          ipForwardedHeader: X-Forwarded-For
+          goodBots:
+            - apple.com
+            - archive.org
+            - commoncrawl.org
+            - duckduckgo.com
+            - iframely.com
+            - facebook.com
+            - instagram.com
+            - kagibot.org
+            - linkedin.com
+            - msn.com
+            - openalex.org
+            - twitter.com
+            - x.com
+          exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
+          persistentStateFile: /tmp/state.json
+          protectFileExtensions: php,html,jp2,tif,tiff
+          excludeRoutes: /oai/request
+          enableStateReconciliation: "true"
+          periodSeconds: 30
+          failureThreshold: 3
+          enableGooglebotIPCheck: "true"

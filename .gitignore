@@ -1,6 +1,6 @@
 .phpunit.result.cache
 drupal/rootfs/var/www/drupal/web/sites/default/settings.php
-docker-compose.override.yml
+docker-compose.override.*
 backup
 drupal/backup
 .DS_Store
@@ -19,3 +19,6 @@ unhealthy.lock
 conf/kubeconfigs/ci.yaml
 drupal/rootfs/var/www/drupal/phpcs.xml.dist
 .env
+islandora_demo_objects
+islandora_workbench
+drupal/rootfs/var/www/drupal/private/

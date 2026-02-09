@@ -6,13 +6,6 @@ services:
     volumes:
       - /mnt/islandora_staging:/data:r
       - /home/runner/etds:/home/runner/etds:r
-  mariadb:
-    image: mariadb:11.8.5-noble@sha256:345fa26d595e8c7fe298e0c4098ed400356f502458769c8902229b3437d6da2b
-    secrets:
-      - source: DB_ROOT_PASSWORD
-        target: MARIADB_ROOT_PASSWORD
-    healthcheck:
-      test: test /run/mysqld/mysqld.sock
   github-actions-runner:
     image: ghcr.io/lehigh-university-libraries/actions-runner:main
     environment:

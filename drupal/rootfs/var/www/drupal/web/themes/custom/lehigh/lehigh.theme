@@ -243,44 +243,7 @@ function lehigh_preprocess_node(&$vars) {
           $vars['#attached']['library'][] = 'lehigh/list-display';
       }
     }
-    else {
-      $entity_array = $node->toArray();
-      $encoder = \Drupal::service('islandora_csl.encoder');
-      $csl_str = $encoder->encode($entity_array);
-      $csl = [json_decode($csl_str)];
-
-      $style = StyleSheet::loadStyleSheet("apa");
-      $citeProc = new CiteProc($style);
-      $apa = $citeProc->render($csl, "bibliography");
-
-      $style = StyleSheet::loadStyleSheet("modern-language-association");
-      $citeProc = new CiteProc($style);
-      $mla = $citeProc->render($csl, "bibliography");
-      $vars['content']['field_islandora_csl'] = [
-        '#type' => 'inline_template',
-        '#weight' => 100,
-        '#template' => <<< EOT
-    <ul class="nav nav-tabs mb-0" id="citation-tabs" role="tablist" style="border-bottom: none">
-      <li class="nav-item" role="presentation">
-        <a class="nav-link active text-decoration-none text-dark" id="apa-tab" data-bs-toggle="tab" data-bs-target="#apa" role="tab" aria-controls="apa" aria-selected="true">APA</a>
-      </li>
-      <li class="nav-item" role="presentation">
-        <a class="nav-link text-decoration-none text-dark" id="mla-tab" data-bs-toggle="tab" data-bs-target="#mla" role="tab" aria-controls="mla" aria-selected="false">MLA</a>
-      </li>
-    </ul>
-    <div class="tab-content" id="citation-tabs-content">
-      <div class="tab-pane fade show active" id="apa" role="tabpanel" aria-labelledby="apa-tab" tabindex="0">
-        $apa
-      </div>
-      <div class="tab-pane fade" id="mla" role="tabpanel" aria-labelledby="mla-tab" tabindex="0">
-        $mla
-      </div>
-    </div>
-EOT
-    ];
   }
-}
-
 }
 
 /**

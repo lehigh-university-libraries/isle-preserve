@@ -2,7 +2,9 @@
 # shellcheck shell=bash
 set -euf -o pipefail
 
-PROGDIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo "Generating certificates with mkcert..."
+
+PROGDIR=$(dirname "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)")
 readonly PROGDIR
 
 # For some commands we must invoke a Windows executable if in the context of
@@ -34,10 +36,14 @@ if [ ! -f "${PROGDIR}/certs/rootCA.pem" ]; then
 fi
 
 "${MKCERT}" -cert-file certs/cert.pem -key-file certs/privkey.pem \
-  "*.lib.lehigh.edu" \
-  "preserve.lehigh.edu" \
-  "preserve-new.lehigh.edu" \
-  "drupal" \
-  "localhost"
+  "*.islandora.io" \
+  "islandora.io" \
+  "*.islandora.info" \
+  "islandora.info" \
+  "*.islandora.traefik.me" \
+  "islandora.traefik.me" \
+  "localhost" \
+  "127.0.0.1" \
+  "::1"
 
-printf '%s' "$(id -u)" > ./certs/UID
+echo "Certificates generated successfully."

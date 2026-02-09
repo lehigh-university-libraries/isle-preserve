@@ -9,21 +9,33 @@ services:
       ALPACA_DERIVATIVE_WHISPER_URL: http://whisper:8080
       ALPACA_DERIVATIVE_OCRPDF_URL: http://ocrpdf:8080
       ALPACA_DERIVATIVE_HTR_URL: http://ocrpdf:8080
+  drupal-cron:
+    profiles: [none]
+  rollout:
+    profiles: [none]
+  drupal-lehigh:
+    profiles: [none]
   cantaloupe:
     volumes:
       - cantaloupe-data:/data:Z,rw
   drupal:
+    build:
+      context: ./drupal
+      x-bake:
+        cache-from:
+          - type=registry,ref=ghcr.io/lehigh-university-libraries/${COMPOSE_PROJECT_NAME}:local
+          - type=registry,ref=ghcr.io/lehigh-university-libraries/${COMPOSE_PROJECT_NAME}:main
+        cache-to:
+          - type=inline
+        platforms:
+          - linux/arm64
     environment:
-      LEHIGH_TRANSFORM_SERVICE_URI: "http://transformer:8080"
+      URI_SCHEME: http
+      DRUPAL_ENABLE_HTTPS: "false"
+    secrets:
+      - source: UID
     volumes:
       - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
-  drupal-lehigh:
-    environment:
-      LEHIGH_TRANSFORM_SERVICE_URI: "http://transformer:8080"
-    volumes:
-      - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
-  transformer:
-    image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:3463cf1178c367079970a8916b2671b0701dc80733126d799033851232723c18
   mariadb:
     ports:
       - 3306:3306
@@ -70,7 +82,7 @@ services:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:29bf64e94e059234786de1d786e02b4978700b7990269cd6d4d22ed40657162c
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:1e02624158694498683db8009431d863d560ab1734ab70b3db04dde14fbe1a8a
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
@@ -98,8 +110,3 @@ services:
       - source: CERT_PUBLIC_KEY
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
-  rollout:
-    profiles: [donotstart]
-  traefik:
-    ports:
-      - 8080:8080

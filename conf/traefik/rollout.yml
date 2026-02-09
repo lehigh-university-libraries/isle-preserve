@@ -1,0 +1,30 @@
+http:
+  services:
+    rollout:
+      loadBalancer:
+        servers:
+          - url: http://rollout:8080
+  routers:
+    rollout:
+      rule: PathPrefix(`/_rollout`)
+
+      tls: {}
+      middlewares:
+        - rollout-strip-prefix
+        - rollout-ip
+      service: rollout
+
+  middlewares:
+    rollout-strip-prefix:
+      stripPrefix:
+        prefixes:
+          - /_rollout
+    rollout-ip:
+      ipWhiteList:
+        sourceRange:
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+          - 127.0.0.1/32
+          - 128.180.2.69/32
+        ipStrategy:
+          depth: {{ env "ROLLOUT_DEPTH" }}
