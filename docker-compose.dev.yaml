@@ -70,7 +70,7 @@ services:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:29bf64e94e059234786de1d786e02b4978700b7990269cd6d4d22ed40657162c
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:1e02624158694498683db8009431d863d560ab1734ab70b3db04dde14fbe1a8a
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:

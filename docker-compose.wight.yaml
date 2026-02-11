@@ -41,7 +41,7 @@ services:
     volumes:
       - ./tmp/houdini:/tmp:rw
   mariadb:
-    image: mariadb:11.8.5-noble@sha256:345fa26d595e8c7fe298e0c4098ed400356f502458769c8902229b3437d6da2b
+    image: mariadb:11.8.6-noble@sha256:7fcb6109db2ba31b22a5709c1eaf9e84f76c9f1b9b9031ef09f24092f7f207cc
     secrets:
       - source: DB_ROOT_PASSWORD
         target: MARIADB_ROOT_PASSWORD
