@@ -3,6 +3,10 @@ services:
     volumes:
       - ./drupal/rootfs/var/www/drupal/config:/var/www/drupal/config:z,rw,${CONSISTENCY}
   fabricator:
+    environment:
+      FABRICATOR_DATA_MOUNT: /data
+      SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
+      FABRICATOR_DRUPAL_PASSWORD: ${FABRICATOR_DRUPAL_PASSWORD}
     volumes:
       - /mnt/islandora_staging:/data:r
       - /home/runner/etds:/home/runner/etds:r
