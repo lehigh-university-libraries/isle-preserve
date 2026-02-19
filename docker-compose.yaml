@@ -64,7 +64,7 @@ secrets:
     file: "./secrets/UID"
 services:
   alpaca:
-    image: islandora/alpaca:6.3.5@sha256:d7a5163d0c6ade08ef01562967026007706784c96e346d226c0eac5c8fa8a486
+    image: islandora/alpaca:6.3.6@sha256:ed88bc5436fc9f056cd97784faa600a1a14a1eb9b4b6a24d5a68f1dfbfae4699
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -107,7 +107,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:6.3.5@sha256:39e64c9a83b193a51a55143684098d921dd45a1e3b154da6d53a46d6a2b22c03
+    image: islandora/mariadb:6.3.6@sha256:5a2d5fbf46cf900c01df32ac9bb1d1ba3af4ac97c6db0e73a24374bcda632b6e
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -120,7 +120,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
-    image: islandora/activemq:6.3.5@sha256:e6951f95fb211f30b099b596b09757f0891502752b83efa7623d57e071a607f7
+    image: islandora/activemq:6.3.6@sha256:1b843f7de965cb98bef345fd87dc482f583bc0340fcce30739eb6d16142eff07
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -136,7 +136,7 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: islandora/cantaloupe:6.3.5@sha256:6923bfcaa8c1408eb3c3b5ee093553a46bdd87bdaab0e2c0bdf68700b61108d5
+    image: islandora/cantaloupe:6.3.6@sha256:e7c24f9b046b0a50896f31a61906c54b8d4e334f8cf4925cc65b23b310048c03
     environment:
       CANTALOUPE_LOG_APPLICATION_LEVEL: info
       CANTALOUPE_HTTPSOURCE_CHUNKING_ENABLED: "false"
@@ -289,7 +289,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:6.3.5@sha256:33f83c2a609b6808dbab5247a5c5b29347d89b592a9a4d6c8fd05873a8264c40
+    image: islandora/fcrepo6:6.3.6@sha256:16985c464025e48590a70b7eb09faee4c5cc4758d30998c7a2866a8199ae8a52
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -312,7 +312,7 @@ services:
         condition: service_started
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:6.3.5
+    image: islandora/base:6.3.6@sha256:c999bd477346a60f25d619ddba31f0abbf66f498ccc8393a4df1eeb4f52e5fa8
     networks:
       default:
     profiles:
@@ -330,7 +330,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:6.3.5@sha256:1d245a1406decbff2df6b029665359008a7092f84e78aec11e519b02b569e0b4
+    image: islandora/solr:6.3.6@sha256:b127abb9e226459db6f848e01dae451bbe12daece4a37a652221ba257196692f
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
@@ -358,7 +358,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.6.7@sha256:a9890c898f379c1905ee5b28342f6b408dc863f08db2dab20e46c267d1ff463a
+    image: traefik:v3.6.8@sha256:90099f8948c828ecf0ababd711a4359a2443eba12261c1df2f548a3b1d815938
     restart: always
     command: >-
       --api.insecure=true

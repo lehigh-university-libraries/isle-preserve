@@ -42,18 +42,18 @@ services:
   memcached:
     command: memcached -m 256 -I 5m
   fits:
-    image: islandora/fits:6.3.5@sha256:914dd666451aeb851d9a00173d0e8da9511d842ac7b74bb10ebabde84944bec7
+    image: islandora/fits:6.3.6@sha256:25a93c8ab411f6019f8fc89a839e2673542cee6c54c8bc4f6be5d02823a8082c
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
-    image: islandora/crayfits:6.3.5@sha256:1e4a8e402a578b7b1e2d0fcdc573537d129e46be9942cd5720bf3d4dc082e2c6
+    image: islandora/crayfits:6.3.6@sha256:113f45ac404aad9cef359a57003bc271d8ab6a56e678420dc615d288082a5144
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/crayfits:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:20e77193149caaa9390e334e538f5da954a141e2fef8dc359a93a9f4b5ffe648
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:532cfdb944e837c33a56c53e61b1a8ab4f761a30ec43e283e21e725526a17275
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -61,32 +61,32 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   homarus:
-    image: islandora/homarus:6.3.5@sha256:b24cac88d04ef6982e97cc921f71d529500c2171efb0114823c8847702dc87b4
+    image: islandora/homarus:6.3.6@sha256:6cad17174178aaf38e9bc8013bc05d3d9a2e18138d1ea1f53a2cec899905c232
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: islandora/houdini:6.3.5@sha256:bfb1228c9eb5f294f22c7c1b58db0897ac1b9bd7b95480f263e276ebe2bce1bc
+    image: islandora/houdini:6.3.6@sha256:22c9aae53ca48dc3b16c41ea95c868b29402513f56a9b492ef3f57abb2a9a5d8
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: islandora/hypercube:6.3.5@sha256:4f8faf17bfdedab720bac6055771b810c2d3a1cd748c366ac2b1c14441271b67
+    image: islandora/hypercube:6.3.6@sha256:97f865bb3d77007f160ffaed3ada4cf6814202e9f4769d6f7b72df5cc057ad22
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:1e02624158694498683db8009431d863d560ab1734ab70b3db04dde14fbe1a8a
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:3ae2d68ef4eb5d351d7da9d052a0ad1d5b76ec69a34675e1888a01c758d3c97f
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   libreoffice:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:2714be39483a38b5a5d6bb07bd87f58b10b7cc9416836c869c3e3f2198731001
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:3c769b1fc091a153290c85ec6954c07caca595e61bbf0bef3b4a75c2bbe6f629
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -94,7 +94,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   coverpage:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:d117476ce8b57a6fb8b83683b449e8cb61c28e5acca013e45e3402b143bc25fc
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:d4525a8aec217026f25ea570854268ef92f7ff0a6b073e3aadf60fac5a2b16e2
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -102,7 +102,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   mergepdf:
-    image: islandora/mergepdf:6.3.5@sha256:51249d4049b63c6007aa66c10e1ced8273a3b1990cbcb7e7ac8ddb495c768828
+    image: islandora/mergepdf:6.3.6@sha256:fb5a43953bface398a6590ab8a74ebb38541a48aeaee399cda1f770942bc64dd
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
