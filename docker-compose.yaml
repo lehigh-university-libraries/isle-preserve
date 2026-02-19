@@ -312,7 +312,7 @@ services:
         condition: service_started
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:6.3.5
+    image: islandora/base:6.3.5@sha256:a5e3d05be8f603a32bc1c3b06c052c5c8f01f269ce013405ef3cb41034d43bfa
     networks:
       default:
     profiles:
