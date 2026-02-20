@@ -10,6 +10,7 @@ dependencies:
     - views.view.related_items
     - views.view.rights_and_reproductions
   module:
+    - crosswalk
     - islandora
     - node
     - views
@@ -36,6 +37,7 @@ conditions:
       node: '@node.node_route_context:node'
     uri: 'http://purl.org/dc/dcmitype/Collection'
     logic: and
+    naive_references: 0
 reactions:
   blocks:
     id: blocks
@@ -155,6 +157,21 @@ reactions:
         exposed: {  }
         third_party_settings: {  }
         override: {  }
+      a364fab5-50c2-47e8-9dab-f6b8ccd957c2:
+        uuid: a364fab5-50c2-47e8-9dab-f6b8ccd957c2
+        id: crosswalk_citation
+        label: Citation
+        provider: crosswalk
+        label_display: visible
+        region: content
+        weight: '0'
+        custom_id: crosswalk_citation
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: repository_item
+        context_mapping: {  }
+        third_party_settings: {  }
     include_default_blocks: 1
     saved: false
 weight: 1

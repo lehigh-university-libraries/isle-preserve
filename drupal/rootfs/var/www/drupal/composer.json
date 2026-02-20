@@ -91,7 +91,6 @@
         "drupal/rabbit_hole": "^1.0",
         "drupal/redirect": "^1.11",
         "drupal/rest_oai_pmh": "^2.0",
-        "drupal/schema_metatag": "^3.0",
         "drupal/search_api": "^1.38",
         "drupal/search_api_solr": "^4.3",
         "drupal/search_api_solr_nlp": "^1.1",
@@ -119,7 +118,6 @@
         "islandora/views_nested_details": "^1.0",
         "lehigh-university-libraries/islandora_rights_statements": "1.x-dev",
         "library/pdf.js": "^4",
-        "mjordan/islandora_repository_reports": "dev-main",
         "mjordan/islandora_workbench_integration": "dev-main",
         "superbalist/flysystem-google-storage": "^7.2.2"
     },

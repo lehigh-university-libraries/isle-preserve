@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "47a5f567a62792c193ab2723b356c06b",
+    "content-hash": "0cb88cb4d529170dfa43ffb1a5ee42eb",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7159,81 +7159,6 @@
             }
         },
         {
-            "name": "drupal/schema_metatag",
-            "version": "3.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/schema_metatag.git",
-                "reference": "3.0.4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/schema_metatag-3.0.4.zip",
-                "reference": "3.0.4",
-                "shasum": "bdc9ee4efc6a995e6b0e75a517e65e1355226c95"
-            },
-            "require": {
-                "drupal/core": "^9 || ^10 || ^11",
-                "drupal/metatag": "^2.0",
-                "php": ">=8.0"
-            },
-            "require-dev": {
-                "drupal/coder": "^8.3",
-                "drupal/metatag_views": "*",
-                "drupal/schema_article": "*",
-                "drupal/schema_organization": "*",
-                "ergebnis/composer-normalize": "*",
-                "mpyw/phpunit-patch-serializable-comparison": "*",
-                "phpcompatibility/php-compatibility": "^9.3"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "3.0.4",
-                    "datestamp": "1771516335",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                },
-                "composer-normalize": {
-                    "indent-size": 2,
-                    "indent-style": "space"
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "damienmckenna",
-                    "homepage": "https://www.drupal.org/user/108450"
-                },
-                {
-                    "name": "karens",
-                    "homepage": "https://www.drupal.org/user/45874"
-                },
-                {
-                    "name": "thejimbirch",
-                    "homepage": "https://www.drupal.org/user/2507260"
-                },
-                {
-                    "name": "wells",
-                    "homepage": "https://www.drupal.org/user/2452278"
-                }
-            ],
-            "description": "Metatag implementation of Schema.org structured data (JSON-LD)",
-            "homepage": "https://www.drupal.org/project/schema_metatag",
-            "keywords": [
-                "Drupal"
-            ],
-            "support": {
-                "source": "https://git.drupalcode.org/project/schema_metatag",
-                "issues": "https://www.drupal.org/project/issues/schema_metatag"
-            }
-        },
-        {
             "name": "drupal/search_api",
             "version": "1.40.0",
             "source": {
@@ -11223,45 +11148,6 @@
                 "source": "https://github.com/mck89/peast/tree/v1.17.4"
             },
             "time": "2025-10-10T12:53:17+00:00"
-        },
-        {
-            "name": "mjordan/islandora_repository_reports",
-            "version": "dev-main",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mjordan/islandora_repository_reports.git",
-                "reference": "0882e81d4d70c9de21c3520c9306cffaba362aeb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mjordan/islandora_repository_reports/zipball/0882e81d4d70c9de21c3520c9306cffaba362aeb",
-                "reference": "0882e81d4d70c9de21c3520c9306cffaba362aeb",
-                "shasum": ""
-            },
-            "default-branch": true,
-            "type": "drupal-module",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "Mark Jordan",
-                    "email": "mjordan@sfu.ca",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "Drupal 8/9 module that provides a collection of reports on various aspects of an Islandora repository.",
-            "homepage": "https://github.com/mjordan/islandora_repository_reports",
-            "keywords": [
-                "Islandora",
-                "drupal"
-            ],
-            "support": {
-                "issues": "https://github.com/mjordan/islandora_repository_reports/issues",
-                "source": "https://github.com/mjordan/islandora_repository_reports/tree/main"
-            },
-            "time": "2024-06-19T04:49:53+00:00"
         },
         {
             "name": "mjordan/islandora_workbench_integration",
@@ -23014,7 +22900,6 @@
         "drupal/xmlsitemap": 10,
         "islandora-rdm/islandora_fits": 20,
         "lehigh-university-libraries/islandora_rights_statements": 20,
-        "mjordan/islandora_repository_reports": 20,
         "mjordan/islandora_workbench_integration": 20
     },
     "prefer-stable": true,

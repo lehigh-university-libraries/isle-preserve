@@ -23,6 +23,7 @@ module:
   controlled_access_terms: 0
   controlled_access_terms_defaults: 0
   crop: 0
+  crosswalk: 0
   csp: 0
   csv_serialization: 0
   ctools: 0
