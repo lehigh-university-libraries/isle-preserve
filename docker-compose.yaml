@@ -378,7 +378,6 @@ services:
       --providers.docker.exposedByDefault=false
       --experimental.localPlugins.captcha-protect.modulename=github.com/libops/captcha-protect
       --log.format=json
-      --log.level=DEBUG
     environment:
       rollout: 20251027
       DOMAIN: ${DOMAIN}
