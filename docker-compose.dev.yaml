@@ -42,11 +42,11 @@ services:
   memcached:
     command: memcached -m 256 -I 5m
   fits:
-    image: islandora/fits:6.3.6@sha256:25a93c8ab411f6019f8fc89a839e2673542cee6c54c8bc4f6be5d02823a8082c
+    image: islandora/fits:6.3.7@sha256:b0436ef2fd6fdcfb951c8aeadd4c677111de3dfb68b611ce6a38409ea9824753
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
-    image: islandora/crayfits:6.3.6@sha256:113f45ac404aad9cef359a57003bc271d8ab6a56e678420dc615d288082a5144
+    image: islandora/crayfits:6.3.7@sha256:cffb7d665b2fe830fbec5b828dc58a484cede81957a079a55758bed69e762fc9
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -61,21 +61,21 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   homarus:
-    image: islandora/homarus:6.3.6@sha256:6cad17174178aaf38e9bc8013bc05d3d9a2e18138d1ea1f53a2cec899905c232
+    image: islandora/homarus:6.3.7@sha256:01114015aca90847e4474fb83ff93d0db74b31a58d8fd8550241e0cad8976318
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: islandora/houdini:6.3.6@sha256:22c9aae53ca48dc3b16c41ea95c868b29402513f56a9b492ef3f57abb2a9a5d8
+    image: islandora/houdini:6.3.7@sha256:60966b37106e57aeb487b0374979b3eb10d49dd5766da6bb96aa98f99032443b
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: islandora/hypercube:6.3.6@sha256:97f865bb3d77007f160ffaed3ada4cf6814202e9f4769d6f7b72df5cc057ad22
+    image: islandora/hypercube:6.3.7@sha256:8b4b396fcce5dbc9a52d1d5980ef2dce5c2453289c151d873aecc14267f889c1
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -102,7 +102,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   mergepdf:
-    image: islandora/mergepdf:6.3.6@sha256:fb5a43953bface398a6590ab8a74ebb38541a48aeaee399cda1f770942bc64dd
+    image: islandora/mergepdf:6.3.7@sha256:7934622044b8121a79bdb179f96882e20fb3970b041c0cfc35d73b995f0e79e6
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3

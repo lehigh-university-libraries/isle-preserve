@@ -4704,17 +4704,17 @@
         },
         {
             "name": "drupal/islandora",
-            "version": "2.17.4",
+            "version": "2.17.5",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/islandora.git",
-                "reference": "2.17.4"
+                "reference": "2.17.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/islandora-2.17.4.zip",
-                "reference": "2.17.4",
-                "shasum": "2947f46bc19d79860e5e0096745d9c9dd10c923a"
+                "url": "https://ftp.drupal.org/files/projects/islandora-2.17.5.zip",
+                "reference": "2.17.5",
+                "shasum": "888d1dd12228ccc498e3af8b238645f3bc9df6a0"
             },
             "require": {
                 "drupal/action": "^0.2",
@@ -4753,8 +4753,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.17.4",
-                    "datestamp": "1770297403",
+                    "version": "2.17.5",
+                    "datestamp": "1772045156",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7112,17 +7112,17 @@
         },
         {
             "name": "drupal/rest_oai_pmh",
-            "version": "2.2.0",
+            "version": "2.2.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/rest_oai_pmh.git",
-                "reference": "2.2.0"
+                "reference": "2.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/rest_oai_pmh-2.2.0.zip",
-                "reference": "2.2.0",
-                "shasum": "5835e4eb122d7c49f367aa855d10cc3c93787151"
+                "url": "https://ftp.drupal.org/files/projects/rest_oai_pmh-2.2.1.zip",
+                "reference": "2.2.1",
+                "shasum": "7bf04ab655fa6017e7b01ccc6748375ab6855882"
             },
             "require": {
                 "drupal/core": "^10.1 || ^11"
@@ -7130,8 +7130,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.2.0",
-                    "datestamp": "1771524738",
+                    "version": "2.2.1",
+                    "datestamp": "1771879700",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -9101,7 +9101,7 @@
         },
         {
             "name": "firebase/php-jwt",
-            "version": "v6.11.1",
+            "version": "6.x-dev",
             "source": {
                 "type": "git",
                 "url": "https://github.com/firebase/php-jwt.git",
