@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-imagemagick
-          image: islandora/houdini:6.3.6@sha256:22c9aae53ca48dc3b16c41ea95c868b29402513f56a9b492ef3f57abb2a9a5d8
+          image: islandora/houdini:6.3.7@sha256:60966b37106e57aeb487b0374979b3eb10d49dd5766da6bb96aa98f99032443b
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
