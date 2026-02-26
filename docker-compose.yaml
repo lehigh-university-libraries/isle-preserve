@@ -126,8 +126,6 @@ services:
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
     volumes:
       - activemq-data:/opt/activemq/data:Z,rw
-      - ./tmp/activemq:/tmp:rw
-      - ./conf/activemq/activemq.xml:/opt/activemq/conf/activemq.xml:r
     healthcheck:
       start_period: 5s
     logging:
