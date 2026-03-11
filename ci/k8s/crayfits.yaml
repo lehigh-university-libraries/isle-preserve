@@ -32,7 +32,7 @@ spec:
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
-            - name: "FITS_URI"
+            - name: "CRAYFITS_WEBSERVICE_URI"
               value: "http://fits:8084/fits/examine"
             - name: CERT_PUBLIC_KEY
               valueFrom:
