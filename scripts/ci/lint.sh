@@ -2,20 +2,19 @@
 
 set -eou pipefail
 
-TRAEFIK_CONFIG="./conf/traefik/config.tmpl"
+TRAEFIK_CONFIG_DIR="./conf/traefik"
 
 check_traefik() {
     DOCKER_VARS=$(docker compose config traefik --format json | \
       jq -r '.services.traefik.environment | keys[]' | sort -u)
 
-    TRAEFIK_VARS=$(grep "{{ env" "$TRAEFIK_CONFIG" | \
-      awk -F '{{ env "' '{print $2}' | \
-      awk -F '" }}' '{print $1}' | \
+    TRAEFIK_VARS=$(rg -o 'env "([A-Z0-9_]+)"' "$TRAEFIK_CONFIG_DIR"/*.yml | \
+      sed -E 's/.*env "([A-Z0-9_]+)"/\1/' | \
       sort -u)
 
     echo "Environment variables defined in docker-compose (traefik):"
     printf "%s\n" "$DOCKER_VARS"
-    echo "Environment variable references in traefik.yaml:"
+    echo "Environment variable references in Traefik dynamic config:"
     printf "%s\n" "$TRAEFIK_VARS"
 
     missing_vars=()
@@ -26,9 +25,9 @@ check_traefik() {
     done
 
     if [ ${#missing_vars[@]} -eq 0 ]; then
-        echo "All docker-compose environment variables are referenced in ${TRAEFIK_CONFIG}."
+        echo "All docker-compose environment variables are referenced in ${TRAEFIK_CONFIG_DIR}."
     else
-        echo "Missing variables in ${TRAEFIK_CONFIG}:"
+        echo "Missing variables in ${TRAEFIK_CONFIG_DIR}:"
         for var in "${missing_vars[@]}"; do
             echo " - $var"
         done
@@ -49,7 +48,15 @@ php_codesniff() {
 }
 
 echo "Checking YML files"
-ls -l ./*.yaml "$TRAEFIK_CONFIG"
+ls -l ./*.yaml "$TRAEFIK_CONFIG_DIR"/*.yml
 yq . ./*.yaml > /dev/null
+
+for traefik_file in "$TRAEFIK_CONFIG_DIR"/*.yml; do
+    if rg -q '{{' "$traefik_file"; then
+        continue
+    fi
+    yq . "$traefik_file" > /dev/null
+done
+
 check_traefik
 php_codesniff
