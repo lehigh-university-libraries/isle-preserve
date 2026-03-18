@@ -223,6 +223,7 @@ services:
       - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:rw
       - /opt/islandora/volumes/drupal-private-files:/var/www/drupal/private:rw
       - /opt/islandora/volumes/fcrepo-data/home/data/ocfl-root:/fcrepo:r
+      - /opt/islandora/volumes/tmp/drupal:/tmp:rw
       - drupal-solr-config:/opt/solr/server/solr/default:z,rw
       - ./conf/php-fpm/www.conf:/etc/confd/templates/www.conf.tmpl:r
       - ./conf/nginx/drupal.fpm.conf.tmpl:/etc/confd/templates/drupal.fpm.conf.tmpl:r
@@ -242,7 +243,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.29.5@sha256:0236ee02dcbce00b9bd83e0f5fbc51069e7e1161bd59d99885b3ae1734f3392e
+    image: nginx:1.29.6@sha256:dec7a90bd0973b076832dc56933fe876bc014929e14b4ec49923951405370112
     restart: always
     environment:
       ROLLOUT: 20251024
@@ -356,7 +357,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.6.9@sha256:9004e1cd1e33c5eb0b6ec02bc6cfda61fe9caca36751114b1c9c6662f01b264a
+    image: traefik:v3.6.11@sha256:37f515ab3fe37979ca6abec9fbb2437acebee8086bb7914f1353faeec27fdb5e
     restart: always
     command: >-
       --api.insecure=true

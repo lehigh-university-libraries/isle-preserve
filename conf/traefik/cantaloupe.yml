@@ -25,9 +25,4 @@ http:
       middlewares:
         - cantaloupe
       service: cantaloupe
-{{- if (eq (env "TLS_PROVIDER") "letsencrypt") }}
-      tls:
-        certResolver: letsencrypt
-{{- else if (eq (env "URI_SCHEME") "https") }}
       tls: {}
-{{- end }}

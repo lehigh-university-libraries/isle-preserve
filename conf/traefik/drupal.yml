@@ -21,22 +21,16 @@ http:
         servers:
           - url: http://drupal-lehigh:80
   routers:
-{{- if (eq (env "DEVELOPMENT_ENVIRONMENT") "false") }}
     # special drupal container reserved for workbench jobs
     # which we have configured to use the internal domain
     drupal-lehigh:
       rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Path(`/`)
-{{- if (eq (env "URI_SCHEME") "https") }}
       tls: {}
-{{- end }}
       priority: 20
       service: drupal-lehigh
-{{- end }}
     drupal-static:
       rule: (Method(`POST`) && Query(`challenge`, `true`)) || (Method(`GET`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`) && !QueryRegexp(`_format`, `^.*$`))
-{{- if (eq (env "URI_SCHEME") "https") }}
       tls: {}
-{{- end }}
       priority: 15
       middlewares:
         - captcha-protect
@@ -44,9 +38,7 @@ http:
     # if none of the other rules apply, serve drupal
     drupal:
       rule: Host(`{{ env "DOMAIN" }}`) || Host(`{{ env "INTERNAL_DOMAIN" }}`)
-{{- if (eq (env "URI_SCHEME") "https") }}
       tls: {}
-{{- end }}
       priority: 10
       service: drupal
   middlewares:
@@ -57,7 +49,11 @@ http:
           ipv4subnetMask: 8
           # 10d
           window: 864000
-          protectRoutes: /
+          mode: regex
+          protectRoutes: ^/
+          excludeRoutes:
+            - \/oai\/request
+            - \/node\/\d+\/manifest
           protectParameters: "true"
 # Allow testing the captcha protection on staging server
 # if we exempt on staging we can't tell if the captcha will work for non-Lehigh visitors
@@ -68,6 +64,8 @@ http:
             # Lehigh Guest Network
             - 4.59.138.56/29
             - 162.223.16.248/29
+{{- else }}
+          loglevel: DEBUG
 {{- end }}
           challengeTmpl: /challenge.tmpl.html
           challengeURL: ""
@@ -94,7 +92,6 @@ http:
           exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
           persistentStateFile: /tmp/state.json
           protectFileExtensions: php,html,jp2,tif,tiff
-          excludeRoutes: /oai/request
           enableStateReconciliation: "true"
           periodSeconds: 30
           failureThreshold: 3

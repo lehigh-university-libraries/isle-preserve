@@ -3,7 +3,6 @@ http:
     redirect_i7:
       rule: Host(`preserve.lib.lehigh.edu`) || Host(`digitalcollections.lib.lehigh.edu`)
       service: drupal
-
       middlewares:
         - redirect-sans
       tls: {}
