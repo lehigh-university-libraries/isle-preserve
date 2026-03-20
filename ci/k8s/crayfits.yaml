@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-crayfits
-          image: islandora/crayfits:6.3.7@sha256:cffb7d665b2fe830fbec5b828dc58a484cede81957a079a55758bed69e762fc9
+          image: islandora/crayfits:6.3.10@sha256:885e5a35c26c91b57cac0d72e573e2a1df86217f079b2ddfea72f5b492da8812
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
