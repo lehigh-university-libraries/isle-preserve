@@ -208,9 +208,6 @@
                 "override domain": "assets/patches/drupal/islandora/event-overwrite.patch",
                 "read from OCFL root": "assets/patches/drupal/islandora/fcrepo-ro.patch"
             },
-            "islandora-rdm/islandora_fits": {
-                "Remove deprecated function call": "assets/patches/islandora-rdm/islandora_fits/18.patch"
-            },
             "twistor/flysystem-stream-wrapper": {
                 "Fix php82 warning": "assets/patches/twistor/flysystem-stream-wrapper/28.patch"
             },
