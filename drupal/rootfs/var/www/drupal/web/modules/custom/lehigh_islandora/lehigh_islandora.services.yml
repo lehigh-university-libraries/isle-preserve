@@ -11,7 +11,7 @@ services:
       - { name: event_subscriber }
   lehigh_islandora.redirect_collections:
     class: Drupal\lehigh_islandora\EventSubscriber\RedirectCollections
-    arguments: ["@config.factory"]
+    arguments: ['@router.route_provider']
     tags:
       - { name: event_subscriber }
   lehigh_islandora.uriports:

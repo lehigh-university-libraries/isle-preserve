@@ -1,0 +1,37 @@
+{%
+  set classes = [
+    'node',
+    'node--type-' ~ node.bundle|clean_class,
+    not node.isPublished() ? 'node--unpublished',
+    view_mode ? 'node--view-mode-' ~ view_mode|clean_class,
+    'scholarly-article-card'
+  ]
+%}
+
+<article{{ attributes.addClass(classes) }}>
+  <div class="scholarly-article-card__main">
+    <div class="scholarly-article-card__eyebrow">
+      {% if node.field_member_of.entity %}
+        {{ node.field_member_of.entity.label }}
+      {% endif %}
+      {% if content.field_part_detail %}
+        <span class="scholarly-article-card__part">{{ content.field_part_detail }}</span>
+      {% endif %}
+    </div>
+    <h3 class="scholarly-article-card__title"><a href="{{ url }}">{{ label }}</a></h3>
+    {% if content.field_linked_agent %}
+      <div class="scholarly-article-card__authors">{{ content.field_linked_agent }}</div>
+    {% endif %}
+    {% if content.field_edtf_date_issued %}
+      <div class="scholarly-article-card__date">{{ content.field_edtf_date_issued }}</div>
+    {% endif %}
+    {% if content.field_abstract %}
+      <div class="scholarly-article-card__abstract">{{ content.field_abstract }}</div>
+    {% endif %}
+  </div>
+  {% if content.display_media_original_download %}
+    <div class="scholarly-article-card__download">
+      {{ content.display_media_original_download }}
+    </div>
+  {% endif %}
+</article>

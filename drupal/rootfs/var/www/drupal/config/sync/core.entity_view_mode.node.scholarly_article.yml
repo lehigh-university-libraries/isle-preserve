@@ -1,0 +1,11 @@
+uuid: ac2e1281-d3b2-4644-890b-bd033a22e3b7
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.scholarly_article
+label: 'Scholarly Article'
+description: null
+targetEntityType: node
+cache: true

@@ -1,0 +1,46 @@
+{% if journal_browser.volumes %}
+  <div class="journal-browser">
+    <aside class="journal-browser__nav">
+      <h2>Browse Issues</h2>
+      {% for volume in journal_browser.volumes %}
+        <section class="journal-browser__volume">
+          <h3>{{ volume.label }}</h3>
+          <ul>
+            {% for issue in volume.issues %}
+              <li class="{{ issue.active ? 'is-active' : '' }}">
+                <a href="{{ issue.url }}">{{ issue.label }}</a>
+              </li>
+            {% endfor %}
+          </ul>
+        </section>
+      {% endfor %}
+    </aside>
+
+    {% if journal_browser.selected_issue %}
+      <section class="journal-browser__content" id="issue-{{ journal_browser.selected_issue.nid }}">
+        <h2>{{ journal_browser.selected_issue.heading }}</h2>
+        <div class="journal-browser__articles">
+          {% for article in journal_browser.selected_issue.articles %}
+            <article class="journal-browser__article">
+              <div class="journal-browser__article-copy">
+                <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
+                {% if article.authors %}
+                  <p>{{ article.authors }}</p>
+                {% endif %}
+              </div>
+              {% if article.download_url %}
+                <div class="journal-browser__article-download">
+                  <a href="{{ article.download_url }}" download>{{ article.download_label }}</a>
+                </div>
+              {% endif %}
+            </article>
+          {% else %}
+            <p>No article-level records were found for this issue yet.</p>
+          {% endfor %}
+        </div>
+      </section>
+    {% endif %}
+  </div>
+{% else %}
+  {{ empty }}
+{% endif %}

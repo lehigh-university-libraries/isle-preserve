@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.card
+    - core.entity_view_mode.node.scholarly_article
     - core.entity_view_mode.node.search_index
     - field.storage.node.field_alt_title
     - field.storage.node.field_collection_hierarchy
@@ -153,6 +154,17 @@ field_settings:
       view_mode:
         'entity:node':
           ':default': card
+          islandora_object: ':default'
+  scholarly_article:
+    label: 'Scholarly Article Display'
+    property_path: rendered_item
+    type: solr_string_storage
+    configuration:
+      roles:
+        - anonymous
+      view_mode:
+        'entity:node':
+          ':default': scholarly_article
           islandora_object: ':default'
   changed:
     label: Changed

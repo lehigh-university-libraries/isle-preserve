@@ -247,6 +247,27 @@ function lehigh_site_support_identify_collection(NodeInterface $node, $includeCo
 }
 
 /**
+ * Check whether a node has one of the given display hint terms.
+ */
+function lehigh_site_support_has_display_hint(NodeInterface $node, $hint_names): bool {
+  if (!$node->hasField('field_display_hints') || $node->field_display_hints->isEmpty()) {
+    return FALSE;
+  }
+
+  $hint_names = array_map('mb_strtolower', (array) $hint_names);
+  foreach ($node->field_display_hints as $item) {
+    if (is_null($item->entity)) {
+      continue;
+    }
+    if (in_array(mb_strtolower($item->entity->label()), $hint_names, TRUE)) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function lehigh_site_support_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {

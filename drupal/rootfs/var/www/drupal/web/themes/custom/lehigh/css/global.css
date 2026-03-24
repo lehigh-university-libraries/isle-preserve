@@ -293,3 +293,134 @@ footer .btn-primary {
   background-color: #fff;
   border-color: #c78f01;
 }
+
+.scholarly-article-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  padding: 1.5rem 0;
+  border-bottom: 1px solid #d7dce1;
+}
+
+.scholarly-article-card__eyebrow,
+.scholarly-article-card__authors,
+.scholarly-article-card__date {
+  font-size: 0.95rem;
+}
+
+.scholarly-article-card__eyebrow {
+  color: #1d5970;
+  font-weight: 600;
+}
+
+.scholarly-article-card__title {
+  margin: 0.35rem 0 0.5rem;
+}
+
+.scholarly-article-card__title a {
+  text-decoration: none;
+}
+
+.scholarly-article-card__authors {
+  margin-bottom: 0.5rem;
+}
+
+.scholarly-article-card__abstract {
+  max-width: 62rem;
+}
+
+.scholarly-article-card__download {
+  min-width: 9rem;
+  align-self: start;
+}
+
+.scholarly-article-card__download .field {
+  margin: 0;
+}
+
+.journal-browser {
+  display: grid;
+  grid-template-columns: minmax(14rem, 18rem) minmax(0, 1fr);
+  gap: 2rem;
+  padding: 1.5rem 0 3rem;
+}
+
+.journal-browser__nav {
+  background: #f4f6f8;
+  border: 1px solid #d7dce1;
+}
+
+.journal-browser__nav h2 {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #d7dce1;
+}
+
+.journal-browser__volume h3 {
+  margin: 0;
+  padding: 0.85rem 1.25rem 0.35rem;
+  font-size: 1rem;
+}
+
+.journal-browser__volume ul {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0.75rem;
+}
+
+.journal-browser__volume li a {
+  display: block;
+  padding: 0.5rem 1.25rem;
+  text-decoration: none;
+}
+
+.journal-browser__volume li.is-active a {
+  background: #9ac0db;
+  color: #111;
+  font-weight: 600;
+}
+
+.journal-browser__content h2 {
+  margin-bottom: 1.5rem;
+}
+
+.journal-browser__articles {
+  border: 1px solid #d7dce1;
+}
+
+.journal-browser__article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid #d7dce1;
+}
+
+.journal-browser__article:last-child {
+  border-bottom: 0;
+}
+
+.journal-browser__article h3 {
+  margin: 0 0 0.35rem;
+}
+
+.journal-browser__article h3 a {
+  text-decoration: none;
+}
+
+.journal-browser__article p {
+  margin: 0;
+}
+
+.journal-browser__article-download a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+@media (max-width: 991px) {
+  .scholarly-article-card,
+  .journal-browser,
+  .journal-browser__article {
+    grid-template-columns: 1fr;
+  }
+}
