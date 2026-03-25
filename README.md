@@ -50,6 +50,24 @@ flowchart TD
     drupal -- foo.html --> Alice
 ```
 
+### Guest Network Allowlist
+
+Lehigh's guest network CIDRs are treated as trusted on-campus traffic in two places:
+
+- `conf/traefik/drupal.yml` exempts them from `captcha-protect` so Lehigh guests do not get challenged like off-campus traffic.
+- `web/modules/custom/lehigh_islandora/lehigh_islandora.module` treats them as on-campus for local restriction checks so restricted-use resources remain accessible to Lehigh users on guest wireless.
+
+The source of truth for these CIDRs is Nautobot. The sync script is [scripts/maintenance/update-lehigh-guest-networks.php](./scripts/maintenance/update-lehigh-guest-networks.php), and it reads `NAUTOBOT_API_URL` and `NAUTOBOT_API_KEY` from the repository `.env` file.
+
+Use:
+
+```bash
+make update-lehigh-guest-networks-dry-run
+make update-lehigh-guest-networks
+```
+
+Lehigh's SET team manages the Nautobot API keys.
+
 ## Production
 
 ### Setup as a systemd Service

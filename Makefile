@@ -4,6 +4,7 @@
 .PHONY: clean demo-objects init ping status
 .PHONY: sequelace
 .PHONY: traefik-certs traefik-http traefik-https-letsencrypt traefik-https-mkcert
+.PHONY: update-lehigh-guest-networks update-lehigh-guest-networks-dry-run
 .SILENT:
 
 # If custom.makefile exists include it.
@@ -71,6 +72,12 @@ overwrite-starter-site: ## Keep site template's drupal install in sync with isla
 
 create-starter-site-pr: ## Create a PR for islandora-starter-site updates
 	./scripts/isle/create-pr.sh
+
+update-lehigh-guest-networks: ## Fetch Lehigh Guest CIDRs and update Drupal and Traefik allowlists
+	./scripts/maintenance/update-lehigh-guest-networks.php
+
+update-lehigh-guest-networks-dry-run: ## Show fetched Lehigh Guest CIDRs without changing files
+	./scripts/maintenance/update-lehigh-guest-networks.php --dry-run
 sequelace:
 	./scripts/isle/sequelace.sh
 
