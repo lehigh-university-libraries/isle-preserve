@@ -44,6 +44,7 @@ dependencies:
     - field.field.node.islandora_object.field_full_title
     - field.field.node.islandora_object.field_genre
     - field.field.node.islandora_object.field_geographic_subject
+    - field.field.node.islandora_object.field_hide_downloads
     - field.field.node.islandora_object.field_hide_gscholar_metatags
     - field.field.node.islandora_object.field_hide_hocr
     - field.field.node.islandora_object.field_identifier
@@ -501,6 +502,16 @@ content:
       facet: subject_geographic
     third_party_settings: {  }
     weight: 23
+    region: content
+  field_hide_downloads:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 56
     region: content
   field_hide_hocr:
     type: boolean

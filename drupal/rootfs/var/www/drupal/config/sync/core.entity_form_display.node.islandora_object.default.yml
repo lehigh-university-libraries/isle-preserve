@@ -44,6 +44,7 @@ dependencies:
     - field.field.node.islandora_object.field_full_title
     - field.field.node.islandora_object.field_genre
     - field.field.node.islandora_object.field_geographic_subject
+    - field.field.node.islandora_object.field_hide_downloads
     - field.field.node.islandora_object.field_hide_gscholar_metatags
     - field.field.node.islandora_object.field_hide_hocr
     - field.field.node.islandora_object.field_identifier
@@ -539,7 +540,7 @@ content:
     third_party_settings: {  }
   field_create_doi:
     type: boolean_checkbox
-    weight: 2
+    weight: 3
     region: content
     settings:
       display_label: true
@@ -750,6 +751,13 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_hide_downloads:
+    type: boolean_checkbox
+    weight: 2
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_hide_gscholar_metatags:
     type: boolean_checkbox
     weight: 30
@@ -772,7 +780,7 @@ content:
     third_party_settings: {  }
   field_input_source:
     type: string_textfield
-    weight: 3
+    weight: 4
     region: content
     settings:
       size: 60
@@ -987,7 +995,7 @@ content:
     third_party_settings: {  }
   field_skip_merge_pdf:
     type: boolean_checkbox
-    weight: 83
+    weight: 6
     region: content
     settings:
       display_label: true
@@ -1148,7 +1156,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   url_redirects:
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }

@@ -259,11 +259,11 @@ display:
     display_plugin: page
     position: 1
     display_options:
-      path: journal-browser/%node
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
         ajax_history: {  }
+      path: journal-browser/%node
     cache_metadata:
       max-age: -1
       contexts:
@@ -275,3 +275,4 @@ display:
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'
       cacheable: false
+

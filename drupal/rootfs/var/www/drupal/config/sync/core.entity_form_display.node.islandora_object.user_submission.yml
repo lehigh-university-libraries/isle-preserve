@@ -45,6 +45,7 @@ dependencies:
     - field.field.node.islandora_object.field_full_title
     - field.field.node.islandora_object.field_genre
     - field.field.node.islandora_object.field_geographic_subject
+    - field.field.node.islandora_object.field_hide_downloads
     - field.field.node.islandora_object.field_hide_gscholar_metatags
     - field.field.node.islandora_object.field_hide_hocr
     - field.field.node.islandora_object.field_identifier
@@ -606,6 +607,7 @@ hidden:
   field_frequency: true
   field_genre: true
   field_geographic_subject: true
+  field_hide_downloads: true
   field_hide_gscholar_metatags: true
   field_hide_hocr: true
   field_identifier: true

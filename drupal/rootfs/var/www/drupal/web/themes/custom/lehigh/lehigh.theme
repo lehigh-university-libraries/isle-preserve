@@ -211,6 +211,58 @@ function lehigh_preprocess_pager(&$vars) {
   lehigh_add_path_variables($vars);
 }
 
+/**
+ * Implements hook_preprocess_block().
+ */
+function lehigh_preprocess_block(&$vars) {
+  if (empty($vars['plugin_id']) || $vars['plugin_id'] !== 'views_block:downloads-block_1') {
+    return;
+  }
+
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (is_numeric($node)) {
+    $node = Node::load((int) $node);
+  }
+
+  if (!lehigh_hide_downloads_block($node)) {
+    return;
+  }
+
+  $vars['content'] = [];
+  $vars['label'] = '';
+}
+
+/**
+ * Check whether downloads should be hidden for a node or its ancestors.
+ */
+function lehigh_hide_downloads_block($node): bool {
+  if (!$node || !is_object($node) || $node->bundle() !== 'islandora_object') {
+    return FALSE;
+  }
+
+  $depth = 0;
+  while ($depth < 20 && $node->hasField('field_hide_downloads')) {
+    if (!$node->field_hide_downloads->isEmpty()
+      && $node->field_hide_downloads->value) {
+      return TRUE;
+    }
+
+    // Avoid circular references causing infinite loops.
+    ++$depth;
+
+    // @todo use recursion for multi-valued field_member_of
+    // right now that isn't a thing here at Lehigh.
+    if ($node->hasField('field_member_of') && !$node->field_member_of->isEmpty()) {
+      $node = $node->field_member_of->entity;
+    }
+    else {
+      break;
+    }
+  }
+
+  return FALSE;
+}
+
 
 function lehigh_preprocess_node(&$vars) {
   $vars['#attached']['library'][] = 'lehigh/node';
