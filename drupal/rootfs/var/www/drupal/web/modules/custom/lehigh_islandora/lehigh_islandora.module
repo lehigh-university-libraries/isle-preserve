@@ -976,6 +976,31 @@ function lehigh_islandora_get_queue_depth($name = "*") {
  * Check if request is coming from on-campus.
  */
 function lehigh_islandora_on_campus() {
-  $ip = \Drupal::request()->getClientIp();
-  return \Drupal::currentUser()->hasPermission('administer media') || str_starts_with($ip, '128.180.');
+  // guest network IPs
+  static $allowed_ips = [
+    '162.223.16.248' => true,
+    '162.223.16.249' => true,
+    '162.223.16.250' => true,
+    '162.223.16.251' => true,
+    '162.223.16.252' => true,
+    '162.223.16.253' => true,
+    '162.223.16.254' => true,
+    '162.223.16.255' => true,
+    '4.59.138.56' => true,
+    '4.59.138.57' => true,
+    '4.59.138.58' => true,
+    '4.59.138.59' => true,
+    '4.59.138.60' => true,
+    '4.59.138.61' => true,
+    '4.59.138.62' => true,
+    '4.59.138.63' => true,
+  ];
+
+  $request = \Drupal::request();
+  $account = \Drupal::currentUser();
+  $ip = $request->getClientIp();
+
+  return $account->hasPermission('administer media')
+    || str_starts_with($ip, '128.180.')
+    || isset($allowed_ips[$ip]);
 }
