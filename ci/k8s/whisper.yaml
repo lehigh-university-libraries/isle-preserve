@@ -25,6 +25,15 @@ spec:
       labels:
         app: islandora-whisper
     spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchLabels:
+                  app: islandora-whisper
+              topologyKey: kubernetes.io/hostname
       volumes:
         - name: islandora-prod-ca
           configMap:
@@ -42,13 +51,14 @@ spec:
             - name: "WHISPER_PROCESSORS"
               value: "2"
             - name: "WHISPER_THREADS"
-              value: "8"
+              value: "4"
           resources:
             requests:
               memory: "32Gi"
               cpu: "500m"
             limits:
               memory: "32Gi"
+              cpu: "28"
               nvidia.com/gpu: 4
           ports:
             - containerPort: 8080
