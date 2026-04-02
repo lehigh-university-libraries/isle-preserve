@@ -18,6 +18,9 @@ services:
   cantaloupe:
     volumes:
       - cantaloupe-data:/data:Z,rw
+  traefik:
+    ports:
+      - 8080:8080
   drupal:
     build:
       context: ./drupal
@@ -35,6 +38,7 @@ services:
     secrets:
       - source: UID
     volumes:
+      - ./tmp/drupal:/tmp:rw
       - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
   mariadb:
     ports:
