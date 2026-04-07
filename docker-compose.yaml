@@ -64,7 +64,7 @@ secrets:
     file: "./secrets/UID"
 services:
   alpaca:
-    image: islandora/alpaca:6.3.10@sha256:46f6936c57e2560ed55c9d118786fa9a9eb6d4f1879f73f2cd08a145053884e6
+    image: islandora/alpaca:6.3.13@sha256:952690808dbf3be0d70734a7ffadf90de5350eb3c2b4c38ddc65ea3c5c51dd87
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -99,7 +99,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:9d406273f4f6de9f97ce763fe4c0cf1d1249554216119b9580b67c169ab2f671
+    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:144e13b0471974875f37ce67f06873c78196079a59386e5ccfb28e30813aabd4
     environment:
       FABRICATOR_DATA_MOUNT: /data
       SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
@@ -107,7 +107,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:6.3.10@sha256:a18b93704fbb969d6ab55152af1a4f27270e77817e7986350e482e178e135325
+    image: islandora/mariadb:6.3.13@sha256:6c6f58a4c16e42f79b0991d78f5d182bdf6827e28b0e66f917c3ea5b5285395b
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -120,7 +120,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
-    image: islandora/activemq:6.3.10@sha256:dea6d41e14c3dd43e896f0e8dbed8d7f44a78158c7bde4ea2886f46622f8aab6
+    image: islandora/activemq:6.3.13@sha256:4997b013a1d8fba24b0e326686c78d5ee389cb1d7c0f826380d0dd3aa9e23488
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -134,7 +134,7 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: islandora/cantaloupe:6.3.10@sha256:09b200648f68698f57d16ee32bc884903eead7576dfaadb589fbaf7efb4fbf02
+    image: islandora/cantaloupe:6.3.13@sha256:6d99a7f835f4d571b8a7653b2786602bedcf875f68fe8d27a5d1a48e24041602
     environment:
       CANTALOUPE_LOG_APPLICATION_LEVEL: info
       CANTALOUPE_HTTPSOURCE_CHUNKING_ENABLED: "false"
@@ -149,7 +149,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.41@sha256:27db90ca1d538b8bb8dae861fac9a44b3857c54bd1b3a3bd809a45a7744eaae2
+    image: memcached:1.6.41@sha256:db739c92f80323018f33e3ddd392c7bb62c015280c7319f7e5dc207677ea3467
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -243,7 +243,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.29.6@sha256:dec7a90bd0973b076832dc56933fe876bc014929e14b4ec49923951405370112
+    image: nginx:1.29.7@sha256:1854da86e82d5dfb49a8f3d78b099adcc7e36608b207146ed95cd47937938a40
     restart: always
     environment:
       ROLLOUT: 20251024
@@ -288,7 +288,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:6.3.10@sha256:e6fdd7f838d6b8075c52e7d992f26fa0ba59da28f3b1dc448bbb61a3ee339a0a
+    image: islandora/fcrepo6:6.3.13@sha256:2cc92e4ab3a89d91cb1fc8ed47fd7b91fc36e4470b3bce91e2977cfd6e26a07e
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -311,7 +311,7 @@ services:
         condition: service_started
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:6.3.10@sha256:c6e74b6c0bdf8070571c33e479b09f8b1163e44a86a9ea0374dfc6aeb5d96145
+    image: islandora/base:6.3.13@sha256:73f39170fb29a7aaa0f12eec31a496a1c58b91183cf3d9757e9b03eea74c8198
     networks:
       default:
     profiles:
@@ -329,7 +329,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:6.3.10@sha256:225b7bca72d5751c692503b97e665a6f4dff0a925f910402b9f857468cc272db
+    image: islandora/solr:6.3.13@sha256:8c65c37d6de643e546ac8e59be760926bbabfecc7027a4e4f8fb50c6ee64d052
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
@@ -357,7 +357,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.6.11@sha256:37f515ab3fe37979ca6abec9fbb2437acebee8086bb7914f1353faeec27fdb5e
+    image: traefik:v3.6.12@sha256:171c9c3565b29f6c133f1c1b43c5d4e5853415198e9e1078c001f8702ff66aec
     restart: always
     command: >-
       --api.insecure=true
