@@ -334,7 +334,7 @@ function lehigh_site_support_preprocess_views_view(&$variables) {
  * Add the special thumbnail CSS to a given node from a preprocess function.
  */
 function lehigh_site_support_add_css(&$variables, $node) {
-  if (!lehigh_site_support_identify_collection($node)) {
+  if (is_null($node) || !lehigh_site_support_identify_collection($node)) {
     return;
   }
 
