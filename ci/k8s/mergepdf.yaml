@@ -30,6 +30,8 @@ spec:
           image: islandora/mergepdf:mergepdf-iiif@sha256:edacfa29fdac7fb4255270811ea336c20c2526f2af300afca5b744e88e32af9a
           imagePullPolicy: IfNotPresent
           env:
+            - name: MAX_WIDTH
+              value: "1200"
             - name: MAX_THREADS
               value: "7"
             - name: "JWKS_URI"
