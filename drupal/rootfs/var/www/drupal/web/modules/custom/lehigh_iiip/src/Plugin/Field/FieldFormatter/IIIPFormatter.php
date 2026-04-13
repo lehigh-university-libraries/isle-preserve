@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormBuilderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\views\Views;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Plugin implementation of the 'islandora_collection_tabs_default' formatter.
@@ -29,15 +30,15 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
    */
   protected $formBuilder;
 
-  public function __construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, FormBuilderInterface $form_builder) {
-    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+  public function __construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, FormBuilderInterface $form_builder, RequestStack $request_stack) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, $request_stack);
     $this->formBuilder = $form_builder;
   }
 
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
     return new static(
       $plugin_id,
       $plugin_definition,
@@ -46,7 +47,8 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
       $configuration['label'],
       $configuration['view_mode'],
       $configuration['third_party_settings'],
-      $container->get('form_builder')
+      $container->get('form_builder'),
+      $container->get('request_stack')
     );
   }
 

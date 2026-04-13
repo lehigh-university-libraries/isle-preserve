@@ -5,6 +5,7 @@
  * Primary module hooks for Lehigh IIIP module.
  */
 
+use Drupal\islandora_collection_tabs\Plugin\Field\FieldType\CollectionTabsItem;
 use Drupal\node\NodeForm;
 use Drupal\views\ViewExecutable;
 
@@ -16,11 +17,16 @@ function lehigh_iiip_views_pre_render(ViewExecutable $view) {
     return;
   }
   foreach ($view->result as $row) {
-    if (isset($row->nid) && $row->nid == 453222) {
-      if (isset($view->field['field_collection_tabs'])) {
-        $field_handler = $view->field['field_collection_tabs'];
-        $field_handler->options['type'] = 'lehigh_iiip_collection_formatter';
-      }
+    $entity = $row->_entity ?? NULL;
+    if (!$entity || !$entity->hasField('field_collection_tabs') || !isset($view->field['field_collection_tabs'])) {
+      continue;
+    }
+
+    $field_item = $entity->get('field_collection_tabs')->first();
+    if ($field_item && $field_item->display === CollectionTabsItem::DISPLAY_IIIP) {
+      $field_handler = $view->field['field_collection_tabs'];
+      $field_handler->options['type'] = 'lehigh_iiip_collection_formatter';
+      break;
     }
   }
 }

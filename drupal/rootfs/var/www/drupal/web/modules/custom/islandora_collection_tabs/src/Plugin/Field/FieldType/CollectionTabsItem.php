@@ -23,12 +23,32 @@ use Drupal\Core\TypedData\DataDefinition;
  */
 final class CollectionTabsItem extends FieldItemBase {
 
+  public const DISPLAY_TABS = 'tabs';
+  public const DISPLAY_INLINE = 'inline';
+  public const DISPLAY_IIIP = 'iiip';
+
+  /**
+   * Returns the available display mode options.
+   */
+  public static function getDisplayOptions(): array {
+    return [
+      static::DISPLAY_TABS => t('Tabs'),
+      static::DISPLAY_INLINE => t('Inline'),
+      static::DISPLAY_IIIP => t('IIIP'),
+    ];
+  }
+
   /**
    * {@inheritdoc}
    */
   public function isEmpty(): bool {
     $value = $this->get('value')->getValue();
-    return $this->label === NULL && empty($value);
+    $display = $this->get('display')->getValue();
+    return $this->label === NULL
+      && empty($value)
+      && empty($this->map)
+      && empty($this->default)
+      && ($display === NULL || $display === static::DISPLAY_TABS);
   }
 
   /**
@@ -44,6 +64,8 @@ final class CollectionTabsItem extends FieldItemBase {
       ->setLabel(t('Default'));
     $properties['map'] = DataDefinition::create('boolean')
       ->setLabel(t('Map'));
+    $properties['display'] = DataDefinition::create('string')
+      ->setLabel(t('Display mode'));
     return $properties;
   }
 
@@ -79,6 +101,10 @@ final class CollectionTabsItem extends FieldItemBase {
         'type' => 'int',
         'size' => 'tiny',
       ],
+      'display' => [
+        'type' => 'varchar',
+        'length' => 32,
+      ],
     ];
 
     $schema = [
@@ -102,6 +128,7 @@ final class CollectionTabsItem extends FieldItemBase {
     $values['default'] = (bool) mt_rand(0, 1);
 
     $values['map'] = (bool) mt_rand(0, 1);
+    $values['display'] = static::DISPLAY_TABS;
 
     return $values;
   }

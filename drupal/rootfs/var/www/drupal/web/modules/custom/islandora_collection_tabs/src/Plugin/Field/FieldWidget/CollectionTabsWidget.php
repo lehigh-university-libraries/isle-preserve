@@ -7,6 +7,7 @@ namespace Drupal\islandora_collection_tabs\Plugin\Field\FieldWidget;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\islandora_collection_tabs\Plugin\Field\FieldType\CollectionTabsItem;
 use Symfony\Component\Validator\ConstraintViolationInterface;
 
 /**
@@ -24,6 +25,23 @@ final class CollectionTabsWidget extends WidgetBase {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state): array {
+    $display = $items[$delta]->display ?? CollectionTabsItem::DISPLAY_TABS;
+    if ($delta === 0) {
+      $element['display'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Display mode'),
+        '#options' => CollectionTabsItem::getDisplayOptions(),
+        '#default_value' => $display,
+        '#description' => $this->t('Controls how this field is rendered. This selection is applied to the full field.'),
+      ];
+    }
+    else {
+      $element['display'] = [
+        '#type' => 'hidden',
+        '#value' => $display,
+      ];
+    }
+
     $element['default'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Default tab'),
@@ -77,6 +95,7 @@ final class CollectionTabsWidget extends WidgetBase {
     foreach ($values as $delta => $value) {
       // Get the value from the text format form element.
       $values[$delta]['value'] = $value['value']['value'];
+      $values[$delta]['display'] = $values[0]['display'] ?: CollectionTabsItem::DISPLAY_TABS;
 
       if ($value['label'] === '') {
         $values[$delta]['label'] = NULL;
@@ -89,6 +108,9 @@ final class CollectionTabsWidget extends WidgetBase {
       }
       if ($value['default'] === '') {
         $values[$delta]['default'] = NULL;
+      }
+      if ($values[$delta]['display'] === '') {
+        $values[$delta]['display'] = CollectionTabsItem::DISPLAY_TABS;
       }
     }
     return $values;

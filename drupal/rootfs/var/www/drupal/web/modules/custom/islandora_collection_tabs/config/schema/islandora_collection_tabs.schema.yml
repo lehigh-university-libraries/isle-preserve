@@ -16,3 +16,6 @@ field.value.islandora_collection_tabs:
     map:
       type: boolean
       label: Map
+    display:
+      type: string
+      label: Display mode

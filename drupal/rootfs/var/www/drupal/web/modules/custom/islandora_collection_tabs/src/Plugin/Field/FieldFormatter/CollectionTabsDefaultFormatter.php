@@ -6,7 +6,11 @@ namespace Drupal\islandora_collection_tabs\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\islandora_collection_tabs\Plugin\Field\FieldType\CollectionTabsItem;
 use Drupal\views\Views;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Plugin implementation of the 'islandora_collection_tabs_default' formatter.
@@ -17,12 +21,45 @@ use Drupal\views\Views;
  *   field_types = {"islandora_collection_tabs"},
  * )
  */
-class CollectionTabsDefaultFormatter extends FormatterBase {
+class CollectionTabsDefaultFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The request stack.
+   */
+  protected RequestStack $requestStack;
+
+  /**
+   * Constructs a CollectionTabsDefaultFormatter object.
+   */
+  public function __construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings, RequestStack $request_stack) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+    $this->requestStack = $request_stack;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition): static {
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['label'],
+      $configuration['view_mode'],
+      $configuration['third_party_settings'],
+      $container->get('request_stack')
+    );
+  }
 
   /**
    * {@inheritdoc}
    */
   public function viewElements(FieldItemListInterface $items, $langcode): array {
+    if ($this->getDisplayMode($items) === CollectionTabsItem::DISPLAY_INLINE) {
+      return $this->buildInlineElements($items);
+    }
+
     $element = [];
     $element['#attached']['library'][] = 'islandora_collection_tabs/tabs';
     $element[0]['tabs'] = [
@@ -56,16 +93,12 @@ class CollectionTabsDefaultFormatter extends FormatterBase {
     $content = &$element[0]['content'];
 
     $collectionId = 'tab-view-collection';
-    $item = (object) [
-      'default' => TRUE,
-      'label' => 'View this collection',
-      'value' => '&nbsp;',
-    ];
+    $item = $this->getCollectionViewItem();
     $tabs[$collectionId] = $this->addTab($collectionId, $item);
     $content[$collectionId] = $this->addContent($collectionId, $item);
     $this->setDefault($collectionId, $tabs, $content);
 
-    $request = \Drupal::request();
+    $request = $this->requestStack->getCurrentRequest();
     $s = $request->query->get('search_api_fulltext');
     $f = $request->query->all('f');
     $filters = is_array($f) && count($f) > 0;
@@ -83,19 +116,88 @@ class CollectionTabsDefaultFormatter extends FormatterBase {
       }
 
       if ($item->map) {
-        $view = Views::getView('map');
-        if ($view) {
-          $view->setDisplay('default');
-          $view->execute();
-
-          if ($view->total_rows > 0) {
-            $content[$id]['view'] = $view->render();
-          }
+        $map = $this->buildMapView();
+        if ($map !== NULL) {
+          $content[$id]['view'] = $map;
         }
       }
     }
 
     return $element;
+  }
+
+  /**
+   * Builds the inline section display for the field items.
+   */
+  protected function buildInlineElements(FieldItemListInterface $items): array {
+    $element = [
+      0 => [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['collection-tab-sections'],
+        ],
+      ],
+    ];
+
+    foreach ($items as $delta => $item) {
+      $has_visible_content = FALSE;
+      $section = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['collection-tab-section', 'mb-5'],
+        ],
+      ];
+
+      if (!empty($item->label)) {
+        $has_visible_content = TRUE;
+        $section['label'] = [
+          '#type' => 'html_tag',
+          '#tag' => 'h2',
+          '#value' => $item->label,
+          '#attributes' => [
+            'class' => ['h3', 'mb-3'],
+          ],
+        ];
+      }
+
+      if (!empty($item->value)) {
+        $has_visible_content = TRUE;
+        $section['content'] = [
+          '#type' => 'html_tag',
+          '#tag' => 'div',
+          '#value' => $item->value,
+          '#attributes' => [
+            'class' => ['collection-tab-section__content'],
+          ],
+        ];
+      }
+
+      if ($item->map) {
+        $map = $this->buildMapView();
+        if ($map !== NULL) {
+          $has_visible_content = TRUE;
+          $section['map'] = $map;
+        }
+      }
+
+      if ($has_visible_content) {
+        $element[0]['section_' . $delta] = $section;
+      }
+    }
+
+    return $element;
+  }
+
+  /**
+   * Gets the display mode for this field.
+   */
+  protected function getDisplayMode(FieldItemListInterface $items): string {
+    $first_item = $items->first();
+    if ($first_item === NULL || empty($first_item->display)) {
+      return CollectionTabsItem::DISPLAY_TABS;
+    }
+
+    return $first_item->display;
   }
 
   /**
@@ -144,6 +246,36 @@ class CollectionTabsDefaultFormatter extends FormatterBase {
       ],
       '#value' => $item->value,
     ];
+  }
+
+  /**
+   * Builds the default collection view pseudo-tab item.
+   */
+  protected function getCollectionViewItem(): object {
+    return (object) [
+      'default' => TRUE,
+      'label' => 'View this collection',
+      'value' => '&nbsp;',
+    ];
+  }
+
+  /**
+   * Builds the shared map view render array when results exist.
+   */
+  protected function buildMapView(): ?array {
+    $view = Views::getView('map');
+    if (!$view) {
+      return NULL;
+    }
+
+    $view->setDisplay('default');
+    $view->execute();
+
+    if ($view->total_rows <= 0) {
+      return NULL;
+    }
+
+    return $view->render();
   }
 
   /**
