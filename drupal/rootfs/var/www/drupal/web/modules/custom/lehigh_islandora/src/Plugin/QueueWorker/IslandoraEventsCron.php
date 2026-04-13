@@ -9,7 +9,6 @@ use Drupal\Core\Logger\LoggerChannelInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountSwitcher;
 use Drupal\Core\Session\UserSession;
-use Drupal\user\Entity\User;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -120,7 +119,7 @@ class IslandoraEventsCron extends QueueWorkerBase implements ContainerFactoryPlu
       return;
     }
 
-    $account = User::load($entity->getOwnerId());
+    $account = $this->entityTypeManager->getStorage('user')->load($entity->getOwnerId());
     $userSession = new UserSession([
       'uid'   => $account->id(),
       'name'  => $account->getDisplayName(),

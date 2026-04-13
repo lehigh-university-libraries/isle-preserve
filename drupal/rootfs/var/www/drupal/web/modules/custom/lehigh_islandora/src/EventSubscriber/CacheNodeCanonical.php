@@ -149,9 +149,14 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
       return FALSE;
     }
 
-    // Only apply on the the homepage, collections/browse Views, and canonical node URIs.
+    // Only apply on the homepage, collections/browse Views,
+    // and canonical node URIs.
     $route_name = $request->attributes->get('_route');
-    if (!in_array($route_name, ["view.homepage.page_1", "view.browse.main", "entity.node.canonical"])) {
+    if (!in_array($route_name, [
+      'view.homepage.page_1',
+      'view.browse.main',
+      'entity.node.canonical',
+    ])) {
       return FALSE;
     }
     if ($request->attributes->has('node')) {

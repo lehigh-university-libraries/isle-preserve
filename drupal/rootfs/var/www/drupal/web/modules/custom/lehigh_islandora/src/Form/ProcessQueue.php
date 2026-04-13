@@ -2,8 +2,10 @@
 
 namespace Drupal\lehigh_islandora\Form;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\Queue\QueueWorkerManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -44,6 +46,20 @@ class ProcessQueue extends FormBase {
   protected $loggerFactory;
 
   /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * Constructs a ProcessQueue object.
    *
    * @param \Drupal\Core\Queue\QueueFactory $queue
@@ -54,12 +70,18 @@ class ProcessQueue extends FormBase {
    *   The messenger service.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger channel factory.
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(QueueFactory $queue, QueueWorkerManagerInterface $queue_manager, MessengerInterface $messenger, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(QueueFactory $queue, QueueWorkerManagerInterface $queue_manager, MessengerInterface $messenger, LoggerChannelFactoryInterface $logger_factory, Connection $database, EntityTypeManagerInterface $entity_type_manager) {
     $this->queueFactory = $queue;
     $this->queueManager = $queue_manager;
     $this->messenger = $messenger;
     $this->loggerFactory = $logger_factory;
+    $this->database = $database;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -70,7 +92,9 @@ class ProcessQueue extends FormBase {
       $container->get('queue'),
       $container->get('plugin.manager.queue_worker'),
       $container->get('messenger'),
-      $container->get('logger.factory')
+      $container->get('logger.factory'),
+      $container->get('database'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -119,13 +143,12 @@ class ProcessQueue extends FormBase {
       '#empty' => $this->t('No items currently being processed.'),
     ];
 
-    $results = \Drupal::database()->query('SELECT SUBSTRING(`name`, 1, LENGTH(`name`) - LENGTH(SUBSTRING_INDEX(`name`, \'_\', -1)) - 1) AS `action_name`,
+    $results = $this->database->query('SELECT SUBSTRING(`name`, 1, LENGTH(`name`) - LENGTH(SUBSTRING_INDEX(`name`, \'_\', -1)) - 1) AS `action_name`,
       COUNT(*) AS count
       FROM `queue`
       GROUP BY `action_name`');
     $options = [];
-    $entity_type_manager = \Drupal::entityTypeManager();
-    $action_storage = $entity_type_manager->getStorage('action');
+    $action_storage = $this->entityTypeManager->getStorage('action');
 
     foreach ($results as $row) {
       $action = $action_storage->load($row->action_name);

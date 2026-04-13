@@ -7,6 +7,7 @@ namespace Drupal\lehigh_iiip\Form;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Node\Entity\Node;
 use Drupal\media\Entity\Media;
 use Drupal\Core\Session\AccountProxyInterface;
@@ -31,16 +32,26 @@ final class SubmissionForm extends FormBase {
   protected $currentUser;
 
   /**
+   * The logger channel factory.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $loggerFactory;
+
+  /**
    * Constructs a new MyForm object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    *   The current user.
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   *   The logger channel factory.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, AccountProxyInterface $current_user) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, AccountProxyInterface $current_user, LoggerChannelFactoryInterface $logger_factory) {
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $current_user;
+    $this->loggerFactory = $logger_factory;
   }
 
   /**
@@ -49,7 +60,8 @@ final class SubmissionForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('logger.factory')
     );
   }
 
@@ -65,7 +77,7 @@ final class SubmissionForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state): array {
     $required = TRUE;
-    if (\Drupal::currentUser()->isAnonymous()) {
+    if ($this->currentUser->isAnonymous()) {
       $key = getenv('GOOGLE_MAPS_API_KEY');
       $form['#attached']['html_head'][] = [
         [
@@ -630,7 +642,7 @@ final class SubmissionForm extends FormBase {
     }
 
     // Save the values just in case as we roll this out.
-    \Drupal::logger('islandora_iiip')->notice("Submission received @values", ['@values' => json_encode($values)]);
+    $this->loggerFactory->get('islandora_iiip')->notice('Submission received @values', ['@values' => json_encode($values)]);
     $form_state->setRedirect('entity.node.canonical', ['node' => $student->id()]);
   }
 

@@ -4,8 +4,8 @@ namespace Drupal\lehigh_islandora\Commands;
 
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\File\FileExists;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\media\Entity\Media;
-use Drupal\node\Entity\Node;
 use Drush\Commands\DrushCommands;
 
 /**
@@ -21,13 +21,23 @@ class PublishSubmission extends DrushCommands {
   protected $fileSystem;
 
   /**
+   * The node storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $nodeStorage;
+
+  /**
    * Constructs a new MyMigrationCommands object.
    *
    * @param \Drupal\Core\File\FileSystemInterface $file_system
    *   The file system service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(FileSystemInterface $file_system) {
+  public function __construct(FileSystemInterface $file_system, EntityTypeManagerInterface $entity_type_manager) {
     $this->fileSystem = $file_system;
+    $this->nodeStorage = $entity_type_manager->getStorage('node');
   }
 
   /**
@@ -42,7 +52,7 @@ class PublishSubmission extends DrushCommands {
    * Publishes node 123, creating media entities for each file.
    */
   public function migrateFiles(int $nid) {
-    $node = Node::load($nid);
+    $node = $this->nodeStorage->load($nid);
     if (!$node) {
       $this->io()->error(dt('Node with ID @nid not found.', ['@nid' => $nid]));
       return;

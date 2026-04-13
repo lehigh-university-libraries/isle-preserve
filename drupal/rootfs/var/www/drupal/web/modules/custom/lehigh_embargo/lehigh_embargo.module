@@ -7,7 +7,12 @@
 
 use Drupal\Core\Datetime\DrupalDateTime;
 
-define('LEHIGH_EMBARGO_INDEFINITE', '2999-12-31');
+/**
+ * Gets the indefinite embargo date string.
+ */
+function lehigh_embargo_indefinite_date() {
+  return '2999-12-31';
+}
 
 /**
  * Implements hook_preprocess_media().
@@ -26,7 +31,7 @@ function lehigh_embargo_preprocess_media(&$vars) {
 
   $date = $embargoDate->format('Y-m-d');
   $embargo_suffix = 'until ' . $date;
-  if ($date == LEHIGH_EMBARGO_INDEFINITE) {
+  if ($date == lehigh_embargo_indefinite_date()) {
     $embargo_suffix = 'indefinitely';
   }
 

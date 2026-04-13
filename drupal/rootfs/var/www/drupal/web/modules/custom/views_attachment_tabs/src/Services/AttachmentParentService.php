@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Theme\ThemeManagerInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -14,6 +15,7 @@ use Drupal\views\ViewExecutable;
  * @ingroup views
  */
 class AttachmentParentService {
+  use StringTranslationTrait;
 
   /**
    * The module handler service.
@@ -155,8 +157,8 @@ class AttachmentParentService {
 
     $form['default_attachment_display'] = [
       '#type' => 'select',
-      '#title' => t('Default Attachment View'),
-      '#description' => t("Select a view to be displayed in place of this view will be displayed in place of this one."),
+      '#title' => $this->t('Default Attachment View'),
+      '#description' => $this->t('Select a view to be displayed in place of this one.'),
       '#options' => $this->getAttachmentParentDefaultOptions($view)['default_attachment_display_options'],
       '#default_value' => array_key_exists('default_attachment_display', $default_values) ? $default_values['default_attachment_display'] : NULL,
     ];

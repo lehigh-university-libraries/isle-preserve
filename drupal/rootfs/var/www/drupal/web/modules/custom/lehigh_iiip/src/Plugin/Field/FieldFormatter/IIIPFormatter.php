@@ -9,7 +9,6 @@ use Drupal\islandora_collection_tabs\Plugin\Field\FieldFormatter\CollectionTabsD
 use Drupal\Core\Form\FormBuilderInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\views\Views;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**

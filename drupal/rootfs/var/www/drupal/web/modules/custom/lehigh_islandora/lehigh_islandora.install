@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Install and update hooks for the Lehigh Islandora module.
+ */
+
 use Drupal\node\Entity\Node;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\Component\Utility\UrlHelper;
@@ -12,7 +17,7 @@ function lehigh_islandora_update_100101() {
     INNER JOIN {taxonomy_term_field_data} t ON t.tid = field_linked_agent_target_id
     WHERE field_linked_agent_rel_type = 'relators:pbl'
     GROUP BY t.tid")->fetchAllKeyed();
-  
+
   $nids = \Drupal::database()->query("SELECT entity_id FROM node__field_linked_agent
     WHERE field_linked_agent_rel_type = 'relators:pbl'")->fetchCol();
   foreach ($nids as $nid) {
@@ -20,7 +25,7 @@ function lehigh_islandora_update_100101() {
     $linked_agents = [];
     $publishers = [];
     foreach ($node->field_linked_agent as $agent) {
-      if ($agent->rel_type ==  'relators:pbl') {
+      if ($agent->rel_type == 'relators:pbl') {
         $publishers[] = $terms[$agent->target_id];
       }
       else {
@@ -40,7 +45,6 @@ function lehigh_islandora_update_100101() {
   }
 }
 
-
 /**
  * Carry forward bepress and contentdm redirects from i7.
  */
@@ -49,13 +53,13 @@ function lehigh_islandora_update_100102() {
     FROM _i7_redirects
     INNER JOIN node__field_pid p ON field_pid_value = REPLACE(SUBSTRING_INDEX(islandora_url, '/', -1), '%3A', ':')");
   foreach ($bepress_uris as $uri) {
-    // just make the old redirects we had a relative path
+    // Just make the old redirects we had a relative path.
     $uri->source = str_replace('https:', 'http:', $uri->source);
     $uri->source = str_replace('http://preserve.lehigh.edu/', '', $uri->source);
-    // fix bepress cgi URLs
+    // Fix bepress cgi URLs.
     $uri->source = str_replace('&amp;', '&', $uri->source);
 
-    // add the redirect so we can delete them easily if/when we need to
+    // Add the redirect so we can delete them easily if/when we need to.
     $url = UrlHelper::parse($uri->source);
     $source = [
       'path' => trim($url['path']),
@@ -73,7 +77,7 @@ function lehigh_islandora_update_100102() {
     FROM _cdm_redirects r
     INNER JOIN node__field_pid p ON field_pid_value = REPLACE(SUBSTRING_INDEX(islandora_url, '/', -1), '%3A', ':')");
   foreach ($cdm_uris as $uri) {
-    // add the redirect so we can delete them easily if/when we need to
+    // Add the redirect so we can delete them easily if/when we need to.
     $url = UrlHelper::parse($uri->source);
     $source = [
       'path' => trim($url['path']),
@@ -89,7 +93,6 @@ function lehigh_islandora_update_100102() {
 
 }
 
-
 /**
  * Move discoverygarden embargo into node field.
  */
@@ -97,7 +100,9 @@ function lehigh_islandora_update_100103() {
   $nids = \Drupal::database()->query("SELECT embargoed_node, COALESCE(expiration_date, '2999-12-31') FROM {embargo}")->fetchAllKeyed();
   foreach ($nids as $nid => $date) {
     $node = Node::load($nid);
-    if (!$node) continue;
+    if (!$node) {
+      continue;
+    }
     $node->set('field_edtf_date_embargo', $date);
     $node->save();
   }

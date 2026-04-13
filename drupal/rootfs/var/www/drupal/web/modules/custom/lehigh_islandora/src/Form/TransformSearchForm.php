@@ -4,14 +4,53 @@ declare(strict_types=1);
 
 namespace Drupal\lehigh_islandora\Form;
 
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\node\Entity\Node;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a Lehigh Islandora form.
  */
 final class TransformSearchForm extends FormBase {
+
+  /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
+   * The node storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $nodeStorage;
+
+  /**
+   * Constructs the form.
+   *
+   * @param \Drupal\Core\Database\Connection $database
+   *   The database connection.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $node_storage
+   *   The node storage.
+   */
+  public function __construct(Connection $database, EntityStorageInterface $node_storage) {
+    $this->database = $database;
+    $this->nodeStorage = $node_storage;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): static {
+    return new static(
+      $container->get('database'),
+      $container->get('entity_type.manager')->getStorage('node')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -47,15 +86,15 @@ final class TransformSearchForm extends FormBase {
         ],
         '#title' => $this->t('Results'),
       ];
-      $results = \Drupal::database()->query("SELECT *, VEC_DISTANCE_COSINE(vec_fromtext(:vector), embedding) AS distance
+      $results = $this->database->query("SELECT *, VEC_DISTANCE_COSINE(vec_fromtext(:vector), embedding) AS distance
         FROM node__embeddings
         ORDER BY VEC_DISTANCE_COSINE(embedding, vec_fromtext(:vector))
         LIMIT 10", [':vector' => $transform]);
       foreach ($results as $row) {
         $nid = $row->entity_id;
-        $node = Node::load($nid);
+        $node = $this->nodeStorage->load($nid);
         $form['results'][$nid]['#markup'] = '<div class="card w-50"><h3>' . $node->label() . '</h3>';
-        $sentence = \Drupal::database()->query("SELECT sentence
+        $sentence = $this->database->query("SELECT sentence
           FROM node__embeddings_chunked
           WHERE entity_id = :nid
           ORDER BY VEC_DISTANCE_COSINE(embedding, vec_fromtext(:vector))

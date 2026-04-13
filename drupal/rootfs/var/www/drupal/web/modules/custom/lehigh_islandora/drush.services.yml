@@ -3,5 +3,6 @@ services:
     class: Drupal\lehigh_islandora\Commands\PublishSubmission
     arguments:
       - '@file_system'
+      - '@entity_type.manager'
     tags:
       - { name: drush.command }

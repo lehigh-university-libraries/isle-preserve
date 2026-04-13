@@ -3,14 +3,46 @@
 namespace Drupal\lehigh_site_support\Form;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\taxonomy\Entity\Vocabulary;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure lehigh Digital Collections settings for this site.
  */
 class SettingsForm extends ConfigFormBase {
+
+  /**
+   * The taxonomy vocabulary storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $vocabularyStorage;
+
+  /**
+   * Constructs a settings form.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
+    parent::__construct($config_factory);
+    $this->vocabularyStorage = $entity_type_manager->getStorage('taxonomy_vocabulary');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('entity_type.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -93,7 +125,7 @@ class SettingsForm extends ConfigFormBase {
 
     $vlist = [];
     // To get names:
-    foreach (Vocabulary::loadMultiple() as $voc) {
+    foreach ($this->vocabularyStorage->loadMultiple() as $voc) {
       $vlist[$voc->getOriginalId()] = $voc->label();
     }
 
@@ -102,22 +134,22 @@ class SettingsForm extends ConfigFormBase {
       '#options' => $vlist,
       '#default_value' => $config->get('collections_vocabulary'),
       '#group' => 'general',
-      '#title' => 'Top-level collections vocabulary',
-      '#description' => 'Choose the vocabulary that represents the active top-level collections. Used by the site to direct collection search forms.',
+      '#title' => $this->t('Top-level collections vocabulary'),
+      '#description' => $this->t('Choose the vocabulary that represents the active top-level collections. Used by the site to direct collection search forms.'),
     ];
 
     $form['collections']['collection_searchfield_placeholder'] = [
       '#type' => 'textfield',
       '#default_value' => $config->get('collection_searchfield_placeholder') ?? 'Search for keywords, names, and locations',
-      '#title' => 'Collection search form placeholder',
-      '#description' => 'Placeholder text to present to a user on collection search forms',
+      '#title' => $this->t('Collection search form placeholder'),
+      '#description' => $this->t('Placeholder text to present to a user on collection search forms'),
     ];
 
     $form['collections']['collections_route_path'] = [
       '#type' => 'textfield',
       '#default_value' => $config->get('collections_route_path') ?? 'collections',
-      '#title' => 'Collections route path',
-      '#description' => 'Path slug that represents base path for all collections.',
+      '#title' => $this->t('Collections route path'),
+      '#description' => $this->t('Path slug that represents base path for all collections.'),
     ];
 
     return parent::buildForm($form, $form_state);

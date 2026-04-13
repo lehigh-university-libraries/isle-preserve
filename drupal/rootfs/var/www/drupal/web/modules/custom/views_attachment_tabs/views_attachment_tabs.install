@@ -1,17 +1,21 @@
 <?php
 
 /**
+ * @file
+ * Install hooks for the Views Attachment Tabs module.
+ */
+
+/**
  * Implements hook_install().
  */
 function views_attachment_tabs_install() {
   // Enable attachment_tabs plugin.
   $config = \Drupal::service('config.factory')->getEditable('views.settings');
-  $display_extenders = $config->get('display_extenders') ?: array();
+  $display_extenders = $config->get('display_extenders') ?: [];
   $display_extenders[] = 'attachment_tabs';
   $config->set('display_extenders', $display_extenders);
   $config->save();
 }
-
 
 /**
  * Implements hook_uninstall().
@@ -19,14 +23,12 @@ function views_attachment_tabs_install() {
 function views_attachment_tabs_uninstall() {
   // Disable attachment_tabs plugin.
   $config = \Drupal::service('config.factory')->getEditable('views.settings');
-  $display_extenders = $config->get('display_extenders') ?: array();
+  $display_extenders = $config->get('display_extenders') ?: [];
 
   $key = array_search('attachment_tabs', $display_extenders);
-  if ($key!== FALSE) {
+  if ($key !== FALSE) {
     unset($display_extenders[$key]);
     $config->set('display_extenders', $display_extenders);
     $config->save();
   }
 }
-
-?>
