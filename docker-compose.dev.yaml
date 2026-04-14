@@ -114,3 +114,9 @@ services:
       - source: CERT_PUBLIC_KEY
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
+  drupal-static:
+    volumes:
+      - ./tmp/drupal/web:/var/www/drupal/web:rw
+  fcrepo:
+    volumes:
+      - ./tmp/fcrepo:/tmp:rw

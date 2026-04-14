@@ -250,12 +250,12 @@ services:
     volumes:
       - /opt/islandora/volumes/drupal-private-files/canonical/$DOMAIN/0:/usr/share/nginx/drupal:ro
       - /opt/islandora/volumes/drupal-private-files/iiif/$DOMAIN/294de3557d9d00b3d2d8a1e6aab028cf:/usr/share/nginx/iiif:ro
-      - ./tmp/drupal/web:/var/www/drupal/web:rw
       - /opt/islandora/volumes/drupal-public-files:/var/www/drupal/web/sites/default/files:ro
       - ./conf/nginx.static:/etc/nginx/conf.d:ro
       - /opt/islandora/volumes/tmp/drupal-static:/tmp:rw
       - /opt/islandora/volumes/tmp/nginx-static:/var/lib/nginx/tmp:rw
       - /opt/islandora/volumes/tmp/nginx-static-cache:/var/cache/nginx:rw
+      - /opt/islandora/volumes/tmp/drupal/web:/var/www/drupal/web:rw
     healthcheck:
       test: curl -sfo /dev/null http://localhost/themes/custom/lehigh/favicon.ico
       start_period: 5s
@@ -305,10 +305,10 @@ services:
       start_period: 5s
     volumes:
       - /opt/islandora/volumes/fcrepo-data:/data:rw
-      - ./tmp/fcrepo:/tmp:rw
+      - /opt/islandora/volumes/tmp/fcrepo:/tmp:rw
     depends_on:
       activemq:
-        condition: service_started
+        condition: service_healthy
   init:
     entrypoint: /scripts/init-entrypoint.sh
     image: islandora/base:6.3.13@sha256:73f39170fb29a7aaa0f12eec31a496a1c58b91183cf3d9757e9b03eea74c8198
