@@ -1,7 +1,7 @@
-diff --git a/core/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php b/core/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
+diff --git a/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php b/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
 index 28ad2c0445..3a95f44b92 100644
---- a/core/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
-+++ b/core/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
+--- a/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
++++ b/lib/Drupal/Core/EventSubscriber/ActiveLinkResponseFilter.php
 @@ -82,7 +82,8 @@ public function onResponse(ResponseEvent $event) {
      $response = $event->getResponse();
  
@@ -12,10 +12,10 @@ index 28ad2c0445..3a95f44b92 100644
        return;
      }
  
-diff --git a/core/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php b/core/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
+diff --git a/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php b/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
 index fa6c09c7a7..ff93971f37 100644
---- a/core/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
-+++ b/core/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
+--- a/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
++++ b/lib/Drupal/Core/EventSubscriber/RssResponseRelativeUrlFilter.php
 @@ -20,12 +20,14 @@ class RssResponseRelativeUrlFilter implements EventSubscriberInterface {
     *   The response event.
     */

@@ -195,6 +195,9 @@
             ]
         },
         "patches": {
+            "drupal/core": {
+                "Fix PHP 8 deprecation warnings in response content-type checks": "assets/patches/drupal/core/stripos.patch"
+            },
             "drupal/facets": {
                 "Allow exposed filters to work with AJAX Facets": "assets/patches/drupal/facets/3168241-8.patch",
                 "Allow views attachments to reflect search parameters (still not working)": "assets/patches/drupal/facets/facets-attachments-3116236-16.patch",
