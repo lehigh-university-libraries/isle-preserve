@@ -55,7 +55,8 @@ class MediaInsertSubscriber implements EventSubscriberInterface {
         // @todo if zip, parse directory tree and create manifest
       }
       elseif ($media->field_media_use->entity->field_external_uri->uri === 'http://pcdm.org/use#PreservationMasterFile') {
-        if (lehigh_islandora_media_is_ms_document($media)) {
+        if (lehigh_islandora_media_is_ms_document($media) &&
+          !lehigh_islandora_node_has_parent_generate_pdf_disabled($node)) {
           $action_name = 'microsoft_document_to_pdf';
         }
       }

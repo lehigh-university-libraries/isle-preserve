@@ -399,6 +399,10 @@ function lehigh_islandora_media_presave(EntityInterface $media) {
   // so we can create original file being pdf
   // then service file being.
   if (lehigh_islandora_media_is_ms_document($media) &&
+      $media->hasField('field_media_of') &&
+      !$media->field_media_of->isEmpty() &&
+      !is_null($media->field_media_of->entity) &&
+      !lehigh_islandora_node_has_parent_generate_pdf_disabled($media->field_media_of->entity) &&
       $media->field_media_use->entity->label() === 'Original File') {
     $media->set('field_media_use', lehigh_islandora_get_tid_by_name('Preservation Master File', 'islandora_media_use'));
   }
@@ -814,6 +818,60 @@ function lehigh_islandora_node_is_locally_restricted($node) {
   }
 
   return FALSE;
+}
+
+/**
+ * Check if any parent node disables PDF generation.
+ */
+function lehigh_islandora_node_has_parent_generate_pdf_disabled($node) {
+  $depth = 0;
+  while ($depth < 20) {
+    if (!is_object($node) ||
+      !$node->hasField('field_member_of') ||
+      $node->field_member_of->isEmpty() ||
+      is_null($node->field_member_of->entity)) {
+      break;
+    }
+
+    $node = $node->field_member_of->entity;
+    if ($node->hasField('field_generate_pdf') &&
+      !$node->field_generate_pdf->isEmpty() &&
+      !$node->field_generate_pdf->value) {
+      return TRUE;
+    }
+
+    // Avoid circular references causing infinite loops.
+    ++$depth;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Get all descendant item node IDs for a parent node.
+ */
+function lehigh_islandora_get_descendant_item_nids($nid) {
+  $query = "WITH RECURSIVE hierarchy AS (
+    SELECT
+        entity_id,
+        field_member_of_target_id,
+        0 AS depth
+    FROM node__field_member_of
+    WHERE field_member_of_target_id = :nid
+    UNION ALL
+    SELECT
+        child.entity_id,
+        child.field_member_of_target_id,
+        parent.depth + 1
+    FROM node__field_member_of AS child
+    INNER JOIN hierarchy AS parent
+        ON child.field_member_of_target_id = parent.entity_id
+  )
+  SELECT entity_id
+  FROM hierarchy
+  ORDER BY depth, entity_id";
+
+  return \Drupal::database()->query($query, [':nid' => $nid])->fetchCol();
 }
 
 /**
