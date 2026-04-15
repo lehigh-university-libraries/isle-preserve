@@ -42,6 +42,7 @@ dependencies:
     - field.field.node.islandora_object.field_file_uploads
     - field.field.node.islandora_object.field_frequency
     - field.field.node.islandora_object.field_full_title
+    - field.field.node.islandora_object.field_generate_pdf
     - field.field.node.islandora_object.field_genre
     - field.field.node.islandora_object.field_geographic_subject
     - field.field.node.islandora_object.field_hide_downloads
@@ -416,6 +417,7 @@ third_party_settings:
       children:
         - field_collection_tabs
         - field_crop_thumbnails_top
+        - field_generate_pdf
       label: 'Collection Display'
       region: hidden
       parent_name: group_metadata_tabs
@@ -501,7 +503,7 @@ content:
     third_party_settings: {  }
   field_collection_hierarchy:
     type: entity_reference_autocomplete
-    weight: 12
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -709,7 +711,7 @@ content:
     third_party_settings: {  }
   field_extent:
     type: attr_default
-    weight: 10
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -730,6 +732,13 @@ content:
     settings:
       rows: 2
       placeholder: ''
+    third_party_settings: {  }
+  field_generate_pdf:
+    type: boolean_checkbox
+    weight: 12
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   field_genre:
     type: entity_reference_autocomplete
@@ -883,7 +892,7 @@ content:
     third_party_settings: {  }
   field_part_detail:
     type: part_detail
-    weight: 11
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }

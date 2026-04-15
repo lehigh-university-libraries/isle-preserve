@@ -43,6 +43,7 @@ dependencies:
     - field.field.node.islandora_object.field_file_uploads
     - field.field.node.islandora_object.field_frequency
     - field.field.node.islandora_object.field_full_title
+    - field.field.node.islandora_object.field_generate_pdf
     - field.field.node.islandora_object.field_genre
     - field.field.node.islandora_object.field_geographic_subject
     - field.field.node.islandora_object.field_hide_downloads
@@ -605,6 +606,7 @@ hidden:
   field_edtf_date_captured: true
   field_extent: true
   field_frequency: true
+  field_generate_pdf: true
   field_genre: true
   field_geographic_subject: true
   field_hide_downloads: true

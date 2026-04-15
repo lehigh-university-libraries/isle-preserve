@@ -42,6 +42,7 @@ dependencies:
     - field.field.node.islandora_object.field_file_uploads
     - field.field.node.islandora_object.field_frequency
     - field.field.node.islandora_object.field_full_title
+    - field.field.node.islandora_object.field_generate_pdf
     - field.field.node.islandora_object.field_genre
     - field.field.node.islandora_object.field_geographic_subject
     - field.field.node.islandora_object.field_hide_downloads
@@ -95,7 +96,6 @@ dependencies:
     - controlled_access_terms
     - entity_reference_facet_link
     - field_group
-    - file
     - geolocation
     - lehigh_islandora
     - text
@@ -206,23 +206,6 @@ content:
     third_party_settings: {  }
     weight: 0
     region: content
-  field_access:
-    type: text_default
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    weight: 4
-    region: content
-  field_add_coverpage:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 6
-    region: content
   field_affiliated_institution:
     type: entity_reference_label
     label: above
@@ -274,16 +257,6 @@ content:
     third_party_settings: {  }
     weight: 10
     region: content
-  field_create_doi:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 7
-    region: content
   field_creator_description:
     type: text_default
     label: above
@@ -305,16 +278,6 @@ content:
       link: false
     third_party_settings: {  }
     weight: 34
-    region: content
-  field_crop_thumbnails_top:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 10
     region: content
   field_date_modified:
     type: edtf_default
@@ -432,18 +395,6 @@ content:
     third_party_settings: {  }
     weight: 7
     region: content
-  field_edtf_date_embargo:
-    type: edtf_default
-    label: above
-    settings:
-      date_separator: dash
-      date_order: big_endian
-      month_format: mm
-      day_format: dd
-      year_format: 'y'
-    third_party_settings: {  }
-    weight: 3
-    region: content
   field_edtf_date_issued:
     type: edtf_default
     label: inline
@@ -463,14 +414,6 @@ content:
       override_label: false
     third_party_settings: {  }
     weight: 42
-    region: content
-  field_file_uploads:
-    type: file_default
-    label: above
-    settings:
-      use_description_as_link_text: true
-    third_party_settings: {  }
-    weight: 8
     region: content
   field_frequency:
     type: entity_reference_label
@@ -503,26 +446,6 @@ content:
     third_party_settings: {  }
     weight: 23
     region: content
-  field_hide_downloads:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 56
-    region: content
-  field_hide_hocr:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 2
-    region: content
   field_identifier:
     type: attr_default
     label: above
@@ -530,14 +453,6 @@ content:
       override_label: false
     third_party_settings: {  }
     weight: 40
-    region: content
-  field_input_source:
-    type: string
-    label: above
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
-    weight: 9
     region: content
   field_keywords:
     type: entity_reference_facet_link
@@ -578,16 +493,6 @@ content:
       link: true
     third_party_settings: {  }
     weight: 3
-    region: content
-  field_local_restriction:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 5
     region: content
   field_media_type:
     type: entity_reference_facet_link
@@ -697,16 +602,6 @@ content:
     third_party_settings: {  }
     weight: 18
     region: content
-  field_skip_merge_pdf:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 11
-    region: content
   field_subject:
     type: entity_reference_facet_link
     label: inline
@@ -778,15 +673,26 @@ hidden:
   display_media_entity_view_3: true
   display_media_service_file: true
   display_media_thumbnail: true
+  field_access: true
+  field_add_coverpage: true
   field_administrator: true
   field_collection_hierarchy: true
   field_collection_tabs: true
+  field_create_doi: true
+  field_crop_thumbnails_top: true
   field_description: true
   field_digital_origin: true
   field_display_hints: true
+  field_edtf_date_embargo: true
+  field_file_uploads: true
   field_gemini_uri: true
+  field_generate_pdf: true
+  field_hide_downloads: true
   field_hide_gscholar_metatags: true
+  field_hide_hocr: true
+  field_input_source: true
   field_islandora_csl: true
+  field_local_restriction: true
   field_model: true
   field_physical_location: true
   field_pid: true
@@ -794,6 +700,7 @@ hidden:
   field_rights: true
   field_self_submission_creator: true
   field_site_disposition: true
+  field_skip_merge_pdf: true
   field_sort_by: true
   field_source: true
   field_thumbnail: true

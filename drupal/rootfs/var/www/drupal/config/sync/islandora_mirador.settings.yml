@@ -5,3 +5,4 @@ mirador_enabled_plugins:
   textOverlayPlugin: textOverlayPlugin
   miradorImageToolsPlugin: miradorImageToolsPlugin
 iiif_manifest_url: '[node:url:unaliased:absolute]/manifest'
+mirador_language_support: false

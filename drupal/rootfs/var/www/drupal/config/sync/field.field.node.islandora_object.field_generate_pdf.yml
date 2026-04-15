@@ -1,0 +1,23 @@
+uuid: c35d5204-abce-49c6-af7f-a8afa7beb422
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_generate_pdf
+    - node.type.islandora_object
+id: node.islandora_object.field_generate_pdf
+field_name: field_generate_pdf
+entity_type: node
+bundle: islandora_object
+label: 'Generate PDF'
+description: 'Uncheck this box to never generate PDFs for items in this collection that have microsoft documents'
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean
