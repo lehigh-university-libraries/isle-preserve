@@ -63,7 +63,7 @@ class EmbargoTest extends ExistingSiteBase {
       'uid' => 1,
       'status' => 1,
       'field_model' => lehigh_islandora_get_tid_by_name('Digital Document', 'islandora_models'),
-      'field_edtf_date_embargo' => LEHIGH_EMBARGO_INDEFINITE,
+      'field_edtf_date_embargo' => lehigh_embargo_indefinite_date(),
     ]);
 
     $this->createMedia([
