@@ -8,6 +8,7 @@
 
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\Request;
@@ -712,6 +713,71 @@ function lehigh_preprocess_media(&$vars) {
       $vars['#attached']['library'][] = 'lehigh/hls';
     }
   }
+  elseif (in_array($media->bundle(), ['document', 'file'])) {
+    $download = lehigh_build_default_media_download_box($media);
+    if ($download) {
+      $vars['content'] = $download;
+    }
+  }
+}
+
+/**
+ * Build a styled fallback download card for non-viewer files.
+ */
+function lehigh_build_default_media_download_box($media) {
+  $file = lehigh_get_default_media_source_file($media);
+  if (!$file) {
+    return [];
+  }
+
+  $filename = $file->getFilename();
+  $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+  if ($extension === 'pdf') {
+    return [];
+  }
+
+  $extension_label = $extension ? strtoupper($extension) : 'FILE';
+  $download_text = 'Download ' . $extension_label;
+
+  return [
+    '#type' => 'inline_template',
+    '#template' => '
+      <div class="alert alert-primary default-download-box" role="alert">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+          <div class="d-flex align-items-start gap-2">
+            <span class="material-symbols-outlined default-download-box__icon" aria-hidden="true">download_for_offline</span>
+            <div>
+              <strong>{{ extension_label }} file</strong>
+              <div>{{ filename }} <span class="text-muted">({{ file_size }})</span></div>
+            </div>
+          </div>
+          <div>
+            <a href="{{ file_url }}" class="btn btn-primary" download>{{ download_text }}</a>
+          </div>
+        </div>
+      </div>',
+    '#context' => [
+      'download_text' => $download_text,
+      'extension_label' => $extension_label,
+      'file_size' => ByteSizeMarkup::create($file->getSize()),
+      'file_url' => $file->createFileUrl(),
+      'filename' => $filename,
+    ],
+  ];
+}
+
+/**
+ * Get the source file entity for default media display downloads.
+ */
+function lehigh_get_default_media_source_file($media) {
+  $field_name = $media->bundle() === 'document' ? 'field_media_document' : 'field_media_file';
+  if (!$media->hasField($field_name) ||
+    $media->get($field_name)->isEmpty() ||
+    is_null($media->get($field_name)->entity)) {
+    return NULL;
+  }
+
+  return $media->get($field_name)->entity;
 }
 
 /**
