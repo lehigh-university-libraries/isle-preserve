@@ -35,10 +35,6 @@
   }
 }
 
-.default_islandora_display .default-download-box {
-  width: 100% !important;
-}
-
 .default-download-box__button-icon {
   font-size: 20px;
   line-height: 1;

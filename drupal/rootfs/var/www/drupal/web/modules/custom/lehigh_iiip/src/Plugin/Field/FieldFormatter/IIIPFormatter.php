@@ -59,8 +59,11 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
     $content = &$element[0]['content'];
 
     foreach ($items as $delta => $item) {
-      $label = strtolower($item->label);
-      $label = trim($label);
+      if (!is_string($item->label) || trim($item->label) === '') {
+        continue;
+      }
+
+      $label = strtolower(trim($item->label));
       if ($label !== 'contribute to this collection') {
         continue;
       }
