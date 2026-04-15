@@ -35,6 +35,15 @@
   }
 }
 
+.default_islandora_display .default-download-box {
+  width: 100% !important;
+}
+
+.default-download-box__button-icon {
+  font-size: 20px;
+  line-height: 1;
+}
+
 .cue a {
   color: rgba(var(--bs-link-color-rgb),var(--bs-link-opacity,1)) !important;
 }
