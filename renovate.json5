@@ -9,6 +9,9 @@
       '/ci/k8s/.+\\.yaml$/',
     ],
   },
+  lockFileMaintenance: {
+    enabled: false,
+  },
   packageRules: [
     {
       matchDatasources: [
