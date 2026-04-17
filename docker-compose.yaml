@@ -99,7 +99,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:144e13b0471974875f37ce67f06873c78196079a59386e5ccfb28e30813aabd4
+    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:136abdb8b975121ab4806200cbfd88aef1d61e24944f2006f135f0512292fda6
     environment:
       FABRICATOR_DATA_MOUNT: /data
       SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
