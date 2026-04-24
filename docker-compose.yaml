@@ -224,6 +224,8 @@ services:
       - /opt/islandora/volumes/drupal-private-files:/var/www/drupal/private:rw
       - /opt/islandora/volumes/fcrepo-data/home/data/ocfl-root:/fcrepo:r
       - /opt/islandora/volumes/tmp/drupal:/tmp:rw
+      - /opt/islandora/volumes/tmp/nginx:/var/lib/nginx/tmp:rw
+      - /opt/islandora/volumes/tmp/nginx-cache:/var/cache/nginx:rw
       - drupal-solr-config:/opt/solr/server/solr/default:z,rw
       - ./conf/php-fpm/www.conf:/etc/confd/templates/www.conf.tmpl:r
       - ./conf/nginx/drupal.fpm.conf.tmpl:/etc/confd/templates/drupal.fpm.conf.tmpl:r
