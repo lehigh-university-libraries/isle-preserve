@@ -64,7 +64,7 @@ secrets:
     file: "./secrets/UID"
 services:
   alpaca:
-    image: islandora/alpaca:6.3.16@sha256:c2b03e939f11488f47c7667a82168b9d02934718f3427e28565796eba2fe82c9
+    image: islandora/alpaca:6.3.18@sha256:d88804c338bac268c64cc8197f7cbcd682872b2f7233280828e7d304464b9084
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -107,7 +107,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:6.3.16@sha256:31d80b9591ed906b09fc405570a49e89695abf8b92556cb79432b6ab27955e71
+    image: islandora/mariadb:6.3.18@sha256:a1a1ccbcd8bb9b44b7a1861d59f850e472d4c22f1f3c62f780e33d2091c6f741
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -120,7 +120,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
-    image: islandora/activemq:6.3.16@sha256:58e2410b18fd063755074834545ba7a2e66db079c39475c725d748df0469c621
+    image: islandora/activemq:6.3.18@sha256:e8c0ccb6f4046c407ba41d84620358291c6b0f45dba96c877317c276e38d13e2
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -134,7 +134,7 @@ services:
         max-size: "100m"
         max-file: "3"
   cantaloupe:
-    image: islandora/cantaloupe:6.3.16@sha256:b247b3ce151fdacc0e03117d01addb3da78a15bb067256dc606d37795b49da5f
+    image: islandora/cantaloupe:6.3.18@sha256:8716969a1cc952210f0ef42f01f2c6e13175c15a449ac15d6652a5b44fc39e86
     environment:
       CANTALOUPE_LOG_APPLICATION_LEVEL: info
       CANTALOUPE_HTTPSOURCE_CHUNKING_ENABLED: "false"
@@ -149,7 +149,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   memcached:
-    image: memcached:1.6.41@sha256:db739c92f80323018f33e3ddd392c7bb62c015280c7319f7e5dc207677ea3467
+    image: memcached:1.6.41@sha256:277e0c4f249b118e95ab10e535bae2fa1af772271d9152f3468e58d59348db56
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -245,7 +245,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.30.0@sha256:0c3a604353135ac13f3a991e2a98c9958af7b8c0b7251ce1590e0c5ff5e3692c
+    image: nginx:1.30.0@sha256:1a9ab83e2892b75773978e8d91f42a7a2a0d8bb704959a51ff17c0377481973d
     restart: always
     environment:
       ROLLOUT: 20251024
@@ -290,7 +290,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:6.3.16@sha256:f2601100cb88e81f948ff873da7dc2b23554cbfa43ffec779e604c56f2cdf720
+    image: islandora/fcrepo6:6.3.18@sha256:d64e28813ae42b1d6f43292a2477b5b6c103c748c46118bb73cacdb13c868b7e
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -313,7 +313,7 @@ services:
         condition: service_healthy
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:6.3.16@sha256:433aa15db24537a63389b5b26cb4aa71527ec452e2407b7cfbfebd46d3faf859
+    image: islandora/base:6.3.18@sha256:756ac57c85a0c1eac9a0eb57a3c8b9ecd0bedda5932d49f4c45b4a1dfb92369e
     networks:
       default:
     profiles:
@@ -331,7 +331,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:6.3.16@sha256:c465855588664003f4390beeccdaaa0269b7552746749c7edf2fb8f048dfcb95
+    image: islandora/solr:6.3.18@sha256:35d0634a0d481b1421de69bae3cedca2b57b76a8301bbb80d43f1db7f344e226
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
@@ -359,7 +359,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.6.13@sha256:5ae9c349154d5298a5d61a7b25e5f3a9f53314f1515e87632120b95051c7917c
+    image: traefik:v3.6.14@sha256:4cda3393930dceff030e144b46260e96e1337c9cfaa4fed81c90cb8f4d498f57
     restart: always
     command: >-
       --api.insecure=true
