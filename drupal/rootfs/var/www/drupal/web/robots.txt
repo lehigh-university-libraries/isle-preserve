@@ -56,6 +56,7 @@ Disallow: /search?*
 Disallow: /*?*
 Disallow: /libraries/pdf.js/web/viewer.html?*
 Disallow: /cantaloupe/*
+Disallow: /iiif/*
 
 # General settings
 Sitemap: https://preserve.lehigh.edu/sitemap.xml
