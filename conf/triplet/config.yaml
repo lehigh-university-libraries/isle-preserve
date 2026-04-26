@@ -1,0 +1,101 @@
+server:
+  listen: ":8080"
+  read_timeout: 300s
+  write_timeout: 10s
+  public_base_url: "${TRIPLET_PUBLIC_BASE_URL}"
+
+logging:
+  level: info
+  format: json
+
+debug:
+  pprof_enabled: false
+  pprof_prefix: /debug/pprof
+
+vips:
+  concurrency: 0
+  cache_max_mem: 0
+  cache_max_files: 0
+  report_leaks: false
+  block_untrusted: true
+  blocked_operations:
+    - VipsForeignLoadPdf
+
+iiif:
+  image:
+    enabled: true
+    prefix: /iiif/3
+    allowed_origins:
+      - islandora.traefik.me
+      - wight.cc.lehigh.edu
+      - islandora-stage.lib.lehigh.edu
+      - preserve.lehigh.edu
+    max_output_pixels: 100000000
+    allow_unsafe_unlimited_output_pixels: false
+    max_source_pixels: 250000000
+    max_source_bytes: 1073741824
+    max_derivative_bytes: 536870912
+    max_concurrent_transforms: 10
+    max_width: 0
+    max_height: 0
+    # `preserve` keeps embedded profiles without converting, matching common
+    # Cantaloupe behavior. `normalize` converts to sRGB/gray. `none` skips
+    # profile conversion and strips metadata where the output codec supports it.
+    color_management: preserve
+    # `auto` uses random access for region crops and sequential access for
+    # full/resize requests. You can force sequential or random for profiling.
+    load_access: auto
+    # Cache info.json dimensions by identifier plus source mtime/size.
+    info_dimension_cache: true
+  presentation:
+    enabled: false
+    prefix: /presentation/v3
+    write_enabled: false
+  search:
+    enabled: false
+    prefix: /search/v2
+  auth:
+    enabled: false
+    prefix: /auth/v2
+    development_permit_all: false
+
+sources:
+  default: file
+  file:
+    root: /public
+    url_mappings:
+      - prefix: /sites/default/files
+        root: /public
+
+      - prefix: /system/files
+        root: /private
+        auth_probe: true
+        auth_anonymous_cache_ttl: 720h
+        auth_authenticated_cache_ttl: 168h
+        auth_cache_max_entries: 4096
+
+      - prefix: /_flysystem/fedora
+        root: /fcrepo
+        ocfl: true
+        auth_probe: true
+        auth_anonymous_cache_ttl: 720h
+        auth_authenticated_cache_ttl: 168h
+        auth_cache_max_entries: 4096
+  http:
+    allowed_hosts:
+      - islandora.traefik.me
+      - wight.cc.lehigh.edu
+      - islandora-stage.lib.lehigh.edu
+      - preserve.lehigh.edu
+    allow_private_hosts: false
+
+cache:
+  root: /var/lib/triplet/cache
+  max_bytes: 1073741824
+
+extensions:
+  transform:
+    enabled: false
+  uploads:
+    enabled: false
+
