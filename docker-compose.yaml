@@ -134,7 +134,7 @@ services:
         max-size: "100m"
         max-file: "3"
   triplet:
-    image: ghcr.io/libops/triplet:v0.1.0
+    image: ghcr.io/libops/triplet:v0.1.0@sha256:e72cbe870e2af0cb07f25f615c516635b593b7d9afc8be0e071156f2a75da257
     environment:
       TRIPLET_PUBLIC_BASE_URL: https://${DOMAIN}
     volumes:
