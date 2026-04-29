@@ -885,6 +885,7 @@ function lehigh_islandora_file_download($uri) {
   // and we do not create file/media entities for ts files
   // so map the ts files to their parent m3u8 file for access lookups.
   $extension = pathinfo($uri, PATHINFO_EXTENSION);
+
   $cache = \Drupal::cache();
   $cache_key = "islandora_hls_" . md5($uri);
   if ($extension == 'ts') {
@@ -944,11 +945,21 @@ function lehigh_islandora_file_download($uri) {
     }
   }
 
+  if (!$access) {
+    return NULL;
+  }
+
+  if ($extension == 'jp2') {
+    return [
+      'Content-Type' => 'image/jp2',
+    ];
+  }
+
   // This TS file is not embargoed or locally restricted
   // and none of the nodes it's a media of are unpublished
   // so it's up to this logic to grant access
   // since we are not creating media/files for these file types.
-  if ($access && $extension == 'ts') {
+  if ($extension == 'ts') {
     if ($anon) {
       $cache->set($cache_key, [
         'Content-Type' => 'video/mp2t',
