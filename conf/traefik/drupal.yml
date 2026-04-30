@@ -24,7 +24,7 @@ http:
     # special drupal container reserved for workbench jobs
     # which we have configured to use the internal domain
     drupal-lehigh:
-      rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Path(`/`)
+      rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Host(`islandora.traefik.me`) && !Path(`/`)
       tls: {}
       priority: 20
       service: drupal-lehigh

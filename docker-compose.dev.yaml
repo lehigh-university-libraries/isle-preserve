@@ -18,6 +18,7 @@ services:
   cantaloupe:
     volumes:
       - cantaloupe-data:/data:Z,rw
+      - ./tmp/cantaloupe:/tmp:rw
   traefik:
     ports:
       - 8080:8080
@@ -38,7 +39,12 @@ services:
     secrets:
       - source: UID
     volumes:
+      - drupal-public-files:/var/www/drupal/web/sites/default/files:rw
+      - ./tmp/drupal-private-files:/var/www/drupal/private:rw
+      - fcrepo-data:/fcrepo:rw
       - ./tmp/drupal:/tmp:rw
+      - ./tmp/nginx:/var/lib/nginx/tmp:rw
+      - ./tmp/nginx-cache:/var/cache/nginx:rw
       - ./drupal/rootfs/var/www/drupal:/var/www/drupal:z,rw,${CONSISTENCY}
   mariadb:
     ports:
@@ -116,7 +122,22 @@ services:
       - source: JWT_PUBLIC_KEY
   drupal-static:
     volumes:
+      - ./tmp/drupal-private-files/canonical/${DOMAIN}/0:/usr/share/nginx/drupal:ro
+      - ./tmp/drupal-private-files/iiif/${DOMAIN}/294de3557d9d00b3d2d8a1e6aab028cf:/usr/share/nginx/iiif:ro
+      - drupal-public-files:/var/www/drupal/web/sites/default/files:ro
+      - ./tmp/drupal-static:/tmp:rw
+      - ./tmp/nginx-static:/var/lib/nginx/tmp:rw
+      - ./tmp/nginx-static-cache:/var/cache/nginx:rw
       - ./tmp/drupal/web:/var/www/drupal/web:rw
   fcrepo:
     volumes:
+      - fcrepo-data:/data:rw
       - ./tmp/fcrepo:/tmp:rw
+  triplet:
+    volumes:
+      - drupal-public-files:/public:r
+      - ./tmp/drupal-private-files:/private:r
+      - fcrepo-data:/fcrepo:r
+      - ./certs/rootCA.pem:/etc/ssl/certs/lehigh.pem:r
+      - ./conf/triplet/config.yaml:/etc/triplet/config.yaml:r
+      - ./tmp/triplet-cache:/var/lib/triplet/cache:rw
