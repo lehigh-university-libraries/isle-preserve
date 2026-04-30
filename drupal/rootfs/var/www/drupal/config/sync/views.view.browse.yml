@@ -2024,10 +2024,10 @@ display:
       export_method: batch
       export_batch_size: 100
       facet_settings: 'search_api:views_page__browse__main'
-      store_in_public_file_directory: false
       custom_redirect_path: true
       redirect_to_display: none
       include_query_params: false
+      export_filesystem: private
     cache_metadata:
       max-age: -1
       contexts:

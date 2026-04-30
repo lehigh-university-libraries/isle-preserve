@@ -1,7 +1,12 @@
 uuid: c8afa8cb-8157-4a64-88a4-52061036d04d
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - crop
+third_party_settings:
+  crop:
+    image_field: _none
 _core:
   default_config_hash: iChqZUHWKZPuvvQVJ4Wqfq6EcS_nGnNYR0NpF0amKtE
 id: video
@@ -9,7 +14,7 @@ label: Video
 description: 'A video file.'
 source: video_file
 queue_thumbnail_downloads: false
-new_revision: true
+new_revision: false
 source_configuration:
   source_field: field_media_video_file
 field_map:
