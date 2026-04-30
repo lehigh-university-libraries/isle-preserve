@@ -2,31 +2,62 @@
   Drupal.behaviors.islandoraCollectionTabs = {
     attach: function (context, settings) {
       $(once('control-view', '#block-lehigh-views-block-collection-tabs-block-1', context)).each(function () {
-        if (!$('#tab-view-collection-tab').hasClass('active')) {
-          $('#primary-content, #block-lehigh-browseitemssummary').each(function () {
-            $(this).addClass('d-none');
-          });
-          $('.messages.messages--error').prependTo('.tab-pane.active');
+        const block = $(this);
+        const navTabs = block.find('.nav-tabs a');
+        const collectionElements = $('#primary-content, #block-lehigh-browseitemssummary');
+        const collectionTabId = 'tab-view-collection-tab';
 
+        function getActiveTab() {
+          return navTabs.filter('.active').first();
         }
 
-        $('#block-lehigh-views-block-collection-tabs-block-1 .nav-tabs a').on('click', function() {
-          const elements = $('#primary-content, #block-lehigh-browseitemssummary')
-          if ($(this).attr('id') == 'tab-view-collection-tab') {
-            elements.removeClass('d-none');
+        function getActiveHash() {
+          const activeTab = getActiveTab();
+          const target = activeTab.attr('data-bs-target');
+          return target && target.charAt(0) === '#' ? target : '#tab-view-collection';
+        }
+
+        function syncCollectionView() {
+          const activeTab = getActiveTab();
+          if (activeTab.attr('id') === collectionTabId) {
+            collectionElements.removeClass('d-none');
           }
           else {
-            elements.each(function () {
-              if (!$(this).hasClass('d-none')) {
-                $(this).addClass('d-none');
-              }
-            });
+            collectionElements.addClass('d-none');
           }
-        });
-        function activateTabWhenReady() {
-          const targetTab = $('a[data-bs-target="' + window.location.hash + '"]');
 
-          if (targetTab.length && typeof targetTab.tab === 'function') {
+          $('.messages.messages--error').prependTo('.tab-pane.active');
+        }
+
+        function appendHash(url, hash) {
+          return url.replace(/#.*$/, '') + hash;
+        }
+
+        function syncPagerLinks() {
+          const hash = getActiveHash();
+          $('#primary-content .pager a, #block-lehigh-browseitemssummary .pager a').each(function () {
+            if (this.href) {
+              this.href = appendHash(this.href, hash);
+            }
+          });
+        }
+
+        navTabs.on('shown.bs.tab', function () {
+          const target = $(this).attr('data-bs-target');
+          if (target && window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', target);
+          }
+          syncCollectionView();
+          syncPagerLinks();
+        });
+
+        function activateTabWhenReady() {
+          const activeSelector = window.location.hash || getActiveHash();
+          const targetTab = block.find('a[data-bs-target="' + activeSelector + '"]').first();
+
+          if (targetTab.length && window.bootstrap && window.bootstrap.Tab) {
+            window.bootstrap.Tab.getOrCreateInstance(targetTab[0]).show();
+          } else if (targetTab.length && typeof targetTab.tab === 'function') {
             targetTab.tab('show');
           } else if (targetTab.length) {
             setTimeout(activateTabWhenReady, 50);
@@ -34,7 +65,8 @@
         }
 
         activateTabWhenReady();
-
+        syncCollectionView();
+        syncPagerLinks();
       });
     }
   };

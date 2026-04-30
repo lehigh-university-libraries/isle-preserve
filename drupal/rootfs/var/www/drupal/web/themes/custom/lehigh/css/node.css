@@ -50,3 +50,43 @@
   width: 36px;
   background-image: url(/modules/contrib/views_data_export/images/csv.png);
 }
+
+.field_abstract_container .iiip-description,
+.field_abstract_container .iiip-description .field-value,
+.field_abstract_container .iiip-description p {
+  line-height: 1.5;
+}
+
+.field_abstract_container .iiip-description p:first-child {
+  margin-top: 0;
+}
+
+.map-pin-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  min-width: 240px;
+}
+
+.map-pin-card__avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 72px;
+  background: #e9ecef;
+}
+
+.map-pin-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.map-pin-card__meta {
+  line-height: 1.4;
+}
+
+.map-pin-card__link {
+  font-weight: 600;
+}
