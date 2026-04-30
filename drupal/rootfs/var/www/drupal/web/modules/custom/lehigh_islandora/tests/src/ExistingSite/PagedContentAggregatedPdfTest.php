@@ -54,6 +54,8 @@ class PagedContentAggregatedPdfTest extends DerivativeTestBase {
         'uri' => "public://tests/$children.tiff",
         'filename' => "$children.tiff",
         'filemime' => 'image/tiff',
+        'uid' => 1,
+        'status' => 1,
       ]);
       $file->save();
       $this->markEntityForCleanup($file);

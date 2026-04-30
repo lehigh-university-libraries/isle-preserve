@@ -10,6 +10,7 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
+use Drupal\islandora_collection_tabs\Plugin\Field\FieldType\CollectionTabsItem;
 use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\Request;
 use Seboettg\CiteProc\StyleSheet;
@@ -41,16 +42,33 @@ function lehigh_preprocess_input__textfield(&$vars) {
 function lehigh_preprocess_field(&$vars) {
   if (isset($vars['element']['#view_mode'])) {
     $view_mode = $vars['element']['#view_mode'];
+    $field_name = $vars['element']['#field_name'] ?? '';
+    $field_items = $vars['element']['#items'] ?? NULL;
+    $entity = $field_items ? $field_items->getEntity() : NULL;
+    $is_iiip_context = $entity instanceof Node && lehigh_node_has_iiip_collection_context($entity);
+
     if (!in_array($vars['field_name'], ['body', 'field_abstract', 'field_thumbnail']) &&
       ($view_mode == 'card' || $view_mode == 'full')) {
       $vars['attributes']['class'][] = $view_mode == 'card' ? 'col-4' : 'col-3';
     }
 
     // Only show the first value in an abstract multi value field.
-    if (in_array($view_mode, ['card', 'list'])) {
-      $field_name = $vars['element']['#field_name'] ?? '';
-      if ($field_name === 'field_abstract' && count($vars['items']) > 1) {
-        $vars['items'] = array_slice($vars['items'], 0, 1);
+    if ($field_name === 'field_abstract' && count($vars['items']) > 1 && $is_iiip_context && $view_mode === 'card') {
+      $vars['items'] = array_slice($vars['items'], 0, 1);
+    }
+
+    if (in_array($view_mode, ['card', 'full'], TRUE) && $field_name === 'field_abstract' && $is_iiip_context && $field_items) {
+      foreach ($field_items as $delta => $item) {
+        if (!isset($vars['items'][$delta])) {
+          continue;
+        }
+
+        $vars['items'][$delta]['attributes']->addClass('iiip-description');
+        $vars['items'][$delta]['content'] = [
+          '#type' => 'processed_text',
+          '#text' => (string) $item->value,
+          '#format' => 'full_html',
+        ];
       }
     }
   }
@@ -332,6 +350,34 @@ function lehigh_preprocess_views_view_field(&$variables) {
     '#type' => 'inline_template',
     '#template' => $card[0],
   ];
+}
+
+/**
+ * Implements hook_preprocess_views_view_fields().
+ */
+function lehigh_preprocess_views_view_fields(array &$variables) {
+  if ($variables['view']->id() !== 'map') {
+    return;
+  }
+
+  $node = $variables['row']->_entity ?? NULL;
+  if (!$node instanceof Node || !lehigh_node_has_iiip_collection_context($node)) {
+    return;
+  }
+
+  $variables['map_pin_avatar_url'] = lehigh_get_map_pin_avatar_url($node);
+  $variables['map_pin_avatar_alt'] = $node->label();
+  $variables['map_pin_avatar_placeholder_url'] = \Drupal::request()->getBasePath() . '/' . \Drupal::theme()->getActiveTheme()->getPath() . '/assets/img/svg/placeholders/avatar.svg';
+  $variables['map_pin_popup_url'] = $node->toUrl()->toString();
+  $variables['map_pin_title'] = $node->label();
+  $variables['map_pin_institution'] = '';
+  if ($node->hasField('field_affiliated_institution') && !$node->get('field_affiliated_institution')->isEmpty()) {
+    $variables['map_pin_institution'] = $node->get('field_affiliated_institution')->entity?->label() ?? '';
+  }
+  $variables['map_pin_year'] = '';
+  if ($node->hasField('field_edtf_date_issued') && !$node->get('field_edtf_date_issued')->isEmpty()) {
+    $variables['map_pin_year'] = substr((string) $node->get('field_edtf_date_issued')->value, 0, 4);
+  }
 }
 
 /**
@@ -629,6 +675,45 @@ function lehigh_add_path_variables(&$vars) {
   $vars['basepath'] = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
   $vars['base_path'] = $vars['basepath']; // Alias
   $vars['themepath'] = $vars['basepath'] . \Drupal::theme()->getActiveTheme()->getPath();
+}
+
+/**
+ * Check whether a node belongs to a collection using the IIIP tab display.
+ */
+function lehigh_node_has_iiip_collection_context($node): bool {
+  $depth = 0;
+  while ($depth < 20 && $node instanceof Node) {
+    if ($node->hasField('field_collection_tabs') && !$node->get('field_collection_tabs')->isEmpty()) {
+      $field_item = $node->get('field_collection_tabs')->first();
+      return $field_item && $field_item->display === CollectionTabsItem::DISPLAY_IIIP;
+    }
+
+    ++$depth;
+    if ($node->hasField('field_member_of') && !$node->get('field_member_of')->isEmpty() && $node->get('field_member_of')->entity instanceof Node) {
+      $node = $node->get('field_member_of')->entity;
+      continue;
+    }
+
+    break;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Build the avatar URL used in IIIP map popups.
+ */
+function lehigh_get_map_pin_avatar_url(Node $node): ?string {
+  if (!$node->hasField('field_thumbnail') || $node->get('field_thumbnail')->isEmpty() || !$node->get('field_thumbnail')->entity) {
+    return NULL;
+  }
+
+  $media = $node->get('field_thumbnail')->entity;
+  if (!$media->hasField('field_media_image') || $media->get('field_media_image')->isEmpty() || !$media->get('field_media_image')->entity) {
+    return NULL;
+  }
+
+  return \Drupal::service('file_url_generator')->generateString($media->get('field_media_image')->entity->getFileUri());
 }
 
 /**

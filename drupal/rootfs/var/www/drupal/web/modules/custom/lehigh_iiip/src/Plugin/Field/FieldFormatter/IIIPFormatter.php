@@ -57,6 +57,9 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
   public function viewElements(FieldItemListInterface $items, $langcode): array {
     $element = parent::viewElements($items, $langcode);
     $content = &$element[0]['content'];
+    $tabs = &$element[0]['tabs'];
+    $about_id = NULL;
+    $contribute_id = NULL;
 
     foreach ($items as $delta => $item) {
       if (!is_string($item->label) || trim($item->label) === '') {
@@ -64,11 +67,19 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
       }
 
       $label = strtolower(trim($item->label));
+      $id = 'tab-' . $delta;
+      if ($label === 'about this collection') {
+        $about_id = $id;
+        $tabs[$id]['anchor']['#value'] = 'About this Collection';
+      }
+      elseif ($label === 'contribute to this collection') {
+        $contribute_id = $id;
+      }
+
       if ($label !== 'contribute to this collection') {
         continue;
       }
 
-      $id = 'tab-' . $delta;
       if (\Drupal::currentUser()->isAnonymous()) {
         $loginForm = $this->formBuilder->getForm('Drupal\user\Form\UserLoginForm');
         // Remove the block title.
@@ -83,18 +94,94 @@ final class IIIPFormatter extends CollectionTabsDefaultFormatter implements Cont
         $nodeForm = $this->formBuilder->getForm('Drupal\lehigh_iiip\Form\SubmissionForm');
         $content[$id]['node_form'] = $nodeForm;
       }
-      if (!empty(\Drupal::messenger()->messagesByType('error'))) {
-        $tabs = &$element[0]['tabs'];
-        $collectionId = 'tab-0';
-        $tabs[$collectionId]['anchor']['#attributes']['class'] = ['nav-link', 'fs-5', 'pt-3', 'fw-medium', 'text-dark'];
-        $tabs[$collectionId]['anchor']['#attributes']['aria-selected'] = "false";
-        $content[$collectionId]['#attributes']['class'] = ['tab-pane', 'fade'];
-        $this->setDefault($id, $tabs, $content);
-      }
+    }
 
+    $tabs['tab-view-collection']['anchor']['#value'] = 'View this Collection';
+    $this->reorderTabs($tabs, $content, array_filter([
+      $about_id,
+      'tab-view-collection',
+      $contribute_id,
+    ]));
+
+    if ($about_id !== NULL) {
+      $this->resetActiveState($tabs, $content);
+      $this->setDefault($about_id, $tabs, $content);
+    }
+
+    if ($contribute_id !== NULL && !empty(\Drupal::messenger()->messagesByType('error'))) {
+      $this->resetActiveState($tabs, $content);
+      $this->setDefault($contribute_id, $tabs, $content);
     }
 
     return $element;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function getCollectionViewItem(): object {
+    return (object) [
+      'default' => FALSE,
+      'label' => 'View this Collection',
+      'value' => '&nbsp;',
+    ];
+  }
+
+  /**
+   * Reorder the rendered tabs while keeping render metadata intact.
+   */
+  private function reorderTabs(array &$tabs, array &$content, array $priority_ids): void {
+    $this->reorderRenderArray($tabs, $priority_ids);
+    $this->reorderRenderArray($content, $priority_ids);
+  }
+
+  /**
+   * Reorder child elements in a render array.
+   */
+  private function reorderRenderArray(array &$elements, array $priority_ids): void {
+    $metadata = [];
+    $children = [];
+
+    foreach ($elements as $key => $value) {
+      if (str_starts_with((string) $key, '#')) {
+        $metadata[$key] = $value;
+      }
+      else {
+        $children[$key] = $value;
+      }
+    }
+
+    $ordered = [];
+    foreach ($priority_ids as $id) {
+      if (isset($children[$id])) {
+        $ordered[$id] = $children[$id];
+        unset($children[$id]);
+      }
+    }
+
+    $elements = $metadata + $ordered + $children;
+  }
+
+  /**
+   * Remove active state so a different tab can become the default.
+   */
+  private function resetActiveState(array &$tabs, array &$content): void {
+    foreach ($tabs as $tab_id => &$tab) {
+      if (str_starts_with((string) $tab_id, '#') || empty($tab['anchor']['#attributes']['class'])) {
+        continue;
+      }
+
+      $tab['anchor']['#attributes']['class'] = array_values(array_diff($tab['anchor']['#attributes']['class'], ['active']));
+      $tab['anchor']['#attributes']['aria-selected'] = "false";
+    }
+
+    foreach ($content as $content_id => &$pane) {
+      if (str_starts_with((string) $content_id, '#') || empty($pane['#attributes']['class'])) {
+        continue;
+      }
+
+      $pane['#attributes']['class'] = array_values(array_diff($pane['#attributes']['class'], ['show', 'active']));
+    }
   }
 
 }

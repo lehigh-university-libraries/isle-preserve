@@ -971,9 +971,14 @@ function lehigh_islandora_file_download($uri) {
   }
 
   // Make sure OCR is viewable for published node/media.
+  // media and parent node are published. Embargo and local restriction checks
+  // have already run above against the related node(s).
   $scheme = StreamWrapperManager::getScheme($uri);
   if ($scheme == 'private') {
-    $nid = \Drupal::database()->query('SELECT field_media_of_target_id from file_managed f
+    $allowed_media_use_tids = [
+      lehigh_islandora_get_tid_by_name('Extracted Text', 'islandora_media_use'),
+    ];
+    $file = \Drupal::database()->query('SELECT f.filemime FROM file_managed f
       INNER JOIN media__field_media_file mf ON field_media_file_target_id = f.fid
       INNER JOIN media__field_media_use mu ON mu.entity_id = mf.entity_id
       INNER JOIN media__field_media_of mo ON mo.entity_id = mf.entity_id
@@ -981,14 +986,14 @@ function lehigh_islandora_file_download($uri) {
       INNER JOIN node_field_data n ON n.nid = field_media_of_target_id
       WHERE m.status = 1
         AND n.status = 1
-        AND field_media_use_target_id = 14
+        AND field_media_use_target_id IN (:tids[])
         AND uri = :uri', [
+          ':tids[]' => $allowed_media_use_tids,
           ':uri' => $uri,
-        ])->fetchField();
-    if ($nid) {
-      $node = Node::load($nid);
+        ])->fetchAssoc();
+    if ($file) {
       return [
-        'Content-Type' => 'text/plain',
+        'Content-Type' => $file['filemime'] ?: 'application/octet-stream',
       ];
     }
   }

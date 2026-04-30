@@ -55,15 +55,18 @@ final class AttrDefaultFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode): array {
     $element = [];
+    $show_attribute_label = $this->label !== 'hidden';
 
     foreach ($items as $delta => $item) {
       $label = '';
-      $allowed_values = $item->possibleValues();
-      if ($item->attr0) {
-        $label = $allowed_values[$item->attr0] ?? $item->attr0;
-      }
-      elseif ($item->attr1) {
-        $label = $allowed_values[$item->attr1] ?? $item->attr1;
+      if ($show_attribute_label) {
+        $allowed_values = $item->possibleValues();
+        if ($item->attr0) {
+          $label = $allowed_values[$item->attr0] ?? $item->attr0;
+        }
+        elseif ($item->attr1) {
+          $label = $allowed_values[$item->attr1] ?? $item->attr1;
+        }
       }
 
       if ($item->format) {

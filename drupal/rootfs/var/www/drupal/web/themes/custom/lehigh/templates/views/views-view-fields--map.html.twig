@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Theme override for IIIP map pin popup content.
+ */
+#}
+<div class="map-pin-card">
+  <img
+    class="map-pin-card__avatar"
+    src="{{ map_pin_avatar_url ?: map_pin_avatar_placeholder_url }}"
+    alt="{{ map_pin_avatar_alt|default('Profile image') }}"
+  />
+  <div class="map-pin-card__body">
+    {% if map_pin_title %}
+      <div class="map-pin-card__title">{{ map_pin_title }}</div>
+    {% endif %}
+    {% if map_pin_institution %}
+      <div class="map-pin-card__meta">{{ map_pin_institution }}</div>
+    {% endif %}
+    {% if map_pin_year %}
+      <div class="map-pin-card__meta">{{ map_pin_year }}</div>
+    {% endif %}
+    {% if map_pin_popup_url %}
+      <a class="map-pin-card__link" href="{{ map_pin_popup_url }}">View this student</a>
+    {% endif %}
+  </div>
+</div>

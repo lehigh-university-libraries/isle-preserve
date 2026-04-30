@@ -104,6 +104,10 @@ class CollectionTabsDefaultFormatter extends FormatterBase implements ContainerF
     $filters = is_array($f) && count($f) > 0;
     $filters |= is_string($s) && strlen($s) > 0;
     foreach ($items as $delta => $item) {
+      if (!$this->shouldRenderItem($item)) {
+        continue;
+      }
+
       $id = 'tab-' . $delta;
       $tabs[$id] = $this->addTab($id, $item);
       $content[$id] = $this->addContent($id, $item);
@@ -140,6 +144,10 @@ class CollectionTabsDefaultFormatter extends FormatterBase implements ContainerF
     ];
 
     foreach ($items as $delta => $item) {
+      if (!$this->shouldRenderItem($item)) {
+        continue;
+      }
+
       $has_visible_content = FALSE;
       $section = [
         '#type' => 'container',
@@ -285,6 +293,17 @@ class CollectionTabsDefaultFormatter extends FormatterBase implements ContainerF
     $tabs[$id]['anchor']['#attributes']['class'][] = 'active';
     $tabs[$id]['anchor']['#attributes']['aria-selected'] = "true";
     $content[$id]['#attributes']['class'][] = 'show active';
+  }
+
+  /**
+   * Determine whether a field item has anything worth rendering.
+   */
+  protected function shouldRenderItem(mixed $item): bool {
+    $label = is_string($item->label ?? NULL) ? trim($item->label) : '';
+    $value = is_string($item->value ?? NULL) ? trim(strip_tags($item->value)) : '';
+    $has_map = !empty($item->map);
+
+    return $label !== '' || $value !== '' || $has_map;
   }
 
 }

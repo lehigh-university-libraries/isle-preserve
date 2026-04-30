@@ -781,7 +781,7 @@ display:
                 weight: 0
                 enabled: false
             type: ROADMAP
-            zoom: 2
+            zoom: 15
             minZoom: 0
             maxZoom: 20
             height: 400px

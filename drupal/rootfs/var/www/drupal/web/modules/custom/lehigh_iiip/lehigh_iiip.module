@@ -5,6 +5,7 @@
  * Primary module hooks for Lehigh IIIP module.
  */
 
+use Drupal\node\Entity\Node;
 use Drupal\islandora_collection_tabs\Plugin\Field\FieldType\CollectionTabsItem;
 use Drupal\node\NodeForm;
 use Drupal\views\ViewExecutable;
@@ -13,6 +14,29 @@ use Drupal\views\ViewExecutable;
  * Implements hook_views_pre_render().
  */
 function lehigh_iiip_views_pre_render(ViewExecutable $view) {
+  if ($view->id() === 'map') {
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if (is_numeric($node)) {
+      $node = Node::load((int) $node);
+    }
+
+    if (lehigh_iiip_has_collection_context($node)) {
+      $view->style_plugin->options['map_provider_settings']['zoom'] = 2;
+
+      $map_features = &$view->style_plugin->options['map_provider_settings']['map_features'];
+      if (isset($map_features['marker_clusterer'])) {
+        $map_features['marker_clusterer']['enabled'] = TRUE;
+        $map_features['marker_clusterer']['settings']['zoom_on_click'] = TRUE;
+        $map_features['marker_clusterer']['settings']['minimum_cluster_size'] = 2;
+      }
+      if (isset($map_features['spiderfying'])) {
+        $map_features['spiderfying']['enabled'] = TRUE;
+      }
+    }
+
+    return;
+  }
+
   if ($view->id() !== 'collection_tabs') {
     return;
   }
@@ -38,4 +62,27 @@ function lehigh_iiip_entity_type_alter(array &$entity_types) {
   if (isset($entity_types['node'])) {
     $entity_types['node']->setFormClass('iiip_submission', NodeForm::class);
   }
+}
+
+/**
+ * Check whether a node belongs to a collection using the IIIP tab display.
+ */
+function lehigh_iiip_has_collection_context($node): bool {
+  $depth = 0;
+  while ($depth < 20 && $node && is_object($node)) {
+    if ($node->hasField('field_collection_tabs') && !$node->get('field_collection_tabs')->isEmpty()) {
+      $field_item = $node->get('field_collection_tabs')->first();
+      return $field_item && $field_item->display === CollectionTabsItem::DISPLAY_IIIP;
+    }
+
+    ++$depth;
+    if ($node->hasField('field_member_of') && !$node->get('field_member_of')->isEmpty()) {
+      $node = $node->get('field_member_of')->entity;
+      continue;
+    }
+
+    break;
+  }
+
+  return FALSE;
 }
