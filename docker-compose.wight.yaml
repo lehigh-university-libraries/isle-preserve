@@ -31,7 +31,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   houdini:
-    image: islandora/houdini:6.3.16@sha256:5d911b0d09434aed69fe70943e02b17442f335173d9a748c2b4ae490fa029a98
+    image: islandora/houdini:6.3.19@sha256:ef539ddafdc26fe10faf104b75aac549812897ca8a4332d2341e72944c8ec7bb
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
