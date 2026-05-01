@@ -10,7 +10,7 @@ $action_storage = $entity_type_manager->getStorage('action');
 $action = $action_storage->load($action_name);
 
 $of_tid = lehigh_islandora_get_tid_by_name("Original File", "islandora_media_use");
-$sql = "SELECT f.entity_id
+$sql = "SELECT f.entity_id, field_media_of_target_id
   FROM media__field_media_file f
   INNER JOIN media__field_media_of mo ON mo.entity_id = f.entity_id
   INNER JOIN media__field_media_use mu ON mu.entity_id = f.entity_id

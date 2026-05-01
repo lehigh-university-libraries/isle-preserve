@@ -149,7 +149,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   triplet:
-    image: ghcr.io/libops/triplet:v1.0.1@sha256:1ed96851b6835a3ebd0bed6129f10fc439f3de4d0b471ae66012c5f38882fa2e
+    image: ghcr.io/libops/triplet:v1.0.3@sha256:2b25913ea068f24ca1949ec6448dcb634d82d5e297abcfe31b1baa94e43628ff
     environment:
       TRIPLET_PUBLIC_BASE_URL: https://${DOMAIN}
     volumes:
