@@ -45,7 +45,7 @@
                 map.settings.google_map_settings &&
                 map.settings.google_map_settings.maxZoom) ||
               20;
-            var targetZoom = Math.min(maxZoom, Math.max(currentZoom + 3, 6));
+            var targetZoom = Math.min(maxZoom, Math.max(currentZoom + 2, 5));
 
             if (targetZoom <= currentZoom) {
               return;
