@@ -7,6 +7,7 @@
  */
 
 use Drupal\Component\Utility\Xss;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
@@ -52,12 +53,21 @@ function lehigh_preprocess_field(&$vars) {
       $vars['attributes']['class'][] = $view_mode == 'card' ? 'col-4' : 'col-3';
     }
 
-    // Only show the first value in an abstract multi value field.
-    if ($field_name === 'field_abstract' && count($vars['items']) > 1 && $is_iiip_context && $view_mode === 'card') {
-      $vars['items'] = array_slice($vars['items'], 0, 1);
+    if ($view_mode === 'card' && $field_name === 'field_abstract' && $is_iiip_context && $field_items) {
+      if (count($vars['items']) > 1) {
+        $vars['items'] = array_slice($vars['items'], 0, 1);
+      }
+
+      $first_item = $field_items->first();
+      if ($first_item && isset($vars['items'][0])) {
+        $text = lehigh_trim_text_at_word_boundary(strip_tags(Html::decodeEntities((string) $first_item->value)), 600);
+        $vars['items'][0]['content'] = [
+          '#plain_text' => $text,
+        ];
+      }
     }
 
-    if (in_array($view_mode, ['card', 'full'], TRUE) && $field_name === 'field_abstract' && $is_iiip_context && $field_items) {
+    if ($view_mode === 'full' && $field_name === 'field_abstract' && $is_iiip_context && $field_items) {
       foreach ($field_items as $delta => $item) {
         if (!isset($vars['items'][$delta])) {
           continue;
@@ -714,6 +724,22 @@ function lehigh_get_map_pin_avatar_url(Node $node): ?string {
   }
 
   return \Drupal::service('file_url_generator')->generateString($media->get('field_media_image')->entity->getFileUri());
+}
+
+/**
+ * Trim text at a word boundary near the provided limit.
+ */
+function lehigh_trim_text_at_word_boundary(string $text, int $limit = 600): string {
+  $text = trim(preg_replace('/\s+/u', ' ', $text) ?? $text);
+  if ($text === '' || mb_strlen($text) <= $limit) {
+    return $text;
+  }
+
+  $trimmed = mb_substr($text, 0, $limit + 1);
+  $trimmed = preg_replace('/\s+\S*$/u', '', $trimmed) ?? $trimmed;
+  $trimmed = rtrim($trimmed, " \t\n\r\0\x0B.,;:!?");
+
+  return $trimmed . '...';
 }
 
 /**
