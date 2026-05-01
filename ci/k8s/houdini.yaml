@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: islandora-imagemagick
 spec:
-  replicas: 3
+  replicas: 4
   selector:
     matchLabels:
       app: islandora-imagemagick
@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-imagemagick
-          image: islandora/houdini:6.3.19@sha256:ef539ddafdc26fe10faf104b75aac549812897ca8a4332d2341e72944c8ec7bb
+          image: islandora/houdini:houdini-vips@sha256:e581e21a9dcae588dbca8bf064dce861f530544d82ddd86dee31cffe77f023fc
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
