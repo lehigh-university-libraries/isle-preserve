@@ -74,7 +74,7 @@ services:
       ALPACA_DERIVATIVE_OCR_URL: https://isle-microservices.cc.lehigh.edu/hypercube
       ALPACA_DERIVATIVE_HOMARUS_CONSUMERS: 3
       ALPACA_DERIVATIVE_HOMARUS_URL: https://isle-microservices.cc.lehigh.edu/homarus
-      ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 3
+      ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 8
       ALPACA_DERIVATIVE_HOUDINI_URL: https://isle-microservices.cc.lehigh.edu/houdini
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: https://isle-microservices.cc.lehigh.edu/libreoffice
       ALPACA_DERIVATIVE_WHISPER_URL: https://isle-microservices.cc.lehigh.edu/whisper
@@ -149,7 +149,7 @@ services:
       - /opt/islandora/volumes/cantaloupe-data:/data:rw
       - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   triplet:
-    image: ghcr.io/libops/triplet:v0.3.1@sha256:0d9f80c33d9803317f4c1da874e03faaa7c3cc5e0a65e380d9ebb7fcf2eba854
+    image: ghcr.io/libops/triplet:v1.0.1@sha256:1ed96851b6835a3ebd0bed6129f10fc439f3de4d0b471ae66012c5f38882fa2e
     environment:
       TRIPLET_PUBLIC_BASE_URL: https://${DOMAIN}
     volumes:
