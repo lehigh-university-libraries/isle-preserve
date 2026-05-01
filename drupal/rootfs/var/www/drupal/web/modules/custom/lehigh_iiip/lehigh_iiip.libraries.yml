@@ -8,3 +8,13 @@ google_places_autocomplete:
     - core/jquery
     - core/drupal
     - core/jquery.once
+
+iiip_map_spiderfy:
+  js:
+    js/iiip-map-spiderfy.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - geolocation/geolocation.api
+    - geolocation_google_maps/googlemapsapi
+    - geolocation_google_maps/mapfeature.spiderfying

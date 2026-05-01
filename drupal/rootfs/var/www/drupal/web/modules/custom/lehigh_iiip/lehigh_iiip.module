@@ -25,9 +25,7 @@ function lehigh_iiip_views_pre_render(ViewExecutable $view) {
 
       $map_features = &$view->style_plugin->options['map_provider_settings']['map_features'];
       if (isset($map_features['marker_clusterer'])) {
-        $map_features['marker_clusterer']['enabled'] = TRUE;
-        $map_features['marker_clusterer']['settings']['zoom_on_click'] = TRUE;
-        $map_features['marker_clusterer']['settings']['minimum_cluster_size'] = 2;
+        $map_features['marker_clusterer']['enabled'] = FALSE;
       }
       if (isset($map_features['spiderfying'])) {
         $map_features['spiderfying']['enabled'] = TRUE;
@@ -61,6 +59,20 @@ function lehigh_iiip_views_pre_render(ViewExecutable $view) {
 function lehigh_iiip_entity_type_alter(array &$entity_types) {
   if (isset($entity_types['node'])) {
     $entity_types['node']->setFormClass('iiip_submission', NodeForm::class);
+  }
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function lehigh_iiip_page_attachments(array &$attachments): void {
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (is_numeric($node)) {
+    $node = Node::load((int) $node);
+  }
+
+  if (lehigh_iiip_has_collection_context($node)) {
+    $attachments['#attached']['library'][] = 'lehigh_iiip/iiip_map_spiderfy';
   }
 }
 
