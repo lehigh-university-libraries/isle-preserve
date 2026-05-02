@@ -85,7 +85,7 @@ services:
       ALPACA_DERIVATIVE_TN_ZIP_URL: https://isle-microservices.cc.lehigh.edu/zip
       ALPACA_DERIVATIVE_COVERPAGE_URL: https://isle-microservices.cc.lehigh.edu/coverpage
       ALPACA_DERIVATIVE_MERGEPDF_URL: https://isle-microservices.cc.lehigh.edu/mergepdf
-      ROLLOUT: 20260207
+      ALPACA_DERIVATIVE_MERGEPDF_CONSUMERS: 3
     secrets:
       - source: ALPACA_JMS_PASSWORD
       - source: CERT_AUTHORITY
