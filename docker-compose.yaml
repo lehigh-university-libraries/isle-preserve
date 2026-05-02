@@ -4,7 +4,6 @@ networks:
 
 volumes:
   activemq-data: {}
-  cantaloupe-data: {}
   drupal-private-files: {}
   drupal-public-files: {}
   drupal-solr-config: {}
@@ -74,7 +73,7 @@ services:
       ALPACA_DERIVATIVE_OCR_URL: https://isle-microservices.cc.lehigh.edu/hypercube
       ALPACA_DERIVATIVE_HOMARUS_CONSUMERS: 3
       ALPACA_DERIVATIVE_HOMARUS_URL: https://isle-microservices.cc.lehigh.edu/homarus
-      ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 8
+      ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 12
       ALPACA_DERIVATIVE_HOUDINI_URL: https://isle-microservices.cc.lehigh.edu/houdini
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: https://isle-microservices.cc.lehigh.edu/libreoffice
       ALPACA_DERIVATIVE_WHISPER_URL: https://isle-microservices.cc.lehigh.edu/whisper
@@ -133,21 +132,6 @@ services:
       options:
         max-size: "100m"
         max-file: "3"
-  cantaloupe:
-    image: islandora/cantaloupe:6.3.19@sha256:12b4037f26253990d71df42b741997ce57aedd730b263ad19e578b3f21d529ec
-    environment:
-      CANTALOUPE_LOG_APPLICATION_LEVEL: info
-      CANTALOUPE_HTTPSOURCE_CHUNKING_ENABLED: "false"
-      CANTALOUPE_CACHE_SERVER_DERIVATIVE_ENABLED: "true"
-      CANTALOUPE_CACHE_SERVER_DERIVATIVE: "FilesystemCache"
-    secrets:
-      - source: CERT_AUTHORITY
-        target: CERT_PUBLIC_KEY
-    healthcheck:
-      start_period: 5s
-    volumes:
-      - /opt/islandora/volumes/cantaloupe-data:/data:rw
-      - /opt/islandora/volumes/tmp/cantaloupe:/tmp:rw
   triplet:
     image: ghcr.io/libops/triplet:v1.0.3@sha256:2b25913ea068f24ca1949ec6448dcb634d82d5e297abcfe31b1baa94e43628ff
     environment:

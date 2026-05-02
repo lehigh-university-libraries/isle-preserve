@@ -15,10 +15,6 @@ services:
     profiles: [none]
   drupal-lehigh:
     profiles: [none]
-  cantaloupe:
-    volumes:
-      - cantaloupe-data:/data:Z,rw
-      - ./tmp/cantaloupe:/tmp:rw
   traefik:
     ports:
       - 8080:8080
