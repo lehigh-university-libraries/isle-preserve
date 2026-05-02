@@ -8,7 +8,7 @@ spec:
     app: islandora-tn-zip
   ports:
     - protocol: TCP
-      port: 8096
+      port: 8080
       targetPort: 8080
 ---
 apiVersion: apps/v1
@@ -45,7 +45,6 @@ spec:
               memory: "2Gi"
           ports:
             - containerPort: 8080
-              hostPort: 8096
           readinessProbe:
             httpGet:
               path: /healthcheck

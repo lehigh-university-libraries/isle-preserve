@@ -8,7 +8,7 @@ spec:
     app: islandora-mergepdf
   ports:
     - protocol: TCP
-      port: 8091
+      port: 8080
       targetPort: 8080
 ---
 apiVersion: apps/v1
@@ -49,7 +49,6 @@ spec:
               memory: "24Gi"
           ports:
             - containerPort: 8080
-              hostPort: 8091
           readinessProbe:
             httpGet:
               path: /healthcheck

@@ -8,7 +8,7 @@ spec:
     app: islandora-tn-warc
   ports:
     - protocol: TCP
-      port: 8095
+      port: 8080
       targetPort: 8080
 ---
 apiVersion: apps/v1
@@ -45,7 +45,6 @@ spec:
               memory: "2Gi"
           ports:
             - containerPort: 8080
-              hostPort: 8095
           readinessProbe:
             httpGet:
               path: /healthcheck

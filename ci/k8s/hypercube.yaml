@@ -8,7 +8,7 @@ spec:
     app: islandora-tesseract
   ports:
     - protocol: TCP
-      port: 8089
+      port: 8080
       targetPort: 8080
 ---
 apiVersion: apps/v1
@@ -45,8 +45,7 @@ spec:
             limits:
               memory: "4Gi"
           ports:
-            - hostPort: 8089
-              containerPort: 8080
+            - containerPort: 8080
           readinessProbe:
             httpGet:
               path: /healthcheck

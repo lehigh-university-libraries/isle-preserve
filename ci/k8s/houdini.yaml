@@ -8,7 +8,7 @@ spec:
     app: islandora-imagemagick
   ports:
     - protocol: TCP
-      port: 8087
+      port: 8080
       targetPort: 8080
 ---
 apiVersion: apps/v1
@@ -16,7 +16,7 @@ kind: Deployment
 metadata:
   name: islandora-imagemagick
 spec:
-  replicas: 4
+  replicas: 12
   selector:
     matchLabels:
       app: islandora-imagemagick
@@ -39,13 +39,12 @@ spec:
                   key: islandora-prod.pem
           resources:
             requests:
-              memory: "32Gi"
+              memory: "8Gi"
               cpu: "100m"
             limits:
-              memory: "32Gi"
+              memory: "8Gi"
           ports:
             - containerPort: 8080
-              hostPort: 8087
           readinessProbe:
             httpGet:
               path: /healthcheck

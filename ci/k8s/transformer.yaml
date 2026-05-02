@@ -8,7 +8,7 @@ spec:
     app: sentence-transformer
   ports:
     - protocol: TCP
-      port: 8094
+      port: 8080
       targetPort: 8080
 ---
 apiVersion: apps/v1
@@ -37,7 +37,6 @@ spec:
               memory: "2Gi"
           ports:
             - containerPort: 8080
-              hostPort: 8094
           readinessProbe:
             httpGet:
               path: /healthcheck
