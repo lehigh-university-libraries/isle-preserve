@@ -949,9 +949,13 @@ function lehigh_islandora_file_download($uri) {
     return NULL;
   }
 
-  if ($extension == 'jp2') {
+  if ($extension == 'tif') {
+    $extension = 'tiff';
+  }
+
+  if ($extension == 'jp2' || $extension == 'tiff') {
     return [
-      'Content-Type' => 'image/jp2',
+      'Content-Type' => 'image/' . $extension,
     ];
   }
 
