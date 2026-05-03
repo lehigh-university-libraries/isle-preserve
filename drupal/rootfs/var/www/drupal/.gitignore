@@ -9,6 +9,7 @@
 !/web/libraries/link
 !/web/libraries/fakeobjects
 !/web/libraries/jquery-ui-slider-pips
+!web/libraries/mirador
 /web/sites/*/settings.local.php
 /web/sites/*/files/
 /.env
