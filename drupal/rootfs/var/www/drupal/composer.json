@@ -209,7 +209,8 @@
             },
             "drupal/islandora": {
                 "override domain": "assets/patches/drupal/islandora/event-overwrite.patch",
-                "read from OCFL root": "assets/patches/drupal/islandora/fcrepo-ro.patch"
+                "read from OCFL root": "assets/patches/drupal/islandora/fcrepo-ro.patch",
+                "iiif v3": "assets/patches/drupal/islandora/iiif3.patch"
             },
             "twistor/flysystem-stream-wrapper": {
                 "Fix php82 warning": "assets/patches/twistor/flysystem-stream-wrapper/28.patch"
