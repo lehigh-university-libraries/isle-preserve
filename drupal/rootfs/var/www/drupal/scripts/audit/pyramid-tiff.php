@@ -30,10 +30,19 @@ $results = \Drupal::database()->query($sql, $d_args)->fetchAllKeyed();
 
 foreach ($results as $mid => $nid) {
   $media = $media_storage->load($mid);
-  $media->field_media_file->delete();
+  if (!$media) {
+    continue;
+  }
+  $file = $media->field_media_file->entity;
   $media->delete();
-
+  if ($file) {
+    $file->delete();
+  }
 
   $node = $node_storage->load($nid);
+  if (!$node) {
+    continue;
+  }
+
   $action->execute([$node]);
 }
