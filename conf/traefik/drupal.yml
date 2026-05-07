@@ -94,7 +94,7 @@ http:
           exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
           persistentStateFile: /tmp/state.json
           protectFileExtensions: php,html,jp2,tif,tiff
-          enableStateReconciliation: "true"
+          enableStateReconciliation: "false"
           periodSeconds: 30
           failureThreshold: 3
           enableGooglebotIPCheck: "true"

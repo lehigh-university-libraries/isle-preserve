@@ -80,4 +80,5 @@ update-lehigh-guest-networks-dry-run: ## Show fetched Lehigh Guest CIDRs without
 	./scripts/maintenance/update-lehigh-guest-networks.php --dry-run
 sequelace:
 	./scripts/isle/sequelace.sh
-
+update-captcha-protect:
+	./scripts/maintenance/update-captcha.sh
