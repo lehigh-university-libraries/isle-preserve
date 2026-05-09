@@ -50,7 +50,7 @@ while true; do
   echo "$(date +"%Y-%m-%dT%H:%M:%S%z") Starting cron loop"
   time drush queue:run lehigh_islandora_events
   time drush scr scripts/audit/paged-content-pdf.php
-  time drush scr scripts/audit/jp2.php
+  time drush scr scripts/audit/pyramidal-tiff.php
   for FILE in scripts/derivatives/*.php; do
     if [ "$FILE" = "scripts/derivatives/action.php" ] || [ "$FILE" = "scripts/derivatives/action-rerun.php" ]; then
       continue;

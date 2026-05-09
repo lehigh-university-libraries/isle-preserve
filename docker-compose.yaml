@@ -76,7 +76,8 @@ services:
       ALPACA_DERIVATIVE_HOUDINI_CONSUMERS: 12
       ALPACA_DERIVATIVE_HOUDINI_URL: https://isle-microservices.cc.lehigh.edu/houdini
       ALPACA_DERIVATIVE_LIBREOFFICE_URL: https://isle-microservices.cc.lehigh.edu/libreoffice
-      ALPACA_DERIVATIVE_WHISPER_URL: https://isle-microservices.cc.lehigh.edu/whisper
+      ALPACA_DERIVATIVE_WHISPER_URL: ${ALPACA_DERIVATIVE_WHISPER_URL:-https://isle-microservices.cc.lehigh.edu/whisper}
+      ALPACA_DERIVATIVE_WHISPER_MAX_CONSUMERS: 1
       ALPACA_DERIVATIVE_OCRPDF_URL: https://isle-microservices.cc.lehigh.edu/ocrpdf
       ALPACA_DERIVATIVE_HTR_URL: https://isle-microservices.cc.lehigh.edu/openai-htr
       ALPACA_DERIVATIVE_CLEAN_PDF_URL: https://isle-microservices.cc.lehigh.edu/cleanpdf

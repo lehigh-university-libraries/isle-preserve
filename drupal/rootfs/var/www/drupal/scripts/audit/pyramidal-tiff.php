@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Ensure jp2 service files are valid.
+ * Ensure TIFF service files are valid.
  */
 
 lehigh_islandora_cron_account_switcher();
@@ -20,7 +20,7 @@ $sql = "SELECT mo.field_media_of_target_id AS nid, f.uri
   INNER JOIN file_managed f ON f.fid = field_media_file_target_id
   WHERE m.created > UNIX_TIMESTAMP()-3600
     AND mu.field_media_use_target_id = :tid
-    AND f.uri LIKE '%.jp2'
+    AND f.uri LIKE '%.tiff'
   GROUP BY mo.field_media_of_target_id";
 $d_args = [
   ':tid' => lehigh_islandora_get_tid_by_name("Service File", "islandora_media_use"),
@@ -44,12 +44,12 @@ foreach ($items as $item) {
     continue;
   }
 
-  echo "Need new JP2 for $item->nid at $item->uri.";
+  echo "Need new TIFF for $item->nid at $item->uri\n";
   try {
-    $nodes = $node_storage->loadMultiple([$item->nid]);
+    $node = $node_storage->load($item->nid);
   } catch (Exception $e) {
     echo "Unable to load $item->nid\n";
     continue;
   }
-  $action->execute(array_values($nodes));
+  $action->execute([$node]);
 }
