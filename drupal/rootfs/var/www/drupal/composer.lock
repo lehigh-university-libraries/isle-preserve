@@ -7125,26 +7125,29 @@
         },
         {
             "name": "drupal/rest_oai_pmh",
-            "version": "2.2.1",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/rest_oai_pmh.git",
-                "reference": "2.2.1"
+                "reference": "2.3.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/rest_oai_pmh-2.2.1.zip",
-                "reference": "2.2.1",
-                "shasum": "7bf04ab655fa6017e7b01ccc6748375ab6855882"
+                "url": "https://ftp.drupal.org/files/projects/rest_oai_pmh-2.3.1.zip",
+                "reference": "2.3.1",
+                "shasum": "cab3a4670665110c923feafd4bf6dfb9b1ddbf6c"
             },
             "require": {
                 "drupal/core": "^10.1 || ^11"
             },
+            "suggest": {
+                "discoverygarden/dgi_image_discovery": "Provides image discovery support for RDF thumbnail URL callbacks."
+            },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.2.1",
-                    "datestamp": "1771879700",
+                    "version": "2.3.1",
+                    "datestamp": "1778690242",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
