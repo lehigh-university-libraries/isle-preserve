@@ -85,7 +85,7 @@ function lehigh_preprocess_field(&$vars) {
 }
 
 function lehigh_preprocess_field_group_html_element(&$vars) {
-   $vars['attributes']['class'] = ['row g-3 w-100'];
+   $vars['attributes']['class'] = ['row g-3 s-3 w-100'];
 }
 
 function lehigh_preprocess_html(&$vars) {

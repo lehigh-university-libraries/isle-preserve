@@ -42,9 +42,7 @@ const sidebarDefaultState = 'expanded';
         let vc = $('.view-attachment-tab');
         let r = $('.view-attachment-tab .rows');
         let rows = $('.view-attachment-tab .rows .views-row');
-        if ($(this).hasClass('masonry')) {
-          console.log('m')
-        } else if ($(this).hasClass('list')) {
+        if ($(this).hasClass('list')) {
           nodes.removeClass('agileCard');
           nodes.removeClass('node--view-mode-card')
           vc.removeClass('view-attachment-tab-card-view card-view')
@@ -55,7 +53,7 @@ const sidebarDefaultState = 'expanded';
           vc.addClass('view-attachment-tab-list-view list-view');
           $('article.node--type-islandora-object header').addClass('w-25 float-start');
           $('article.node--type-islandora-object .node--content').addClass('w-70 float-start ms-3');
-          $('article.node--type-islandora-object footer').addClass('w-70 ml-25 position-absolute')
+          $('article.node--type-islandora-object footer').addClass('w-70 ml-27 position-absolute')
           $('article.node--type-islandora-object footer .reference-count').addClass('d-none');
           $('article.node--type-islandora-object footer .row.g3').addClass('ms-3');
         } else {
@@ -68,7 +66,7 @@ const sidebarDefaultState = 'expanded';
           vc.removeClass('view-attachment-tab-list-view list-view');
           $('article.node--type-islandora-object header').removeClass('w-25 float-start');
           $('article.node--type-islandora-object .node--content').removeClass('w-70 float-start ms-3');
-          $('article.node--type-islandora-object footer').removeClass('w-70 ml-25 position-absolute')
+          $('article.node--type-islandora-object footer').removeClass('w-70 ml-27 position-absolute')
           $('article.node--type-islandora-object footer .reference-count').removeClass('d-none');
           $('article.node--type-islandora-object footer .row.g3').removeClass('ms-3');
         }

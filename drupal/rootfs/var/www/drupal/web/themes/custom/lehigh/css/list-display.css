@@ -9,3 +9,160 @@
 .field_abstract_container {
   margin-bottom: 1rem;
 }
+
+/* -------------------------------------------------------------------------
+ * Compound / collection object metadata card
+ *
+ * Bootstrap-flavoured polish for the compound-object render block. The theme's
+ * style.css carries page-level rules on `article.node--view-mode-full` with
+ * high specificity (and an !important max-width), so every rule here is scoped
+ * under the block ID to win the cascade.
+ * ---------------------------------------------------------------------- */
+
+#block-lehigh-views-block-compond-object-render-block-1 {
+  --co-accent: #502d0e;       /* Lehigh Brown — primary */
+  --co-accent-soft: #ffe41e;  /* Golden Hour — signature accent */
+  --co-link: #327d9a;         /* brand hyperlink */
+  --co-border: #e1dfda;       /* grey_60 — subtle warm divider */
+  --co-text: #212529;         /* base font */
+  --co-muted: #6a6764;        /* grey_k60 */
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 .compond-object-render {
+  background-color: transparent !important;
+  border: 0 !important;
+}
+
+/* The card itself. !important is required to beat
+   `body.page-node-type-islandora-object.collection article.node--view-mode-full
+   { max-width: 1900px !important }` and the no-sidebar padding:0 rule. */
+#block-lehigh-views-block-compond-object-render-block-1 .node--type-islandora-object {
+  box-sizing: border-box;
+  max-width: 75rem !important;
+  padding: 2.25rem 2.5rem !important;
+  background-color: #fff;
+  border: 1px solid var(--co-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 1rem rgba(80, 45, 14, 0.08);
+}
+
+/* Neutralise the theme's blanket `>* { margin-bottom: 3.11rem }` so we can
+   control vertical rhythm inside the card. */
+#block-lehigh-views-block-compond-object-render-block-1 .node--type-islandora-object > * {
+  margin-bottom: 1.5rem;
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 .node--type-islandora-object > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Title */
+#block-lehigh-views-block-compond-object-render-block-1 .node--type-islandora-object > h2 {
+  font-size: 1.75rem;
+  line-height: 1.25;
+  margin-bottom: 1rem;
+  padding-bottom: 0.75rem;
+  color: var(--co-accent);
+}
+
+/* Abstract / description — full card width, comfortable reading rhythm */
+#block-lehigh-views-block-compond-object-render-block-1 .field_abstract_container {
+  color: var(--co-text);
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: 1.75rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--co-border);
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 .field_abstract_container p {
+  margin-bottom: 0.85rem;
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 .field_abstract_container a {
+  color: var(--co-link);
+}
+
+/* Metadata grid */
+#block-lehigh-views-block-compond-object-render-block-1 #collapsible-row {
+  padding-top: 0;
+  margin-bottom: 0;
+  row-gap: 0.25rem;
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 #collapsible-row .col-3 {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid var(--co-border);
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 #collapsible-row .label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--co-accent);
+  margin-bottom: 0.3rem;
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 #collapsible-row .field-value {
+  color: var(--co-text);
+  font-size: 0.98rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 #collapsible-row .field-value a {
+  color: var(--co-link);
+  text-decoration: none;
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 #collapsible-row .field-value a:hover,
+#block-lehigh-views-block-compond-object-render-block-1 #collapsible-row .field-value a:focus {
+  text-decoration: underline;
+}
+
+/* Responsive columns: 4-up on desktop, 2-up on tablet, 1-up on phone.
+   JS toggles display:none/block per cell, so only override the width. */
+@media only screen and (max-width: 991px) {
+  #block-lehigh-views-block-compond-object-render-block-1 #collapsible-row .col-3 {
+    width: 50%;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  #block-lehigh-views-block-compond-object-render-block-1 #collapsible-row .col-3 {
+    width: 100%;
+  }
+}
+
+/* More / Close toggle as a pill button */
+#block-lehigh-views-block-compond-object-render-block-1 .float-end {
+  clear: both;
+  padding-top: 0.5rem;
+  margin-bottom: 0;
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 #expand-link,
+#block-lehigh-views-block-compond-object-render-block-1 #collapse-link {
+  display: inline-block;
+  padding: 0.4rem 1.1rem;
+  border: 1px solid var(--co-accent);
+  border-radius: 50rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--co-accent);
+  text-decoration: none;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+#block-lehigh-views-block-compond-object-render-block-1 #expand-link:hover,
+#block-lehigh-views-block-compond-object-render-block-1 #expand-link:focus,
+#block-lehigh-views-block-compond-object-render-block-1 #collapse-link:hover,
+#block-lehigh-views-block-compond-object-render-block-1 #collapse-link:focus {
+  background-color: var(--co-accent);
+  color: #fff;
+}
+.row.g-3.s-3>* {
+  margin-top: 0rem;
+}
