@@ -97,7 +97,7 @@ dependencies:
     - autocomplete_deluxe
     - controlled_access_terms
     - field_group
-    - file
+    - flysystem_gcs_cors
     - inline_entity_form
     - lehigh_islandora
     - text
@@ -277,6 +277,7 @@ third_party_settings:
         required_fields: true
     group_metadata_tabs:
       children:
+        - field_edtf_date_created
         - group_basic
         - group_date_tab
         - group_vocabularies
@@ -289,7 +290,6 @@ third_party_settings:
         - group_dissertations
         - group_creator_metadata
         - group_geographic_coordinates
-        - field_edtf_date_created
         - group_other
       label: Metadata
       region: hidden
@@ -487,7 +487,7 @@ content:
       sets: false
     third_party_settings: {  }
   field_file_uploads:
-    type: file_generic
+    type: flysystem_gcs_cors_file_widget
     weight: 15
     region: content
     settings:
@@ -549,16 +549,9 @@ content:
       override_labels: true
       label_singular: ''
       label_plural: ''
-      allow_new: true
       collapsible: false
       collapsed: false
       revision: false
-      hide_fieldset: false
-      hide_title: false
-      config_labels_button: complex_label
-      labels:
-        label_singular_person: person
-        label_plural_person: people
     third_party_settings: {  }
   status:
     type: boolean_checkbox

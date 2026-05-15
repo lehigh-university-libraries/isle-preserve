@@ -277,11 +277,11 @@ display:
               weight: 0
               map_center_id: client_location
             fit_bounds:
-              enable: false
+              enable: true
               weight: 0
               settings:
                 reset_zoom: false
-                min_zoom: null
+                min_zoom: 5
               map_center_id: fit_bounds
             fixed_boundaries:
               enable: false
@@ -293,7 +293,7 @@ display:
                 east: ''
               map_center_id: fixed_boundaries
             first_row:
-              enable: true
+              enable: false
               weight: 0
               settings:
                 location_option_id: first_row
@@ -542,7 +542,7 @@ display:
                 weight: 0
                 settings:
                   marker_zoom_anchor_id: ''
-                enabled: false
+                enabled: true
               spiderfying:
                 weight: 0
                 settings:
@@ -568,7 +568,7 @@ display:
                 weight: 0
                 enabled: false
             type: ROADMAP
-            zoom: 16
+            zoom: 7
             minZoom: 0
             maxZoom: 0
             height: 400px

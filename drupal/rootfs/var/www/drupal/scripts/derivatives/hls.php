@@ -41,7 +41,7 @@ foreach($rows as $nid => $mid) {
     continue;
   }
 
-  $file = lehigh_islandora_fcrepo_realpath($fileEntity->uri->value);
+  $file = $file_system->realpath($fileEntity->uri->value);
   if (!file_exists($file) || is_dir($file)) {
     continue;
   }

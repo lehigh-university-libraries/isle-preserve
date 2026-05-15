@@ -182,6 +182,6 @@ fieldMappings:
       callable: 'Drupal\rest_oai_pmh\EntityUrl::makeAbsoluteUrl'
   field_thumbnail:
     properties:
-      - 'dcterms:identifier'
+      - 'dcterms:identifier.thumbnail'
     datatype_callback:
       callable: 'Drupal\rest_oai_pmh\MediaThumbnailUrl::makeAbsoluteUrl'
