@@ -56,6 +56,9 @@ final class AttrDefaultFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode): array {
     $element = [];
     $show_attribute_label = $this->label !== 'hidden';
+    $field_definition = $items->getFieldDefinition();
+    $render_as_html = $field_definition->getName() === 'field_abstract'
+      && $field_definition->getType() === 'textarea_attr';
 
     foreach ($items as $delta => $item) {
       $label = '';
@@ -69,11 +72,11 @@ final class AttrDefaultFormatter extends FormatterBase {
         }
       }
 
-      if ($item->format) {
+      if ($item->format || $render_as_html) {
         $element[$delta]['value'] = [
           '#type' => 'processed_text',
           '#text' => $item->value,
-          '#format' => $item->format,
+          '#format' => $item->format ?: 'full_html',
           '#langcode' => $item->getLangcode(),
         ];
       }
