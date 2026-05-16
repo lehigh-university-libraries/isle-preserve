@@ -1,0 +1,3 @@
+_core:
+  default_config_hash: tGb-PSnAbP5UxRKmxXuHg5W-Y9ZtAFi4FgaVxy8T2bk
+rewrite_rules: "https://islandora-prod.lib.lehigh.edu|https://preserve.lehigh.edu\r\nhttps://islandora-test.lib.lehigh.edu|https://islandora-stage.lib.lehigh.edu"

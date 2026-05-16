@@ -32,6 +32,16 @@ content:
     settings:
       progress_indicator: throbber
     third_party_settings: {  }
+  field_media_of:
+    type: entity_reference_autocomplete
+    weight: 8
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_media_use:
     type: options_buttons
     weight: 7
@@ -79,6 +89,5 @@ content:
 hidden:
   field_complete: true
   field_file_size: true
-  field_media_of: true
   field_mime_type: true
   fits_ois_file_information_md5che: true
