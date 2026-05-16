@@ -68,17 +68,12 @@ function lehigh_preprocess_field(&$vars) {
     }
 
     if ($view_mode === 'full' && $field_name === 'field_abstract' && $is_iiip_context && $field_items) {
-      foreach ($field_items as $delta => $item) {
+      foreach ($field_items as $delta => $_item) {
         if (!isset($vars['items'][$delta])) {
           continue;
         }
 
         $vars['items'][$delta]['attributes']->addClass('iiip-description');
-        $vars['items'][$delta]['content'] = [
-          '#type' => 'processed_text',
-          '#text' => (string) $item->value,
-          '#format' => 'full_html',
-        ];
       }
     }
   }
@@ -371,15 +366,22 @@ function lehigh_preprocess_views_view_fields(array &$variables) {
   }
 
   $node = $variables['row']->_entity ?? NULL;
-  if (!$node instanceof Node || !lehigh_node_has_iiip_collection_context($node)) {
+  if (!$node instanceof Node) {
     return;
   }
 
+  $variables['map_pin_title'] = $node->label();
+  $variables['map_pin_popup_url'] = $node->toUrl()->toString();
+  $variables['map_pin_is_iiip'] = FALSE;
+
+  if (!lehigh_node_has_iiip_collection_context($node)) {
+    return;
+  }
+
+  $variables['map_pin_is_iiip'] = TRUE;
   $variables['map_pin_avatar_url'] = lehigh_get_map_pin_avatar_url($node);
   $variables['map_pin_avatar_alt'] = $node->label();
   $variables['map_pin_avatar_placeholder_url'] = \Drupal::request()->getBasePath() . '/' . \Drupal::theme()->getActiveTheme()->getPath() . '/assets/img/svg/placeholders/avatar.svg';
-  $variables['map_pin_popup_url'] = $node->toUrl()->toString();
-  $variables['map_pin_title'] = $node->label();
   $variables['map_pin_institution'] = '';
   if ($node->hasField('field_affiliated_institution') && !$node->get('field_affiliated_institution')->isEmpty()) {
     $variables['map_pin_institution'] = $node->get('field_affiliated_institution')->entity?->label() ?? '';
@@ -398,6 +400,11 @@ function lehigh_preprocess_views_view(&$variables) {
 
   if ($view->id() === 'journal_browser' && $view->current_display === 'main') {
     $variables['journal_browser'] = lehigh_build_journal_browser($view);
+    return;
+  }
+
+  if ($view->id() === 'map_sidebar') {
+    $variables['#attached']['library'][] = 'lehigh/node';
     return;
   }
 

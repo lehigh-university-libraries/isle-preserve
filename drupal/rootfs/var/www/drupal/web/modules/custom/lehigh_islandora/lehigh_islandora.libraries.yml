@@ -36,6 +36,7 @@ altmetrics:
     https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js: { external: true }
 
 node:
+  version: 1.0.1
   css:
     component:
       css/node.css: {}

@@ -106,6 +106,61 @@
           }
         }, checkInterval);
       });
+
+      if (Drupal.geolocation && Drupal.geolocation.maps) {
+        $.each(Drupal.geolocation.maps, function (_index, map) {
+          if (!map || map.type !== "google_maps" || map.__lehighSidebarZoomBound) {
+            return;
+          }
+
+          var $wrapper = map.wrapper ? $(map.wrapper) : $();
+          var $sidebarWrapper = $wrapper.closest('#block-lehigh-views-block-map-sidebar-block-1, .block-views-blockmap-sidebar-block-1, .view-id-map-sidebar');
+
+          if (!$wrapper.length || !$sidebarWrapper.length) {
+            return;
+          }
+
+          map.__lehighSidebarZoomBound = true;
+          map.__lehighSidebarZoomState = null;
+
+          var bindMarkerZoom = function (marker) {
+            if (!marker || marker.__lehighSidebarZoomBound) {
+              return;
+            }
+
+            marker.__lehighSidebarZoomBound = true;
+            marker.addListener("click", function () {
+              var currentZoom = map.googleMap.getZoom() || 0;
+              var position = marker.getPosition();
+              var activeState = map.__lehighSidebarZoomState;
+
+              if (activeState && activeState.marker === marker) {
+                map.googleMap.panTo(activeState.center);
+                map.googleMap.setZoom(activeState.zoom);
+                map.__lehighSidebarZoomState = null;
+                return;
+              }
+
+              map.__lehighSidebarZoomState = {
+                marker: marker,
+                center: map.googleMap.getCenter(),
+                zoom: currentZoom
+              };
+
+              map.googleMap.panTo(position);
+              map.googleMap.setZoom(15);
+            });
+          };
+
+          $.each(map.mapMarkers || [], function (_markerIndex, marker) {
+            bindMarkerZoom(marker);
+          });
+
+          map.addMarkerAddedCallback(function (marker) {
+            bindMarkerZoom(marker);
+          }, true);
+        });
+      }
     },
     parseCdmzoom: function(cdmzoomString) {
       let paramString = cdmzoomString.startsWith('cdmzoom:') 
