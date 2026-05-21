@@ -2,17 +2,19 @@ uuid: 64f41261-799f-439d-ac4f-bedb3938a97c
 langcode: en
 status: true
 dependencies:
+  config:
+    - node.type.article
+    - node.type.page
   module:
     - node
 id: articles_and_basic_pages
 label: 'Articles and Basic Pages'
 type: 'canonical_entities:node'
-pattern: '[node:title]'
+pattern: '/[node:title]'
 selection_criteria:
   c1a38f83-a387-4242-92df-734552fe5379:
     id: 'entity_bundle:node'
     negate: false
-    uuid: c1a38f83-a387-4242-92df-734552fe5379
     context_mapping:
       node: node
     bundles:
