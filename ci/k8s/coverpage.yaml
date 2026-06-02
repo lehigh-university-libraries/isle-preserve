@@ -34,7 +34,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-coverpage
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:d4525a8aec217026f25ea570854268ef92f7ff0a6b073e3aadf60fac5a2b16e2
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:3773d3da4cacc5082fd817d746af24db199f6e3524e4c0103dc20ad4576a2023
           env:
             - name: "JWKS_URI"
               value: "https://preserve.lehigh.edu/oauth/discovery/keys"
