@@ -14,6 +14,12 @@ services:
     arguments: ['@router.route_provider']
     tags:
       - { name: event_subscriber }
+  lehigh_islandora.journal_browser.repository:
+    class: Drupal\lehigh_islandora\JournalBrowser\JournalBrowserRepository
+    arguments: ['@entity_type.manager', '@database']
+  lehigh_islandora.journal_browser.builder:
+    class: Drupal\lehigh_islandora\JournalBrowser\JournalBrowserBuilder
+    arguments: ['@lehigh_islandora.journal_browser.repository', '@request_stack']
   lehigh_islandora.uriports:
     class: Drupal\lehigh_islandora\EventSubscriber\Uriports
     arguments: ["@config.factory"]

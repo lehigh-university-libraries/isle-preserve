@@ -46,3 +46,14 @@ node:
     - core/jquery
     - core/drupal
     - core/jquery.once
+
+source-browser:
+  version: 1.0.0
+  css:
+    component:
+      css/source-browser.css: {}
+  js:
+    js/source-browser.js: {}
+  dependencies:
+    - core/drupal
+    - core/once

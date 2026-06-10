@@ -18,6 +18,74 @@ lehigh_islandora.paged_content:
   requirements:
     _permission: "access content"
 
+lehigh_islandora.source_browser_landing:
+  path: "/browse-source"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::landing'
+    _title_callback: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::landingTitle'
+  requirements:
+    _permission: "access content"
+
+lehigh_islandora.source_browser:
+  path: "/browse-source/{node}"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::legacy'
+    _title_callback: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::title'
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+lehigh_islandora.source_browser_json:
+  path: "/api/v1/source-browser/{node}"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::json'
+    _title: "Source Browser"
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+lehigh_islandora.source_browser_search:
+  path: "/api/v1/source-browser/{node}/search"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::search'
+    _title: "Source Browser Search"
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+lehigh_islandora.source_browser_index:
+  path: "/api/v1/source-browser/{node}/index"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::index'
+    _title: "Source Browser Index"
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+lehigh_islandora.source_browser_downloads:
+  path: "/api/v1/source-browser/{node}/downloads"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::downloads'
+    _title: "Source Browser Downloads"
+  requirements:
+    _permission: "access content"
+  options:
+    parameters:
+      node:
+        type: entity:node
+
 lehigh_islandora.legacy_solr_redirect:
   path: "/islandora/rest/v1/solr/{pid}"
   defaults:

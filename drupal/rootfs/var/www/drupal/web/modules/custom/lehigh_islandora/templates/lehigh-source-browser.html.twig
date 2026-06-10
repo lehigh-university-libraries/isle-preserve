@@ -1,0 +1,46 @@
+{% set selected = browser.selected_issue %}
+<div class="source-browser" data-source-browser data-source-id="{{ browser.source.nid }}">
+  <form class="source-browser__toolbar" action="{{ browser.source.browse_url }}" method="get">
+    <div>
+      <label for="source-browser-source">Source</label>
+      <select id="source-browser-source" class="form-select" data-source-browser-source>
+        {% for source in browser.sources %}
+          <option value="{{ source.url }}"{{ source.active ? ' selected' }}>{{ source.label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label for="source-browser-issue">Paged Content</label>
+      <select id="source-browser-issue" class="form-select" data-source-browser-manifest>
+        {% for issue in browser.issues %}
+          <option
+            value="{{ issue.nid }}"
+            data-url="{{ issue.url }}"
+            data-manifest="{{ issue.manifest_url }}"
+            data-heading="{{ issue.heading }}"
+            {{ issue.active ? ' selected' }}
+          >{{ issue.label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </form>
+
+  {% if selected %}
+    <header class="source-browser__heading" data-source-browser-heading>
+      <h1>{{ selected.heading }}</h1>
+    </header>
+
+    <section class="source-browser__viewer" data-source-browser-viewer>
+      {% if selected_issue_viewer %}
+        {{ selected_issue_viewer }}
+      {% else %}
+        <p>No viewer is available for this issue.</p>
+      {% endif %}
+    </section>
+  {% else %}
+    <section class="source-browser__panel">
+      <p>No browsable content was found for this source.</p>
+    </section>
+  {% endif %}
+</div>

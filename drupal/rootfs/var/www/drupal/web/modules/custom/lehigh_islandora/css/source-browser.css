@@ -1,0 +1,45 @@
+.source-browser {
+  margin: 0 auto 3rem;
+  max-width: 1320px;
+}
+
+.source-browser__toolbar {
+  align-items: end;
+  border-bottom: 1px solid #d7dce1;
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(14rem, 1fr) minmax(14rem, 1fr);
+  margin-bottom: 1.25rem;
+  padding: 1rem 0 1.25rem;
+}
+
+.source-browser label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin-bottom: 0.35rem;
+}
+
+.source-browser__heading {
+  margin-bottom: 1rem;
+}
+
+.source-browser__heading h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.source-browser__panel,
+.source-browser__viewer {
+  border: 1px solid #d7dce1;
+}
+
+.source-browser__viewer {
+  padding: 1rem;
+}
+
+@media (max-width: 767px) {
+  .source-browser__toolbar {
+    grid-template-columns: 1fr;
+  }
+}

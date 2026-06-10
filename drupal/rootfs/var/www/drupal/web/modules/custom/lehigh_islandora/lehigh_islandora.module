@@ -165,6 +165,21 @@ function lehigh_islandora_theme_registry_alter(array &$theme_registry) {
 }
 
 /**
+ * Implements hook_theme().
+ */
+function lehigh_islandora_theme($existing, $type, $theme, $path) {
+  return [
+    'lehigh_source_browser' => [
+      'variables' => [
+        'browser' => [],
+        'selected_issue_viewer' => [],
+      ],
+      'template' => 'lehigh-source-browser',
+    ],
+  ];
+}
+
+/**
  * Implements hook_preprocess_media().
  */
 function lehigh_islandora_preprocess_media(&$vars) {

@@ -236,7 +236,10 @@ function lehigh_site_support_identify_collection(NodeInterface $node, $includeCo
     if ($includeCompoundObjects) {
       $collection_uris[] = 'http://vocab.getty.edu/aat/300242735';
     }
-    if (!$node->field_model->isEmpty()
+    if ($node->hasField('field_model')
+      && !$node->field_model->isEmpty()
+      && $node->field_model->entity
+      && $node->field_model->entity->hasField('field_external_uri')
       && !$node->field_model->entity->field_external_uri->isEmpty()
       && in_array($node->field_model->entity->field_external_uri->uri, $collection_uris)) {
       $is_collection = TRUE;
