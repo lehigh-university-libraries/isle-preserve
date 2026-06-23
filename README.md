@@ -247,6 +247,31 @@ Host: isle-microservices.cc.lehigh.edu
 EOF
 ```
 
+## Turnstile Fallback Rules
+
+The static nginx frontend has a final fallback blocklist in [conf/nginx.static/turnstile-fallback.conf](./conf/nginx.static/turnstile-fallback.conf). It catches crawlers that pass the Traefik Turnstile challenge but continue crawling facets abusively.
+
+```mermaid
+flowchart TD
+    request["Incoming request"]
+    encoded_amp{"URI contains<br>amp%3Bamp%3Bamp%3B?"}
+    ua_match{"Exact User-Agent<br>listed in $tf_blocked_ua?"}
+    lehigh_ip{"Client IP in<br>128.180.0.0/16?"}
+    facet_param{"Query has Drupal facet array<br>f[...]=... or f%5B...%5D=...?"}
+    block["Return 403 with<br>bot-block.html"]
+    allow["Continue normal nginx routing"]
+
+    request --> encoded_amp
+    encoded_amp -- yes --> block
+    encoded_amp -- no --> ua_match
+    ua_match -- no --> allow
+    ua_match -- yes --> lehigh_ip
+    lehigh_ip -- yes --> allow
+    lehigh_ip -- no --> facet_param
+    facet_param -- yes --> block
+    facet_param -- no --> allow
+```
+
 ## Legacy Redirects
 
 When sites migrate from an old platform into The Preserve, redirects from the old URLs to their new location are maintained in [the nginx static conf](./conf/nginx.static)
