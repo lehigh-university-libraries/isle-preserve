@@ -249,11 +249,12 @@ EOF
 
 ## Turnstile Fallback Rules
 
-The static nginx frontend has a final fallback blocklist in [conf/nginx.static/turnstile-fallback.conf](./conf/nginx.static/turnstile-fallback.conf). It catches crawlers that pass the Traefik Turnstile challenge but continue crawling facets abusively.
+The static nginx frontend has a final fallback blocklist in [conf/nginx.static/turnstile-fallback.conf](./conf/nginx.static/turnstile-fallback.conf). It catches crawlers that pass the Traefik Turnstile challenge but continue crawling facets abusively. It defaults to off; enable it by setting `$tf_fallback_enabled` to `1` in [conf/nginx.static/static.conf](./conf/nginx.static/static.conf), testing with `nginx -t`, then reloading nginx.
 
 ```mermaid
 flowchart TD
     request["Incoming request"]
+    enabled{"$tf_fallback_enabled = 1?"}
     encoded_amp{"URI contains<br>amp%3Bamp%3Bamp%3B?"}
     ua_match{"Exact User-Agent<br>listed in $tf_blocked_ua?"}
     lehigh_ip{"Client IP in<br>128.180.0.0/16?"}
@@ -261,7 +262,9 @@ flowchart TD
     block["Return 403 with<br>bot-block.html"]
     allow["Continue normal nginx routing"]
 
-    request --> encoded_amp
+    request --> enabled
+    enabled -- no --> allow
+    enabled -- yes --> encoded_amp
     encoded_amp -- yes --> block
     encoded_amp -- no --> ua_match
     ua_match -- no --> allow
