@@ -1,0 +1,68 @@
+http:
+  routers:
+    # Parent router: runs captcha-protect once for all protected child
+    # routers (drupal-static + drupal in drupal.yml, triplet in triplet.yml).
+    # The shared middleware instance owns the verification/bot caches for them.
+    # The rule is an intentional match-all so it stays host-agnostic (other
+    # domains fall through to the drupal-static child); each child's own rule
+    # does the actual narrowing. Higher-priority routers still win first.
+    captcha-protected:
+      rule: PathPrefix(`/`)
+      tls: {}
+      priority: 15
+      middlewares:
+        - captcha-protect
+  middlewares:
+    captcha-protect:
+      plugin:
+        captcha-protect:
+          window: 864000
+          mode: regex
+          protectRoutes: ^/
+          excludeRoutes:
+            - \/oai\/request
+            - \/node\/\d+\/manifest
+          protectParameters: "true"
+# Allow testing the captcha protection on staging server
+# if we exempt on staging we can't tell if the captcha will work for non-Lehigh visitors
+{{- if eq (env "INTERNAL_DOMAIN") "islandora-prod.lib.lehigh.edu" }}
+          exemptIps:
+            # Lehigh range
+            - 128.180.0.0/16
+            # Lehigh Guest Network
+            - 4.59.138.56/29
+            - 162.223.16.248/29
+            - 208.220.178.48/28
+            - 209.66.120.16/28
+{{- else }}
+          loglevel: DEBUG
+{{- end }}
+          challengeTmpl: /challenge.tmpl.html
+          challengeURL: ""
+          challengeStatusCode: 429
+          captchaProvider: turnstile
+          siteKey: {{ env "TURNSTILE_SITE_KEY" }}
+          secretKey: {{ env "TURNSTILE_SECRET_KEY" }}
+          enableStatsPage: "true"
+          ipForwardedHeader: X-Forwarded-For
+          goodBots:
+            - apple.com
+            - archive.org
+            - commoncrawl.org
+            - duckduckgo.com
+            - iframely.com
+            - facebook.com
+            - instagram.com
+            - kagibot.org
+            - linkedin.com
+            - msn.com
+            - openalex.org
+            - twitter.com
+            - x.com
+          exemptUserAgents: {{ env "EXEMPT_USER_AGENTS" }}
+          persistentStateFile: /tmp/state.json
+          protectFileExtensions: php,html,jp2,tif,tiff,json
+          periodSeconds: 30
+          failureThreshold: 3
+          enableGooglebotIPCheck: "true"
+          enableUptimeRobotBypass: "true"
