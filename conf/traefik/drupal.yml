@@ -28,9 +28,11 @@ http:
     # special drupal container reserved for workbench jobs
     # which we have configured to use the internal domain
     drupal-lehigh:
-      rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Host(`islandora.io`) && !Path(`/`)
+      rule: Host(`{{ env "INTERNAL_DOMAIN" }}`) && !Host(`{{ env "DOMAIN" }}`) && !Path(`/`)
       tls: {}
       priority: 20
+      middlewares:
+        - drupal-lehigh-host
       service: drupal-lehigh
     # child: anonymous/static requests served from the nginx static cache.
     # Parent captcha-protected router + captcha-protect middleware now live
@@ -48,3 +50,9 @@ http:
       parentRefs:
         - captcha-protected
       service: drupal
+  middlewares:
+    drupal-lehigh-host:
+      headers:
+        customRequestHeaders:
+          Host: '{{ env "DOMAIN" }}'
+          X-Forwarded-Host: '{{ env "DOMAIN" }}'
