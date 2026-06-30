@@ -7,7 +7,7 @@ http:
   routers:
     triplet:
       rule: Host(`{{ env "DOMAIN" }}`) && PathPrefix(`/iiif`)
-      priority: 16
+      priority: 100
       parentRefs:
         - captcha-protected
       service: triplet
