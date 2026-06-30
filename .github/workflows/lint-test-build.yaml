@@ -28,6 +28,10 @@ jobs:
           dockerfile: ./drupal/Dockerfile
           verbose: true
 
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24
+
       - name: Setup PHP
         uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # v2
         with:
@@ -48,6 +52,8 @@ jobs:
 
       - run: composer install
         working-directory: codebase
+
+      - run: ./codebase/scripts/test-mirador-js.sh
 
       - run: ./scripts/ci/lint.sh
 
@@ -78,6 +84,14 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - run: ./scripts/ci/test.sh
+        env:
+          DOMAIN: wight.cc.lehigh.edu
+
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
+        with:
+          node-version: 24
+
+      - run: ./scripts/ci/playwright.sh
         env:
           DOMAIN: wight.cc.lehigh.edu
 

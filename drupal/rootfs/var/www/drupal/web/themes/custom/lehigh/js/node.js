@@ -82,15 +82,13 @@
               || typeof state.manifests[mid].json == 'undefined') {
               return;
             }
-            const manifest = state.manifests[mid].json;
-            if (typeof manifest.sequences == 'undefined'
-              || typeof manifest.sequences[0] == 'undefined'
-              || typeof manifest.sequences[0].canvases == 'undefined') {
+            const canvases = Drupal.behaviors.lehighNode.getManifestCanvases(state.manifests[mid].json);
+            if (!canvases.length) {
               return;
             }
             clearInterval(intervalId);
-            if (pageValue !== null && typeof manifest.sequences[0].canvases[pageValue] !== 'undefined') {
-              var action = Mirador.actions.setCanvas(windowId, manifest.sequences[0].canvases[pageValue]['@id']);
+            if (pageValue !== null && typeof canvases[pageValue] !== 'undefined') {
+              var action = Mirador.actions.setCanvas(windowId, Drupal.behaviors.lehighNode.getCanvasId(canvases[pageValue]));
               instance.store.dispatch(action);
             }
             if (cdmzoomValue) {
@@ -232,6 +230,31 @@
         }
       };
     },
+    getManifestCanvases: function(manifest) {
+      if (!manifest || typeof manifest !== 'object') {
+        return [];
+      }
+      if (manifest.sequences && manifest.sequences[0] && Array.isArray(manifest.sequences[0].canvases)) {
+        return manifest.sequences[0].canvases;
+      }
+      if (Array.isArray(manifest.items)) {
+        return manifest.items;
+      }
+      return [];
+    },
+    getCanvasId: function(canvas) {
+      if (!canvas || typeof canvas !== 'object') {
+        return null;
+      }
+      return canvas.id || canvas['@id'] || null;
+    },
+    getCanvasById: function(manifest, canvasId) {
+      if (!canvasId) {
+        return null;
+      }
+      const canvases = this.getManifestCanvases(manifest);
+      return canvases.find(canvas => this.getCanvasId(canvas) === canvasId) || null;
+    },
     applyCdmzoom: function(instance, windowId, cdmzoomString) {
       try {
         const state = instance.store.getState();
@@ -242,10 +265,7 @@
         const manifestId = window.manifestId;
         const manifest = state.manifests[manifestId].json;
         const canvasId = window.canvasId;
-        let canvas = null;
-        if (manifest.sequences && manifest.sequences[0] && manifest.sequences[0].canvases) {
-          canvas = manifest.sequences[0].canvases.find(c => c['@id'] === canvasId);
-        }
+        let canvas = this.getCanvasById(manifest, canvasId);
         if (!canvas) {
           return;
         }

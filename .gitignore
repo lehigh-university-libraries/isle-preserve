@@ -5,6 +5,8 @@ backup
 drupal/backup
 .DS_Store
 *.log
+playwright-report/
+test-results/
 
 tmp/*
 !tmp/*/.keep
