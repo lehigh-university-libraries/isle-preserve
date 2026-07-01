@@ -1,0 +1,9 @@
+uuid: 0809da81-3e5c-471e-b1ec-c825110e0658
+langcode: en
+status: true
+dependencies: {  }
+id: search_api__views_data_export__browse__data_export
+name: 'search_api:views_data_export__browse__data_export'
+filter_key: null
+url_processor: query_string
+breadcrumb: {  }

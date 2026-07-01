@@ -41,6 +41,7 @@ module:
   entity_reference_revisions: 0
   eva: 0
   facets: 0
+  facets_exposed_filters: 0
   facets_range_widget: 0
   facets_searchbox_widget: 0
   facets_summary: 0

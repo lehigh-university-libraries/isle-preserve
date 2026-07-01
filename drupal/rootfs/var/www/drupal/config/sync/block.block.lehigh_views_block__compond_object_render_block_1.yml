@@ -12,7 +12,7 @@ dependencies:
 id: lehigh_views_block__compond_object_render_block_1
 theme: lehigh
 region: title
-weight: -20
+weight: -12
 provider: null
 plugin: 'views_block:compond_object_render-block_1'
 settings:

@@ -198,10 +198,6 @@
             "drupal/core": {
                 "Fix PHP 8 deprecation warnings in response content-type checks": "assets/patches/drupal/core/stripos.patch"
             },
-            "drupal/facets": {
-                "Allow views attachments to reflect search parameters (still not working)": "assets/patches/drupal/facets/facets-attachments-3116236-16.patch",
-                "Show label on summary": "assets/patches/drupal/facets/summary-label.patch"
-            },
             "drupal/drupal_slider": {
                 "jquery once": "assets/patches/drupal/drupal_slider/jquery_once_fix_0.patch",
                 "Issues 3209755": "assets/patches/drupal/drupal_slider/3209755.patch"

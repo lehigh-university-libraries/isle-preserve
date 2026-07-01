@@ -11,7 +11,7 @@ _core:
 id: lehigh_messages
 theme: lehigh
 region: content
-weight: -25
+weight: -16
 provider: null
 plugin: system_messages_block
 settings:

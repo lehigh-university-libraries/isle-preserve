@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.card
-    - facets.facet.genre
     - field.field.node.islandora_object.field_abstract
     - field.field.node.islandora_object.field_access
     - field.field.node.islandora_object.field_add_coverpage
@@ -95,7 +94,6 @@ dependencies:
     - node.type.islandora_object
   module:
     - controlled_access_terms
-    - entity_reference_facet_link
     - field_group
     - lehigh_islandora
     - user
@@ -216,14 +214,6 @@ content:
     third_party_settings: {  }
     weight: 11
     region: content
-  field_genre:
-    type: entity_reference_facet_link
-    label: above
-    settings:
-      facet: genre
-    third_party_settings: {  }
-    weight: 9
-    region: content
   field_resource_type:
     type: entity_reference_label
     label: above
@@ -289,6 +279,7 @@ hidden:
   field_full_title: true
   field_gemini_uri: true
   field_generate_pdf: true
+  field_genre: true
   field_geographic_subject: true
   field_hide_downloads: true
   field_hide_gscholar_metatags: true

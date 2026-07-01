@@ -12,7 +12,7 @@ dependencies:
 id: lehigh_nodehistoryblock
 theme: lehigh
 region: main_sidebar
-weight: -24
+weight: -16
 provider: null
 plugin: entity_metrics_node_history
 settings:

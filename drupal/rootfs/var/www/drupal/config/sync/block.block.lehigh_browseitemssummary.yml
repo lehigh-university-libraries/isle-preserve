@@ -11,8 +11,8 @@ dependencies:
     - lehigh
 id: lehigh_browseitemssummary
 theme: lehigh
-region: title
-weight: -18
+region: content
+weight: -17
 provider: null
 plugin: 'facets_summary_block:browse_items_summary'
 settings:

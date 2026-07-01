@@ -10,7 +10,7 @@ dependencies:
 id: lehigh_collectiontasksblock
 theme: lehigh
 region: content
-weight: -24
+weight: -15
 provider: null
 plugin: collection_tasks
 settings:
