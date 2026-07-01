@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-mergepdf
-          image: islandora/mergepdf:6.4.2@sha256:b59a5e1cda8b83d99dfa4578dd7fc3c3fc1be4fe51cdca38d6f26e6a36921dec
+          image: islandora/mergepdf:6.4.3@sha256:fcd7c2e81a67df773d5acbcbf6d307e1552f46722591ddeaf8f949b42ae2c97d
           imagePullPolicy: IfNotPresent
           env:
             - name: MAX_WIDTH
