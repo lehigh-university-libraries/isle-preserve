@@ -24,6 +24,15 @@ http:
       loadBalancer:
         servers:
           - url: http://drupal-lehigh:80
+    search:
+      loadBalancer:
+        servers:
+          - url: http://search:8080
+        healthCheck:
+          path: /healthcheck
+          scheme: http
+          interval: 10s
+          timeout: 3s
   routers:
     # special drupal container reserved for workbench jobs
     # which we have configured to use the internal domain
@@ -34,6 +43,14 @@ http:
       middlewares:
         - drupal-lehigh-host
       service: drupal-lehigh
+    # Drupal owns the page shell. Beta search uses AJAX to fetch only result
+    # fragments from the Go service.
+    search-fragment:
+      rule: Method(`GET`) && PathPrefix(`/_go-search/`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`)
+      priority: 16
+      parentRefs:
+        - captcha-protected
+      service: search
     # child: anonymous/static requests served from the nginx static cache.
     # Parent captcha-protected router + captcha-protect middleware now live
     # in captcha-protect.yml (merged via the shared file provider directory).

@@ -1,0 +1,203 @@
+diff --git a/src/EventSubscriber/SearchApiSubscriber.php b/src/EventSubscriber/SearchApiSubscriber.php
+index 403103b16d3571ff58ca5342be7e3e1683a2a8fe..82ca179985cacca11312e67db90c1c615189899d 100644
+--- a/src/EventSubscriber/SearchApiSubscriber.php
++++ b/src/EventSubscriber/SearchApiSubscriber.php
+@@ -49,6 +49,25 @@ class SearchApiSubscriber implements EventSubscriberInterface {
+ 
+       // Add the active filters.
+       $this->facetManager->alterQuery($query, $facet_source);
++
++      // Add optionally selected facet sources for views attachments.
++      /** @var \Drupal\views\ViewExecutable|null $view */
++      if (!$view = $query->getOption('search_api_view')) {
++        return;
++      }
++
++      $display = $view->getDisplay();
++
++      if (!$display || $display->getPluginId() !== 'attachment') {
++        return;
++      }
++
++      $facet_settings = $display->options['display_extenders']['facets_display_extender']['facet_settings'] ?? [];
++
++      foreach ($facet_settings as $facet_source_id) {
++        // Add the active filters.
++        $this->facetManager->alterQuery($query, $facet_source_id);
++      }
+     }
+   }
+ 
+diff --git a/src/Plugin/views/display_extender/FacetsAttachmentsDisplayExtender.php b/src/Plugin/views/display_extender/FacetsAttachmentsDisplayExtender.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..5644b35154a10a80ec3b19d7b226d4828fc3d432
+--- /dev/null
++++ b/src/Plugin/views/display_extender/FacetsAttachmentsDisplayExtender.php
+@@ -0,0 +1,167 @@
++<?php
++
++namespace Drupal\facets\Plugin\views\display_extender;
++
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++use Drupal\facets\FacetManager\DefaultFacetManager;
++use Drupal\facets\FacetSource\FacetSourcePluginManager;
++use Drupal\views\Plugin\views\display_extender\DisplayExtenderPluginBase;
++use Symfony\Component\DependencyInjection\ContainerInterface;
++
++/**
++ * Facets display extender plugin.
++ *
++ * @ingroup views_display_extender_plugins
++ *
++ * @ViewsDisplayExtender(
++ *   id = "facets_display_extender",
++ *   title = @Translation("Facets display extender"),
++ *   short_title = @Translation("Facets"),
++ *   help = @Translation("Facets settings for this attachment."),
++ *   no_ui = FALSE
++ * )
++ */
++class FacetsAttachmentsDisplayExtender extends DisplayExtenderPluginBase {
++
++  use StringTranslationTrait;
++
++  /**
++   * The facet manager.
++   *
++   * @var \Drupal\facets\FacetSource\FacetSourcePluginManager
++   */
++  private $facetSourcePluginManager;
++
++  /**
++   * The facet manager.
++   *
++   * @var \Drupal\facets\FacetManager\DefaultFacetManager
++   */
++  private $facetManager;
++
++  /**
++   * The constructor.
++   *
++   * @param array $configuration
++   *   Site configuration.
++   * @param string $plugin_id
++   *   Plugin id.
++   * @param mixed $plugin_definition
++   *   Plugin definition.
++   * @param \Drupal\facets\FacetSource\FacetSourcePluginManager $facet_source_plugin_manager
++   *   The facet source plugin manager.
++   * @param \Drupal\facets\FacetManager\DefaultFacetManager $facet_manager
++   *   The facet manager.
++   */
++  public function __construct(array $configuration, $plugin_id, $plugin_definition, FacetSourcePluginManager $facet_source_plugin_manager, DefaultFacetManager $facet_manager) {
++    parent::__construct($configuration, $plugin_id, $plugin_definition);
++    $this->facetSourcePluginManager = $facet_source_plugin_manager;
++    $this->facetManager = $facet_manager;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
++    return new static(
++      $configuration,
++      $plugin_id,
++      $plugin_definition,
++      $container->get('plugin.manager.facets.facet_source'),
++      $container->get('facets.manager')
++    );
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function defineOptions() {
++    $options = parent::defineOptions();
++    $options['facet_settings']['default'] = [];
++    return $options;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
++    if ($form_state->get('section') !== 'facet_settings') {
++      return;
++    }
++
++    // Determine if the view is a Search API data source view and
++    // load facet sources.
++    $view = $form_state->getStorage()['view'];
++
++    $dependencies = $view->get('storage')->getDependencies();
++    if (isset($dependencies['module'])) {
++      $view_module_dependencies = $dependencies['module'];
++      if (in_array('search_api', $view_module_dependencies)) {
++        $facet_source_list = [];
++
++        $sibling_key = (string) $this->t('Source from sibling displays');
++        $other_key = (string) $this->t('Other sources');
++
++        foreach ($this->facetSourcePluginManager->getDefinitions() as $source_id => $source) {
++          if ($this->view->id() === ($source['view_id'] ?? NULL)) {
++            $facet_source_list[$sibling_key][$source_id] = $source['label'];
++          }
++          else {
++            $facet_source_list[$other_key][$source_id] = $source['label'];
++          }
++        }
++
++        $form['#title'] .= $this->t('Facet source');
++        $form['facet_settings'] = [
++          '#title' => $this->t('Facet source'),
++          '#type' => 'select',
++          '#description' => $this->t('Choose the facet source used to alter data export. This should be the display that this data export is attached to.'),
++          '#options' => $facet_source_list,
++          '#default_value' => $this->options['facet_settings'],
++          '#multiple' => TRUE,
++        ];
++      }
++    }
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function submitOptionsForm(&$form, FormStateInterface $form_state) {
++    if ($form_state->get('section') === 'facet_settings') {
++      $this->options['facet_settings'] = $form_state->getValue('facet_settings');
++    }
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function optionsSummary(&$categories, &$options) {
++    // Only handle attachments.
++    if ($this->displayHandler->pluginId !== 'attachment') {
++      return;
++    }
++
++    // Add a view configuration category for data facet settings in the
++    // second column.
++    $categories['facet_settings'] = [
++      'title' => $this->t('Facet settings'),
++      'column' => 'second',
++      'build' => [
++        '#weight' => 40,
++      ],
++    ];
++
++    $facet_source = $this->options['facet_settings']
++      ? \implode(', ', $this->options['facet_settings'])
++      : 'none';
++
++    $options['facet_settings'] = [
++      'category' => 'facet_settings',
++      'title' => $this->t('Facet source'),
++      'value' => $facet_source,
++    ];
++  }
++
++}

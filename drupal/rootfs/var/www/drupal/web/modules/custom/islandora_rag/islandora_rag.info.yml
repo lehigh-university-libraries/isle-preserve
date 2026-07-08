@@ -1,0 +1,9 @@
+name: "Islandora RAG"
+type: module
+description: "Chunk-level semantic (vector) indexing of Islandora objects into a dedicated Solr KNN core for RAG/semantic search."
+core_version_requirement: ^10 || ^11
+package: "Custom"
+dependencies:
+  - islandora:islandora
+  - node:node
+  - media:media

@@ -13,7 +13,7 @@ dependencies:
 id: lehigh_views_block__binary_thumbnails_block_1
 theme: lehigh
 region: content
-weight: -10
+weight: -21
 provider: null
 plugin: 'views_block:binary_thumbnails-block_1'
 settings:

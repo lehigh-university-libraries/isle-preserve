@@ -1,0 +1,5 @@
+islandora_rag.settings:
+  title: 'Islandora RAG'
+  description: 'Configure chunk-level semantic (vector) indexing.'
+  route_name: islandora_rag.settings
+  parent: system.admin_config_search

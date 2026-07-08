@@ -52,6 +52,14 @@ node:
     - core/drupal
     - core/drupalSettings
     - core/jquery.once
+
+beta-search:
+  version: 1.0.0
+  js:
+    js/beta-search.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
 hls:
   version: 1.0.0
   js:

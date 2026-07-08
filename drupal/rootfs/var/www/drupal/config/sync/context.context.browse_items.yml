@@ -1,10 +1,30 @@
-uuid: d58e8c35-d373-44ed-a23c-e89c0a79cc97
+uuid: 28858a88-72b0-4e07-a0d3-1d18377b0926
 langcode: en
 status: true
 dependencies:
+  config:
+    - facets.facet.contributor
+    - facets.facet.date_created_items
+    - facets.facet.genre
+    - facets.facet.keywords
+    - facets.facet.material_type
+    - facets.facet.media_type
+    - facets.facet.member_of
+    - facets.facet.model
+    - facets.facet.name
+    - facets.facet.physical_form
+    - facets.facet.places
+    - facets.facet.publisher
+    - facets.facet.subject
+    - facets.facet.subject_general
+    - facets.facet.subject_geographic
+    - facets.facet.subject_lcsh
+    - facets.facet.subject_name
+    - facets.facet.subject_temporal
   module:
+    - facets
     - stop14_tools
-label: 'Browse Items'
+label: 'Item Browser'
 name: browse_items
 group: Display
 description: 'Builds the block structure for the browse items page.'
@@ -14,21 +34,306 @@ conditions:
   view_inclusion:
     id: view_inclusion
     negate: false
-    uuid: 8b8d2382-dca3-40d4-b0a5-1f55652b059a
+    uuid: 1aee3e1a-3f62-4e31-8b42-76ed7793e647
     context_mapping: {  }
     view_inclusion:
       view-browse-main: view-browse-main
 reactions:
   blocks:
     id: blocks
-    uuid: 772f05f3-0a1e-4672-b9a0-aacbb77c0ba7
+    uuid: 90c79285-5c5d-42bd-8dd3-33e7bbd954d7
     blocks:
-      e21154d3-afc9-4827-94f8-af930290a6cd:
-        uuid: e21154d3-afc9-4827-94f8-af930290a6cd
+      abd53a70-f26b-4d2b-a546-a55dbe90177f:
+        uuid: abd53a70-f26b-4d2b-a546-a55dbe90177f
+        id: 'facet_block:places'
+        label: Places
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '2'
+        custom_id: facet_block_places
+        theme: nyhs
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      e096c026-2d42-4e66-92a9-dcbc88bd05ea:
+        uuid: e096c026-2d42-4e66-92a9-dcbc88bd05ea
+        id: 'facet_block:material_type'
+        label: 'Material Type'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '1'
+        custom_id: facet_block_material_type
+        theme: nyhs
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      aa3b81e8-c1b7-4569-b36f-d7b35cb6d95c:
+        uuid: aa3b81e8-c1b7-4569-b36f-d7b35cb6d95c
+        id: 'facet_block:subject'
+        label: Subject
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '0'
+        custom_id: facet_block_subject
+        theme: nyhs
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      d0ce0477-4ba8-421f-bbed-c33e505ebe0d:
+        uuid: d0ce0477-4ba8-421f-bbed-c33e505ebe0d
+        id: 'facet_block:genre'
+        label: Genre
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-1'
+        custom_id: facet_block_genre
+        theme: nyhs
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      9279dcb4-8129-4e56-93e0-894e8a43cff8:
+        uuid: 9279dcb4-8129-4e56-93e0-894e8a43cff8
+        id: 'facet_block:name'
+        label: Name
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-2'
+        custom_id: facet_block_name
+        theme: nyhs
+        css_class: ''
+        unique: 1
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      a5e0daf4-6ecc-45f7-9204-8e05a49012d5:
+        uuid: a5e0daf4-6ecc-45f7-9204-8e05a49012d5
+        id: 'facet_block:date_created_items'
+        label: 'Date Created'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '3'
+        custom_id: facet_block_date_created_items
+        theme: nyhs
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      15c9662e-2d6f-4353-9242-6fd4994e56ab:
+        uuid: 15c9662e-2d6f-4353-9242-6fd4994e56ab
+        id: 'facet_block:date_created_items'
+        label: 'Date Created'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-4'
+        custom_id: facet_block_date_created_items
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      c30c111b-2f9a-45d6-a261-332f054daa04:
+        uuid: c30c111b-2f9a-45d6-a261-332f054daa04
+        id: 'facet_block:genre'
+        label: Genre
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-2'
+        custom_id: facet_block_genre
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      1d49b391-5827-4fdc-b1b1-5ff9734e4aa9:
+        uuid: 1d49b391-5827-4fdc-b1b1-5ff9734e4aa9
+        id: 'facet_block:material_type'
+        label: 'Material Type'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-8'
+        custom_id: facet_block_material_type
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      215edd52-0361-4704-b2a8-a36825079831:
+        uuid: 215edd52-0361-4704-b2a8-a36825079831
+        id: 'facet_block:physical_form'
+        label: 'Physical Form'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-7'
+        custom_id: facet_block_physical_form
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      3dc60642-1767-4b4a-8b9e-72c081754a38:
+        uuid: 3dc60642-1767-4b4a-8b9e-72c081754a38
+        id: 'facet_block:member_of'
+        label: Sub-Collections
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-10'
+        custom_id: facet_block_member_of
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      9fd35fbf-a89a-4d9c-9b90-a8de340f0ede:
+        uuid: 9fd35fbf-a89a-4d9c-9b90-a8de340f0ede
+        id: 'facet_block:media_type'
+        label: 'Media type'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-6'
+        custom_id: facet_block_media_type
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      f34a2db1-ab35-4af7-af4e-db6504b645e5:
+        uuid: f34a2db1-ab35-4af7-af4e-db6504b645e5
+        id: 'facet_block:model'
+        label: Model
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-5'
+        custom_id: facet_block_model
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      3c6fc451-9754-4213-b68c-6076763a75bd:
+        uuid: 3c6fc451-9754-4213-b68c-6076763a75bd
+        id: 'facet_block:contributor'
+        label: Contributor
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-9'
+        custom_id: facet_block_contributor
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      7b1c0bcb-2f89-46d1-9cf1-3698832221b0:
+        uuid: 7b1c0bcb-2f89-46d1-9cf1-3698832221b0
+        id: 'facet_block:subject_general'
+        label: 'Subject (General)'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '0'
+        custom_id: facet_block_subject_general
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      92cb614e-fbca-4c36-b7da-1c9c9e63aaa4:
+        uuid: 92cb614e-fbca-4c36-b7da-1c9c9e63aaa4
+        id: 'facet_block:subject_geographic'
+        label: 'Subject (Geographic)'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '1'
+        custom_id: facet_block_subject_geographic
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      59b0e0dc-ed5c-404f-bc38-4c79dd94afcb:
+        uuid: 59b0e0dc-ed5c-404f-bc38-4c79dd94afcb
+        id: 'facet_block:subject_name'
+        label: 'Subject (Name)'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '2'
+        custom_id: facet_block_subject_name
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      ab429e50-8035-4f7b-a335-efbfb47e1b6a:
+        uuid: ab429e50-8035-4f7b-a335-efbfb47e1b6a
+        id: 'facet_block:subject_temporal'
+        label: 'Subject (Temporal)'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '3'
+        custom_id: facet_block_subject_temporal
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      c1c02d96-cbcb-40e3-b8df-7afa88dea990:
+        uuid: c1c02d96-cbcb-40e3-b8df-7afa88dea990
+        id: 'facet_block:publisher'
+        label: Publisher
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-3'
+        custom_id: facet_block_publisher
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      82a2384c-23d6-4d22-9fff-e7997a7d123c:
+        uuid: 82a2384c-23d6-4d22-9fff-e7997a7d123c
         id: stop14_tools_browser_toolbar
         label: 'Stop14 Browser Toolbar'
         provider: stop14_tools
-        label_display: visible
+        label_display: '0'
         region: mobile_toolbar
         weight: '0'
         custom_id: stop14_tools_browser_toolbar
@@ -38,10 +343,40 @@ reactions:
         context_id: browse_items
         context_mapping: {  }
         third_party_settings: {  }
-    include_default_blocks: 0
+      6ee41cdc-b6ef-4501-b5bb-33de7f41df13:
+        uuid: 6ee41cdc-b6ef-4501-b5bb-33de7f41df13
+        id: 'facet_block:subject_lcsh'
+        label: 'Subject (LCSH)'
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '-1'
+        custom_id: facet_block_subject_lcsh
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+      0ca2d49e-2a05-4bf5-a6c5-a77bb896b369:
+        uuid: 0ca2d49e-2a05-4bf5-a6c5-a77bb896b369
+        id: 'facet_block:keywords'
+        label: Keywords
+        provider: facets
+        label_display: visible
+        region: main_sidebar_left
+        weight: '0'
+        custom_id: facet_block_keywords
+        theme: lehigh
+        css_class: ''
+        unique: 0
+        context_id: browse_items
+        context_mapping: {  }
+        third_party_settings: {  }
+    include_default_blocks: 1
     saved: false
   body_class:
     id: body_class
     body_class: 'object-browser path-browse'
     saved: false
-weight: 0
+weight: -5

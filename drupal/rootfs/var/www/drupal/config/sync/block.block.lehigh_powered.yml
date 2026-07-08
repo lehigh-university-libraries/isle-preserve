@@ -1,0 +1,22 @@
+uuid: 8f316107-3e13-4f54-abd1-a8825062a104
+langcode: en
+status: false
+dependencies:
+  module:
+    - system
+  theme:
+    - lehigh
+_core:
+  default_config_hash: eYL19CLDyinGTWYQfBD1DswWzglEotE_kHnHx3AxTXM
+id: lehigh_powered
+theme: lehigh
+region: quaternary_content
+weight: -1
+provider: null
+plugin: system_powered_by_block
+settings:
+  id: system_powered_by_block
+  label: 'Powered by Drupal'
+  label_display: '0'
+  provider: system
+visibility: {  }

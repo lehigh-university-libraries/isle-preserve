@@ -1,0 +1,40 @@
+islandora_rag.settings:
+  type: config_object
+  label: 'Islandora RAG settings'
+  mapping:
+    enabled:
+      type: boolean
+      label: 'Enable semantic indexing'
+    embedding_model:
+      type: string
+      label: 'Embedding model'
+    embedding_dimension:
+      type: integer
+      label: 'Embedding dimension'
+    solr_core:
+      type: string
+      label: 'Solr vector core name'
+    max_chunks_per_node:
+      type: integer
+      label: 'Maximum chunks per node'
+    indexed_collections:
+      type: sequence
+      label: 'Indexed collection node ids'
+      sequence:
+        type: integer
+    chunk:
+      type: mapping
+      label: 'Chunking'
+      mapping:
+        target_tokens:
+          type: integer
+          label: 'Target tokens per chunk'
+        overlap_tokens:
+          type: integer
+          label: 'Overlap tokens'
+        max_tokens:
+          type: integer
+          label: 'Max tokens'
+        min_tokens:
+          type: integer
+          label: 'Min tokens'

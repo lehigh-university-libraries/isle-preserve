@@ -1,0 +1,24 @@
+diff --git a/js/facets-views-ajax.js b/js/facets-views-ajax.js
+index e0e4f2c..3b591da 100644
+--- a/js/facets-views-ajax.js
++++ b/js/facets-views-ajax.js
+@@ -52,7 +52,7 @@
+               $(facet_item).unbind('facets_filter.facets');
+               $(facet_item).on('facets_filter.facets', function (event, url) {
+                 $('.js-facets-widget').trigger('facets_filtering');
+-
++                url = addExposedFiltersToFacetsUrl(url, facetSettings.view_id, facetSettings.current_display_id);
+                 updateFacetsView(url, current_dom_id, view_path);
+               });
+             }
+@@ -182,7 +182,9 @@
+     // Update facet blocks as well.
+     // Get view from options.
+     if (typeof options.extraData !== 'undefined' && typeof options.extraData.view_name !== 'undefined') {
+-      var href = window.location.href;
++      var href = window.location.pathname + window.location.search;
++      // For IE check that the first character is the expected '/'.
++      href = (href.charAt(0) !== '/') ? '/' + href : href;
+       var settings = drupalSettings;
+ 
+       // TODO: Maybe we should limit facet block reloads by view?

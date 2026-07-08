@@ -12,7 +12,7 @@ dependencies:
 id: views_block_media_evas_full_width_block
 theme: lehigh
 region: title
-weight: -13
+weight: -21
 provider: null
 plugin: 'views_block:media_evas-full_width_block'
 settings:

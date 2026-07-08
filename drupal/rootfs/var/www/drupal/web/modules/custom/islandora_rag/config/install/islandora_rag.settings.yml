@@ -1,0 +1,13 @@
+enabled: true
+embedding_model: 'Qwen/Qwen3-Embedding-0.6B'
+embedding_dimension: 1024
+solr_core: 'islandora_rag'
+max_chunks_per_node: 2000
+# Restrict indexing to these collection node ids (member_of). Empty = all
+# published islandora_object nodes.
+indexed_collections: {  }
+chunk:
+  target_tokens: 500
+  overlap_tokens: 100
+  max_tokens: 800
+  min_tokens: 80

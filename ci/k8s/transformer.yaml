@@ -27,13 +27,21 @@ spec:
     spec:
       containers:
         - name: sentence-transformer
-          image: ghcr.io/lehigh-university-libraries/sentence-transformer:main@sha256:3463cf1178c367079970a8916b2671b0701dc80733126d799033851232723c18
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/lehigh-university-libraries/sentence-transformer-service:renovate.bump-dependencies
+          imagePullPolicy: Always
+          env:
+            - name: HOME
+              value: /tmp
+            - name: XDG_CACHE_HOME
+              value: /tmp/.cache
+            - name: WORKERS
+              value: "1"
           resources:
             requests:
               memory: "2Gi"
               cpu: "1000m"
             limits:
+              nvidia.com/gpu: 1
               memory: "2Gi"
           ports:
             - containerPort: 8080

@@ -53,7 +53,7 @@
         "drupal/entity_metrics": "^1.0@beta",
         "drupal/entity_reference_facet_link": "^2.0",
         "drupal/entity_reference_revisions": "^1.10",
-        "drupal/facets": "^3",
+        "drupal/facets": "^2",
         "drupal/field_group": "^4.0",
         "drupal/field_permissions": "^1",
         "drupal/file_download_link": "^2.0",
@@ -197,6 +197,11 @@
         "patches": {
             "drupal/core": {
                 "Fix PHP 8 deprecation warnings in response content-type checks": "assets/patches/drupal/core/stripos.patch"
+            },
+            "drupal/facets": {
+                "Allow exposed filters to work with AJAX Facets": "assets/patches/drupal/facets/3168241-8.patch",
+                "Allow views attachments to reflect search parameters (still not working)": "assets/patches/drupal/facets/facets-attachments-3116236-16.patch",
+                "Show label on summary": "assets/patches/drupal/facets/summary-label.patch"
             },
             "drupal/drupal_slider": {
                 "jquery once": "assets/patches/drupal/drupal_slider/jquery_once_fix_0.patch",

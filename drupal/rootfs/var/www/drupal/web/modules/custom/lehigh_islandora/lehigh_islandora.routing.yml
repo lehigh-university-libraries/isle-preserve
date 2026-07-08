@@ -26,6 +26,14 @@ lehigh_islandora.source_browser_landing:
   requirements:
     _permission: "access content"
 
+lehigh_islandora.beta_search_shell:
+  path: "/_lehigh/beta-search-shell"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\BetaSearchController::page'
+    _title: "Browse Items"
+  requirements:
+    _permission: "access content"
+
 lehigh_islandora.source_browser:
   path: "/browse-source/{node}"
   defaults:

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  islandora_rag vector core: one Solr doc per CHUNK (flat), tied to a node via
+  node_id. Queried with {!knn f=embedding ...} then grouped by node_id to return
+  the node plus its matching chunks. DenseVectorField is single-valued, which is
+  why chunks are separate docs rather than a multi-valued field on the node.
+
+  vectorDimension is fixed per field type (1024 = Qwen3-Embedding). dot_product
+  requires unit-normalized vectors (embedding service normalizes). Switch to
+  cosine if vectors are ever un-normalized.
+-->
+<schema name="islandora_rag" version="1.6">
+  <uniqueKey>id</uniqueKey>
+
+  <fieldType name="string" class="solr.StrField" sortMissingLast="true" docValues="true"/>
+  <fieldType name="strings" class="solr.StrField" multiValued="true" docValues="true"/>
+  <fieldType name="boolean" class="solr.BoolField"/>
+  <fieldType name="pint" class="solr.IntPointField" docValues="true"/>
+  <fieldType name="plong" class="solr.LongPointField" docValues="true"/>
+  <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
+    <analyzer>
+      <tokenizer class="solr.StandardTokenizerFactory"/>
+      <filter class="solr.LowerCaseFilterFactory"/>
+    </analyzer>
+  </fieldType>
+
+  <fieldType name="knn_vector_1024" class="solr.DenseVectorField"
+             vectorDimension="1024" similarityFunction="dot_product"
+             knnAlgorithm="hnsw" hnswMaxConnections="16" hnswBeamWidth="100"/>
+
+  <!-- identity / grouping -->
+  <field name="id" type="string" indexed="true" stored="true" required="true"/>
+  <field name="node_id" type="string" indexed="true" stored="true"/>
+  <field name="media_id" type="string" indexed="true" stored="true"/>
+
+  <!-- chunk metadata for citations -->
+  <field name="chunk_type" type="string" indexed="true" stored="true"/>
+  <field name="chunk_index" type="pint" indexed="true" stored="true"/>
+  <field name="page_number" type="pint" indexed="true" stored="true"/>
+
+  <!-- filtering / faceting parity with the object index -->
+  <field name="collection_ids" type="strings" indexed="true" stored="true"/>
+  <field name="content_model" type="strings" indexed="true" stored="true"/>
+  <field name="published" type="boolean" indexed="true" stored="true"/>
+  <field name="access" type="strings" indexed="true" stored="true"/>
+
+  <!-- display -->
+  <field name="title" type="text_general" indexed="true" stored="true"/>
+  <field name="text" type="text_general" indexed="true" stored="true"/>
+  <field name="object_url" type="string" indexed="false" stored="true"/>
+
+  <!-- provenance for incremental reindex -->
+  <field name="embedding_model" type="string" indexed="true" stored="true"/>
+  <field name="embedding_dimension" type="pint" indexed="true" stored="true"/>
+  <field name="source_hash" type="string" indexed="true" stored="true"/>
+
+  <!-- the vector: indexed for KNN, not stored (don't ship vectors back) -->
+  <field name="embedding" type="knn_vector_1024" indexed="true" stored="false"/>
+
+  <field name="_version_" type="plong" indexed="true" stored="true"/>
+</schema>

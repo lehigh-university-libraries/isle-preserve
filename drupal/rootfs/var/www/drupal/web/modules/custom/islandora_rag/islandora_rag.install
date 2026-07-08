@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Install/runtime checks for Islandora RAG.
+ */
+
+declare(strict_types=1);
+
+/**
+ * Implements hook_requirements().
+ */
+function islandora_rag_requirements(string $phase): array {
+  if ($phase !== 'runtime') {
+    return [];
+  }
+
+  $requirements = [];
+  $expected_dimension = 1024;
+  $configured_dimension = (int) \Drupal::config('islandora_rag.settings')->get('embedding_dimension');
+  $service_dimension = getenv('EMBEDDING_DIMENSION');
+
+  $ok = $configured_dimension === $expected_dimension
+    && ($service_dimension === FALSE || $service_dimension === '' || (int) $service_dimension === $expected_dimension);
+
+  $requirements['islandora_rag_embedding_dimension'] = [
+    'title' => t('Islandora RAG embedding dimension'),
+    'value' => $ok ? t('1024 dimensions') : t('Dimension mismatch'),
+    'severity' => $ok ? REQUIREMENT_OK : REQUIREMENT_ERROR,
+    'description' => $ok
+      ? t('Drupal configuration, the embedding service, and the Solr vector core dimension are aligned.')
+      : t('The Solr vector core is configured for 1024 dimensions. Keep islandora_rag.settings embedding_dimension and EMBEDDING_DIMENSION aligned with that value.'),
+  ];
+
+  return $requirements;
+}

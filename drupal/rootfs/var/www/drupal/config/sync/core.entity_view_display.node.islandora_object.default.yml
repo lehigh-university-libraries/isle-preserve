@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - facets.facet.subject_temporal
     - field.field.node.islandora_object.field_abstract
     - field.field.node.islandora_object.field_access
     - field.field.node.islandora_object.field_add_coverpage
@@ -647,6 +648,14 @@ content:
     third_party_settings: {  }
     weight: 16
     region: content
+  field_temporal_subject:
+    type: entity_reference_facet_link
+    label: inline
+    settings:
+      facet: subject_temporal
+    third_party_settings: {  }
+    weight: 25
+    region: content
   field_title_part_name:
     type: string
     label: above
@@ -694,7 +703,6 @@ hidden:
   field_skip_merge_pdf: true
   field_sort_by: true
   field_source: true
-  field_temporal_subject: true
   field_thumbnail: true
   field_viewer_override: true
   field_weight: true

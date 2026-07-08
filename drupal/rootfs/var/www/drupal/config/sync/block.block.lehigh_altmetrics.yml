@@ -11,7 +11,7 @@ dependencies:
 id: lehigh_altmetrics
 theme: lehigh
 region: main_sidebar
-weight: -17
+weight: -25
 provider: null
 plugin: altmetrics
 settings:

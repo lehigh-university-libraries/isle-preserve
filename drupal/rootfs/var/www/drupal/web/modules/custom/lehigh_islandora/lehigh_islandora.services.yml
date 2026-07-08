@@ -14,6 +14,11 @@ services:
     arguments: ['@router.route_provider']
     tags:
       - { name: event_subscriber }
+  lehigh_islandora.beta_search_subscriber:
+    class: Drupal\lehigh_islandora\EventSubscriber\BetaSearchSubscriber
+    arguments: ['@router.route_provider']
+    tags:
+      - { name: event_subscriber }
   lehigh_islandora.journal_browser.repository:
     class: Drupal\lehigh_islandora\JournalBrowser\JournalBrowserRepository
     arguments: ['@entity_type.manager', '@database']

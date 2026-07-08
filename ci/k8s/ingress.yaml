@@ -103,13 +103,6 @@ spec:
                 name: islandora-cleanpdf
                 port:
                   number: 8080
-          - path: /transformer
-            pathType: Prefix
-            backend:
-              service:
-                name: sentence-transformer
-                port:
-                  number: 8080
           - path: /warc
             pathType: Prefix
             backend:
@@ -122,5 +115,34 @@ spec:
             backend:
               service:
                 name: islandora-tn-zip
+                port:
+                  number: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sentence-transformer
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "7200"
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+spec:
+  tls:
+    - hosts:
+        - isle-microservices.cc.lehigh.edu
+      secretName: cc-tls
+  ingressClassName: nginx
+  rules:
+    - host: isle-microservices.cc.lehigh.edu
+      http:
+        paths:
+          - path: /transformer(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: sentence-transformer
                 port:
                   number: 8080

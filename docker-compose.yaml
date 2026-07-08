@@ -10,6 +10,8 @@ volumes:
   fcrepo-data: {}
   mariadb-data: {}
   solr-data: {}
+  solr-rag-data: {}
+  search-cache: {}
   xhgui-data: {}
   actions-runner-data: {}
 
@@ -99,7 +101,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:main@sha256:85a48766f00ea13e692c693054875e5711e85fa476a032c7a427b9fe51cd4ffb
+    image: ghcr.io/lehigh-university-libraries/fabricator:v0.4.2@sha256:6612f7583da5ff69d8dc5282e29096f9c9c76aa550b42db52f071d697aef2ac3
     environment:
       FABRICATOR_DATA_MOUNT: /data
       SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
@@ -198,6 +200,7 @@ services:
       DRUPAL_DEFAULT_SOLR_CORE: "default"
       DRUPAL_DEFAULT_SOLR_HOST: "solr"
       DRUPAL_DEFAULT_SOLR_PORT: 8983
+      SOLR_RAG_URL: "http://solr:8983/solr/islandora_rag"
       DRUPAL_DEFAULT_DB_PASSWORD: "${DRUPAL_DEFAULT_DB_PASSWORD}"
       TURNSTILE_SITE_KEY: "${TURNSTILE_SITE_KEY}"
       TURNSTILE_SECRET_KEY: "${TURNSTILE_SECRET_KEY}"
@@ -255,6 +258,30 @@ services:
     healthcheck:
       test: curl -sfo /dev/null http://localhost/themes/custom/lehigh/favicon.ico
       start_period: 5s
+  search:
+    build: ./search
+    restart: always
+    environment:
+      DB_MYSQL_HOST: "mariadb"
+      DB_MYSQL_PORT: "3306"
+      DRUPAL_DEFAULT_DB_NAME: "drupal_default"
+      DRUPAL_DEFAULT_DB_USER: "drupal_default"
+      DRUPAL_UPSTREAM: "http://drupal-static:80"
+      COLLECTION_REFRESH: "5m"
+      COLLECTION_CACHE_FILE: "/var/lib/search/collections.json"
+      SOLR_RAG_URL: "http://solr:8983/solr/islandora_rag"
+      EMBEDDING_DIMENSION: "${EMBEDDING_DIMENSION:-1024}"
+      LLM_SUMMARY_URL: "${LLM_SUMMARY_URL:-}"
+      LLM_SUMMARY_MODEL: "${LLM_SUMMARY_MODEL:-}"
+    secrets:
+      - source: DRUPAL_DEFAULT_DB_PASSWORD
+    volumes:
+      - search-cache:/var/lib/search:rw
+    depends_on:
+      mariadb:
+        condition: service_started
+      drupal-static:
+        condition: service_started
   drupal-cron:
     image: ghcr.io/lehigh-university-libraries/isle-preserve:${DRUPAL_DOCKER_TAG}
     entrypoint: /bin/bash
@@ -325,7 +352,8 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:6.4.2@sha256:636df456353546cc0bd14b200d9a5ba7c91a720aa101f52bb80efb63f9a909a6
+    build:
+      context: ./conf/solr-rag
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
@@ -334,6 +362,10 @@ services:
         read_only: false
         volume:
           nocopy: true
+      # islandora_rag vector core config is baked into the image
+      # (conf/solr-rag/Dockerfile). Only its index data is a writable volume,
+      # placed under the Solr home so the image's startup chown makes it writable.
+      - solr-rag-data:/opt/solr/server/solr/islandora_rag/data:Z,rw
     healthcheck:
       start_period: 5s
   rollout:

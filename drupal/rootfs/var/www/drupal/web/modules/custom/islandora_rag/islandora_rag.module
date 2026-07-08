@@ -1,0 +1,77 @@
+<?php
+
+/**
+ * @file
+ * Hooks for Islandora RAG: enqueue nodes for semantic (re)indexing on change.
+ */
+
+declare(strict_types=1);
+
+use Drupal\media\MediaInterface;
+use Drupal\node\NodeInterface;
+
+/**
+ * Queue an index/delete job for a node.
+ */
+function _islandora_rag_enqueue(int $nid, string $op): void {
+  if ($nid > 0 && \Drupal::config('islandora_rag.settings')->get('enabled')) {
+    \Drupal::queue('islandora_rag_index')->createItem(['op' => $op, 'nid' => $nid]);
+  }
+}
+
+/**
+ * Queue the parent node of a media (field_media_of) for reindex.
+ */
+function _islandora_rag_enqueue_media_parent(MediaInterface $media): void {
+  if ($media->hasField('field_media_of') && !$media->get('field_media_of')->isEmpty()) {
+    _islandora_rag_enqueue((int) $media->get('field_media_of')->target_id, 'index');
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for node.
+ */
+function islandora_rag_node_insert(NodeInterface $node): void {
+  if ($node->bundle() === 'islandora_object') {
+    _islandora_rag_enqueue((int) $node->id(), 'index');
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for node.
+ */
+function islandora_rag_node_update(NodeInterface $node): void {
+  if ($node->bundle() === 'islandora_object') {
+    _islandora_rag_enqueue((int) $node->id(), 'index');
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for node.
+ */
+function islandora_rag_node_delete(NodeInterface $node): void {
+  if ($node->bundle() === 'islandora_object') {
+    _islandora_rag_enqueue((int) $node->id(), 'delete');
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for media.
+ */
+function islandora_rag_media_insert(MediaInterface $media): void {
+  _islandora_rag_enqueue_media_parent($media);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for media.
+ */
+function islandora_rag_media_update(MediaInterface $media): void {
+  _islandora_rag_enqueue_media_parent($media);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete() for media.
+ */
+function islandora_rag_media_delete(MediaInterface $media): void {
+  _islandora_rag_enqueue_media_parent($media);
+}

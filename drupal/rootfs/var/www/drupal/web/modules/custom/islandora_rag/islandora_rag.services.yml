@@ -1,0 +1,31 @@
+services:
+  logger.channel.islandora_rag:
+    parent: logger.channel_base
+    arguments: ['islandora_rag']
+
+  islandora_rag.content_gatherer:
+    class: Drupal\islandora_rag\ContentGatherer
+    arguments: ['@entity_type.manager', '@logger.channel.islandora_rag']
+
+  islandora_rag.chunker:
+    class: Drupal\islandora_rag\Chunker\TokenChunker
+    arguments: ['@config.factory']
+
+  islandora_rag.embedding_client:
+    class: Drupal\islandora_rag\Embedding\HttpEmbeddingClient
+    arguments: ['@http_client', '@config.factory', '@logger.channel.islandora_rag']
+
+  islandora_rag.solr_client:
+    class: Drupal\islandora_rag\Indexer\RagSolrClient
+    arguments: ['@http_client', '@config.factory', '@logger.channel.islandora_rag']
+
+  islandora_rag.indexer:
+    class: Drupal\islandora_rag\Indexer\SemanticIndexer
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@islandora_rag.content_gatherer'
+      - '@islandora_rag.chunker'
+      - '@islandora_rag.embedding_client'
+      - '@islandora_rag.solr_client'
+      - '@logger.channel.islandora_rag'

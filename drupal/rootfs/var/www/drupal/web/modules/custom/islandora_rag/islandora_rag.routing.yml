@@ -1,0 +1,7 @@
+islandora_rag.settings:
+  path: '/admin/config/search/islandora-rag'
+  defaults:
+    _form: 'Drupal\islandora_rag\Form\SettingsForm'
+    _title: 'Islandora RAG'
+  requirements:
+    _permission: 'administer site configuration'
