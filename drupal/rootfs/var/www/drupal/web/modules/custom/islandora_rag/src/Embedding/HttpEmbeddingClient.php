@@ -18,10 +18,7 @@ use Psr\Log\LoggerInterface;
  */
 final class HttpEmbeddingClient implements EmbeddingClientInterface {
 
-  /**
-   * Hosted Qwen embedding service (isle-microservice).
-   */
-  private const SERVICE_URL = 'https://isle-microservices.cc.lehigh.edu/transformer';
+  private const DEFAULT_SERVICE_URL = 'https://isle-microservices.cc.lehigh.edu/transformer';
 
   public function __construct(
     private readonly ClientInterface $httpClient,
@@ -37,7 +34,7 @@ final class HttpEmbeddingClient implements EmbeddingClientInterface {
       return [];
     }
 
-    $base = self::SERVICE_URL;
+    $base = $this->serviceUrl();
 
     $config = $this->configFactory->get('islandora_rag.settings');
     try {
@@ -83,6 +80,17 @@ final class HttpEmbeddingClient implements EmbeddingClientInterface {
       }
       return array_map(static fn($x): float => (float) $x, $v);
     }, $vectors);
+  }
+
+  /**
+   * Embedding service base URL.
+   */
+  private function serviceUrl(): string {
+    $url = getenv('EMBEDDING_SERVICE_URL');
+    if (is_string($url) && $url !== '') {
+      return rtrim($url, '/');
+    }
+    return self::DEFAULT_SERVICE_URL;
   }
 
 }

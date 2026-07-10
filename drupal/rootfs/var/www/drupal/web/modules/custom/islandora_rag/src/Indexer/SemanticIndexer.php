@@ -20,7 +20,7 @@ use Psr\Log\LoggerInterface;
 final class SemanticIndexer {
 
   private const VECTOR_DIMENSION = 1024;
-  private const EMBEDDING_BATCH_SIZE = 64;
+  private const DEFAULT_EMBEDDING_BATCH_SIZE = 8;
   private const DEFAULT_MAX_CHUNKS_PER_NODE = 2000;
 
   public function __construct(
@@ -36,19 +36,19 @@ final class SemanticIndexer {
   /**
    * Reindexes a node's chunks, or removes them if it should not be indexed.
    */
-  public function indexNode(int $nid): void {
+  public function indexNode(int $nid): int {
     $this->assertVectorDimension();
 
     $node = $this->entityTypeManager->getStorage('node')->load($nid);
     if (!$node instanceof NodeInterface || !$this->shouldIndex($node)) {
       $this->solr->deleteByNode($nid);
-      return;
+      return 0;
     }
 
     $chunks = $this->buildChunks($node);
     if ($chunks === []) {
       $this->solr->deleteByNode($nid);
-      return;
+      return 0;
     }
 
     $vectors = $this->embedChunks($chunks);
@@ -78,6 +78,7 @@ final class SemanticIndexer {
     $this->solr->deleteByNode($nid);
     $this->solr->addDocuments($docs);
     $this->logger->info('Indexed @count chunks for node @nid.', ['@count' => count($docs), '@nid' => $nid]);
+    return count($docs);
   }
 
   /**
@@ -136,11 +137,19 @@ final class SemanticIndexer {
    */
   private function embedChunks(array $chunks): array {
     $vectors = [];
-    foreach (array_chunk($chunks, self::EMBEDDING_BATCH_SIZE) as $batch) {
+    foreach (array_chunk($chunks, $this->embeddingBatchSize()) as $batch) {
       $texts = array_map(static fn(Chunk $c): string => $c->embedText, $batch);
       array_push($vectors, ...$this->embedder->embedDocuments($texts));
     }
     return $vectors;
+  }
+
+  /**
+   * Number of chunks to send to the embedding service per request.
+   */
+  private function embeddingBatchSize(): int {
+    $batch_size = (int) (getenv('EMBEDDING_BATCH_SIZE') ?: self::DEFAULT_EMBEDDING_BATCH_SIZE);
+    return max(1, $batch_size);
   }
 
   /**

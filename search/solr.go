@@ -4,8 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 )
 
@@ -56,17 +58,20 @@ type solrResponse struct {
 
 func (c *solrClient) selectQuery(ctx context.Context, params url.Values) (*solrResponse, error) {
 	params.Set("wt", "json")
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, c.base+"/select?"+params.Encode(), nil)
+	body := params.Encode()
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, c.base+"/select", strings.NewReader(body))
 	if err != nil {
 		return nil, err
 	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("solr returned %d", resp.StatusCode)
+		msg, _ := io.ReadAll(io.LimitReader(resp.Body, 1024))
+		return nil, fmt.Errorf("solr returned %d: %s", resp.StatusCode, strings.TrimSpace(string(msg)))
 	}
 	var out solrResponse
 	if err := json.NewDecoder(resp.Body).Decode(&out); err != nil {

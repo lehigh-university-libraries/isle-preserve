@@ -6,6 +6,7 @@ namespace Drupal\islandora_rag\Indexer;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\islandora_rag\Exception\TransientDependencyException;
+use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Log\LoggerInterface;
@@ -20,12 +21,26 @@ use Psr\Log\LoggerInterface;
 final class RagSolrClient {
 
   private const UPDATE_BATCH_SIZE = 500;
+  private const CURL_OPTIONS = [
+    \CURLOPT_NOPROXY => '*',
+    \CURLOPT_IPRESOLVE => \CURL_IPRESOLVE_V4,
+  ];
+
+  private readonly ClientInterface $httpClient;
 
   public function __construct(
-    private readonly ClientInterface $httpClient,
+    ClientInterface $_httpClient,
     private readonly ConfigFactoryInterface $configFactory,
     private readonly LoggerInterface $logger,
-  ) {}
+  ) {
+    // Do not reuse Drupal's shared client for internal Solr traffic: site-wide
+    // proxy/client defaults can break Docker service-name resolution.
+    $this->httpClient = new Client([
+      'proxy' => '',
+      'force_ip_resolve' => 'v4',
+      'curl' => self::CURL_OPTIONS,
+    ]);
+  }
 
   /**
    * Upsert chunk documents.
@@ -72,7 +87,6 @@ final class RagSolrClient {
     try {
       $response = $this->httpClient->request('GET', $this->baseUrl() . '/select?' . $params, [
         'timeout' => 60,
-        'curl' => $this->curlOptions(),
       ]);
     }
     catch (RequestException $e) {
@@ -126,7 +140,6 @@ final class RagSolrClient {
       $this->httpClient->request('POST', $this->baseUrl() . $path, [
         'json' => $body,
         'timeout' => 30,
-        'curl' => $this->curlOptions(),
       ]);
     }
     catch (RequestException $e) {
@@ -143,23 +156,6 @@ final class RagSolrClient {
       $this->logger->error('RAG Solr update failed: @msg', ['@msg' => $e->getMessage()]);
       throw new TransientDependencyException('RAG Solr update failed: ' . $e->getMessage(), 0, $e);
     }
-  }
-
-  /**
-   * cURL options for internal Docker/Kubernetes service calls.
-   *
-   * Shell curl can resolve Docker service names while PHP cURL may still be
-   * affected by inherited proxy settings or IPv6 resolver behavior. Solr is an
-   * internal HTTP dependency, so keep these requests direct and IPv4-only.
-   *
-   * @return array<int, mixed>
-   *   Guzzle cURL handler options.
-   */
-  private function curlOptions(): array {
-    return [
-      \CURLOPT_NOPROXY => '*',
-      \CURLOPT_IPRESOLVE => \CURL_IPRESOLVE_V4,
-    ];
   }
 
 }

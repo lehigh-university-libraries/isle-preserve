@@ -201,6 +201,8 @@ services:
       DRUPAL_DEFAULT_SOLR_HOST: "solr"
       DRUPAL_DEFAULT_SOLR_PORT: 8983
       SOLR_RAG_URL: "http://solr:8983/solr/islandora_rag"
+      EMBEDDING_SERVICE_URL: "${EMBEDDING_SERVICE_URL:-https://isle-microservices.cc.lehigh.edu/transformer}"
+      EMBEDDING_BATCH_SIZE: "${EMBEDDING_BATCH_SIZE:-8}"
       DRUPAL_DEFAULT_DB_PASSWORD: "${DRUPAL_DEFAULT_DB_PASSWORD}"
       TURNSTILE_SITE_KEY: "${TURNSTILE_SITE_KEY}"
       TURNSTILE_SECRET_KEY: "${TURNSTILE_SECRET_KEY}"
@@ -270,6 +272,7 @@ services:
       COLLECTION_REFRESH: "5m"
       COLLECTION_CACHE_FILE: "/var/lib/search/collections.json"
       SOLR_RAG_URL: "http://solr:8983/solr/islandora_rag"
+      EMBEDDING_SERVICE_URL: "${EMBEDDING_SERVICE_URL:-https://isle-microservices.cc.lehigh.edu/transformer}"
       EMBEDDING_DIMENSION: "${EMBEDDING_DIMENSION:-1024}"
       LLM_SUMMARY_URL: "${LLM_SUMMARY_URL:-}"
       LLM_SUMMARY_MODEL: "${LLM_SUMMARY_MODEL:-}"

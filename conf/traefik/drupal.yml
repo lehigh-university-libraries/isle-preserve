@@ -51,6 +51,12 @@ http:
       parentRefs:
         - captcha-protected
       service: search
+    semantic-search:
+      rule: Method(`GET`) && Path(`/semantic-search`) && !HeaderRegexp(`Cookie`, `^.*DrupalAuth=1.*$`)
+      priority: 16
+      parentRefs:
+        - captcha-protected
+      service: search
     # child: anonymous/static requests served from the nginx static cache.
     # Parent captcha-protected router + captcha-protect middleware now live
     # in captcha-protect.yml (merged via the shared file provider directory).

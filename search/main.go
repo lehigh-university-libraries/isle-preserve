@@ -54,7 +54,7 @@ func loadConfig() (config, error) {
 		solrIndexID:     getenv("SOLR_INDEX_ID", "default_solr_index"),
 		excludeModels:   splitCSV(getenv("BROWSE_EXCLUDE_MODELS", "27821,23,28")),
 		solrRagURL:      getenv("SOLR_RAG_URL", "http://solr:8983/solr/islandora_rag"),
-		embeddingURL:    embeddingServiceURL,
+		embeddingURL:    getenv("EMBEDDING_SERVICE_URL", embeddingServiceURL),
 		embeddingDim:    getenvInt("EMBEDDING_DIMENSION", 1024),
 		semanticHybrid:  getenv("SEMANTIC_HYBRID", "true") != "false",
 		llmSummaryURL:   getenv("LLM_SUMMARY_URL", getenv("OLLAMA_URL", "")),

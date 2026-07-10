@@ -57,10 +57,14 @@ final class RagIndexQueueWorker extends QueueWorkerBase implements ContainerFact
     }
     try {
       if (($data['op'] ?? 'index') === 'delete') {
+        $this->status(sprintf('RAG delete node %d', $nid));
         $this->indexer->deleteNode($nid);
+        $this->status(sprintf('RAG deleted node %d', $nid));
         return;
       }
-      $this->indexer->indexNode($nid);
+      $this->status(sprintf('RAG indexing node %d', $nid));
+      $chunks = $this->indexer->indexNode($nid);
+      $this->status(sprintf('RAG indexed node %d (%d chunks)', $nid, $chunks));
     }
     catch (\RuntimeException $e) {
       if ($e instanceof TransientDependencyException) {
@@ -70,6 +74,16 @@ final class RagIndexQueueWorker extends QueueWorkerBase implements ContainerFact
         '@nid' => $nid,
         '@msg' => $e->getMessage(),
       ]);
+    }
+  }
+
+  /**
+   * Emit queue progress to logs and CLI queue runners.
+   */
+  private function status(string $message): void {
+    $this->logger->notice($message);
+    if (PHP_SAPI === 'cli' && defined('STDERR')) {
+      fwrite(STDERR, $message . PHP_EOL);
     }
   }
 
