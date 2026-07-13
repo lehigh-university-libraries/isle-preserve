@@ -444,7 +444,7 @@ function lehigh_islandora_media_is_ms_document($media) {
   $uri_components = explode('.', $file->entity->getFileUri());
   $extension = array_pop($uri_components);
 
-  return in_array($extension, ['doc', 'docx', 'ppt', 'pptx', 'xls', 'xlsx']);
+  return in_array($extension, ['doc', 'docx', 'ppt', 'pptx']);
 }
 
 /**
