@@ -65,7 +65,7 @@ secrets:
     file: "./secrets/UID"
 services:
   alpaca:
-    image: islandora/alpaca:6.4.2@sha256:929bb7d8cb4d3da99d55ed579ae1c56ae6ab4193db27e985d3eaffd5bcdc8860
+    image: islandora/alpaca:6.4.3@sha256:91e9cc18ef9ab78092f646f156598420ef6a9ddefc0e3a52a6e714cb396f5a7e
     environment:
       ALPACA_MAX_REDELIVERIES: 2
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -101,7 +101,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:v0.4.2@sha256:6612f7583da5ff69d8dc5282e29096f9c9c76aa550b42db52f071d697aef2ac3
+    image: ghcr.io/lehigh-university-libraries/fabricator:v0.4.3@sha256:37863e1c2a2f5c0b4fb4a0b18b931a13d75c8d563193bd6e6a183d091a0c9844
     environment:
       FABRICATOR_DATA_MOUNT: /data
       SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
@@ -109,7 +109,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:6.4.2@sha256:b00e50de9c1743275318cbc82bf668188a50ed154624101fe849e166b1018c10
+    image: islandora/mariadb:6.4.3@sha256:8f41414cba3286567e0590fa5428e2860e3351f13b1377666b1d362b01e6fe6e
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -122,7 +122,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
-    image: islandora/activemq:6.4.2@sha256:5fe0cb77aac2d07831c7352e78988eb33280c454f2e5cee56e21b78daeea7aa5
+    image: islandora/activemq:6.4.3@sha256:d99a34202d8d8ae13894d326a599541a85954ce8fd4d6415cf1441b64bad4044
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -136,7 +136,7 @@ services:
         max-size: "100m"
         max-file: "3"
   triplet:
-    image: ghcr.io/libops/triplet:v1.1.0@sha256:ebdd90375f515e863a57372940a61a3b071c3bfb3134c699e2b5d726949603c8
+    image: ghcr.io/libops/triplet:v1.1.3@sha256:37bf78b5d109c173b40a23fa09550894f7fd479b860f335824c5acc33b5ec30a
     environment:
       TRIPLET_PUBLIC_BASE_URL: https://${DOMAIN}
     volumes:
@@ -147,7 +147,7 @@ services:
       - ./conf/triplet/config.yaml:/etc/triplet/config.yaml:r
       - /opt/islandora/volumes/triplet-cache:/var/lib/triplet/cache:rw
   memcached:
-    image: memcached:1.6.42@sha256:26983a43c9181d37d0f9b0d2cf49c3ccf02e5b816afb1f8ffff7f825e65bcdad
+    image: memcached:1.6.45@sha256:dc561d52bb8ad3c038867123ed2dc8357c4c128f047cdbd526cd65cf39408cbd
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -246,7 +246,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.31.2@sha256:424939d458e28153a78d9a4a8d60e8fae5eae35e84a2d92a43d153d1f92c171c
+    image: nginx:1.31.3@sha256:5a88c9c45479443d7be2eadc894b4ed0a9801bae03d97a5760ae13b5c2005942
     restart: always
     volumes:
       - /opt/islandora/volumes/drupal-private-files/canonical/$DOMAIN/0:/usr/share/nginx/drupal:ro
@@ -314,7 +314,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:6.4.2@sha256:202d814ceb5df6a2978444e1736b5acd55b58b017dd43e10fd350d0202a89f2d
+    image: islandora/fcrepo6:6.4.3@sha256:693aa5c21296074da0d289ee314175e7d727feed0e33a6bcbf0880c51e9362d1
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -337,7 +337,7 @@ services:
         condition: service_healthy
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:6.4.2@sha256:52f6fa15841f55937fbc0dd41154f8071f9051d4db50cbf0ce2e48894a69f6e2
+    image: islandora/base:6.4.3@sha256:67331b4a0a3adf90216ee7e192013842790ddda61124ccdced18a35b7e8aace9
     networks:
       default:
     profiles:
@@ -388,7 +388,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.7.5@sha256:e4d98158c01ad752fc1071d4e9573788747230d902cdde00a772516e692d07c9
+    image: traefik:v3.7.8@sha256:4299bbed850421258fc5448c2e0e6ad350981d4d335a68de11b92448aedbefe5
     restart: always
     command: >-
       --api.insecure=true
