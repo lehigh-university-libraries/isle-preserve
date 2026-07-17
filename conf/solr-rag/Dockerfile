@@ -3,7 +3,7 @@
 # and keeps the config owned by the solr user. Only the core's index data is a
 # mounted volume (see docker-compose.yaml), placed under the Solr home so the
 # startup chown makes it writable.
-FROM islandora/solr:6.4.2@sha256:636df456353546cc0bd14b200d9a5ba7c91a720aa101f52bb80efb63f9a909a6
+FROM islandora/solr:6.4.3@sha256:5cb87ecc431acd07000374dd7e83897b10033ecdfa679e1c5f2426957e636127
 
 COPY core.properties /opt/solr/server/solr/islandora_rag/core.properties
 COPY conf /opt/solr/server/solr/islandora_rag/conf
