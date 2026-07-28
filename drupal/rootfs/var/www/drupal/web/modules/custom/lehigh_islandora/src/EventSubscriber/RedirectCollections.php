@@ -38,7 +38,8 @@ final class RedirectCollections implements EventSubscriberInterface {
     if ($route_name === 'view.browse.main') {
       $node = $request->attributes->get('node');
       if (is_numeric($node)) {
-        $node = Node::load((int) $node);
+        $node_id = (int) $node;
+        $node = $node_id > 0 ? Node::load($node_id) : NULL;
       }
 
       if ($node instanceof Node

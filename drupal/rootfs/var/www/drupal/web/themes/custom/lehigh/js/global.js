@@ -1,77 +1,92 @@
 const sidebarDefaultState = 'expanded';
 
 (function ($, Drupal, once) {
+  function setBrowseDisplay($view, display) {
+    const activeDisplay = display === 'list' ? 'list' : 'card';
+
+    $view.attr('data-browse-view', activeDisplay);
+    $view.find('.browse-view-toggle__button').each(function () {
+      const isActive = this.dataset.browseView === activeDisplay;
+      $(this)
+        .toggleClass('is-active', isActive)
+        .attr('aria-pressed', isActive ? 'true' : 'false');
+    });
+  }
+
+  function addBackToTopButton() {
+    $(once('browse-back-to-top', 'body')).each(function () {
+      const $button = $('<button>', {
+        'aria-label': Drupal.t('Back to top'),
+        'class': 'btn btn-floating btn-lg p-2',
+        'id': 'btn-back-to-top',
+        'type': 'button',
+      }).append(
+        $('<span>', {
+          'class': 'material-symbols-outlined',
+          'text': 'keyboard_double_arrow_up',
+        }),
+      );
+
+      $(this).append($button);
+
+      const toggleButton = function () {
+        $button.toggle(
+          document.body.scrollTop > 100 ||
+          document.documentElement.scrollTop > 100,
+        );
+      };
+
+      window.addEventListener('scroll', toggleButton, { passive: true });
+      $button.on('click', function () {
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+      });
+      toggleButton();
+    });
+  }
+
   Drupal.behaviors.lehighGlobal = {
     attach: function (context, settings) {
-      $(once('addOptions', '.view-attachment-tab-parent .view-header .views-attachment-tabs ul', context)).each(function () {
-        $(this).html('<li><a class="vat-tab card_view vat-button-processed active" alt="Card View Icon" title="Card View"><span>Card View</span></a></li>');
-        $(this).append('<li><a class="vat-tab list vat-button-processed" alt="List View Icon" title="List View"><span>List View</span></a></li>');
-        //$(this).append('<li><a class="vat-tab masonry vat-button-processed" alt="Masonry View Icon" title="Masonry View"><span>Masonry View</span></a></li>');
+      $(once('browse-view-toggle', '.browse-results', context)).each(function () {
+        const $view = $(this);
+        const $header = $view.children('.view-header').first();
 
-        $('body').append('<a class="btn btn-floating btn-lg p-2" id="btn-back-to-top"><span class="material-symbols-outlined">keyboard_double_arrow_up</span></a>');
-        let mybutton = document.getElementById("btn-back-to-top");
-
-        // When the user scrolls down 20px from the top of the document, show the button
-        window.onscroll = function () {
-          scrollFunction();
-        };
-
-        function scrollFunction() {
-          if (
-            document.body.scrollTop > 100 ||
-            document.documentElement.scrollTop > 100
-          ) {
-            mybutton.style.display = "block";
-          } else {
-            mybutton.style.display = "none";
-          }
-        }
-        mybutton.addEventListener("click", backToTop);
-        function backToTop() {
-          document.body.scrollTop = 0;
-          document.documentElement.scrollTop = 0;
+        if (!$header.length) {
+          return;
         }
 
-      $('.view-attachment-tab-parent .view-header .views-attachment-tabs ul li a').on('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        $('.view-attachment-tab-parent .view-header .views-attachment-tabs ul li a').removeClass('active');
-        $(this).addClass('active');
+        const $toggle = $('<div>', {
+          'aria-label': Drupal.t('Display options'),
+          'class': 'browse-view-toggle',
+          'role': 'group',
+        });
 
-        let nodes = $('article.node--type-islandora-object');
-        let vc = $('.view-attachment-tab');
-        let r = $('.view-attachment-tab .rows');
-        let rows = $('.view-attachment-tab .rows .views-row');
-        if ($(this).hasClass('list')) {
-          nodes.removeClass('agileCard');
-          nodes.removeClass('node--view-mode-card')
-          vc.removeClass('view-attachment-tab-card-view card-view')
-          r.addClass('list-group');
-          r.removeClass('themed-grid');
-          rows.addClass('list-group-item');
-          nodes.addClass('node--view-mode-list card m-3');
-          vc.addClass('view-attachment-tab-list-view list-view');
-          $('article.node--type-islandora-object header').addClass('w-25 float-start');
-          $('article.node--type-islandora-object .node--content').addClass('w-70 float-start ms-3');
-          $('article.node--type-islandora-object footer').addClass('w-70 ml-27 position-absolute')
-          $('article.node--type-islandora-object footer .reference-count').addClass('d-none');
-          $('article.node--type-islandora-object footer .row.g3').addClass('ms-3');
-        } else {
-          nodes.addClass('node--view-mode-card agileCard');
-          vc.addClass('view-attachment-tab-card-view card-view');
-          r.removeClass('list-group');
-          r.addClass('themed-grid');
-          rows.removeClass('list-group-item');
-          nodes.removeClass('node--view-mode-list card m-3');
-          vc.removeClass('view-attachment-tab-list-view list-view');
-          $('article.node--type-islandora-object header').removeClass('w-25 float-start');
-          $('article.node--type-islandora-object .node--content').removeClass('w-70 float-start ms-3');
-          $('article.node--type-islandora-object footer').removeClass('w-70 ml-27 position-absolute')
-          $('article.node--type-islandora-object footer .reference-count').removeClass('d-none');
-          $('article.node--type-islandora-object footer .row.g3').removeClass('ms-3');
+        ['card', 'list'].forEach(function (display) {
+          const label = display === 'card' ? Drupal.t('Card view') : Drupal.t('List view');
+          $toggle.append(
+            $('<button>', {
+              'aria-label': label,
+              'aria-pressed': 'false',
+              'class': 'browse-view-toggle__button browse-view-toggle__button--' + display,
+              'data-browse-view': display,
+              'title': label,
+              'type': 'button',
+            }).append($('<span>', { 'class': 'visually-hidden', 'text': label })),
+          );
+        });
+
+        $header.prepend($toggle);
+        if (!$header.parent().hasClass('browser-ui')) {
+          $header.wrap('<div class="browser-ui"></div>');
         }
-        return false;
-      });
+
+        $toggle.on('click', '.browse-view-toggle__button', function () {
+          setBrowseDisplay($view, this.dataset.browseView);
+        });
+
+        const defaultDisplay = $view.attr('data-default-view');
+        setBrowseDisplay($view, defaultDisplay);
+        addBackToTopButton();
       });
       $(once('focus', '#toggle-main-nav-search')).on('click', function() {
         document.getElementById('main-nav-search-text').focus();

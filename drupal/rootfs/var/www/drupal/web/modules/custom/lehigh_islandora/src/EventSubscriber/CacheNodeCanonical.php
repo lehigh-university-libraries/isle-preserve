@@ -94,7 +94,12 @@ final class CacheNodeCanonical implements EventSubscriberInterface {
           $node = FALSE;
           if ($request->attributes->has('node')) {
             $nid = $request->attributes->get('node');
-            $node = is_object($nid) ? $nid : Node::load($nid);
+            if (is_object($nid)) {
+              $node = $nid;
+            }
+            elseif (is_numeric($nid) && (int) $nid > 0) {
+              $node = Node::load((int) $nid);
+            }
           }
 
           // If we're invalidating a node, clear its disk cache.

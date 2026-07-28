@@ -68,7 +68,8 @@ function lehigh_iiip_entity_type_alter(array &$entity_types) {
 function lehigh_iiip_page_attachments(array &$attachments): void {
   $node = \Drupal::routeMatch()->getParameter('node');
   if (is_numeric($node)) {
-    $node = Node::load((int) $node);
+    $node_id = (int) $node;
+    $node = $node_id > 0 ? Node::load($node_id) : NULL;
   }
 
   if (lehigh_iiip_has_collection_context($node)) {

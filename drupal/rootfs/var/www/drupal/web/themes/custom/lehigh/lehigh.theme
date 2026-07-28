@@ -88,7 +88,8 @@ function lehigh_preprocess_html(&$vars) {
 
   $node = \Drupal::routeMatch()->getParameter('node');
   if (is_numeric($node)) {
-    if ($node == 0) {
+    $node_id = (int) $node;
+    if ($node_id === 0) {
       $vars['head_title'] = [
         'Browse Collections',
         $config->get('name'),
@@ -96,7 +97,7 @@ function lehigh_preprocess_html(&$vars) {
       $vars['attributes']['class'][] = 'collections';
       return;
     }
-    $node = Node::load($node);
+    $node = $node_id > 0 ? Node::load($node_id) : NULL;
   }
   if ($node && is_object($node)) {
     if (lehigh_site_support_identify_collection($node)) {
@@ -333,9 +334,10 @@ function lehigh_preprocess_views_view_field(&$variables) {
   $field_name = 'card';
   $node = \Drupal::routeMatch()->getParameter('node');
   if (is_numeric($node)) {
-    $node = Node::load((int) $node);
+    $node_id = (int) $node;
+    $node = $node_id > 0 ? Node::load($node_id) : NULL;
   }
-  if ($node && is_object($node) && lehigh_site_support_has_display_hint($node, 'Scholarly Articles')) {
+  if ($node instanceof Node && lehigh_site_support_has_display_hint($node, 'Scholarly Articles')) {
     $field_name = 'scholarly_article';
   }
 
@@ -411,6 +413,23 @@ function lehigh_preprocess_views_view(&$variables) {
   if ($view->id() !== 'browse' || $view->current_display !== 'main') {
     return;
   }
+  $variables['attributes']->addClass('browse-results');
+
+  // Browse always renders card markup; compound children start in list layout.
+  $default_view = 'card';
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (is_numeric($node)) {
+    $node_id = (int) $node;
+    $node = $node_id > 0 ? Node::load($node_id) : NULL;
+  }
+  if ($node instanceof Node
+    && lehigh_site_support_identify_collection($node, TRUE)
+    && !lehigh_site_support_identify_collection($node)) {
+    $default_view = 'list';
+  }
+  $variables['attributes']->setAttribute('data-default-view', $default_view);
+  $variables['attributes']->setAttribute('data-browse-view', $default_view);
+
   $variables['#attached']['library'][] = 'lehigh/node';
 
   if (!\Drupal::currentUser()->isAuthenticated()) {
@@ -996,8 +1015,8 @@ function lehigh_form_views_exposed_form_alter(&$form, FormStateInterface $form_s
       if ($node == 0) {
         $sort = 'title_ASC';
       }
-      else {
-        $node = Node::load($node);
+      elseif ((int) $node > 0) {
+        $node = Node::load((int) $node);
         if ($node && !$node->field_sort_by->isEmpty()) {
           $components = explode('_', $node->field_sort_by->value);
           $direction = array_pop($components);
