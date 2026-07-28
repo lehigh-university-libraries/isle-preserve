@@ -47,7 +47,7 @@
         "drupal/crosswalk": "^1.0@dev",
         "drupal/csp": "^2.0",
         "drupal/csv_serialization": "^4.0",
-        "drupal/diff": "^1.1",
+        "drupal/diff": "^2.0",
         "drupal/entity": "^1.4",
         "drupal/entity_browser": "^2.9",
         "drupal/entity_metrics": "^1.0@beta",
