@@ -134,7 +134,7 @@ services:
         max-size: "100m"
         max-file: "3"
   triplet:
-    image: ghcr.io/libops/triplet:v1.2.0@sha256:6f7ce5374a4517456ae0b8ba410f0abd2e6a717675e8f4e3e18ddf6ab2227ace
+    image: ghcr.io/libops/triplet:v1.2.1@sha256:bca1f8c935d07b4fd0f284d058391c9a80b965da0ff3da41f4a07a1a33b8fd97
     environment:
       TRIPLET_PUBLIC_BASE_URL: https://${DOMAIN}
     volumes:
@@ -145,7 +145,7 @@ services:
       - ./conf/triplet/config.yaml:/etc/triplet/config.yaml:r
       - /opt/islandora/volumes/triplet-cache:/var/lib/triplet/cache:rw
   memcached:
-    image: memcached:1.6.45@sha256:dc561d52bb8ad3c038867123ed2dc8357c4c128f047cdbd526cd65cf39408cbd
+    image: memcached:1.6.45@sha256:eeb9eaa939ffaa2304899674c9e88a9247ec8e5e40e424a892df7b09914bd2ec
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -241,7 +241,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.31.3@sha256:5a88c9c45479443d7be2eadc894b4ed0a9801bae03d97a5760ae13b5c2005942
+    image: nginx:1.31.3@sha256:8541484afbc9c8a5a8a99b379568ebbc957f658583ec9448fc43104229c03cf8
     restart: always
     volumes:
       - /opt/islandora/volumes/drupal-private-files/canonical/$DOMAIN/0:/usr/share/nginx/drupal:ro
@@ -353,7 +353,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
-    image: traefik:v3.7.9@sha256:652929a140a32d7cafafb13c6cdfab5376cfeff800f51397b87b524501ed02a8
+    image: traefik:v3.7.10@sha256:9c3b91d5fb7770853ca5c1124a23c34bf2d9b47ffaebeab2614cbaf410dcb2ac
     restart: always
     command: >-
       --api.insecure=true
