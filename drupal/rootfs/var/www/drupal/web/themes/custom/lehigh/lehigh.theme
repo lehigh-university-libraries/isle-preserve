@@ -9,6 +9,7 @@
 use Drupal\Component\Utility\Xss;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Template\Attribute;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
 use Drupal\Core\Url;
 use Drupal\islandora_collection_tabs\Plugin\Field\FieldType\CollectionTabsItem;
@@ -412,6 +413,11 @@ function lehigh_preprocess_views_view(&$variables) {
 
   if ($view->id() !== 'browse' || $view->current_display !== 'main') {
     return;
+  }
+  // Core sets 'attributes' as a plain array (not an Attribute object) when
+  // the view display has a css_class configured, as 'browse' does.
+  if (!($variables['attributes'] instanceof Attribute)) {
+    $variables['attributes'] = new Attribute($variables['attributes'] ?? []);
   }
   $variables['attributes']->addClass('browse-results');
 
