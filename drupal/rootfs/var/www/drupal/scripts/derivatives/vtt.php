@@ -1,6 +1,7 @@
 <?php
 
 $action_name = 'get_vtt_from_audio';
+$max_attempts = 1;
 
 // audio or video items
 // that do not have an ocr derivative file (tid=14)

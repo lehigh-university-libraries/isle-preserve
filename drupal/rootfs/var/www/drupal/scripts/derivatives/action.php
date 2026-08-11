@@ -7,6 +7,8 @@ $node_storage   = $entity_type_manager->getStorage('node');
 $action_storage = $entity_type_manager->getStorage('action');
 $action = $action_storage->load($action_name);
 
+$max_attempts = $max_attempts ?? 4;
+
 // check the queue depth
 // islandora's actions have the queue set in the config
 // and we're mounting the activemq pass into the container as a secret
@@ -45,7 +47,7 @@ foreach ($nids as $nid) {
     $data = unserialize($data);
   }
 
-  if ($data['count'] > 3) {
+  if ($data['count'] >= $max_attempts) {
     continue;
   }
 

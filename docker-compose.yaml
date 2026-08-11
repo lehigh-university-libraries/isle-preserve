@@ -65,7 +65,7 @@ services:
   alpaca:
     image: islandora/alpaca:6.4.3@sha256:91e9cc18ef9ab78092f646f156598420ef6a9ddefc0e3a52a6e714cb396f5a7e
     environment:
-      ALPACA_MAX_REDELIVERIES: 2
+      ALPACA_MAX_REDELIVERIES: 1
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
       ALPACA_DERIVATIVE_FITS_CONSUMERS: 3
       ALPACA_DERIVATIVE_FITS_URL: https://isle-microservices.cc.lehigh.edu/crayfits
