@@ -325,7 +325,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:alpine-3-24@sha256:6d689b28bf1a71784834e379c1358fdea490d4870454ff05469021d1e5cb7476
+    image: islandora/solr:alpine-3-24@sha256:f85b6dbc1bfc413124501b5dddcff54ebc864e76123d5e94cbd913c7473f461c
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
