@@ -107,7 +107,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:alpine-3-24@sha256:e79187c876125790934b1d25c2155c1a1b063c14a3c41f11f605e62567dfd42c
+    image: islandora/mariadb:alpine-3-24@sha256:d17cbe4d391c40648a04c05e134bfee6a291b18551315365d984ad98b2149061
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -120,7 +120,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
-    image: islandora/activemq:alpine-3-24@sha256:da58d1d0b9c66e070abc1b12e493f182351a414e9224fd83667bcf337cf1095a
+    image: islandora/activemq:alpine-3-24@sha256:a8dae3d39a8334e34088ec7ae12294cbd91a819650751f4f4345974944852712
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -134,7 +134,7 @@ services:
         max-size: "100m"
         max-file: "3"
   triplet:
-    image: ghcr.io/libops/triplet:v1.2.1@sha256:bca1f8c935d07b4fd0f284d058391c9a80b965da0ff3da41f4a07a1a33b8fd97
+    image: ghcr.io/libops/triplet:v1.2.2@sha256:1d62224c6c0dc190e4508aabde0106aba5f155baaaa92ce0af06bcce3f8ae446
     environment:
       TRIPLET_PUBLIC_BASE_URL: https://${DOMAIN}
     volumes:
@@ -284,7 +284,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo6:6.4.3@sha256:693aa5c21296074da0d289ee314175e7d727feed0e33a6bcbf0880c51e9362d1
+    image: islandora/fcrepo:alpine-3-24
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -307,7 +307,7 @@ services:
         condition: service_healthy
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:alpine-3-24@sha256:f79ed8331c2da019bda618bbc4200b3826018dcb0d92626e001e9b2ea0de3c40
+    image: islandora/base:alpine-3-24@sha256:338104f6bb6e7aab38fb8ecc073d12c74723eadf7a4c9b16c38e5c3f6426186f
     networks:
       default:
     profiles:
@@ -325,7 +325,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:alpine-3-24@sha256:f85b6dbc1bfc413124501b5dddcff54ebc864e76123d5e94cbd913c7473f461c
+    image: islandora/solr:alpine-3-24@sha256:6d689b28bf1a71784834e379c1358fdea490d4870454ff05469021d1e5cb7476
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
