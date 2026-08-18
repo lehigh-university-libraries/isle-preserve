@@ -63,7 +63,7 @@ secrets:
     file: "./secrets/UID"
 services:
   alpaca:
-    image: islandora/alpaca:alpine-3-24@sha256:216388a47e83a37aa79df429ceb76463d149cd5a0be6b9150c7b9fe549e473f7
+    image: islandora/alpaca:7.0.6
     environment:
       ALPACA_MAX_REDELIVERIES: 1
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -107,7 +107,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:alpine-3-24@sha256:d17cbe4d391c40648a04c05e134bfee6a291b18551315365d984ad98b2149061
+    image: islandora/mariadb:7.0.6
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -120,7 +120,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
-    image: islandora/activemq:alpine-3-24@sha256:a8dae3d39a8334e34088ec7ae12294cbd91a819650751f4f4345974944852712
+    image: islandora/activemq:7.0.6
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -284,7 +284,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo:alpine-3-24
+    image: islandora/fcrepo:7.0.6
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -307,7 +307,7 @@ services:
         condition: service_healthy
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:alpine-3-24@sha256:338104f6bb6e7aab38fb8ecc073d12c74723eadf7a4c9b16c38e5c3f6426186f
+    image: islandora/base:7.0.6
     networks:
       default:
     profiles:
@@ -325,7 +325,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:alpine-3-24@sha256:851b9859ae6b571ab0e9516643b72e4a6e957090d1bfa5fc00641c725b6963b3
+    image: islandora/solr:7.0.6
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
