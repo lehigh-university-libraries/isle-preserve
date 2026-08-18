@@ -63,7 +63,7 @@ secrets:
     file: "./secrets/UID"
 services:
   alpaca:
-    image: islandora/alpaca:7.0.6
+    image: islandora/alpaca:7.0.6@sha256:4436e77ae7400d625d024e7acce4ed0ea0c18466df7da9ee5cb49f9419692a5f
     environment:
       ALPACA_MAX_REDELIVERIES: 1
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -107,7 +107,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:7.0.6
+    image: islandora/mariadb:7.0.6@sha256:bdddbca09a4b52e16655ea969a057a71cd38c677ce0bd67a9cb730db0fcec5f5
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -120,7 +120,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
-    image: islandora/activemq:7.0.6
+    image: islandora/activemq:7.0.6@sha256:5bf9ffd49a9ca2fb44005fdc1e48a6d8af1cd550b317189733498dd40dc02a74
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -284,7 +284,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo:7.0.6
+    image: islandora/fcrepo:7.0.6@sha256:168dacfa1c40930529145127ec9cd0ebddee4f87a9c7dc20410292b4f5dcc938
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -307,7 +307,7 @@ services:
         condition: service_healthy
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:7.0.6
+    image: islandora/base:7.0.6@sha256:99d216a04d12af7d61052baa7f6d0c59fa53ea4379a20ec6741a083e6a6416d2
     networks:
       default:
     profiles:
@@ -325,7 +325,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:7.0.6
+    image: islandora/solr:7.0.6@sha256:147908e8304f04b3b8c2ca183ad517f968949772f5632f513ecbecd2cd1e0bbe
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
