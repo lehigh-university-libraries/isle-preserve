@@ -27,7 +27,7 @@ mode: default
 content:
   description:
     type: text_textarea
-    weight: 5
+    weight: 6
     region: content
     settings:
       rows: 9
@@ -35,7 +35,7 @@ content:
     third_party_settings: {  }
   field_alternate_name:
     type: string_textfield
-    weight: 4
+    weight: 5
     region: content
     settings:
       size: 60
@@ -43,22 +43,13 @@ content:
     third_party_settings: {  }
   field_authority_link:
     type: authority_link_default
-    weight: 1
+    weight: 2
     region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
   field_cat_date_begin:
-    type: edtf_default
-    weight: 7
-    region: content
-    settings:
-      strict_dates: false
-      intervals: false
-      sets: false
-    third_party_settings: {  }
-  field_cat_date_end:
     type: edtf_default
     weight: 8
     region: content
@@ -67,9 +58,18 @@ content:
       intervals: false
       sets: false
     third_party_settings: {  }
+  field_cat_date_end:
+    type: edtf_default
+    weight: 9
+    region: content
+    settings:
+      strict_dates: false
+      intervals: false
+      sets: false
+    third_party_settings: {  }
   field_contributor_status:
     type: options_select
-    weight: 26
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -83,13 +83,13 @@ content:
     third_party_settings: {  }
   field_identifier:
     type: attr_default
-    weight: 11
+    weight: 1
     region: content
     settings: {  }
     third_party_settings: {  }
   field_institution:
     type: entity_reference_autocomplete
-    weight: 27
+    weight: 14
     region: content
     settings:
       match_operator: CONTAINS
@@ -99,7 +99,7 @@ content:
     third_party_settings: {  }
   field_relationships:
     type: typed_relation_default
-    weight: 9
+    weight: 10
     region: content
     settings:
       match_operator: CONTAINS
@@ -109,7 +109,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 2
+    weight: 3
     region: content
     settings:
       include_locked: true
@@ -124,19 +124,19 @@ content:
     third_party_settings: {  }
   path:
     type: path
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 10
+    weight: 11
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   translation:
-    weight: 6
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }

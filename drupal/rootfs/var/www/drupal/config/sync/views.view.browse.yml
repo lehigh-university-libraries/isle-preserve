@@ -30,6 +30,7 @@ dependencies:
     - serialization
     - stop14_tools
     - user
+    - views_attachment_tabs
     - views_data_export
 _core:
   default_config_hash: d-DwLzBXnDh7as84BBK0Pxv16Ypczqg_TF9tjAyNgjU
@@ -375,16 +376,12 @@ display:
         groups:
           1: AND
       style:
-        type: themed_grid
+        type: attachment_parent
         options:
           row_class: ''
           default_row_class: true
           uses_fields: false
-          breakpoints:
-            sml: '1'
-            med: '2'
-            lrg: '3'
-            xlrg: '3'
+          default_attachment_display: ''
       row:
         type: search_api
         options:
@@ -444,6 +441,87 @@ display:
         - 'config:search_api.index.default_solr_index'
         - 'search_api_list:default_solr_index'
       cacheable: false
+  card_view:
+    id: card_view
+    display_title: 'Browse Items (Card)'
+    display_plugin: attachment
+    position: 4
+    display_options:
+      title: 'Card View'
+      pager:
+        type: full
+        options:
+          offset: 0
+          pagination_heading_level: h4
+          items_per_page: 24
+          total_pages: null
+          id: 0
+          tags:
+            next: 'Next ›'
+            previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+      style:
+        type: themed_grid
+        options:
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+          breakpoints:
+            sml: '1'
+            med: '2'
+            lrg: '3'
+            xlrg: '3'
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: false
+      defaults:
+        title: false
+        style: false
+        row: false
+        filters: true
+        filter_groups: true
+        header: false
+      display_description: ''
+      header: {  }
+      display_extenders:
+        facets_display_extender:
+          facet_settings:
+            'search_api:views_page__browse__main': 'search_api:views_page__browse__main'
+        attachment_tabs:
+          attachment_tabs_enabled: false
+        ajax_history: {  }
+      displays:
+        main: main
+      attachment_position: after
+      inherit_exposed_filters: true
+      inherit_pager: true
+      render_pager: true
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
+        - 'user.node_grants:view'
+      tags:
+        - 'config:search_api.index.default_solr_index'
+        - 'search_api_list:default_solr_index'
   data_export:
     id: data_export
     display_title: 'CSV Export'
@@ -1930,6 +2008,8 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: 'search_api:views_page__browse__main'
+        attachment_tabs:
+          attachment_tabs_enabled: false
         ajax_history: {  }
       path: browse-items/%node
       auth:
@@ -1997,16 +2077,12 @@ display:
             format: basic_html
           tokenize: false
       style:
-        type: themed_grid
+        type: attachment_parent
         options:
           row_class: ''
-          default_row_class: true
+          default_row_class: false
           uses_fields: false
-          breakpoints:
-            sml: '1'
-            med: '2'
-            lrg: '3'
-            xlrg: '3'
+          default_attachment_display: card_view
       row:
         type: fields
         options:
@@ -2027,6 +2103,10 @@ display:
       display_extenders:
         facets_display_extender:
           facet_settings: {  }
+        attachment_tabs:
+          attachment_tabs_enabled: 1
+          enabled: 1
+          attachment_tabs_default_container_class: rows
         ajax_history: {  }
       path: browse-items/%node
     cache_metadata:
