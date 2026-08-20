@@ -19,4 +19,3 @@ class BrowsePageTest extends ExistingSiteBase {
   }
 
 }
-
