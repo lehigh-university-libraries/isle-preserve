@@ -14,7 +14,7 @@ services:
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: islandora/mergepdf:alpine-3-24@sha256:4c3468fb214830f8e6a6c2e1ed2646afa301b91808f623a317ea8b38d7b34542
+    image: islandora/mergepdf:alpine-3-24@sha256:dbba2f6614c48cff59074139ad7acfea9284961166917d6eeae41f96329c8a98
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
