@@ -48,11 +48,11 @@ services:
   memcached:
     command: memcached -m 256 -I 5m
   fits:
-    image: islandora/fits:alpine-3-24@sha256:caa59516f364d4c136526d1be8566e37cbce3fd9928f7454d82ed25843410fbf
+    image: islandora/fits:7.0.7
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
-    image: islandora/crayfits:alpine-3-24@sha256:b0de536dd16f4a1dfe9541224c1e8e4ef7e321f14cd9c365a591cbe809073c1f
+    image: islandora/crayfits:7.0.7
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -67,21 +67,21 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   homarus:
-    image: islandora/homarus:alpine-3-24@sha256:1f2b990f1f9b109155792c8af01bba54d5500e37e294a21a044ef219452a8a1b
+    image: islandora/homarus:7.0.7
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
-    image: islandora/houdini:alpine-3-24@sha256:673f62abc452e34ea777a9d4ebecbd4be16615f2b8eccd8c2ce159b7aebbbfca
+    image: islandora/houdini:7.0.7
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
-    image: islandora/hypercube:alpine-3-24@sha256:dcaa66816034ed634751f75d12a197c2ec1cef153aa0fca493b5ee57f3ce3891
+    image: islandora/hypercube:7.0.7
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -108,7 +108,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   mergepdf:
-    image: islandora/mergepdf:alpine-3-24@sha256:dbba2f6614c48cff59074139ad7acfea9284961166917d6eeae41f96329c8a98
+    image: islandora/mergepdf:7.0.7
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
