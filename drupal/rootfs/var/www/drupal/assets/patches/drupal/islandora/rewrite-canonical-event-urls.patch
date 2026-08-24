@@ -1,8 +1,18 @@
+From 673b78254e7f53852794824aa3c0d75b2a685b49 Mon Sep 17 00:00:00 2001
+From: Joe Corall <jjc223@lehigh.edu>
+Date: Thu, 20 Aug 2026 14:29:05 -0400
+Subject: [PATCH 1/2] Fix microservice rewrite for canonical event URLs
+
+---
+ .../MicroserviceRewriteSubscriber.php         | 49 ++++++++++++++-----
+ .../MicroserviceRewriteSubscriberTest.php     | 16 ++++++
+ 2 files changed, 53 insertions(+), 12 deletions(-)
+
 diff --git a/modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php b/modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php
-index 332c76b..7bd5d72 100644
+index 332c76b42..7bd5d722f 100644
 --- a/modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php
 +++ b/modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php
-@@ -51,24 +51,24 @@ class MicroserviceRewriteSubscriber implements EventSubscriberInterface {
+@@ -51,26 +51,26 @@ public function rewriteMessageUris(GeneratedEventMessageEventInterface $event) {
        return;
      }
  
@@ -40,7 +50,8 @@ index 332c76b..7bd5d72 100644
 +
      $event->setMessage($message);
    }
-@@ -105,4 +105,29 @@ class MicroserviceRewriteSubscriber implements EventSubscriberInterface {
+ 
+@@ -105,4 +105,29 @@ protected function parseRewriteRules($rules) {
      return [$find, $replace];
    }
  
@@ -71,10 +82,10 @@ index 332c76b..7bd5d72 100644
 +
  }
 diff --git a/modules/islandora_microservice_rewrite/tests/src/Kernel/MicroserviceRewriteSubscriberTest.php b/modules/islandora_microservice_rewrite/tests/src/Kernel/MicroserviceRewriteSubscriberTest.php
-index ba9abf6..6a3b94e 100644
+index ba9abf662..6a3b94edd 100644
 --- a/modules/islandora_microservice_rewrite/tests/src/Kernel/MicroserviceRewriteSubscriberTest.php
 +++ b/modules/islandora_microservice_rewrite/tests/src/Kernel/MicroserviceRewriteSubscriberTest.php
-@@ -109,6 +109,22 @@ class MicroserviceRewriteSubscriberTest extends IslandoraKernelTestBase {
+@@ -109,6 +109,22 @@ public function testMultipleRulesAreApplied() {
      );
    }
  
@@ -97,3 +108,26 @@ index ba9abf6..6a3b94e 100644
    /**
     * Tests that URI values stay untouched when no rules are configured.
     */
+
+From 7a4cb9ab7573d3f0964f0ffee4db7446a8288262 Mon Sep 17 00:00:00 2001
+From: Joe Corall <jjc223@lehigh.edu>
+Date: Thu, 20 Aug 2026 14:33:49 -0400
+Subject: [PATCH 2/2] Update
+ modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php
+
+---
+ .../src/EventSubscriber/MicroserviceRewriteSubscriber.php        | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php b/modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php
+index 7bd5d722f..54f68781e 100644
+--- a/modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php
++++ b/modules/islandora_microservice_rewrite/src/EventSubscriber/MicroserviceRewriteSubscriber.php
+@@ -126,7 +126,6 @@ protected function rewriteLinkUrls(array &$message, array $find, array $replace)
+           $link['href'] = str_replace($find, $replace, $link['href']);
+         }
+       }
+-      unset($link);
+     }
+   }
+ 

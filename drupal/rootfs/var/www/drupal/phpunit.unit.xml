@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit bootstrap="vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php">
+<phpunit
+    bootstrap="vendor/weitzman/drupal-test-traits/src/bootstrap-fast.php"
+    displayDetailsOnTestsThatTriggerDeprecations="false"
+    displayDetailsOnPhpunitDeprecations="false"
+>
     <php>
         <env name="DTT_BASE_URL" value="https://wight.cc.lehigh.edu"/>
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>

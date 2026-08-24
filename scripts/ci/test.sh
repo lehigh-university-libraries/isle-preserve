@@ -15,4 +15,4 @@ echo "running tests against live site config"
 echo -e "=============================================\n\n"
 docker compose exec drupal \
   su nginx -s /bin/bash -c \
-    "php vendor/bin/phpunit -c phpunit.unit.xml --debug"
+    "php vendor/bin/phpunit -c phpunit.unit.xml"
