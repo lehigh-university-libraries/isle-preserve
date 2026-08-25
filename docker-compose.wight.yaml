@@ -14,7 +14,7 @@ services:
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: islandora/mergepdf:7.0.7@sha256:e453352a1e3e80df8f50539e1b852da0d8102baed5f9f8dc7b65d73502dd57b4
+    image: islandora/mergepdf:7.0.8@sha256:0ec5b57b55cb6496fe2a29717a8b9a81f88f2d72655a65aebd866ed594619e2a
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
@@ -31,7 +31,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   houdini:
-    image: islandora/houdini:7.0.7@sha256:8fe9c43b5273431feb29ca20d5ccb9c6383d2c60da7a7e0534f6a830570902f9
+    image: islandora/houdini:7.0.8@sha256:5a5271dbb3332ecf26e276daf79292b09826161474565f3e6729120472406e63
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:

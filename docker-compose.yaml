@@ -63,7 +63,7 @@ secrets:
     file: "./secrets/UID"
 services:
   alpaca:
-    image: islandora/alpaca:7.0.7@sha256:f9d149e9c5e2ff820a872b244d2b789aef632f3a182b58fc01f72b25a243cda3
+    image: islandora/alpaca:7.0.8@sha256:d0e516df714ad87df276b18ec66343852c68efc6b41da9de235ececac79e5018
     environment:
       ALPACA_MAX_REDELIVERIES: 1
       ALPACA_TRIPLESTORE_INDEXER_ENABLED: false
@@ -99,7 +99,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
-    image: ghcr.io/lehigh-university-libraries/fabricator:v0.4.3@sha256:37863e1c2a2f5c0b4fb4a0b18b931a13d75c8d563193bd6e6a183d091a0c9844
+    image: ghcr.io/lehigh-university-libraries/fabricator:v0.4.4@sha256:660367394ed027bdc952c5d727ad960de22eac408aa56622928d75a97d60706f
     environment:
       FABRICATOR_DATA_MOUNT: /data
       SHARED_SECRET: ${FABRICATOR_SHARED_SECRET}
@@ -107,7 +107,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
-    image: islandora/mariadb:7.0.7@sha256:d203a8e06428183c79c491aa70752a36283bfcb4231fbca8de755c10c9f88f3c
+    image: islandora/mariadb:7.0.8@sha256:a1b9fcf72b3689bb92d3c39655efcff175ec0c3fe245e14ea5c68288cfa0f326
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
       MYSQL_TRANSACTION_ISOLATION: READ-COMMITTED
@@ -120,7 +120,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
-    image: islandora/activemq:7.0.7@sha256:5612c35106a432d8be7b8363cbdad3f097f87aadde0baefd69bc934ba172f65d
+    image: islandora/activemq:7.0.8@sha256:fa7eb873fc272fa08569479d63f907e2785573fe8502a61dbad16b6e41075af8
     secrets:
       - source: ACTIVEMQ_PASSWORD
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -134,7 +134,7 @@ services:
         max-size: "100m"
         max-file: "3"
   triplet:
-    image: ghcr.io/libops/triplet:v1.2.2@sha256:1d62224c6c0dc190e4508aabde0106aba5f155baaaa92ce0af06bcce3f8ae446
+    image: ghcr.io/libops/triplet:v1.2.4@sha256:1a1abbae387129c6a157005fdab43f0256adc6a1652a0144df58cdcce825cd20
     environment:
       TRIPLET_PUBLIC_BASE_URL: https://${DOMAIN}
     volumes:
@@ -145,7 +145,7 @@ services:
       - ./conf/triplet/config.yaml:/etc/triplet/config.yaml:r
       - /opt/islandora/volumes/triplet-cache:/var/lib/triplet/cache:rw
   memcached:
-    image: memcached:1.6.45@sha256:eeb9eaa939ffaa2304899674c9e88a9247ec8e5e40e424a892df7b09914bd2ec
+    image: memcached:1.6.45@sha256:75c93cc91e76853da7c029e74d6e8dbd44774dd3713c93be8cd1971ad26120a4
     command: memcached -m 2048 -I 5m
     healthcheck:
       test: >
@@ -241,7 +241,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
-    image: nginx:1.31.4@sha256:0d4374c710a9649200e84f8ef8dbdd4fa76c0c107839cd50f1e42a63916b0f2e
+    image: nginx:1.31.4@sha256:b34848eff6db786b6b1282d3a9c3fd0b5563dfb6d261df4923378b419e0d24f0
     restart: always
     volumes:
       - /opt/islandora/volumes/drupal-private-files/canonical/$DOMAIN/0:/usr/share/nginx/drupal:ro
@@ -284,7 +284,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
-    image: islandora/fcrepo:7.0.7@sha256:187910552640791821b19d553df061679f8f8d3fec0d521d9adb334f4a474891
+    image: islandora/fcrepo:7.0.8@sha256:72bcbe076674cc35ed080210e3b9e7d00bd3f7b432546a962cdf8b9e094ca62e
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
       FCREPO_ALLOW_EXTERNAL_DRUPAL: "https://${DOMAIN}/"
@@ -307,7 +307,7 @@ services:
         condition: service_healthy
   init:
     entrypoint: /scripts/init-entrypoint.sh
-    image: islandora/base:7.0.7@sha256:1affb7ad8e9657fa0be381ceab024b4cead25e6883f366bab119223fec552e1a
+    image: islandora/base:7.0.8@sha256:6158cea94d97f5c3a6c604b9f45efbdc5b99bd7c51e3e1779099cd3fcd2325f7
     networks:
       default:
     profiles:
@@ -325,7 +325,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
-    image: islandora/solr:7.0.7@sha256:18db3d06a2ddd694e32e88337ba541ce6c0afb4cb6ba0e3ff85a49d732378f66
+    image: islandora/solr:7.0.8@sha256:3ef14b1a30e54ea2a33ed44ce0a9781460dc511ec1e79edb98550aa39f4d1a1a
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
       - type: volume
