@@ -228,6 +228,20 @@ Our staging server has read only access to our production filesystem to keep fil
 
 > Okay, I’ve setup the overlay now on `islandora-test.lib.lehigh.edu`. `islandora-prod.cc.lehigh.edu` exports a read-only NFS share that’s mounted at `/mnt/islandora-prod-readonly` on `islandora-test`. Then I created a new LVM volume called `prod_overlay`, currently 30 gigs but we can grow it as needed - that’s used for the upperdir and workdir for the overlay, and it’s mounted at `/opt/prod_overlay`. Then I created the `/opt/islandora` mountpoint, which uses `/mnt/islandora-prod-readonly` as its lowerdir, and folders in the new LV for its upperdir and workdir.
 
+#### Clear space
+
+If upperdir gets full, you can clear it by doing this on `islandora-test.lib.lehigh.edu`
+
+```
+cd ~/
+sudo umount /opt/islandora
+sudo umount /mnt/islandora-prod-readonly
+sudo rm -rf /opt/prod_overlay/upper /opt/prod_overlay/work
+sudo mkdir /opt/prod_overlay/upper /opt/prod_overlay/work
+sudo mount /mnt/islandora-prod-readonly
+sudo mount /opt/islandora
+```
+
 #### Google Cloud Storage
 
 There are also GCS buckets [defined via terraform](https://github.com/lehigh-university-libraries/gcloud-terraform/blob/main/projects/lehigh-preserve-isle/03-gcs.tf) that store files temporarily in a GCS bucket. These buckets are only used for a temporary holding place for user uploads from [https://preserve.lehigh.edu/submit](https://preserve.lehigh.edu/submit)
