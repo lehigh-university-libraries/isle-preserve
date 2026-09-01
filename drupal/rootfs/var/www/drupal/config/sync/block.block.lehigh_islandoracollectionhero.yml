@@ -1,0 +1,26 @@
+uuid: 5d8c72ef-ec5e-4882-97b3-f89a88e23b7e
+langcode: en
+status: true
+dependencies:
+  module:
+    - context
+    - islandora_collection_hero
+  theme:
+    - lehigh
+id: lehigh_islandoracollectionhero
+theme: lehigh
+region: title
+weight: -21
+provider: null
+plugin: islandora_collection_hero
+settings:
+  id: islandora_collection_hero
+  label: ''
+  label_display: '0'
+  provider: islandora_collection_hero
+visibility:
+  view_inclusion:
+    id: view_inclusion
+    negate: false
+    view_inclusion:
+      view-browse-main: view-browse-main

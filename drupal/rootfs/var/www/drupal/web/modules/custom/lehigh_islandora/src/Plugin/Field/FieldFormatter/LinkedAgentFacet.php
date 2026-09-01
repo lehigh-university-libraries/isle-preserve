@@ -1,28 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\lehigh_islandora\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldFormatter\EntityReferenceLabelFormatter;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 
 /**
- * Plugin implementation of the 'LinkedAgentFacet'.
- *
- * @FieldFormatter(
- *   id = "typed_relation_facet",
- *   label = @Translation("Typed Relation Facet Link"),
- *   field_types = {
- *     "typed_relation"
- *   }
- * )
+ * Links typed agent relations to the browse creator filter.
  */
-class LinkedAgentFacet extends EntityReferenceLabelFormatter {
+#[FieldFormatter(
+  id: 'typed_relation_facet',
+  label: new TranslatableMarkup('Typed relation browse filter link'),
+  field_types: [
+    'typed_relation',
+  ],
+)]
+final class LinkedAgentFacet extends EntityReferenceLabelFormatter {
 
   /**
    * {@inheritdoc}
    */
-  public function viewElements(FieldItemListInterface $items, $langcode) {
+  public function viewElements(FieldItemListInterface $items, $langcode): array {
     $elements = parent::viewElements($items, $langcode);
 
     foreach ($items as $delta => $item) {
@@ -35,7 +38,7 @@ class LinkedAgentFacet extends EntityReferenceLabelFormatter {
 
       $options = [
         'query' => [
-          'f[0]' => 'contributor:' . $item->target_id,
+          'creator' => [$item->entity?->label() ?? (string) $item->target_id],
         ],
         'attributes' => [
           'rel' => 'nofollow',

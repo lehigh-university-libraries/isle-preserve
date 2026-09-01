@@ -319,8 +319,6 @@ display:
         style: true
         row: true
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }

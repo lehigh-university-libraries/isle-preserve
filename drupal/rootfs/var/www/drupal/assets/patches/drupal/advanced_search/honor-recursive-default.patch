@@ -1,0 +1,52 @@
+diff --git a/js/advanced_search.form.js b/js/advanced_search.form.js
+index cda6aa0..50e1594 100644
+--- a/js/advanced_search.form.js
++++ b/js/advanced_search.form.js
+@@ -87,9 +87,7 @@
+         }
+       }
+     }
+-    if (recurse) {
+-      params.set(settings.recurse_parameter, '1');
+-    }
++    params.set(settings.recurse_parameter, recurse ? '1' : '0');
+     const destination = new URL(window.location.href);
+     destination.search = params.toString();
+     return destination.toString();
+diff --git a/src/AdvancedSearchQuery.php b/src/AdvancedSearchQuery.php
+index 553b958..fab764a 100644
+--- a/src/AdvancedSearchQuery.php
++++ b/src/AdvancedSearchQuery.php
+@@ -144,9 +144,14 @@ class AdvancedSearchQuery {
+    *   TRUE if the search should recurse FALSE otherwise.
+    */
+   public function shouldRecurse(Request $request) {
+-    $recurse_param = $request->query->all()[$this->recurseParameter] ?? NULL;
+-    return is_scalar($recurse_param)
+-      ? filter_var($recurse_param, FILTER_VALIDATE_BOOLEAN)
+-      : FALSE;
++    if ($request->query->has($this->recurseParameter)) {
++      $recurse_param = $request->query->all()[$this->recurseParameter];
++      return is_scalar($recurse_param)
++        && filter_var($recurse_param, FILTER_VALIDATE_BOOLEAN);
++    }
++
++    return (bool) $this->configFactory
++      ->get(SettingsForm::CONFIG_NAME)
++      ->get(SettingsForm::RECURSIVE_FLAG);
+   }
+   /**
+@@ -418,12 +423,7 @@ class AdvancedSearchQuery {
+     foreach ($terms as $term) {
+       $query_params[$this->queryParameter][] = $term->toQueryParams();
+     }
+-    if ($recurse) {
+-      $query_params[$this->recurseParameter] = '1';
+-    }
+-    else {
+-      unset($query_params[$this->recurseParameter]);
+-    }
++    $query_params[$this->recurseParameter] = $recurse ? '1' : '0';
+     $url->setOptions(['query' => $query_params]);
+     return $url;
+   }

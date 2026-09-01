@@ -1,0 +1,11 @@
+diff --git a/dxpr_theme.theme b/dxpr_theme.theme
+index 46a464a..fc49c2a 100644
+--- a/dxpr_theme.theme
++++ b/dxpr_theme.theme
+@@ -463,3 +463,3 @@ function dxpr_theme_preprocess_region(&$variables) {
+   // Apply class to block design regions.
+-  if ($block_design_regions = array_keys(array_filter(theme_get_setting('block_design_regions')))) {
++  if ($block_design_regions = array_keys(array_filter((array) theme_get_setting('block_design_regions')))) {
+     if (in_array($variables['region'], $block_design_regions)) {
+       $variables['attributes']['class'][] = 'region-block-design';
+     }

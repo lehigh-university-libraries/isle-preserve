@@ -9,6 +9,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\user\Entity\User;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
@@ -633,6 +634,106 @@ function lehigh_islandora_get_ocfl_dir(string $objectId) : string {
 }
 
 /**
+ * Implements hook_views_pre_view().
+ *
+ * The browse display has the two contextual filters expected by Advanced
+ * Search: direct membership followed by recursive membership. The special
+ * browse aliases use -1 for items and 0 for collections, so disable both
+ * contextual filters on those pages and let hook_views_query_alter() apply
+ * their model constraints.
+ */
+function lehigh_islandora_views_pre_view(ViewExecutable $view, $display_id, array &$args): void {
+  if ($view->id() !== 'browse') {
+    return;
+  }
+
+  $context_id = lehigh_islandora_browse_context_id($args);
+  \Drupal::request()->attributes->set('_lehigh_browse_context_id', $context_id);
+
+  $header = $view->display_handler->getOption('header');
+  if (isset($header['advanced_search_results_toolbar'])) {
+    $header['advanced_search_results_toolbar']['override-default-display-mode'] =
+      lehigh_islandora_browse_default_display_mode($context_id);
+  }
+
+  if ($context_id <= 0) {
+    $args = ['all', 'all'];
+
+    // The -1 and 0 aliases are repository-wide pages, not collection pages.
+    // Keep the integrated search form but suppress its collection-only
+    // recursive-search control and heading on these displays.
+    if (isset($header['advanced_search_form'])) {
+      $header['advanced_search_form']['context_filter'] = '';
+    }
+    unset($header['area']);
+  }
+
+  $view->display_handler->setOption('header', $header);
+}
+
+/**
+ * Gets the initial browse display mode for a contextual collection.
+ */
+function lehigh_islandora_browse_default_display_mode(int $context_id): string {
+  if ($context_id <= 0) {
+    return 'grid';
+  }
+
+  $node = \Drupal::entityTypeManager()
+    ->getStorage('node')
+    ->load($context_id);
+  if (!$node instanceof NodeInterface
+    || !$node->hasField('field_model')
+    || $node->get('field_model')->isEmpty()) {
+    return 'grid';
+  }
+
+  return $node->get('field_model')->entity?->label() === 'Compound Object'
+    ? 'list'
+    : 'grid';
+}
+
+/**
+ * Resolves the browse context from View arguments or the internal path.
+ */
+function lehigh_islandora_browse_context_id(array $args = []): int {
+  foreach ($args as $arg) {
+    if (is_numeric($arg)) {
+      return (int) $arg;
+    }
+  }
+
+  $request = \Drupal::request();
+  $route_node = $request->attributes->get('node');
+  if ($route_node instanceof Node) {
+    return (int) $route_node->id();
+  }
+  if (is_numeric($route_node)) {
+    return (int) $route_node;
+  }
+
+  // Views AJAX sends the original contextual arguments separately even when
+  // Advanced Search has replaced the direct-child argument with "all".
+  $view_args = $request->request->get('view_args')
+    ?? $request->query->get('view_args');
+  if (is_string($view_args)) {
+    foreach (explode('/', $view_args) as $arg) {
+      if (is_numeric($arg)) {
+        return (int) $arg;
+      }
+    }
+  }
+
+  $path_parts = explode('/', trim(
+    \Drupal::service('path.current')->getPath(),
+    '/',
+  ));
+  return isset($path_parts[1]) && is_numeric($path_parts[1])
+    ? (int) $path_parts[1]
+    : -1;
+}
+
+/**
  * Implements hook_views_query_alter().
  */
 function lehigh_islandora_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
@@ -641,20 +742,12 @@ function lehigh_islandora_views_query_alter(ViewExecutable $view, QueryPluginBas
   }
   $request = \Drupal::request();
 
-  if (isset($view->args[0])) {
-    $arg = (int) $view->args[0];
-  }
-  else {
-    $current_path = \Drupal::service('path.current')->getPath();
-    $current_path = ltrim($current_path, '/');
-    $path_parts = explode('/', $current_path);
-    if (isset($path_parts[1]) && is_numeric($path_parts[1])) {
-      $arg = (int) $path_parts[1];
-    }
-    else {
-      $arg = -1;
-    }
-  }
+  $arg = $view->id() === 'browse'
+    ? $request->attributes->get(
+      '_lehigh_browse_context_id',
+      lehigh_islandora_browse_context_id($view->args),
+    )
+    : lehigh_islandora_browse_context_id($view->args);
 
   // Get the term IDs we filter on.
   $models = [
@@ -684,9 +777,6 @@ function lehigh_islandora_views_query_alter(ViewExecutable $view, QueryPluginBas
   // browse all items
   if ($arg == -1) {
     $query->addCondition('field_model', array_values($models), 'NOT IN');
-    if ($request->query->get('sort_bef_combine') === NULL) {
-      $query->sort('search_api_relevance', 'DESC');
-    }
   }
   // /browse-items/0
   // browse all collections
@@ -704,14 +794,9 @@ function lehigh_islandora_views_query_alter(ViewExecutable $view, QueryPluginBas
   else {
     $query->addCondition('field_model', [$models['page']], 'NOT IN');
 
-    // Search all sub collections
-    // otherwise only show direct descendants.
-    $field = $request->query->get('search_api_fulltext') === NULL ? 'field_member_of' : 'field_descendant_of';
-    $query->addCondition($field, [$arg], 'IN');
-
     // See if there's a custom sort on this collection.
     $sort = \Drupal::database()->query('SELECT field_sort_by_value FROM {node__field_sort_by} WHERE entity_id = :id', [':id' => $arg])->fetchField();
-    if ($sort && $request->query->get('sort_bef_combine') === NULL) {
+    if ($sort && !$request->query->has('sort_by')) {
       $components = explode('_', $sort);
       $direction = array_pop($components);
       $sort_by = implode('_', $components);

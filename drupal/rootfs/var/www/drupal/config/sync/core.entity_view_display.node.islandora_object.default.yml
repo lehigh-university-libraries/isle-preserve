@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - facets.facet.subject_temporal
     - field.field.node.islandora_object.field_abstract
     - field.field.node.islandora_object.field_access
     - field.field.node.islandora_object.field_add_coverpage
@@ -94,7 +93,6 @@ dependencies:
     - node.type.islandora_object
   module:
     - controlled_access_terms
-    - entity_reference_facet_link
     - field_group
     - geolocation
     - lehigh_islandora
@@ -431,18 +429,24 @@ content:
     weight: 0
     region: content
   field_genre:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: inline
     settings:
-      facet: genre
+      link: true
+      exposed_filter: ''
+      search_field: field_genre
+      value_source: id
     third_party_settings: {  }
     weight: 19
     region: content
   field_geographic_subject:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: inline
     settings:
-      facet: subject_geographic
+      link: true
+      exposed_filter: ''
+      search_field: field_geographic_subject
+      value_source: id
     third_party_settings: {  }
     weight: 23
     region: content
@@ -455,10 +459,13 @@ content:
     weight: 40
     region: content
   field_keywords:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: above
     settings:
-      facet: keywords
+      link: true
+      exposed_filter: ''
+      search_field: field_keywords
+      value_source: id
     third_party_settings: {  }
     weight: 45
     region: content
@@ -495,10 +502,13 @@ content:
     weight: 3
     region: content
   field_media_type:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: above
     settings:
-      facet: media_type
+      link: true
+      exposed_filter: ''
+      search_field: field_media_type
+      value_source: id
     third_party_settings: {  }
     weight: 32
     region: content
@@ -595,26 +605,35 @@ content:
     weight: 47
     region: content
   field_resource_type:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: inline
     settings:
-      facet: material_type
+      link: true
+      exposed_filter: resource_type
+      search_field: ''
+      value_source: id
     third_party_settings: {  }
     weight: 18
     region: content
   field_subject:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: inline
     settings:
-      facet: subject_topical
+      link: true
+      exposed_filter: ''
+      search_field: field_subject
+      value_source: id
     third_party_settings: {  }
     weight: 22
     region: content
   field_subject_general:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: inline
     settings:
-      facet: subject_general
+      link: true
+      exposed_filter: subject
+      search_field: ''
+      value_source: label
     third_party_settings: {  }
     weight: 21
     region: content
@@ -626,18 +645,24 @@ content:
     weight: 52
     region: content
   field_subject_lcsh:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: above
     settings:
-      facet: subject_lcsh
+      link: true
+      exposed_filter: ''
+      search_field: field_subject_lcsh
+      value_source: id
     third_party_settings: {  }
     weight: 44
     region: content
   field_subjects_name:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: inline
     settings:
-      facet: subject_name
+      link: true
+      exposed_filter: subject_name
+      search_field: ''
+      value_source: label
     third_party_settings: {  }
     weight: 24
     region: content
@@ -649,10 +674,13 @@ content:
     weight: 16
     region: content
   field_temporal_subject:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: inline
     settings:
-      facet: subject_temporal
+      link: true
+      exposed_filter: time_period
+      search_field: ''
+      value_source: label
     third_party_settings: {  }
     weight: 25
     region: content

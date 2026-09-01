@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.card
-    - facets.facet.genre
     - field.field.node.islandora_object.field_abstract
     - field.field.node.islandora_object.field_access
     - field.field.node.islandora_object.field_add_coverpage
@@ -95,7 +94,6 @@ dependencies:
     - node.type.islandora_object
   module:
     - controlled_access_terms
-    - entity_reference_facet_link
     - field_group
     - lehigh_islandora
     - user
@@ -217,10 +215,13 @@ content:
     weight: 11
     region: content
   field_genre:
-    type: entity_reference_facet_link
+    type: lehigh_browse_filter_link
     label: above
     settings:
-      facet: genre
+      link: true
+      exposed_filter: ''
+      search_field: field_genre
+      value_source: id
     third_party_settings: {  }
     weight: 9
     region: content

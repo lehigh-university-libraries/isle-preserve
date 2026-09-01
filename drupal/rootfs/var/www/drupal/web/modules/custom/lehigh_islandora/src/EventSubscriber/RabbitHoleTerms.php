@@ -54,19 +54,30 @@ final class RabbitHoleTerms implements EventSubscriberInterface {
         return;
       }
       $options = [];
-      $facet = '';
+      $field = '';
+      $value = (string) $tid;
       switch ($term->bundle()) {
+        case 'subject':
+          $options['query']['subject'] = [$term->label()];
+          break;
+
         case 'subject_lcsh':
+          $field = 'field_subject_lcsh';
+          break;
+
         case 'keywords':
-          $facet = $term->bundle();
+          $field = 'field_keywords';
           break;
 
         case 'islandora_models':
-          $facet = 'model';
+          $field = 'field_model';
           break;
       }
-      if ($facet != '') {
-        $options['query']['f'][] = "$facet:$tid";
+      if ($field !== '') {
+        $options['query']['a'][] = [
+          'f' => $field,
+          'v' => $value,
+        ];
       }
       $url = Url::fromRoute('view.browse.main', ['node' => -1], $options);
       $redirect = new RedirectResponse($url->toString());
