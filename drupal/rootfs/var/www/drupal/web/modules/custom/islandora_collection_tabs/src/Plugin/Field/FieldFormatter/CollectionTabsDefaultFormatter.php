@@ -4,23 +4,26 @@ declare(strict_types=1);
 
 namespace Drupal\islandora_collection_tabs\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\islandora_collection_tabs\Plugin\Field\FieldType\CollectionTabsItem;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Plugin implementation of the 'islandora_collection_tabs_default' formatter.
- *
- * @FieldFormatter(
- *   id = "islandora_collection_tabs_default",
- *   label = @Translation("Default"),
- *   field_types = {"islandora_collection_tabs"},
- * )
+ * Renders the configured collection tabs.
  */
+#[FieldFormatter(
+  id: 'islandora_collection_tabs_default',
+  label: new TranslatableMarkup('Default'),
+  field_types: [
+    'islandora_collection_tabs',
+  ],
+)]
 class CollectionTabsDefaultFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
 
   /**
@@ -99,10 +102,26 @@ class CollectionTabsDefaultFormatter extends FormatterBase implements ContainerF
     $this->setDefault($collectionId, $tabs, $content);
 
     $request = $this->requestStack->getCurrentRequest();
-    $s = $request->query->get('search_api_fulltext');
-    $f = $request->query->all('f');
-    $filters = is_array($f) && count($f) > 0;
-    $filters |= is_string($s) && strlen($s) > 0;
+    $search_parameters = [
+      'a',
+      'r',
+      'resource_type',
+      'member_of',
+      'creator',
+      'subject',
+      'year',
+      'format',
+      'publisher',
+      'subject_name',
+      'time_period',
+    ];
+    $filters = FALSE;
+    foreach ($search_parameters as $parameter) {
+      if ($request->query->has($parameter)) {
+        $filters = TRUE;
+        break;
+      }
+    }
     foreach ($items as $delta => $item) {
       if (!$this->shouldRenderItem($item)) {
         continue;

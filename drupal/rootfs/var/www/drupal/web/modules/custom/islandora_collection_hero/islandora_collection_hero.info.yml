@@ -1,0 +1,9 @@
+name: 'Islandora Collection Hero'
+type: module
+description: 'Displays collection hero media with inheritance through field_member_of.'
+package: Islandora
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:media
+  - drupal:node
+  - drupal:taxonomy

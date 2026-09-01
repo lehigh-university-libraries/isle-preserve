@@ -9,9 +9,10 @@
   </div>
   <div class="container mb-5">
     <form action="/browse" method="GET" class="row g-2 p-4 pt-2 pb-2">
+      <input type="hidden" name="a[0][f]" value="all">
       <div class="col-sm-12 col-md-8">
         <div class="input-group">
-          <input type="text" autofocus="autofocus" autocomplete="off" class="form-control" placeholder="Search for keywords, names, and locations" name="search_api_fulltext">
+          <input type="text" autofocus="autofocus" autocomplete="off" class="form-control" placeholder="Search for keywords, names, and locations" name="a[0][v]">
           <span class="input-group-text ps-0 pe-0" id="homepage-search">
             <button class="trigger btn">
               <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg" alt="Location" width="24" height="24" />

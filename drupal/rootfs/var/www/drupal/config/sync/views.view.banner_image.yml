@@ -401,8 +401,6 @@ display:
     position: 1
     display_options:
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }

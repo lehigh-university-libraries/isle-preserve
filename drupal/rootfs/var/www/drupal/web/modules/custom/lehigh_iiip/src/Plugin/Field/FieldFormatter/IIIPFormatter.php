@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace Drupal\lehigh_iiip\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Field\Attribute\FieldFormatter;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\islandora_collection_tabs\Plugin\Field\FieldFormatter\CollectionTabsDefaultFormatter;
 use Drupal\Core\Form\FormBuilderInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\islandora_collection_tabs\Plugin\Field\FieldFormatter\CollectionTabsDefaultFormatter;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Plugin implementation of the 'islandora_collection_tabs_default' formatter.
- *
- * @FieldFormatter(
- *   id = "lehigh_iiip_collection_formatter",
- *   label = @Translation("IIIP Formatter"),
- *   field_types = {"islandora_collection_tabs"},
- * )
+ * Renders IIIP-specific collection tabs.
  */
+#[FieldFormatter(
+  id: 'lehigh_iiip_collection_formatter',
+  label: new TranslatableMarkup('IIIP Formatter'),
+  field_types: [
+    'islandora_collection_tabs',
+  ],
+)]
 final class IIIPFormatter extends CollectionTabsDefaultFormatter implements ContainerFactoryPluginInterface {
 
   /**

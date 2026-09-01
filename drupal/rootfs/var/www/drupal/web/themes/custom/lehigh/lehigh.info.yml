@@ -3,8 +3,7 @@ type: theme
 description: "Based on the Stop14 Theme Builder."
 alt text: "Lehigh Digital Collections"
 version: 1.0.0
-base theme: false
-core: 8.x
+base theme: islandora_dxpr
 core_version_requirement: ^11
 libraries:
   - lehigh/global-styling
