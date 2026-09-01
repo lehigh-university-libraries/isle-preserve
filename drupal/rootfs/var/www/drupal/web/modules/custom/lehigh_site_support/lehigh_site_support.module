@@ -11,7 +11,6 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\file\FileInterface;
 use Drupal\media\Plugin\media\Source\File;
 use Drupal\node\NodeInterface;
-use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_token_info().
@@ -170,14 +169,7 @@ function lehigh_site_support_theme($existing, $type, $theme, $path) {
         'about_text' => '',
       ],
     ],
-    'facets_result_item__summary__keywords' => [
-      'template' => 'facets_result_item__summary__keywords',
-      'label' => 'Keyword(s)',
-      'base hook' => 'facets_result_item',
-    ],
-
   ];
-
 }
 
 /**
@@ -274,14 +266,14 @@ function lehigh_site_support_has_display_hint(NodeInterface $node, $hint_names):
  * Implements hook_form_FORM_ID_alter().
  */
 function lehigh_site_support_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (array_key_exists('actions', $form)) {
-
-    // Submit and reset come before the sort mechanism on bef.
+  if (isset($form['sort_bef_combine'])) {
+    // Submit and reset come before the legacy combined BEF sort mechanism.
     $form['sort_bef_combine']['#weight'] = 11;
     unset($form['sort_bef_combine']['#options']['search_api_relevance_ASC']);
+  }
+  if (isset($form['actions'])) {
     $form['actions']['#weight'] = 10;
   }
-
 }
 
 /**
@@ -317,27 +309,32 @@ function lehigh_site_support_get_node_file(NodeInterface $node, string $media_us
 /**
  * Implements hook_preprocess_views_view().
  */
-function lehigh_site_support_preprocess_views_view(&$variables) {
+function lehigh_site_support_preprocess_views_view(array &$variables): void {
   $view = $variables['view'];
   if ($view->id() !== 'browse') {
     return;
   }
-  if (empty($view->args) || !isset($view->args[0]) || $view->args[0] < 1) {
+
+  $argument = $view->args[0] ?? NULL;
+  if ((!is_int($argument) && (!is_string($argument) || !ctype_digit($argument))) || (int) $argument < 1) {
     return;
   }
 
-  $node = $view->args[0];
-  if (is_numeric($node)) {
-    $node = Node::load($node);
+  $node = \Drupal::entityTypeManager()
+    ->getStorage('node')
+    ->load((int) $argument);
+  if (!$node instanceof NodeInterface) {
+    return;
   }
+
   lehigh_site_support_add_css($variables, $node);
 }
 
 /**
  * Add the special thumbnail CSS to a given node from a preprocess function.
  */
-function lehigh_site_support_add_css(&$variables, $node) {
-  if (is_null($node) || !lehigh_site_support_identify_collection($node)) {
+function lehigh_site_support_add_css(array &$variables, NodeInterface $node): void {
+  if (!lehigh_site_support_identify_collection($node)) {
     return;
   }
 

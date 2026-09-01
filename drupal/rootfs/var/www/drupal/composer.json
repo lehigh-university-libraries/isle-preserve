@@ -10,6 +10,10 @@
     },
     "repositories": [
         {
+            "type": "vcs",
+            "url": "https://github.com/Islandora/advanced_search"
+        },
+        {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
@@ -35,6 +39,7 @@
         "cweagans/composer-patches": "^1.7",
         "discoverygarden/islandora_hocr": "^1.3",
         "drupal/admin_toolbar": "3.x-dev",
+        "drupal/advanced_search": "dev-facets3",
         "drupal/antibot": "^2.0",
         "drupal/autocomplete_deluxe": "^2.1",
         "drupal/better_exposed_filters": "^7.0",
@@ -47,14 +52,16 @@
         "drupal/crosswalk": "^1.0@dev",
         "drupal/csp": "^2.0",
         "drupal/csv_serialization": "^4.0",
-        "drupal/diff": "^1.1",
+        "drupal/diff": "^2.1.1",
         "drupal/entity": "^1.4",
         "drupal/entity_browser": "^2.9",
         "drupal/entity_metrics": "^1.0@beta",
         "drupal/entity_reference_facet_link": "^2.0",
         "drupal/entity_reference_revisions": "^1.10",
-        "drupal/facets": "^2",
+        "drupal/facets": "^3",
+        "drupal/facets_exposed_filters": "^3.0",
         "drupal/field_group": "^4.0",
+        "drupal/field_group_bootstrap": "^3.0",
         "drupal/field_permissions": "^1",
         "drupal/file_download_link": "^2.0",
         "drupal/file_download_link_media": "^2.0",
@@ -68,9 +75,10 @@
         "drupal/hal": "^2.0",
         "drupal/honeypot": "^2.2",
         "drupal/inline_entity_form": "^3.0@RC",
-        "drupal/islandora": "^2.16",
+        "drupal/islandora": "^2.19",
         "drupal/islandora_access": "^1.0@dev",
         "drupal/islandora_csl": "^1.0@beta",
+        "drupal/islandora_dxpr": "^1.0@alpha",
         "drupal/islandora_jwks": "^1.0",
         "drupal/islandora_mirador": "^3.0",
         "drupal/islandora_vtt": "1.0.x-dev",
@@ -107,9 +115,11 @@
         "drupal/twig_tweak": "^3.4",
         "drupal/verf": "^2.1",
         "drupal/views_ajax_history": "^1.8",
+        "drupal/views_bootstrap": "^5.5",
         "drupal/views_bulk_operations": "^4.3",
         "drupal/views_data_export": "^1.5",
         "drupal/views_field_view": "^1.0@beta",
+        "drupal/views_filters_summary": "^3.4",
         "drupal/views_infinite_scroll": "^2.0",
         "drupal/xmlsitemap": "^2.0@beta",
         "drush/drush": "^13",
@@ -195,21 +205,28 @@
             ]
         },
         "patches": {
+            "drupal/advanced_search": {
+                "Preserve contextual parameters for integrated page forms": "assets/patches/drupal/advanced_search/preserve-contextual-page-route.patch",
+                "Honor recursive search defaults and explicit opt-out": "assets/patches/drupal/advanced_search/honor-recursive-default.patch"
+            },
             "drupal/core": {
                 "Fix PHP 8 deprecation warnings in response content-type checks": "assets/patches/drupal/core/stripos.patch"
-            },
-            "drupal/facets": {
-                "Allow exposed filters to work with AJAX Facets": "assets/patches/drupal/facets/3168241-8.patch",
-                "Allow views attachments to reflect search parameters (still not working)": "assets/patches/drupal/facets/facets-attachments-3116236-16.patch",
-                "Show label on summary": "assets/patches/drupal/facets/summary-label.patch"
             },
             "drupal/drupal_slider": {
                 "jquery once": "assets/patches/drupal/drupal_slider/jquery_once_fix_0.patch",
                 "Issues 3209755": "assets/patches/drupal/drupal_slider/3209755.patch"
             },
             "drupal/islandora": {
-                "Rewrite canonical event URLs for microservices": "assets/patches/drupal/islandora/rewrite-canonical-event-urls.patch",
                 "read from OCFL root": "assets/patches/drupal/islandora/fcrepo-ro.patch"
+           },
+           "drupal/dxpr_theme": {
+               "Handle unset block design region settings": "assets/patches/drupal/dxpr_theme/block-design-regions-null.patch"
+           },
+           "drupal/facets": {
+               "Exposed filter blocks reuse their View query during rebuilds": "assets/patches/drupal/facets/exposed-filter-block-query.patch",
+               "Issue #3570225: populate summary values without skipping inactive facet queries (MR !360 adapted)": "assets/patches/drupal/facets/accept-exposed-input-summary.patch",
+               "Support searchable Facets 3 exposed filters through Better Exposed Filters": "assets/patches/drupal/facets/exposed-filter-searchbox.patch",
+               "Give searchable exposed filters one unique options wrapper": "assets/patches/drupal/facets/exposed-filter-searchbox-wrapper.patch"
             },
             "twistor/flysystem-stream-wrapper": {
                 "Fix php82 warning": "assets/patches/twistor/flysystem-stream-wrapper/28.patch"

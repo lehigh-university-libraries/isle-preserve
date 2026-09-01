@@ -35,10 +35,6 @@ services:
     arguments: ["@config.factory"]
     tags:
       - { name: event_subscriber }
-  lehigh_islandora.facet_query_string_subscriber:
-    class: Drupal\lehigh_islandora\EventSubscriber\FacetQueryStringSubscriber
-    tags:
-      - { name: event_subscriber }
   lehigh_islandora.media_insert_subscriber:
     class: Drupal\lehigh_islandora\EventSubscriber\MediaInsertSubscriber
     tags:

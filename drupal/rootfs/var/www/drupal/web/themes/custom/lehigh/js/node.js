@@ -2,20 +2,25 @@
   Drupal.behaviors.lehighNode = {
     attach: function (context, settings) {
       $(once('add-search', '.browse', context)).first().each(function () {
-        var s = Drupal.behaviors.lehighNode.getQueryParam('search_api_fulltext');
-        if (s != null && s != "") {
+        const query = new URLSearchParams(window.location.search);
+        let search = null;
+        query.forEach(function (value, key) {
+          const match = key.match(/^a\[(\d+)\]\[f\]$/);
+          if (search === null && match && value === 'all') {
+            search = query.get(`a[${match[1]}][v]`);
+          }
+        });
+        if (search !== null && search !== '') {
           $('.browse .node--type-islandora-object a').each(function() {
-            let h = $(this).attr('href') + '?search_api_fulltext=' + encodeURIComponent(s);
-            $(this).attr('href', h)
+            const url = new URL($(this).attr('href'), window.location.origin);
+            url.searchParams.set('a[0][f]', 'all');
+            url.searchParams.set('a[0][v]', search);
+            $(this).attr('href', url.pathname + url.search + url.hash);
           })
         }
       });
 
-      // empty full text field on views exposed forms
-      // causes a search of all descendants in a collection
-      // so things like simply changing the sort order will return all descendants
-      // instead of the default depth of 1
-      // so if search api contains no text, disable it on form submission
+      // Keep empty facet searchboxes out of submitted exposed-filter URLs.
       $(once('remove-empty-params', '.views-exposed-form', context)).on('submit', function(e) {
         $(this).find('input[type="text"]').each(function() {
           if ($(this).val() === '') {
@@ -24,10 +29,6 @@
         });
       });
 
-      $(once('fix-facet-search', '#main-content a[href*="f%5B0"]', context)).each(function () {
-        var href = $(this).attr('href').replace(window.location.pathname, "/browse");
-        $(this).attr('href', href);
-      });
       $(once('skip', '.block-mirador', context)).first().each(function () {
         if (window.innerWidth < 1200) {
           $('.MuiButtonBase-root[title="Collapse image tools"], button[title="Collapse text overlay options"]').each(function(){

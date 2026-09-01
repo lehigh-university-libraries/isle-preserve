@@ -490,7 +490,7 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: 'https://preserve.lehigh.edu/browse?search_api_fulltext={{ raw_arguments.search_api_fulltext }}'
+            text: 'https://preserve.lehigh.edu/browse?a%5B0%5D%5Bf%5D=all&a%5B0%5D%5Bv%5D={{ raw_arguments.search_api_fulltext }}'
             make_link: false
             path: ''
             absolute: false
@@ -793,8 +793,6 @@ display:
       defaults:
         arguments: true
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -929,8 +927,6 @@ display:
       defaults:
         arguments: false
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }

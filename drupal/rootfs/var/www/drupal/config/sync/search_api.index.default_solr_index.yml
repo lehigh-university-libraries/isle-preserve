@@ -614,6 +614,24 @@ field_settings:
     dependencies:
       module:
         - node
+  field_publisher_fulltext:
+    label: Publisher
+    datasource_id: 'entity:node'
+    property_path: field_publisher
+    type: text
+    dependencies:
+      config:
+        - field.storage.node.field_publisher
+  member_of_title:
+    label: 'Member of » Content » Title'
+    datasource_id: 'entity:node'
+    property_path: 'field_member_of:entity:title'
+    type: string
+    dependencies:
+      config:
+        - field.storage.node.field_member_of
+      module:
+        - node
 datasource_settings:
   'entity:node':
     bundles:

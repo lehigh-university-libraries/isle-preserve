@@ -1433,8 +1433,6 @@ display:
         filters: false
         filter_groups: false
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -1472,8 +1470,6 @@ display:
       defaults:
         pager: true
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }

@@ -72,8 +72,9 @@
           <div class="row collapse" id="collapseSearch">
             <form id="main-nav-search" action="/browse" method="GET" class="row g-2 p-4 pt-2 pb-2">
               <div class="input-group">
+                <input type="hidden" name="a[0][f]" value="all">
                 <input id="main-nav-search-text" type="text" autocomplete="off" class="form-control"
-                  placeholder="Search for keywords, names, and locations" name="search_api_fulltext">
+                  placeholder="Search for keywords, names, and locations" name="a[0][v]">
                 <span class="input-group-text ps-0 pe-0" id="homepage-search">
                   <button class="trigger btn">
                     <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"
@@ -101,8 +102,9 @@
             <div class="row" id="MobileSearch">
               <form id="mobile-nav-search" action="/browse" method="GET" class="row g-2 p-4 pt-2 pb-2">
                 <div class="input-group">
+                  <input type="hidden" name="a[0][f]" value="all">
                   <input id="mobile-nav-search-text" type="text" autocomplete="off" class="form-control"
-                    placeholder="Search for keywords, names, and locations" name="search_api_fulltext">
+                    placeholder="Search for keywords, names, and locations" name="a[0][v]">
                   <span class="input-group-text ps-0 pe-0" id="homepage-search">
                     <button class="trigger btn">
                       <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"

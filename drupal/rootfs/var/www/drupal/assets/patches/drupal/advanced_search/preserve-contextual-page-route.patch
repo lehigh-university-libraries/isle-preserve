@@ -1,0 +1,126 @@
+diff --git a/src/Form/AdvancedSearchForm.php b/src/Form/AdvancedSearchForm.php
+index c7e841f..a387096 100644
+--- a/src/Form/AdvancedSearchForm.php
++++ b/src/Form/AdvancedSearchForm.php
+@@ -286,6 +286,10 @@ class AdvancedSearchForm extends FormBase {
+    *   forms block.
+    */
+   protected function getRouteName(FormStateInterface $form_state) {
++    if ($form_state->get('advanced_search_integrated')) {
++      return NULL;
++    }
++
+     $view = $form_state->get('view');
+     $display = $form_state->get('display');
+     $display_handlers = new DisplayPluginCollection(
+@@ -294,7 +298,15 @@ class AdvancedSearchForm extends FormBase {
+     );
+     $display_handler = $display_handlers->get($display['id']);
+     if ($display_handler instanceof PathPluginBase) {
+-      return $display_handler->getRouteName();
++      $route_name = $display_handler->getRouteName();
++
++      // An integrated form already rendered on its target View should retain
++      // the current URL. Rebuilding the route by name would discard required
++      // contextual parameters (for example, a collection node ID) as well as
++      // an inbound path alias.
++      return $this->currentRouteMatch->getRouteName() === $route_name
++        ? NULL
++        : $route_name;
+     }
+     return NULL;
+   }
+@@ -313,6 +325,10 @@ class AdvancedSearchForm extends FormBase {
+     // to redirect the user to the search page.
+     $form_state->set('view', $view);
+     $form_state->set('display', $display);
++    $form_state->set(
++      'advanced_search_integrated',
++      $instance_id !== NULL && $instance_id !== '',
++    );
+     $route_name = $this->getRouteName($form_state);
+     $requires_redirect = $route_name ? $this->currentRouteMatch->getRouteName() !== $route_name : FALSE;
+     $view_id = $view?->id();
+diff --git a/tests/src/Functional/ViewIntegrationTest.php b/tests/src/Functional/ViewIntegrationTest.php
+index d6301ce..71d65d8 100644
+--- a/tests/src/Functional/ViewIntegrationTest.php
++++ b/tests/src/Functional/ViewIntegrationTest.php
+@@ -5,16 +5,19 @@ namespace Drupal\Tests\advanced_search\Functional;
+ use Drupal\advanced_search\Form\AdvancedSearchForm;
+ use Drupal\advanced_search\SearchResultsToolbarBuilder;
+ use Drupal\Core\Form\FormState;
++use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\search_api\Item\FieldInterface;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\views\Entity\View;
++use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
+ use Symfony\Component\HttpFoundation\Request;
+ 
+ /**
+  * Tests the View-owned Advanced Search integration.
+  *
+  * @group advanced_search
+  */
++#[RunTestsInSeparateProcesses]
+ final class ViewIntegrationTest extends BrowserTestBase {
+ 
+   /**
+@@ -166,6 +169,58 @@ class ViewIntegrationTest extends BrowserTestBase {
+   }
+ 
+   /**
++   * Tests that an integrated form retains contextual page parameters.
++   */
++  public function testIntegratedFormUsesCurrentContextualPageUrl(): void {
++    $field = $this->createMock(FieldInterface::class);
++    $field->method('getFieldIdentifier')->willReturn('title');
++    $field->method('getLabel')->willReturn('Title');
++    $view = View::create([
++      'id' => 'advanced_search_route_test',
++      'label' => 'Advanced Search route test',
++      'base_table' => 'node_field_data',
++      'base_field' => 'nid',
++      'display' => [
++        'default' => [
++          'id' => 'default',
++          'display_title' => 'Default',
++          'display_plugin' => 'default',
++          'position' => 0,
++          'display_options' => [],
++        ],
++        'page_1' => [
++          'id' => 'page_1',
++          'display_title' => 'Collection search',
++          'display_plugin' => 'page',
++          'position' => 1,
++          'display_options' => ['path' => 'collection/%node'],
++        ],
++      ],
++    ]);
++    $route_match = $this->createMock(RouteMatchInterface::class);
++    $route_match->method('getRouteName')
++      ->willReturn('views.ajax');
++    $form = new AdvancedSearchForm(
++      Request::create('/collection/123'),
++      $route_match,
++      $this->container->get('advanced_search.query'),
++      $this->container->get('plugin.manager.views.display'),
++    );
++    $build = $form->buildForm(
++      [],
++      new FormState(),
++      $view,
++      $view->getDisplay('page_1'),
++      ['title' => $field],
++      'field_member_of',
++      'collection-view-instance',
++    );
++
++    $settings = $build['#attached']['drupalSettings']['advanced_search_form'];
++    $this->assertFalse($settings[$build['#id']]['redirect']);
++  }
++
++  /**
+    * Tests accessible sort labels and relevance handling.
+    */
+   public function testToolbarSortOptions(): void {

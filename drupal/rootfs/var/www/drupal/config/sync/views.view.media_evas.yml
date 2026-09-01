@@ -361,8 +361,6 @@ display:
         filter_groups: false
       display_description: ''
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -460,8 +458,6 @@ display:
         filter_groups: false
       display_description: ''
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -494,8 +490,6 @@ display:
         row: false
       display_description: 'Displays a Thumbnail from a Service file. Falls back to child of first member.'
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: 0
         ajax_history: {  }
@@ -591,8 +585,6 @@ display:
         filter_groups: false
       display_description: 'Displays a thumbnail generated from an Intermediate File. Falls back to the Service File Thumbnail.'
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: 0
         ajax_history: {  }

@@ -325,8 +325,6 @@ display:
             title: title
       display_description: ''
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -412,8 +410,6 @@ display:
         arguments: false
       display_description: 'All items with collections grouped into a sets per collection they belong to.'
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }
@@ -579,8 +575,6 @@ display:
         filter_groups: false
       display_description: 'Set of items that do not belong to any Collection, to be used with Collection Sets.'
       display_extenders:
-        facets_display_extender:
-          facet_settings: {  }
         attachment_tabs:
           attachment_tabs_enabled: false
         ajax_history: {  }

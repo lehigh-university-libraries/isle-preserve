@@ -1,7 +1,6 @@
 _core:
   default_config_hash: uZHsLrDp1ThO0RvupHKcPzLOyVvWexm58JTTHNDo7yc
 display_extenders:
-  facets_display_extender: facets_display_extender
   attachment_tabs: attachment_tabs
   0: ajax_history
 sql_signature: false
