@@ -70,7 +70,7 @@
         "drupal/flysystem_gcs_cors": "^1.0@alpha",
         "drupal/focal_point": "^2.0",
         "drupal/form_mode_control": "^2.4",
-        "drupal/geolocation": "^3.12",
+        "drupal/geolocation": "^4.0",
         "drupal/google_tag": "^2.0",
         "drupal/hal": "^2.0",
         "drupal/honeypot": "^2.2",
