@@ -1,0 +1,13 @@
+name: Lehigh Analytics
+type: module
+description: 'Usage reports for The Preserve using Entity Metrics and Islandora metadata.'
+package: Islandora
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - drupal:block
+  - entity_metrics:entity_metrics
+  - islandora:islandora
+  - drupal:node
+  - drupal:media
+  - drupal:taxonomy
+configure: lehigh_analytics.review

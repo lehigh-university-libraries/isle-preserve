@@ -1,0 +1,5 @@
+lehigh_analytics.report:
+  title: 'The Preserve usage'
+  description: 'Usage by content type, top documents, and country.'
+  route_name: lehigh_analytics.review
+  parent: system.admin_reports

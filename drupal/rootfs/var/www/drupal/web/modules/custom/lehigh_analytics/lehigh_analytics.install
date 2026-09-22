@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Persistent usage totals; raw Entity Metrics records remain untouched.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function lehigh_analytics_schema(): array {
+  return [
+    'lehigh_analytics_totals' => [
+      'description' => 'Counts per reporting bucket, entity, and region.',
+      'fields' => [
+        'bucket' => ['type' => 'varchar', 'length' => 32, 'not null' => TRUE],
+        'entity_type' => ['type' => 'varchar', 'length' => 8, 'not null' => TRUE],
+        'entity_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+        'region_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+        'event_count' => ['type' => 'int', 'size' => 'big', 'not null' => TRUE],
+        'first_event' => ['type' => 'int', 'not null' => TRUE],
+        'last_event' => ['type' => 'int', 'not null' => TRUE],
+      ],
+      'primary key' => ['bucket', 'entity_type', 'entity_id', 'region_id'],
+    ],
+    'lehigh_analytics_progress' => [
+      'description' => 'Transactional ingestion checkpoint.',
+      'fields' => [
+        'id' => ['type' => 'int', 'not null' => TRUE],
+        'cursor' => ['type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0],
+        'ready' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+        'updated' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+        'signature' => ['type' => 'varchar', 'length' => 128, 'not null' => TRUE],
+      ],
+      'primary key' => ['id'],
+    ],
+  ];
+}
+
+/**
+ * Adds background aggregation to existing installations without a web backfill.
+ */
+function lehigh_analytics_update_11001(): void {
+  foreach (lehigh_analytics_schema() as $name => $definition) {
+    if (!\Drupal::database()->schema()->tableExists($name)) {
+      \Drupal::database()->schema()->createTable($name, $definition);
+    }
+  }
+}

@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Public dashboard theming and background usage refresh.
+ */
+
+/**
+ * Implements hook_cron().
+ */
+function lehigh_analytics_cron(): void {
+  try {
+    \Drupal::service('lehigh_analytics.rollup')->refresh(500);
+  }
+  catch (\Throwable $exception) {
+    \Drupal::logger('lehigh_analytics')->error('Usage refresh failed: @message', ['@message' => $exception->getMessage()]);
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function lehigh_analytics_theme(): array {
+  return ['lehigh_usage_explorer' => ['variables' => ['periods' => [], 'fields' => []]]];
+}

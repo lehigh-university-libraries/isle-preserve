@@ -1,0 +1,43 @@
+<div class="lu-explorer" data-lehigh-explorer>
+  <nav class="lu-nav" aria-label="Usage explorer sections">
+    <a href="#lu-overview">Overview</a><a href="#lu-distribution">Distribution</a><a href="#lu-documents">Documents</a><a href="#lu-methods">About the data</a>
+    <span class="lu-nav-spacer"></span><button type="button" data-copy>Copy link</button><button type="button" data-theme aria-pressed="false">Dark mode</button>
+  </nav>
+  <header class="lu-masthead" id="lu-overview">
+    <p class="lu-eyebrow">LEHIGH UNIVERSITY · THE PRESERVE</p>
+    <h1>Usage <span>Explorer</span></h1>
+    <p class="lu-intro">Explore how The Preserve’s collections are read and downloaded. Discover the works reaching readers at Lehigh and around the world.</p>
+    <p class="lu-meta" data-updated>Repository usage · Page views and downloads reported separately</p>
+  </header>
+  <form class="lu-filters" data-filters>
+    <div class="lu-period"><label for="lu-period">Reporting period</label><select id="lu-period" name="period">{% for key, period in periods %}<option value="{{ key }}">{{ period.label }}</option>{% endfor %}</select></div>
+    <div><label for="lu-field">Filter by metadata</label><select id="lu-field" data-field>{% for name, label in fields %}<option value="{{ name }}"{% if name == 'field_model' %} selected{% endif %}>{{ label }}</option>{% endfor %}</select></div>
+    <div><label for="lu-search">Find a value</label><input id="lu-search" type="search" placeholder="Search metadata…" maxlength="100" autocomplete="off" data-search></div>
+    <div><label for="lu-value">Matching values (up to 50)</label><select id="lu-value" data-value><option value="">Loading…</option></select></div>
+    <button type="submit" class="lu-primary">Add filter</button><button type="button" data-reset>Reset</button>
+    <div class="lu-chips" data-chips aria-label="Active metadata filters"></div>
+  </form>
+  <p class="lu-status" data-status role="status" aria-live="polite">Loading saved usage totals…</p>
+  <button type="button" data-retry hidden>Retry reports</button>
+  <noscript><p>This explorer needs JavaScript for interactive filtering. <a href="{{ path('lehigh_analytics.public_export', {report: 'types'}) }}">Download usage by content type as CSV</a>.</p></noscript>
+  <div data-results hidden>
+    <section class="lu-kpis" aria-label="Usage totals">
+      <div><span>Page views</span><strong data-kpi="views">—</strong><small>Visits to repository records</small></div>
+      <div><span>Downloads</span><strong data-kpi="downloads">—</strong><small>Recorded media requests</small></div>
+      <div><span>Countries recorded</span><strong data-kpi="countries">—</strong><small>Excludes unknown locations</small></div>
+      <div><span>Collections used</span><strong data-kpi="collections">—</strong><small>Direct collection membership</small></div>
+    </section>
+    <section class="lu-grid" id="lu-distribution" aria-label="Usage distribution">
+      <article class="lu-panel"><div class="lu-panel-heading"><div><p class="lu-eyebrow">CONTENT TYPE</p><h2>Usage by Islandora Model</h2></div><a data-export="types">CSV ↓</a></div><p class="lu-hint">Select a model to explore its usage.</p><div class="lu-legend"><span>Page views</span><span>Downloads</span></div><div data-chart="types"></div></article>
+      <article class="lu-panel"><div class="lu-panel-heading"><div><p class="lu-eyebrow">COLLECTIONS</p><h2>Where readers explore</h2></div><a data-export="collections">CSV ↓</a></div><p class="lu-hint">Top 10 by page views. Select a collection to filter.</p><div class="lu-legend"><span>Page views</span><span>Downloads</span></div><div data-chart="collections"></div></article>
+      <article class="lu-panel lu-countries"><div class="lu-panel-heading"><div><p class="lu-eyebrow">GLOBAL REACH</p><h2>Usage around the world</h2></div><a data-export="countries">CSV ↓</a></div><p class="lu-hint" data-geo-note></p><div class="lu-table-scroll"><table><thead><tr><th scope="col">Country</th><th scope="col">Page views</th><th scope="col">Downloads</th></tr></thead><tbody data-countries></tbody></table></div></article>
+      <article class="lu-panel lu-notes"><p class="lu-eyebrow">READING THE NUMBERS</p><h2>Every view tells part of the story.</h2><p>Page views count visits to a work’s record. Downloads count requests for associated media. They are distinct measures, not unique readers.</p><p>A work may belong to more than one model or collection, so grouped totals may overlap.</p><p>Country coverage depends on location data recorded with each event. Missing locations remain “Unknown.”</p><a href="#lu-methods">See definitions and reporting notes ↗</a></article>
+    </section>
+    <section class="lu-panel lu-documents" id="lu-documents">
+      <div class="lu-panel-heading"><div><p class="lu-eyebrow">MOST USED WORKS</p><h2>Top 100 documents</h2></div><a data-export="views" data-works-export>Download CSV ↓</a></div>
+      <div class="lu-table-tools"><div class="lu-segment" role="group" aria-label="Document ranking"><button type="button" data-rank="views" aria-pressed="true">By page views</button><button type="button" data-rank="downloads" aria-pressed="false">By downloads</button></div><label>Search these results <input type="search" data-work-search placeholder="Document title…"></label><span data-work-count></span></div>
+      <div class="lu-table-scroll"><table><thead><tr><th scope="col">Rank</th><th scope="col">Document</th><th scope="col">Page views</th><th scope="col">Downloads</th></tr></thead><tbody data-works></tbody></table></div>
+    </section>
+  </div>
+  <details class="lu-methods" id="lu-methods"><summary>About the data &amp; reporting downloads</summary><p>Source: Entity Metrics joined to current Islandora metadata. Only published works available to anonymous readers are included. Staff-cookie events are excluded. These are recorded events, not COUNTER-certified counts, unique readers, or verified human activity.</p><p>Calendar years begin January 1; fiscal years begin July 1. “Latest completed” excludes the current year. All time means all recorded history, which may not cover the repository’s entire lifetime. Totals refresh in the background; the update time is shown above.</p><p>Top-document rankings exclude Collection and component Page models. Collection reports use direct membership. Filters combine with AND across fields and OR within a field.</p><p data-coverage></p><p>These worksheets help prepare standards reports; definitions, exclusions, and the reporting year must be reviewed before submission.</p><div class="lu-downloads"><a data-export="counter">COUNTER mapping worksheet ↓</a><a data-export="acrl">ACRL preparation worksheet ↓</a><a data-export="top_types_views">Top 100 per model · page views ↓</a><a data-export="top_types_downloads">Top 100 per model · downloads ↓</a></div></details>
+</div>

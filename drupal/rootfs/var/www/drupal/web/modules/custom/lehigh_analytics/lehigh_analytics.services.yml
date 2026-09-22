@@ -1,0 +1,10 @@
+services:
+  lehigh_analytics.reports:
+    class: Drupal\lehigh_analytics\UsageReport
+    arguments: ['@database', '@entity_field.manager', '@config.factory', '@datetime.time', '@cache.default', '@lehigh_analytics.rollup']
+  lehigh_analytics.display:
+    class: Drupal\lehigh_analytics\ReportDisplay
+    arguments: ['@lehigh_analytics.reports', '@entity_type.manager']
+  lehigh_analytics.rollup:
+    class: Drupal\lehigh_analytics\UsageRollup
+    arguments: ['@database', '@config.factory', '@lock']

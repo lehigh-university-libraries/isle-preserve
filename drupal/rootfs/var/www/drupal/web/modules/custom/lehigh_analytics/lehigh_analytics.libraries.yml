@@ -1,0 +1,10 @@
+explorer:
+  css:
+    theme:
+      css/explorer.css: {}
+  js:
+    js/explorer.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
