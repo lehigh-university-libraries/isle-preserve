@@ -1,0 +1,508 @@
+diff --git a/config/install/geoip_autoupdate.settings.yml b/config/install/geoip_autoupdate.settings.yml
+index 7a7b2a3..4e463c8 100644
+--- a/config/install/geoip_autoupdate.settings.yml
++++ b/config/install/geoip_autoupdate.settings.yml
+@@ -1,2 +1,3 @@
+ account_id: ''
+ license_key: ''
++edition_id: 'GeoLite2-Country'
+diff --git a/config/schema/geoip_autoupdate.schema.yml b/config/schema/geoip_autoupdate.schema.yml
+index 451c90e..45e8f8e 100644
+--- a/config/schema/geoip_autoupdate.schema.yml
++++ b/config/schema/geoip_autoupdate.schema.yml
+@@ -8,3 +8,6 @@ geoip_autoupdate.settings:
+     license_key:
+       type: string
+       label: 'MaxMind License Key'
++    edition_id:
++      type: string
++      label: 'GeoLite2 edition'
+diff --git a/geoip_autoupdate.info.yml b/geoip_autoupdate.info.yml
+index 000cf2b..2317aab 100644
+--- a/geoip_autoupdate.info.yml
++++ b/geoip_autoupdate.info.yml
+@@ -1,6 +1,6 @@
+ name: GeoIP Auto-Update
+ type: module
+-description: 'Automatically updates the MaxMind GeoIP database on cron using direct download.'
++description: 'Keeps a local MaxMind GeoLite2 Country or City database up to date.'
+ core_version_requirement: ^10 || ^11
+ package: GeoIP
+ dependencies:
+diff --git a/geoip_autoupdate.module b/geoip_autoupdate.module
+index b39beb2..6240e9b 100644
+--- a/geoip_autoupdate.module
++++ b/geoip_autoupdate.module
+@@ -19,7 +19,7 @@ function geoip_autoupdate_cron(): void {
+  */
+ function geoip_autoupdate_help(string $route_name, RouteMatchInterface $route_match): string {
+   if ($route_name === 'geoip_autoupdate.settings') {
+-    return '<p>' . t('Configure MaxMind credentials for automatic GeoIP database updates. Checks for updates on every cron run but the database is only downloaded when a newer version is detected.') . '</p>';
++    return '<p>' . t('Configure MaxMind credentials for automatic GeoIP database updates. Checks for updates at most once a day on cron but the database is only downloaded when a newer version is detected.') . '</p>';
+   }
+   return '';
+ }
+diff --git a/geoip_autoupdate.services.yml b/geoip_autoupdate.services.yml
+index b31831d..b01c81a 100644
+--- a/geoip_autoupdate.services.yml
++++ b/geoip_autoupdate.services.yml
+@@ -7,6 +7,8 @@ services:
+       - '@state'
+       - '@file_system'
+       - '@logger.channel.geoip_autoupdate'
++      - '@lock'
++      - '@datetime.time'
+ 
+   logger.channel.geoip_autoupdate:
+     parent: logger.channel_base
+diff --git a/src/Form/GeoIpAutoUpdateSettingsForm.php b/src/Form/GeoIpAutoUpdateSettingsForm.php
+index 0f06137..f841d17 100644
+--- a/src/Form/GeoIpAutoUpdateSettingsForm.php
++++ b/src/Form/GeoIpAutoUpdateSettingsForm.php
+@@ -3,6 +3,7 @@
+ namespace Drupal\geoip_autoupdate\Form;
+ 
+ use Drupal\Core\Config\ConfigFactoryInterface;
++use Drupal\Core\Config\TypedConfigManagerInterface;
+ use Drupal\Core\Form\ConfigFormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\geoip_autoupdate\GeoIpUpdaterService;
+@@ -19,8 +20,9 @@ class GeoIpAutoUpdateSettingsForm extends ConfigFormBase {
+   public function __construct(
+     ConfigFactoryInterface $config_factory,
+     protected GeoIpUpdaterService $updater,
++    TypedConfigManagerInterface $typed_config_manager,
+   ) {
+-    parent::__construct($config_factory);
++    parent::__construct($config_factory, $typed_config_manager);
+   }
+ 
+   /**
+@@ -30,6 +32,7 @@ class GeoIpAutoUpdateSettingsForm extends ConfigFormBase {
+     return new static(
+       $container->get('config.factory'),
+       $container->get('geoip_autoupdate.updater'),
++      $container->get('config.typed'),
+     );
+   }
+ 
+@@ -53,6 +56,15 @@ class GeoIpAutoUpdateSettingsForm extends ConfigFormBase {
+   public function buildForm(array $form, FormStateInterface $form_state): array {
+     $config = $this->config('geoip_autoupdate.settings');
+ 
++    $form['edition_id'] = [
++      '#type' => 'select',
++      '#title' => $this->t('Database edition'),
++      '#options' => [
++        'GeoLite2-Country' => $this->t('Country'),
++        'GeoLite2-City' => $this->t('City (country, region, city, coordinates)'),
++      ],
++      '#default_value' => $config->get('edition_id') ?? 'GeoLite2-Country',
++    ];
+     $form['account_id'] = [
+       '#type' => 'textfield',
+       '#title' => $this->t('MaxMind Account ID'),
+@@ -91,6 +103,7 @@ class GeoIpAutoUpdateSettingsForm extends ConfigFormBase {
+    */
+   public function submitForm(array &$form, FormStateInterface $form_state): void {
+     $config = $this->config('geoip_autoupdate.settings');
++    $config->set('edition_id', $form_state->getValue('edition_id'));
+     $config->set('account_id', $form_state->getValue('account_id'));
+ 
+     $license_key = $form_state->getValue('license_key');
+diff --git a/src/GeoIpUpdaterService.php b/src/GeoIpUpdaterService.php
+index c03488b..8e42cdd 100644
+--- a/src/GeoIpUpdaterService.php
++++ b/src/GeoIpUpdaterService.php
+@@ -2,226 +2,232 @@
+ 
+ namespace Drupal\geoip_autoupdate;
+ 
++use GuzzleHttp\Exception\GuzzleException;
++use Drupal\Component\Datetime\TimeInterface;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\File\FileSystemInterface;
++use Drupal\Core\Lock\LockBackendInterface;
+ use Drupal\Core\State\StateInterface;
+ use GuzzleHttp\ClientInterface;
+-use GuzzleHttp\Exception\RequestException;
++use MaxMind\Db\Reader;
+ use Psr\Log\LoggerInterface;
+ 
+ /**
+- * Downloads and installs the MaxMind GeoIP database.
++ * Safely updates local GeoLite2 Country and City databases.
+  */
+ class GeoIpUpdaterService {
+ 
+   const DOWNLOAD_URL = 'https://download.maxmind.com/geoip/databases/%s/download?suffix=tar.gz';
+-  const EDITION_ID = 'GeoLite2-Country';
+   const STATE_LAST_MODIFIED = 'geoip_autoupdate.last_modified';
++  const CHECK_INTERVAL = 86400;
++  const MAX_ARCHIVE_BYTES = 268435456;
++  const MAX_DATABASE_BYTES = 536870912;
+ 
+-  /**
+-   * Constructs the GeoIpUpdaterService.
+-   */
+   public function __construct(
+     protected ConfigFactoryInterface $configFactory,
+     protected ClientInterface $httpClient,
+     protected StateInterface $state,
+     protected FileSystemInterface $fileSystem,
+     protected LoggerInterface $logger,
++    protected LockBackendInterface $lock,
++    protected TimeInterface $time,
+   ) {}
+ 
+   /**
+-   * Checks for a newer database and downloads it if available.
++   * Uses a fixed allowlist, never arbitrary URLs or archive paths from config.
+    */
+-  public function runUpdate(): void {
+-    $config = $this->configFactory->get('geoip_autoupdate.settings');
+-    $account_id = $config->get('account_id');
+-    $license_key = $config->get('license_key');
+-
+-    if (!$account_id || !$license_key) {
+-      return;
++  public function getEdition(): string {
++    $edition = $this->configFactory->get('geoip_autoupdate.settings')->get('edition_id') ?? 'GeoLite2-Country';
++    if (!in_array($edition, ['GeoLite2-Country', 'GeoLite2-City'], TRUE)) {
++      throw new \RuntimeException('Unsupported GeoLite2 database edition.');
+     }
++    return $edition;
++  }
+ 
+-    $url = sprintf(self::DOWNLOAD_URL, self::EDITION_ID);
+-
+-    // Issue a HEAD request to check the Last-Modified header without
+-    // counting against the daily download limit.
++  /**
++   * Checks at most daily; transient failures leave the current database intact.
++   */
++  public function runUpdate(): void {
+     try {
+-      $head = $this->httpClient->head($url, [
+-        'auth' => [$account_id, $license_key],
+-        'allow_redirects' => TRUE,
+-      ]);
+-    }
+-    catch (RequestException $e) {
+-      $this->logger->error('GeoIP Auto-Update: HEAD request failed: @message', [
+-        '@message' => $e->getMessage(),
+-      ]);
+-      return;
++      $this->update(FALSE);
+     }
+-
+-    $remote_last_modified = $head->getHeaderLine('Last-Modified');
+-    if ($remote_last_modified && $remote_last_modified === $this->state->get(self::STATE_LAST_MODIFIED)) {
+-      // Already up to date.
+-      return;
++    catch (\Throwable $exception) {
++      // Do not log request URLs, authentication, or signed redirect parameters.
++      $this->logger->error('GeoIP database update failed: @message', ['@message' => $exception->getMessage()]);
+     }
+-
+-    $this->download($url, $account_id, $license_key, $remote_last_modified);
+   }
+ 
+   /**
+-   * Downloads the database immediately, bypassing the Last-Modified check.
++   * Downloads now, reporting failures to the caller instead of false success.
+    */
+   public function forceUpdate(): void {
+-    $config = $this->configFactory->get('geoip_autoupdate.settings');
+-    $account_id = $config->get('account_id');
+-    $license_key = $config->get('license_key');
+-
+-    if (!$account_id || !$license_key) {
+-      throw new \RuntimeException('MaxMind credentials are not configured.');
+-    }
+-
+-    $url = sprintf(self::DOWNLOAD_URL, self::EDITION_ID);
+-
+-    $remote_last_modified = NULL;
+-    try {
+-      $head = $this->httpClient->head($url, [
+-        'auth' => [$account_id, $license_key],
+-        'allow_redirects' => TRUE,
+-      ]);
+-      $remote_last_modified = $head->getHeaderLine('Last-Modified') ?: NULL;
+-    }
+-    catch (RequestException $e) {
+-      // Proceed with the download even if the HEAD check fails.
+-    }
+-
+-    $this->download($url, $account_id, $license_key, $remote_last_modified);
++    $this->update(TRUE);
+   }
+ 
+   /**
+-   * Downloads the archive and installs the .mmdb file.
+-   *
+-   * @param string $url
+-   *   The download URL.
+-   * @param string $account_id
+-   *   MaxMind account ID.
+-   * @param string $license_key
+-   *   MaxMind license key.
+-   * @param string|null $remote_last_modified
+-   *   The Last-Modified header value to store after a successful download.
++   * Coordinates cron and manual updates under the same lock.
+    */
+-  protected function download(string $url, string $account_id, string $license_key, ?string $remote_last_modified): void {
+-    $temp_archive = sys_get_temp_dir() . '/geoip_' . uniqid() . '.tar.gz';
+-
+-    try {
+-      $this->httpClient->get($url, [
+-        'auth' => [$account_id, $license_key],
+-        'allow_redirects' => TRUE,
+-        'sink' => $temp_archive,
+-      ]);
+-    }
+-    catch (RequestException $e) {
+-      $this->logger->error('GeoIP Auto-Update: download failed: @message', [
+-        '@message' => $e->getMessage(),
+-      ]);
+-      @unlink($temp_archive);
++  protected function update(bool $force): void {
++    $config = $this->configFactory->get('geoip_autoupdate.settings');
++    if (!$config->get('account_id') || !$config->get('license_key')) {
++      if ($force) {
++        throw new \RuntimeException('MaxMind credentials are not configured.');
++      }
+       return;
+     }
+-
+-    $mmdb_temp = $this->extractMmdb($temp_archive);
+-    @unlink($temp_archive);
+-
+-    if ($mmdb_temp === NULL) {
+-      $this->logger->error('GeoIP Auto-Update: could not extract .mmdb from downloaded archive.');
++    $edition = $this->getEdition();
++    if (!$this->lock->acquire('geoip_autoupdate.update', 300)) {
++      if ($force) {
++        throw new \RuntimeException('Another database update is running.');
++      }
+       return;
+     }
+-
+-    $this->installMmdb($mmdb_temp, $remote_last_modified);
+-  }
+-
+-  /**
+-   * Extracts the .mmdb file from a tar.gz archive.
+-   *
+-   * @return string|null
+-   *   Real path to the extracted .mmdb temp file, or NULL on failure.
+-   */
+-  protected function extractMmdb(string $archive_path): ?string {
+-    $extract_dir = sys_get_temp_dir() . '/geoip_extract_' . uniqid();
+-
++    $archive = $candidate = NULL;
+     try {
+-      $phar = new \PharData($archive_path);
+-      $phar->extractTo($extract_dir);
+-    }
+-    catch (\Exception $e) {
+-      $this->logger->error('GeoIP Auto-Update: extraction failed: @message', [
+-        '@message' => $e->getMessage(),
+-      ]);
+-      $this->deleteDirectory($extract_dir);
+-      return NULL;
+-    }
+-
+-    $iterator = new \RecursiveIteratorIterator(
+-      new \RecursiveDirectoryIterator($extract_dir, \RecursiveDirectoryIterator::SKIP_DOTS)
+-    );
+-
+-    foreach ($iterator as $file) {
+-      if ($file->isFile() && $file->getExtension() === 'mmdb') {
+-        $temp_mmdb = sys_get_temp_dir() . '/geoip_mmdb_' . uniqid() . '.mmdb';
+-        copy($file->getPathname(), $temp_mmdb);
+-        $this->deleteDirectory($extract_dir);
+-        return $temp_mmdb;
++      $checked_key = 'geoip_autoupdate.checked.' . $edition;
++      $now = $this->time->getCurrentTime();
++      if (!$force && $now - (int) $this->state->get($checked_key, 0) < self::CHECK_INTERVAL) {
++        return;
++      }
++      // Throttle unsuccessful checks too, avoiding repeated failed downloads.
++      $this->state->set($checked_key, $now);
++      $directory = $this->fileSystem->realpath('private://');
++      if (!$directory || !is_dir($directory) || !is_writable($directory) || !stream_is_local($directory)) {
++        throw new \RuntimeException('Configure an existing writable local private filesystem directory.');
++      }
++      $destination = $directory . '/' . $edition . '.mmdb';
++      $url = sprintf(self::DOWNLOAD_URL, $edition);
++      $options = [
++        'auth' => [$config->get('account_id'), $config->get('license_key')],
++        'connect_timeout' => 5,
++        'timeout' => 30,
++        'allow_redirects' => ['max' => 5, 'protocols' => ['https']],
++      ];
++      try {
++        $head = $this->httpClient->request('HEAD', $url, ['timeout' => 5] + $options);
++        $modified = $head->getHeaderLine('Last-Modified');
++        if (!$force && $modified !== '' && $modified === $this->getLastModified() && $this->validDatabase($destination, $edition)) {
++          return;
++        }
++        $archive = tempnam($directory, '.geoip-');
++        if ($archive === FALSE) {
++          throw new \RuntimeException('Unable to create a temporary database archive.');
++        }
++        // PharData requires a recognizable archive extension.
++        if (!rename($archive, $archive . '.tar.gz')) {
++          throw new \RuntimeException('Unable to prepare the database archive.');
++        }
++        $archive .= '.tar.gz';
++        $options['sink'] = $archive;
++        $options['progress'] = static function ($total, $received): void {
++          if ($total > self::MAX_ARCHIVE_BYTES || $received > self::MAX_ARCHIVE_BYTES) {
++            throw new \RuntimeException('The database archive exceeds the download size limit.');
++          }
++        };
++        $this->httpClient->request('GET', $url, $options);
++      }
++      catch (GuzzleException $exception) {
++        throw new \RuntimeException('MaxMind download request failed. Check credentials and network connectivity.');
++      }
++      $candidate = $this->extractDatabase($archive, $directory, $edition);
++      if (!$this->validDatabase($candidate, $edition)) {
++        throw new \RuntimeException('The downloaded database is invalid or has the wrong edition.');
++      }
++      // Same-directory rename is atomic. Existing readers retain the old inode.
++      if (!chmod($candidate, 0600) || !rename($candidate, $destination)) {
++        throw new \RuntimeException('Unable to install the database. The previous copy was retained.');
+       }
++      $candidate = NULL;
++      $this->state->set(self::STATE_LAST_MODIFIED . '.' . $edition, $modified);
++      $this->logger->info('Installed @edition local database.', ['@edition' => $edition]);
++    }
++    finally {
++      foreach ([$archive, $candidate] as $file) {
++        if (is_string($file) && is_file($file)) {
++          unlink($file);
++        }
++      }
++      $this->lock->release('geoip_autoupdate.update');
+     }
+-
+-    $this->deleteDirectory($extract_dir);
+-    return NULL;
+   }
+ 
+   /**
+-   * Moves an extracted .mmdb file to the private:// destination.
++   * Reads only the requested MMDB; never extracts arbitrary archive paths.
+    */
+-  protected function installMmdb(string $mmdb_real_path, ?string $remote_last_modified): void {
+-    $private_dir = 'private://';
+-    $this->fileSystem->prepareDirectory($private_dir, FileSystemInterface::CREATE_DIRECTORY);
+-
+-    $dest_real = $this->fileSystem->realpath('private://') . '/GeoLite2-Country.mmdb';
+-    if (!copy($mmdb_real_path, $dest_real)) {
+-      $this->logger->error('GeoIP Auto-Update: failed to copy .mmdb to private://.');
+-      @unlink($mmdb_real_path);
+-      return;
++  protected function extractDatabase(string $archive, string $directory, string $edition): string {
++    $candidate = tempnam($directory, '.geoip-mmdb-');
++    if ($candidate === FALSE) {
++      throw new \RuntimeException('Unable to create a temporary database file.');
+     }
+-
+-    @unlink($mmdb_real_path);
+-
+-    if ($remote_last_modified) {
+-      $this->state->set(self::STATE_LAST_MODIFIED, $remote_last_modified);
++    try {
++      $phar = new \PharData($archive);
++      foreach (new \RecursiveIteratorIterator($phar) as $file) {
++        if (!$file->isFile() || $file->isLink() || $file->getFilename() !== $edition . '.mmdb') {
++          continue;
++        }
++        if ($file->getSize() > self::MAX_DATABASE_BYTES) {
++          throw new \RuntimeException('The database exceeds the extracted size limit.');
++        }
++        $input = fopen($file->getPathname(), 'rb');
++        $output = fopen($candidate, 'wb');
++        try {
++          if (!$input || !$output) {
++            throw new \RuntimeException('Unable to read the database archive.');
++          }
++          $written = stream_copy_to_stream($input, $output, self::MAX_DATABASE_BYTES + 1);
++          if ($written !== $file->getSize() || $written > self::MAX_DATABASE_BYTES) {
++            throw new \RuntimeException('The database archive is incomplete or too large.');
++          }
++        }
++        finally {
++          if (is_resource($input)) {
++            fclose($input);
++          }
++          if (is_resource($output)) {
++            fclose($output);
++          }
++        }
++        return $candidate;
++      }
++      throw new \RuntimeException('The requested database was not found in the archive.');
++    }
++    catch (\Throwable $exception) {
++      unlink($candidate);
++      throw new \RuntimeException('Unable to extract a complete database from the archive.');
+     }
+-
+-    $this->logger->info('GeoIP Auto-Update: database installed successfully. Last-Modified: @date', [
+-      '@date' => $remote_last_modified ?? '(unknown)',
+-    ]);
+   }
+ 
+   /**
+-   * Recursively deletes a directory.
++   * Validates the MMDB metadata and a lookup before accepting a replacement.
+    */
+-  protected function deleteDirectory(string $dir): void {
+-    if (!is_dir($dir)) {
+-      return;
++  protected function validDatabase(string $path, string $edition): bool {
++    if (!is_file($path)) {
++      return FALSE;
++    }
++    try {
++      $reader = new Reader($path);
++      try {
++        $valid = $reader->metadata()->databaseType === $edition;
++        $reader->get('8.8.8.8');
++        $reader->get('2001:4860:4860::8888');
++        return $valid;
++      }
++      finally {
++        $reader->close();
++      }
+     }
+-    $iterator = new \RecursiveIteratorIterator(
+-      new \RecursiveDirectoryIterator($dir, \RecursiveDirectoryIterator::SKIP_DOTS),
+-      \RecursiveIteratorIterator::CHILD_FIRST
+-    );
+-    foreach ($iterator as $file) {
+-      $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname());
++    catch (\Throwable $exception) {
++      return FALSE;
+     }
+-    rmdir($dir);
+   }
+ 
+   /**
+-   * Returns the stored Last-Modified value for the current database.
++   * Returns the installed edition's last modification header, if known.
+    */
+   public function getLastModified(): ?string {
+-    return $this->state->get(self::STATE_LAST_MODIFIED);
++    $edition = $this->getEdition();
++    return $this->state->get(self::STATE_LAST_MODIFIED . '.' . $edition,
++      $edition === 'GeoLite2-Country' ? $this->state->get(self::STATE_LAST_MODIFIED) : NULL);
+   }
+ 
+ }

@@ -1,0 +1,4 @@
+view lehigh analytics:
+  title: 'Review and export Lehigh usage analysis'
+  description: 'Access the staff report form and session-concentration anomaly analysis.'
+  restrict access: true

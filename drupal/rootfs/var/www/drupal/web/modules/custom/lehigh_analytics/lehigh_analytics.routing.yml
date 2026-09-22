@@ -1,0 +1,44 @@
+lehigh_analytics.export:
+  path: '/admin/reports/lehigh-analytics/export/{report}'
+  defaults:
+    _controller: '\Drupal\lehigh_analytics\Controller\ExportController::export'
+  requirements:
+    _permission: 'view lehigh analytics'
+    report: 'summary|types|views|downloads|countries|top_types_views|top_types_downloads|collections|counter|acrl|anomalies'
+lehigh_analytics.explorer:
+  path: '/usage'
+  defaults:
+    _controller: '\Drupal\lehigh_analytics\Controller\ExplorerController::page'
+    _title: 'The Preserve Usage Explorer'
+  requirements:
+    _access: 'TRUE'
+lehigh_analytics.data:
+  path: '/usage/data'
+  defaults:
+    _controller: '\Drupal\lehigh_analytics\Controller\ExplorerController::data'
+  requirements:
+    _access: 'TRUE'
+  methods: [GET]
+lehigh_analytics.options:
+  path: '/usage/options/{field}'
+  defaults:
+    _controller: '\Drupal\lehigh_analytics\Controller\ExplorerController::options'
+  requirements:
+    _access: 'TRUE'
+    field: '[a-z0-9_]+'
+  methods: [GET]
+lehigh_analytics.public_export:
+  path: '/usage/export/{report}'
+  defaults:
+    _controller: '\Drupal\lehigh_analytics\Controller\ExportController::export'
+  requirements:
+    _access: 'TRUE'
+    report: 'summary|types|views|downloads|countries|top_types_views|top_types_downloads|collections|counter|acrl'
+  methods: [GET]
+lehigh_analytics.review:
+  path: '/admin/reports/lehigh-analytics/review'
+  defaults:
+    _form: '\Drupal\lehigh_analytics\Form\ReportForm'
+    _title: 'Usage report review'
+  requirements:
+    _permission: 'view lehigh analytics'

@@ -1,0 +1,6 @@
+services:
+  lehigh_analytics.commands:
+    class: Drupal\lehigh_analytics\Commands\UsageCommands
+    arguments: ['@lehigh_analytics.rollup']
+    tags:
+      - { name: drush.command }
