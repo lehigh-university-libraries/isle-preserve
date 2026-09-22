@@ -1,0 +1,94 @@
+<?php
+
+/**
+ * @file
+ * Public dashboard theming and background usage refresh.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\lehigh_analytics\RefreshLockedException;
+
+/**
+ * Implements hook_cron().
+ */
+function lehigh_analytics_cron(): void {
+  try {
+    \Drupal::service('lehigh_analytics.rollup')->refresh(500);
+    \Drupal::service('lehigh_analytics.reports')->warm();
+  }
+  catch (RefreshLockedException) {
+    // A scheduled CLI refresh is running; it catches up and warms the cache.
+  }
+  catch (\Throwable $exception) {
+    \Drupal::logger('lehigh_analytics')->error('Usage refresh failed: @message', ['@message' => $exception->getMessage()]);
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function lehigh_analytics_theme(): array {
+  return ['lehigh_usage_explorer' => ['variables' => ['periods' => [], 'fields' => []]]];
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function lehigh_analytics_entity_insert(EntityInterface $entity): void {
+  _lehigh_analytics_entity_changed($entity);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function lehigh_analytics_entity_update(EntityInterface $entity): void {
+  _lehigh_analytics_entity_changed($entity);
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function lehigh_analytics_entity_delete(EntityInterface $entity): void {
+  _lehigh_analytics_entity_changed($entity);
+}
+
+/**
+ * Keeps saved work attribution and eligibility in step with entity edits.
+ *
+ * Node publication and model changes update report flags immediately. Media
+ * parents and changed model-term URIs queue works for the background refresh.
+ */
+function _lehigh_analytics_entity_changed(EntityInterface $entity): void {
+  $nids = [];
+  switch ($entity->getEntityTypeId()) {
+    case 'node':
+      \Drupal::service('lehigh_analytics.rollup')->refreshFlags([(int) $entity->id()]);
+      return;
+
+    case 'media':
+      $original = method_exists($entity, 'getOriginal') ? $entity->getOriginal() : ($entity->original ?? NULL);
+      foreach ([$entity, $original] as $version) {
+        if ($version && $version->hasField('field_media_of')) {
+          $nids = array_merge($nids, array_column($version->getUntranslated()->get('field_media_of')->getValue(), 'target_id'));
+        }
+      }
+      break;
+
+    case 'taxonomy_term':
+      $original = method_exists($entity, 'getOriginal') ? $entity->getOriginal() : ($entity->original ?? NULL);
+      $uri = static fn($term) => $term && $term->hasField('field_external_uri') ? $term->get('field_external_uri')->uri : NULL;
+      if ($uri($entity) !== $uri($original) && \Drupal::database()->schema()->tableExists('node__field_model')) {
+        $nids = \Drupal::database()->select('node__field_model', 'm')->fields('m', ['entity_id'])
+          ->condition('field_model_target_id', $entity->id())->execute()->fetchCol();
+      }
+      break;
+  }
+  foreach (array_chunk(array_unique(array_filter($nids)), 500) as $chunk) {
+    // An atomic upsert also waits for a refresh deleting these queue entries.
+    $upsert = \Drupal::database()->upsert('lehigh_analytics_dirty_works')->key('nid')->fields(['nid']);
+    foreach ($chunk as $nid) {
+      $upsert->values([$nid]);
+    }
+    $upsert->execute();
+  }
+}

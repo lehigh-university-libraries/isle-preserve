@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * @file
+ * Persistent usage totals; raw Entity Metrics records remain untouched.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function lehigh_analytics_schema(): array {
+  $published = [
+    'description' => 'Published Islandora object (default translation); kept current by node hooks.',
+    'type' => 'int',
+    'size' => 'tiny',
+    'not null' => TRUE,
+    'default' => 0,
+  ];
+  return [
+    'lehigh_analytics_totals' => [
+      'description' => 'Counts per reporting bucket, source entity, and region.',
+      'fields' => [
+        'bucket' => ['type' => 'varchar_ascii', 'length' => 32, 'not null' => TRUE],
+        'entity_type' => ['type' => 'varchar_ascii', 'length' => 8, 'not null' => TRUE],
+        'entity_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+        'region_id' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0],
+        'event_count' => ['type' => 'int', 'size' => 'big', 'not null' => TRUE],
+        'first_event' => ['type' => 'int', 'not null' => TRUE],
+        'last_event' => ['type' => 'int', 'not null' => TRUE],
+      ],
+      'primary key' => ['bucket', 'entity_type', 'entity_id', 'region_id'],
+      // Work refreshes read every bucket/region of one entity.
+      'indexes' => ['source_entity' => ['entity_type', 'entity_id']],
+    ],
+    'lehigh_analytics_work_totals' => [
+      'description' => 'Usage attributed to works, ready for public queries.',
+      'fields' => [
+        'bucket' => ['type' => 'varchar_ascii', 'length' => 32, 'not null' => TRUE],
+        'nid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+        'page_views' => ['type' => 'int', 'size' => 'big', 'not null' => TRUE],
+        'downloads' => ['type' => 'int', 'size' => 'big', 'not null' => TRUE],
+        'first_event' => ['type' => 'int', 'not null' => TRUE],
+        'last_event' => ['type' => 'int', 'not null' => TRUE],
+        'published' => $published,
+        'document' => [
+          'description' => 'Not a Collection or Page model; eligible for document rankings.',
+          'type' => 'int',
+          'size' => 'tiny',
+          'not null' => TRUE,
+          'default' => 1,
+        ],
+        'langcode' => [
+          'description' => "The work's default language, for joining its field values.",
+          'type' => 'varchar_ascii',
+          'length' => 12,
+          'not null' => TRUE,
+          'default' => '',
+        ],
+      ],
+      'primary key' => ['bucket', 'nid'],
+      'indexes' => [
+        'work' => ['nid'],
+        // Top-100 rankings read these in index order; no join or sort of all works.
+        'rank_views' => ['bucket', 'published', 'document', 'page_views'],
+        'rank_downloads' => ['bucket', 'published', 'document', 'downloads'],
+      ],
+    ],
+    'lehigh_analytics_work_countries' => [
+      'description' => 'Usage per work, bucket, and normalized country.',
+      'fields' => [
+        'bucket' => ['type' => 'varchar_ascii', 'length' => 32, 'not null' => TRUE],
+        'nid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE],
+        'country_code' => ['type' => 'varchar', 'length' => 255, 'not null' => TRUE],
+        'page_views' => ['type' => 'int', 'size' => 'big', 'not null' => TRUE],
+        'downloads' => ['type' => 'int', 'size' => 'big', 'not null' => TRUE],
+        'first_event' => ['type' => 'int', 'not null' => TRUE],
+        'last_event' => ['type' => 'int', 'not null' => TRUE],
+        'published' => $published,
+      ],
+      'primary key' => ['bucket', 'nid', 'country_code'],
+      'indexes' => [
+        'work' => ['nid'],
+        // Covers the unfiltered country report: grouped in index order.
+        'country_report' => ['bucket', 'published', 'country_code', 'page_views', 'downloads'],
+      ],
+    ],
+    'lehigh_analytics_progress' => [
+      'description' => 'Transactional ingestion checkpoint.',
+      'fields' => [
+        'id' => ['type' => 'int', 'not null' => TRUE],
+        'cursor' => ['type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0],
+        'ready' => ['type' => 'int', 'size' => 'tiny', 'not null' => TRUE, 'default' => 0],
+        'updated' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+        'signature' => ['type' => 'varchar', 'length' => 128, 'not null' => TRUE],
+      ],
+      'primary key' => ['id'],
+    ],
+    'lehigh_analytics_dirty_works' => [
+      'description' => 'Works needing refreshed attribution after media or model edits.',
+      'fields' => ['nid' => ['type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE]],
+      'primary key' => ['nid'],
+    ],
+  ];
+}

@@ -1,0 +1,347 @@
+/**
+ * The Preserve usage explorer: Bootstrap 5.3 components with Lehigh brand
+ * tokens (https://live.standards.site/lehighbrandhub).
+ *
+ * Bootstrap comes from the site theme. Brand values are applied through
+ * Bootstrap's CSS variables, scoped to the explorer so the surrounding theme is
+ * unaffected; [data-lehigh-explorer] outranks Bootstrap's [data-bs-theme] rules,
+ * which can load after this file. Text/background pairings
+ * meet WCAG AA; bright accents are used only as fills or on Night Sky.
+ */
+
+.lu-explorer[data-lehigh-explorer] {
+  /* Lehigh palette. */
+  --lu-brown: #502d0e;
+  --lu-brown-dark: #3d2209;
+  --lu-night-sky: #12354c;
+  --lu-mist: #d1e9e8;
+  --lu-first-light: #f5e9ad;
+  --lu-autumn-dusk: #eba033;
+  --lu-bethlehem-sky: #66b0ff;
+  --lu-gainsboro: #d8d8d8;
+  --lu-font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --lu-font-display: "Sora", "Inter", system-ui, sans-serif;
+  --lu-font-condensed: "Barlow Condensed", "Arial Narrow", sans-serif-condensed, sans-serif;
+
+  /* Explorer roles. */
+  --lu-ground: #f6f3ef;
+  --lu-accent: var(--lu-brown);
+  --lu-view: var(--lu-brown);
+  --lu-download: var(--lu-night-sky);
+  --lu-track: #ece8e3;
+  --lu-notes-bg: var(--lu-mist);
+  --lu-notes-color: var(--lu-night-sky);
+
+  /* Bootstrap tokens. */
+  --bs-primary: var(--lu-brown);
+  --bs-primary-rgb: 80, 45, 14;
+  --bs-secondary: var(--lu-night-sky);
+  --bs-secondary-rgb: 18, 53, 76;
+  --bs-body-font-family: var(--lu-font-sans);
+  --bs-body-font-size: 0.9375rem;
+  --bs-body-line-height: 1.6;
+  --bs-body-color: #1f1a17;
+  --bs-body-color-rgb: 31, 26, 23;
+  --bs-body-bg: #fff;
+  --bs-body-bg-rgb: 255, 255, 255;
+  --bs-emphasis-color: #000;
+  --bs-secondary-color: rgba(31, 26, 23, 0.74);
+  --bs-tertiary-bg: var(--lu-ground);
+  --bs-heading-color: var(--lu-brown);
+  --bs-border-color: var(--lu-gainsboro);
+  --bs-border-radius: 0.375rem;
+  --bs-link-color: var(--lu-brown);
+  --bs-link-color-rgb: 80, 45, 14;
+  --bs-link-hover-color: var(--lu-night-sky);
+  --bs-link-hover-color-rgb: 18, 53, 76;
+  --bs-focus-ring-color: rgba(18, 53, 76, 0.35);
+
+  max-width: 1280px;
+  margin: 0 auto 2rem;
+  padding: 1rem 1.75rem 2.25rem;
+  font-family: var(--bs-body-font-family);
+  font-size: var(--bs-body-font-size);
+  line-height: var(--bs-body-line-height);
+  color: var(--bs-body-color);
+  background: var(--lu-ground);
+  border: 1px solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+}
+
+.lu-explorer[data-lehigh-explorer][data-bs-theme="dark"] {
+  --lu-ground: #0b2233;
+  --lu-accent: var(--lu-first-light);
+  --lu-view: var(--lu-autumn-dusk);
+  --lu-download: var(--lu-bethlehem-sky);
+  --lu-track: rgba(255, 255, 255, 0.14);
+  --lu-notes-bg: #1b4461;
+  --lu-notes-color: #fff;
+
+  --bs-primary: var(--lu-autumn-dusk);
+  --bs-primary-rgb: 235, 160, 51;
+  --bs-secondary: var(--lu-mist);
+  --bs-secondary-rgb: 209, 233, 232;
+  --bs-body-color: #fff;
+  --bs-body-color-rgb: 255, 255, 255;
+  --bs-body-bg: var(--lu-night-sky);
+  --bs-body-bg-rgb: 18, 53, 76;
+  --bs-emphasis-color: #fff;
+  --bs-secondary-color: var(--lu-mist);
+  --bs-tertiary-bg: var(--lu-ground);
+  --bs-heading-color: #fff;
+  --bs-border-color: #2c5673;
+  --bs-link-color: var(--lu-first-light);
+  --bs-link-color-rgb: 245, 233, 173;
+  --bs-link-hover-color: #fff;
+  --bs-link-hover-color-rgb: 255, 255, 255;
+  --bs-focus-ring-color: rgba(245, 233, 173, 0.45);
+  color-scheme: dark;
+}
+
+/* Buttons read component-level variables, so theme them here. */
+.lu-explorer .btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--lu-brown);
+  --bs-btn-border-color: var(--lu-brown);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--lu-brown-dark);
+  --bs-btn-hover-border-color: var(--lu-brown-dark);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--lu-night-sky);
+  --bs-btn-active-border-color: var(--lu-night-sky);
+  --bs-btn-focus-shadow-rgb: 80, 45, 14;
+}
+.lu-explorer .btn-outline-primary {
+  --bs-btn-color: var(--lu-brown);
+  --bs-btn-border-color: var(--lu-brown);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--lu-brown);
+  --bs-btn-hover-border-color: var(--lu-brown);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--lu-brown);
+  --bs-btn-active-border-color: var(--lu-brown);
+  --bs-btn-focus-shadow-rgb: 80, 45, 14;
+}
+.lu-explorer .btn-outline-secondary {
+  --bs-btn-color: var(--lu-night-sky);
+  --bs-btn-border-color: var(--lu-night-sky);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: var(--lu-night-sky);
+  --bs-btn-hover-border-color: var(--lu-night-sky);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: var(--lu-night-sky);
+  --bs-btn-focus-shadow-rgb: 18, 53, 76;
+}
+.lu-explorer[data-bs-theme="dark"] .btn-primary,
+.lu-explorer[data-bs-theme="dark"] .btn-outline-primary {
+  --bs-btn-color: var(--lu-first-light);
+  --bs-btn-border-color: var(--lu-first-light);
+  --bs-btn-hover-color: var(--lu-night-sky);
+  --bs-btn-hover-bg: var(--lu-first-light);
+  --bs-btn-hover-border-color: var(--lu-first-light);
+  --bs-btn-active-color: var(--lu-night-sky);
+  --bs-btn-active-bg: var(--lu-first-light);
+  --bs-btn-active-border-color: var(--lu-first-light);
+  --bs-btn-focus-shadow-rgb: 245, 233, 173;
+}
+.lu-explorer[data-bs-theme="dark"] .btn-primary {
+  --bs-btn-color: var(--lu-night-sky);
+  --bs-btn-bg: var(--lu-autumn-dusk);
+  --bs-btn-border-color: var(--lu-autumn-dusk);
+}
+.lu-explorer[data-bs-theme="dark"] .btn-outline-secondary {
+  --bs-btn-color: var(--lu-mist);
+  --bs-btn-border-color: var(--lu-mist);
+  --bs-btn-hover-color: var(--lu-night-sky);
+  --bs-btn-hover-bg: var(--lu-mist);
+  --bs-btn-hover-border-color: var(--lu-mist);
+  --bs-btn-active-color: var(--lu-night-sky);
+  --bs-btn-active-bg: var(--lu-mist);
+}
+
+/* Keep the site theme's generic element styles out of the explorer. */
+.lu-explorer .lu-bar, .lu-explorer .btn { text-decoration: none; }
+/* The theme restyles search inputs (including height: 50px !important);
+   match Bootstrap's other controls. */
+.lu-explorer input[type="search"].form-control {
+  height: auto !important;
+  min-height: 0;
+  margin: 0;
+  padding: 0.375rem 0.75rem;
+  line-height: 1.5;
+  color: var(--bs-body-color);
+  background: var(--bs-body-bg);
+  border: var(--bs-border-width, 1px) solid var(--bs-border-color);
+  border-radius: var(--bs-border-radius);
+  box-shadow: none;
+}
+.lu-explorer input[type="search"].form-control:focus {
+  border-color: var(--lu-night-sky);
+  box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color);
+}
+.lu-nav .nav, .lu-nav .nav-item { margin: 0; padding: 0; list-style: none; }
+.lu-explorer *, .lu-explorer *::before, .lu-explorer *::after { box-sizing: border-box; }
+.lu-explorer [hidden] { display: none !important; }
+.lu-explorer h1::after, .lu-explorer h2::after { display: none; }
+.lu-explorer a:not(.btn) { color: var(--bs-link-color); text-decoration: none; }
+.lu-explorer a:not(.btn):hover { color: var(--bs-link-hover-color); text-decoration: underline; }
+.lu-explorer .btn { font-family: var(--lu-font-sans); font-weight: 600; text-decoration: none; }
+.lu-filter-actions .btn { font-size: 0.875rem; }
+.lu-explorer .form-control, .lu-explorer .form-select { font-family: var(--lu-font-sans); font-size: 0.875rem; }
+.lu-explorer .card { --bs-card-bg: var(--bs-body-bg); --bs-card-border-color: var(--bs-border-color); color: var(--bs-body-color); }
+.lu-explorer .table { --bs-table-bg: transparent; --bs-table-color: var(--bs-body-color); --bs-table-hover-bg: var(--lu-ground); --bs-table-hover-color: var(--bs-body-color); font-size: 0.875rem; }
+
+/* Type: Sora headings, Barlow Condensed uppercase labels, Inter body. */
+.lu-explorer h1, .lu-explorer h2 {
+  font-family: var(--lu-font-display);
+  color: var(--bs-heading-color);
+  padding: 0;
+  text-transform: none;
+}
+.lu-explorer h1 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0 0 1rem;
+  color: var(--bs-emphasis-color);
+}
+.lu-explorer h1 span { color: var(--lu-accent); }
+.lu-explorer h2 { font-size: 1.25rem; font-weight: 700; line-height: 1.3; margin: 0; }
+.lu-explorer .lu-eyebrow,
+.lu-explorer .form-label,
+.lu-explorer .lu-kpis span,
+.lu-explorer .table th {
+  font-family: var(--lu-font-condensed);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--bs-secondary-color);
+}
+.lu-explorer .lu-eyebrow { font-size: 0.875rem; margin: 0 0 0.5rem; color: var(--lu-accent); }
+.lu-explorer .form-label { font-size: 0.8125rem; margin-bottom: 0.375rem; }
+.lu-explorer .table th { font-size: 0.8125rem; white-space: nowrap; }
+
+.lu-nav { gap: 0.5rem 1rem; padding-bottom: 0.875rem; }
+.lu-nav .nav { gap: 0.25rem 1.375rem; }
+.lu-nav .nav-link { padding: 0.375rem 0; color: var(--bs-secondary-color); font-size: 0.875rem; }
+.lu-nav .nav-link:hover { color: var(--bs-link-color); }
+
+.lu-masthead { padding: 2.5rem 0 1.75rem; }
+.lu-explorer .lu-intro { max-width: 42rem; font-size: 1.0625rem; color: var(--bs-secondary-color); margin: 0 0 0.75rem; }
+
+/* Filters: one inline row on wide screens, as in the original explorer. */
+.lu-explorer .card-body { padding: 1.5rem; }
+.lu-filters.card-body { padding: 1.25rem 1.5rem; }
+.lu-filter-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 2fr) auto;
+  align-items: end;
+  gap: 1rem;
+}
+.lu-filter-grid .form-label { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lu-filter-actions { display: flex; gap: 0.5rem; }
+.lu-filter-actions .btn { white-space: nowrap; }
+.lu-chips { margin-top: 1rem; }
+.lu-chips:empty { display: none !important; }
+.lu-explorer .ui-autocomplete { max-height: 18rem; overflow-y: auto; overflow-x: hidden; z-index: 10; background: var(--bs-body-bg); color: var(--bs-body-color); border-color: var(--bs-border-color); }
+.lu-explorer .ui-menu-item-wrapper { padding: 0.5rem 0.75rem; }
+
+.lu-kpis .col { padding: 1.25rem 1.5rem; border-left: 1px solid var(--bs-border-color); }
+.lu-kpis .col:first-child { border-left: 0; }
+.lu-kpis span { display: block; font-size: 0.875rem; }
+.lu-kpis strong {
+  display: block;
+  margin: 0.25rem 0;
+  font-family: var(--lu-font-display);
+  font-size: clamp(1.375rem, 5.5vw, 2.125rem);
+  font-weight: 700;
+  line-height: 1.3;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  color: var(--bs-emphasis-color);
+}
+.lu-kpis small { font-size: 0.8125rem; color: var(--bs-secondary-color); }
+
+.lu-panel-heading { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.75rem; }
+.lu-panel-heading .btn { white-space: nowrap; }
+.lu-explorer .lu-hint { font-size: 0.875rem; color: var(--bs-secondary-color); margin: 0 0 1rem; }
+
+/* Bar charts: page views then downloads, labeled with exact values. */
+.lu-legend { display: flex; gap: 1.25rem; font-size: 0.8125rem; margin-bottom: 1rem; color: var(--bs-secondary-color); }
+.lu-legend span::before { content: ""; display: inline-block; width: 0.75rem; height: 0.75rem; margin-right: 0.375rem; vertical-align: -0.0625rem; border-radius: 2px; background: var(--lu-view); }
+.lu-legend span:last-child::before { background: var(--lu-download); }
+.lu-explorer .lu-bar {
+  display: block;
+  width: 100%;
+  padding: 0.625rem 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-top: 1px solid var(--bs-border-color);
+  border-radius: 0;
+}
+.lu-explorer button.lu-bar { cursor: pointer; }
+.lu-explorer button.lu-bar:hover .lu-bar-head > span { color: var(--bs-link-color); text-decoration: underline; }
+.lu-explorer button.lu-bar:focus-visible { outline: 0; box-shadow: 0 0 0 0.25rem var(--bs-focus-ring-color); }
+.lu-bar-head { display: flex; justify-content: space-between; gap: 0.625rem; font-size: 0.875rem; margin-bottom: 0.5rem; }
+.lu-bar-head > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lu-bar-head small { font-size: 0.8125rem; white-space: nowrap; color: var(--bs-secondary-color); font-variant-numeric: tabular-nums; }
+.lu-track { display: block; height: 6px; margin-top: 3px; overflow: hidden; background: var(--lu-track); border-radius: 3px; }
+.lu-track i { display: block; height: 100%; background: var(--lu-view); }
+.lu-track + .lu-track i { background: var(--lu-download); }
+
+.lu-countries .lu-table-scroll { max-height: 320px; }
+.lu-documents .lu-table-scroll { max-height: 36rem; }
+.lu-table-scroll thead th { position: sticky; top: 0; background: var(--bs-body-bg); }
+.lu-explorer .table > :not(caption) > * > * { padding: 0.75rem 0.625rem; }
+.lu-documents td:nth-child(2) { min-width: 14rem; width: 70%; }
+.lu-table-tools .btn { white-space: nowrap; }
+.lu-table-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.5rem; margin: 1.25rem 0; }
+.lu-work-search { display: flex; align-items: center; gap: 0.75rem; margin: 0; font-size: 0.875rem; color: var(--bs-secondary-color); white-space: nowrap; }
+.lu-work-search .form-control { width: 16rem; max-width: 100%; }
+.lu-work-count { margin-left: auto; font-size: 0.875rem; color: var(--bs-secondary-color); white-space: nowrap; }
+.lu-explorer .table td { font-variant-numeric: tabular-nums; }
+
+.lu-explorer .lu-notes { --bs-card-bg: var(--lu-notes-bg); --bs-card-border-color: var(--lu-notes-bg); color: var(--lu-notes-color); }
+.lu-notes h2 { font-size: 1.75rem; max-width: 22rem; margin-bottom: 1rem; color: var(--lu-notes-color); }
+.lu-notes .lu-eyebrow { color: var(--lu-notes-color); }
+.lu-notes p:not(.lu-eyebrow) { font-size: 0.875rem; }
+.lu-explorer .lu-notes a { color: var(--lu-notes-color); font-weight: 600; text-decoration: underline; }
+
+.lu-methods { font-size: 0.875rem; }
+.lu-methods summary { font-family: var(--lu-font-display); font-weight: 700; color: var(--bs-heading-color); cursor: pointer; }
+.lu-methods[open] summary { margin-bottom: 0.75rem; }
+.lu-methods p { color: var(--bs-secondary-color); }
+
+@media (max-width: 1199.98px) {
+  .lu-filter-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .lu-period { grid-column: span 2; }
+}
+@media (max-width: 991.98px) {
+  .lu-kpis .col:nth-child(3) { border-left: 0; }
+  .lu-kpis .col:nth-child(n + 3) { border-top: 1px solid var(--bs-border-color); }
+}
+@media (max-width: 767.98px) {
+  .lu-explorer { padding: 0.75rem 1rem 1.5rem; }
+  .lu-filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.875rem; }
+  .lu-period, .lu-filter-actions { grid-column: 1 / -1; }
+  .lu-filter-actions .btn { flex: 1; }
+  .lu-explorer .card-body, .lu-filters.card-body { padding: 1.125rem; }
+  .lu-masthead { padding-top: 1.75rem; }
+  .lu-kpis .col { padding: 1rem; }
+  .lu-panel-heading { flex-wrap: wrap; }
+  .lu-table-tools { flex-direction: column; align-items: flex-start; }
+  .lu-work-search { flex-wrap: wrap; white-space: normal; }
+  .lu-work-count { margin-left: 0; }
+}
+@media (max-width: 575.98px) {
+  .lu-filter-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .lu-track i { transition: width 0.2s ease; }
+}
+
+body.page-route-lehigh-analytics-explorer { height: auto; min-height: 100%; }

@@ -1,0 +1,24 @@
+# Bootstrap 5 comes from the site theme (lehigh and DXPR both load it).
+explorer:
+  css:
+    theme:
+      css/explorer.css: {}
+  js:
+    js/explorer.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - core/drupal.autocomplete
+    - lehigh_analytics/fonts
+
+# Lehigh brand fonts: Google substitutes for the licensed faces (see the brand guide).
+fonts:
+  remote: https://fonts.google.com
+  license:
+    name: SIL Open Font License 1.1
+    url: https://openfontlicense.org
+    gpl-compatible: true
+  css:
+    theme:
+      'https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;700&family=Inter:wght@400;500;600;700&family=Sora:wght@400;600;700;800&display=swap': { type: external, minified: true }

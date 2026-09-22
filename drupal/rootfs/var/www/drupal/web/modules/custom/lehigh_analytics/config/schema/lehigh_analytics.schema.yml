@@ -1,0 +1,57 @@
+lehigh_analytics.settings:
+  type: config_object
+  label: 'Lehigh analytics settings'
+  mapping:
+    timezone:
+      type: string
+      label: 'Reporting timezone'
+    fiscal_start_month:
+      type: integer
+      label: 'First month of the fiscal year'
+    google_analytics_url:
+      type: uri
+      label: 'Google Analytics country report URL'
+block.settings.lehigh_analytics_usage:
+  type: block_settings
+  label: 'The Preserve usage report block'
+  mapping:
+    report:
+      type: string
+      label: 'Report'
+    scope:
+      type: string
+      label: 'Collection scope'
+    criteria:
+      type: mapping
+      label: 'Saved report criteria'
+      mapping:
+        period:
+          type: string
+          label: 'Reporting period'
+        group:
+          type: string
+          label: 'Content type field'
+        filters:
+          type: sequence
+          label: 'Metadata filters'
+          sequence:
+            type: sequence
+            label: 'Selected entities'
+            sequence:
+              type: integer
+              label: 'Entity ID'
+        anomaly_scope:
+          type: string
+          label: 'Anomaly scope'
+        baseline_days:
+          type: integer
+          label: 'Baseline days'
+        spike_multiplier:
+          type: integer
+          label: 'Minimum multiple of baseline'
+        minimum_views:
+          type: integer
+          label: 'Minimum page views'
+        session_share:
+          type: integer
+          label: 'Session concentration threshold'
