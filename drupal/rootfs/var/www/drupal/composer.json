@@ -205,6 +205,9 @@
             ]
         },
         "patches": {
+            "drupal/islandora_dxpr": {
+                "Reuse mobile filters in subthemes and contextual Views": "assets/patches/drupal/islandora_dxpr/reuse-mobile-filters.patch"
+            },
             "drupal/geoip_autoupdate": {
                 "Support City databases, safe updates, and Drupal 11 settings forms": "assets/patches/drupal/geoip_autoupdate/city-and-drupal11.patch"
             },

@@ -1,13 +1,11 @@
 uuid: 28858a88-72b0-4e07-a0d3-1d18377b0926
 langcode: en
 status: true
-dependencies:
-  module:
-    - stop14_tools
+dependencies: {  }
 label: 'Item Browser'
 name: browse_items
 group: Display
-description: 'Adds the mobile filter toolbar to repository browse displays.'
+description: 'Identifies repository browse displays.'
 requireAllConditions: true
 disabled: false
 conditions:
@@ -19,27 +17,6 @@ conditions:
     view_inclusion:
       view-browse-main: view-browse-main
 reactions:
-  blocks:
-    id: blocks
-    uuid: 90c79285-5c5d-42bd-8dd3-33e7bbd954d7
-    blocks:
-      82a2384c-23d6-4d22-9fff-e7997a7d123c:
-        uuid: 82a2384c-23d6-4d22-9fff-e7997a7d123c
-        id: stop14_tools_browser_toolbar
-        label: 'Stop14 Browser Toolbar'
-        provider: stop14_tools
-        label_display: '0'
-        region: mobile_toolbar
-        weight: '0'
-        custom_id: stop14_tools_browser_toolbar
-        theme: lehigh
-        css_class: ''
-        unique: 0
-        context_id: browse_items
-        context_mapping: {  }
-        third_party_settings: {  }
-    include_default_blocks: 1
-    saved: false
   body_class:
     id: body_class
     body_class: 'object-browser path-browse'

@@ -1,2 +1,8 @@
 # Stop14 Tools
-An evolving set of Drupal extensions. Includes a Content Editorial feature defining a standard set of paragraph entities, an overlay menu, and some useful Twig extensions.
+
+Legacy media aspect-ratio and paragraph preprocessing used by Lehigh templates.
+
+Repository grids use Drupal core's Responsive Grid Views style. Mobile search
+filters use Islandora DXPR. The former themed-grid service, Views plugin, and
+browser-toolbar block have been removed; keep this module enabled while its
+remaining media and paragraph helpers are in use.

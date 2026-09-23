@@ -2,11 +2,6 @@
   padding-top: 1.8rem;
 }
 
-@media only screen and (min-width: 1200px) and (max-width: 1375px) {
-  .themed-grid {
-    grid-template-columns: repeat(var(--grid-columns-lrg, 3), minmax(0, 1fr));
-  }
-}
 
 .block-lehigh-site-cta-block {
   background: #FFFFFF;

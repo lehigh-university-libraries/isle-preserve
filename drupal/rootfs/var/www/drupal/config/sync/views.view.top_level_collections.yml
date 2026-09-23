@@ -6,7 +6,6 @@ dependencies:
     - core.entity_view_mode.node.card
   module:
     - node
-    - stop14_tools
     - taxonomy
     - user
     - views_field_view
@@ -471,16 +470,13 @@ display:
           1: AND
           2: OR
       style:
-        type: themed_grid
+        type: grid_responsive
         options:
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-          breakpoints:
-            sml: '1'
-            med: '2'
-            lrg: '2'
-            xlrg: '2'
+          grouping: {  }
+          columns: 2
+          cell_min_width: 240
+          grid_gutter: 24
+          alignment: horizontal
       row:
         type: 'entity:node'
         options:

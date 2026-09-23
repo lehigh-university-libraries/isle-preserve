@@ -1,6 +1,6 @@
 name: "Lehigh Digital Collections Theme"
 type: theme
-description: "Based on the Stop14 Theme Builder."
+description: "Lehigh Preserve branding and layouts built on Islandora DXPR."
 alt text: "Lehigh Digital Collections"
 version: 1.0.0
 base theme: islandora_dxpr
@@ -34,4 +34,3 @@ regions:
   quaternary_sidebar: Quaternary Sidebar (right)
   footer: Footer
   overlay: Overlay
-  mobile_toolbar: Mobile Toolbar (fixed bottom)

@@ -7,7 +7,6 @@ dependencies:
     - node.type.islandora_object
   module:
     - node
-    - stop14_tools
     - user
 id: featured_collections
 label: 'Featured Collections'
@@ -135,7 +134,13 @@ display:
           value:
             islandora_object: islandora_object
       style:
-        type: themed_grid
+        type: grid_responsive
+        options:
+          grouping: {  }
+          columns: 3
+          cell_min_width: 240
+          grid_gutter: 24
+          alignment: horizontal
       row:
         type: 'entity:node'
         options:

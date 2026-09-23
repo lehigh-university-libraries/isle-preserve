@@ -2,28 +2,22 @@ global-styling:
   version: VERSION
   js:
     https://www.lehigh.edu/~inltswms/include/ltstemplate/js/scripts.js: { type: external }
-    assets/js/vendor.js: {}
-    assets/js/core.js: {}
-    assets/js/default.js: {}
     js/global.js: {}
   dependencies:
     - core/jquery
     - core/drupal.ajax
     - core/drupal
     - core/drupalSettings
-    - core/jquery.once
+    - core/once
   css:
     theme:
       assets/css/style.css: {}
-      assets/css/vendor.css: {}
-      css/global.css: {}
+      css/global.css: { weight: 10 }
       https://www.lehigh.edu/~inltswms/include/ltstemplate/css/header.min.css: { type: external }
       https://www.lehigh.edu/~inltswms/include/ltstemplate/css/footer.min.css: { type: external }
 
 front:
   version: 1.0.0
-  js:
-    js/front.js: {}
   css:
     theme:
       css/front.css: { weight: 50 }
@@ -39,7 +33,7 @@ node:
     - core/jquery
     - core/drupal
     - core/drupalSettings
-    - core/jquery.once
+    - core/once
 hls:
   version: 1.0.0
   js:
@@ -49,16 +43,4 @@ hls:
     - core/jquery
     - core/drupal
     - core/drupalSettings
-    - core/jquery.once
-list-display:
-  version: 1.0.0
-  css:
-    theme:
-      css/list-display.css: {}
-  js:
-    js/list-display.js: {}
-  dependencies:
-    - core/jquery
-    - core/drupal
-    - core/drupalSettings
-    - core/jquery.once
+    - core/once

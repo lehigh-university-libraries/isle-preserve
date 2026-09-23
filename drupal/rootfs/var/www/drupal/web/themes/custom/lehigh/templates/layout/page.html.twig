@@ -53,6 +53,7 @@
  * @see html.html.twig
  */
 #}
+{% import '@islandora_dxpr/layout/page.html.twig' as dxpr %}
 <header class="lehigh-header">
   <nav class="lehigh-nav lehigh-header-nav lehigh-navbar utility-nav container-fluid">
     <div class="lehigh-branding">
@@ -61,7 +62,7 @@
           <div class="utility-nav--start lehigh-navbar-brand col-md-3">
             <a href="https://lts.lehigh.edu">
               <img src="https://www.lehigh.edu/~inltswms/images/logos/lehighuniversity-lts-wordmark.svg" width="300px"
-                height="43" alt="" />
+                height="43" alt="Lehigh University Library and Technology Services" />
             </a>
           </div><!-- utility-nav--start -->
           <div class="utility-nav--mid col-md-9 d-none d-lg-block">
@@ -74,11 +75,11 @@
               <div class="input-group">
                 <input type="hidden" name="a[0][f]" value="all">
                 <input id="main-nav-search-text" type="text" autocomplete="off" class="form-control"
-                  placeholder="Search for keywords, names, and locations" name="a[0][v]">
-                <span class="input-group-text ps-0 pe-0" id="homepage-search">
-                  <button class="trigger btn">
+                  aria-label="{{ 'Search the repository'|t }}" placeholder="Search for keywords, names, and locations" name="a[0][v]">
+                <span class="input-group-text ps-0 pe-0" >
+                  <button class="trigger btn" type="submit" aria-label="{{ 'Search'|t }}">
                     <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"
-                      alt="Location" width="24" height="24" />
+                      alt="" width="24" height="24" />
                   </button>
                 </span>
               </div>
@@ -104,11 +105,11 @@
                 <div class="input-group">
                   <input type="hidden" name="a[0][f]" value="all">
                   <input id="mobile-nav-search-text" type="text" autocomplete="off" class="form-control"
-                    placeholder="Search for keywords, names, and locations" name="a[0][v]">
-                  <span class="input-group-text ps-0 pe-0" id="homepage-search">
-                    <button class="trigger btn">
+                    aria-label="{{ 'Search the repository'|t }}" placeholder="Search for keywords, names, and locations" name="a[0][v]">
+                  <span class="input-group-text ps-0 pe-0" >
+                    <button class="trigger btn" type="submit" aria-label="{{ 'Search'|t }}">
                       <img class="leh-search--icon icon" src="https://www.lehigh.edu/~inltswms/images/icons/search.svg"
-                        alt="Location" width="24" height="24" />
+                        alt="" width="24" height="24" />
                     </button>
                   </span>
                 </div>
@@ -126,17 +127,18 @@
     {{ page.splash }}
   </section>
 {% endif %}
-{% if page.title or page.wayfinding|render|length %}
+{% set title_content = page.title|render %}
+{% set wayfinding_content = page.wayfinding|render %}
+{% if title_content|striptags('<img>')|trim or wayfinding_content|striptags|trim %}
   <section id="title">
-    {% if page.wayfinding|render|length  %}
+    {% if wayfinding_content|striptags|trim %}
       <div id="wayfinding"{% if logged_in  %} class='compact' {% endif %} role="navigation">
-        {{ page.wayfinding }}
+        {{ wayfinding_content }}
       </div>
     {% endif %}
-    {% if page.title %}
-      {{ page.title }}
+    {% if title_content|striptags('<img>')|trim %}
+      {{ title_content }}
     {% endif %}
-    </div>
   </section>
 {% endif %}
 {% if page.tabs  %}
@@ -157,22 +159,26 @@
   </section>
 {% endif %}
 
-{% if page.content or page.messages or page.help or page.main_sidebar or page.page.main_sidebar_left %}
+{% set main_left = page.main_sidebar_left|render %}
+{% set main_right = page.main_sidebar|render %}
+{% set has_main_left = dxpr.hasContent(main_left) %}
+{% set has_main_right = dxpr.hasContent(main_right) %}
+{% if page.content or page.messages or page.help or page.main_sidebar or page.main_sidebar_left %}
   <section id='primary-content' class='region' role="region">
-    <div class='{% if not page.main_sidebar is empty or not page.main_sidebar_left is empty %}with-sidebar{% else %}no-sidebar{% endif %}'>
-      {% if not page.main_sidebar_left is empty %}
-        <aside role="complementary" class="left">
-          {{ page.main_sidebar_left }}
+    <div class='lehigh-content-layout {% if has_main_right or has_main_left %}with-sidebar{% else %}no-sidebar{% endif %}'>
+      {% if has_main_left %}
+        <aside role="complementary" class="left" data-islandora-sidebar="primary">
+          {{ main_left }}
         </aside>
       {% endif %}
-      <main id='main-content'>
+      <main id='main-content' tabindex='-1'>
         {{ page.help }}
         {{ page.messages }}
         {{ page.content }}
       </main>
-      {% if not page.main_sidebar is empty %}
+      {% if has_main_right %}
         <aside role="complementary" class="right">
-          {{ page.main_sidebar }}
+          {{ main_right }}
         </aside>
         {% endif %}
       {# /.primary-content #}
@@ -186,7 +192,7 @@
 
 
       {% if not page.main_alt_sidebar_left is empty %}
-        <aside role="complementary" class="left">
+        <aside role="complementary" class="left" data-islandora-sidebar="primary">
           {{ page.main_alt_sidebar_left }}
         </aside>
       {% endif %}
@@ -203,21 +209,25 @@
   </section>
 {% endif %}
 
+{% set secondary_left = page.secondary_sidebar_left|render %}
+{% set secondary_right = page.secondary_sidebar|render %}
+{% set has_secondary_left = dxpr.hasContent(secondary_left) %}
+{% set has_secondary_right = dxpr.hasContent(secondary_right) %}
 {% if page.secondary_content or page.secondary_sidebar or page.secondary_sidebar_left%}
-  <section id="secondary-content" class='full {% if not page.secondary_sidebar is empty or not page.secondary_sidebar_left is empty %}sidebars{% endif %}'>
-  <div class='{% if not page.secondary_sidebar is empty or not page.secondary_sidebar_left is empty %}with-sidebar{% else %}no-sidebar{% endif %}'>
+  <section id="secondary-content" class='full {% if has_secondary_right or has_secondary_left %}sidebars{% endif %}'>
+  <div class='lehigh-content-layout {% if has_secondary_right or has_secondary_left %}with-sidebar{% else %}no-sidebar{% endif %}'>
 
-    {% if not page.secondary_sidebar_left is empty %}
-      <aside role="complementary" class="left">
-        {{ page.secondary_sidebar_left }}
+    {% if has_secondary_left %}
+      <aside role="complementary" class="left" data-islandora-sidebar="primary">
+        {{ secondary_left }}
       </aside>
     {% endif %}
     <div class='tier-container'>
       {{ page.secondary_content }}
     </div>
-    {% if not page.secondary_sidebar is empty %}
+    {% if has_secondary_right %}
       <aside role="complementary" class="right">
-        {{ page.secondary_sidebar }}
+        {{ secondary_right }}
       </aside>
       {% endif %}
     {# /.secondary-content #}
@@ -229,7 +239,7 @@
   <section id="tertiary-content" class='full {% if not page.tertiary_sidebar is empty or not page.tertiary_sidebar_left is empty %}sidebars{% endif %}' role="region">
   <div class='{% if not page.tertiary_sidebar is empty or not page.tertiary_sidebar_left is empty %}with-sidebar{% else %}no-sidebar{% endif %}'>
       {% if not page.tertiary_sidebar_left is empty %}
-      <aside role="complementary" class="left">
+      <aside role="complementary" class="left" data-islandora-sidebar="primary">
         {{ page.tertiary_sidebar_left }}
       </aside>
     {% endif %}
@@ -246,24 +256,24 @@
   </section>
 {% endif %}
 
+{% set quaternary_left = page.quaternary_sidebar_left|render %}
+{% set quaternary_right = page.quaternary_sidebar|render %}
+{% set has_quaternary_left = dxpr.hasContent(quaternary_left) %}
+{% set has_quaternary_right = dxpr.hasContent(quaternary_right) %}
 {% if page.quaternary_content or page.quaternary_sidebar %}
-  <section id="quaternary-content" class='full {% if not page.quaternary_sidebar is empty or not page.quaternary_sidebar_left is empty %}sidebars{% endif %}' role="region">
-    <div class='{% if not page.quaternary_sidebar is empty or not page.quaternary_sidebar_left is empty %}with-sidebar{% else %}no-sidebar{% endif %}'>
-      {% if not page.quaternary_sidebar_left is empty %}
-        <aside role="complementary" class="left">
-          <button class="filter-btn results-btn" title="Go back to results" type="button">View results</button>
-          {{ page.quaternary_sidebar_left }}
+  <section id="quaternary-content" class='full {% if has_quaternary_right or has_quaternary_left %}sidebars{% endif %}' role="region">
+    <div class='lehigh-content-layout {% if has_quaternary_right or has_quaternary_left %}with-sidebar{% else %}no-sidebar{% endif %}'>
+      {% if has_quaternary_left %}
+        <aside role="complementary" class="left" data-islandora-sidebar="primary">
+          {{ quaternary_left }}
         </aside>
       {% endif %}
       <div class='tier-container'>
-        {% if not page.quaternary_sidebar_left is empty %}
-          <button class="filter-btn facets-btn" title="Open filter menu" type="button">Filter results</button>
-        {% endif %}
         {{ page.quaternary_content }}
       </div>
-      {% if not page.quaternary_sidebar is empty %}
+      {% if has_quaternary_right %}
         <aside role="complementary" class="right">
-          {{ page.quaternary_sidebar }}
+          {{ quaternary_right }}
         </aside>
       {% endif %}
       {# /.quaternary-content #}
@@ -407,10 +417,3 @@
         </div>
     </div>
 </footer>
-{% if page.mobile_toolbar %}
-  <section id="mobile-toolbar" class='full' role="navigation">
-    <div class="tier-container">
-      {{ page.mobile_toolbar }}
-    </div>
-  </section>
-{% endif %}

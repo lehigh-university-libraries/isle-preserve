@@ -29,7 +29,6 @@ dependencies:
     - rest
     - search_api
     - serialization
-    - stop14_tools
     - user
     - views_data_export
     - views_filters_summary
@@ -1152,16 +1151,13 @@ display:
         groups:
           1: AND
       style:
-        type: themed_grid
+        type: grid_responsive
         options:
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-          breakpoints:
-            sml: '1'
-            med: '2'
-            lrg: '3'
-            xlrg: '3'
+          grouping: {  }
+          columns: 3
+          cell_min_width: 240
+          grid_gutter: 24
+          alignment: horizontal
       row:
         type: fields
         options:

@@ -20,7 +20,7 @@ class BrowsePageTest extends ExistingSiteBase {
     $web_assert->elementExists('css', '.islandora-search-results-toolbar');
     $web_assert->elementExists('css', '.view-browse.view-grid');
     $web_assert->elementExists('css', '#block-lehigh-exposedformbrowsemain');
-    $web_assert->elementExists('css', 'form.islandora-search-filters');
+    $web_assert->elementExists('css', '.islandora-search-filters');
     $web_assert->elementNotExists('css', '.block-facets');
     $web_assert->fieldNotExists('recursive');
     $web_assert->pageTextNotContains('Items in this collection');
@@ -36,7 +36,7 @@ class BrowsePageTest extends ExistingSiteBase {
     $web_assert->elementExists('css', '.advanced-search-form-area');
     $web_assert->elementExists('css', '.view-browse.view-grid');
     $web_assert->elementExists('css', '#block-lehigh-exposedformbrowsemain');
-    $web_assert->elementExists('css', 'form.islandora-search-filters');
+    $web_assert->elementExists('css', '.islandora-search-filters');
     $web_assert->elementNotExists('css', '.block-facets');
     $web_assert->fieldNotExists('recursive');
     $web_assert->pageTextNotContains('Items in this collection');
@@ -65,7 +65,7 @@ class BrowsePageTest extends ExistingSiteBase {
       $display_mode = $model === 'Compound Object' ? 'list' : 'grid';
       $web_assert->elementExists('css', ".view-browse.view-$display_mode");
       $web_assert->elementExists('css', '#block-lehigh-exposedformbrowsemain');
-      $web_assert->elementExists('css', 'form.islandora-search-filters');
+      $web_assert->elementExists('css', '.islandora-search-filters');
       $web_assert->fieldExists('recursive');
       $web_assert->pageTextContains('Items in this collection');
     }

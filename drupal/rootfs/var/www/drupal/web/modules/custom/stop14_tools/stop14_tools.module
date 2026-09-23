@@ -5,8 +5,6 @@
  * Primary module hooks for stop14_tools module.
  */
 
-use Drupal\Core\Template\Attribute;
-
 /**
  * Implements hook_preprocess_media().
  */
@@ -121,43 +119,3 @@ function stop14_tools_preprocess_field(&$vars) {
   }
 }
 
-/**
- * Implements hook_theme().
- */
-function stop14_tools_theme() {
-  return [
-    'stop14_browser_toolbar' => [
-      'template' => 'browser-toolbar',
-      'variables' => [],
-    ],
-  ];
-}
-
-/**
- * Implements hook_preprocess_views_view_themed_grid().
- */
-function stop14_tools_preprocess_views_view_themed_grid(&$vars) {
-  // Get view options.
-  $view = $vars['view'];
-  $style = $view->style_plugin;
-  $options = $style->options;
-
-  // Add settings as template variables if needed.
-  foreach ($options as $key => $option) {
-    $vars[$key] = $option;
-  }
-
-  $styleAttr = [
-    "--grid-columns-sml: {$options['breakpoints']['sml']}",
-    "--grid-columns-med: {$options['breakpoints']['med']}",
-    "--grid-columns-lrg: {$options['breakpoints']['lrg']}",
-    "--grid-columns-xlrg: {$options['breakpoints']['xlrg']}",
-  ];
-
-  // Add component options as attributes.
-  $vars['attributes'] = new Attribute([
-    'style' => implode('; ', $styleAttr) . ';',
-  ]);
-
-  template_preprocess_views_view_unformatted($vars);
-}

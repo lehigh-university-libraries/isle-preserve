@@ -1,4 +1,4 @@
-(function ($, Drupal, cookies) {
+(function ($, Drupal, once) {
   Drupal.behaviors.lehighNode = {
     attach: function (context, settings) {
       $(once('add-search', '.browse', context)).first().each(function () {
@@ -18,15 +18,6 @@
             $(this).attr('href', url.pathname + url.search + url.hash);
           })
         }
-      });
-
-      // Keep empty facet searchboxes out of submitted exposed-filter URLs.
-      $(once('remove-empty-params', '.views-exposed-form', context)).on('submit', function(e) {
-        $(this).find('input[type="text"]').each(function() {
-          if ($(this).val() === '') {
-            $(this).prop('disabled', true);
-          }
-        });
       });
 
       $(once('skip', '.block-mirador', context)).first().each(function () {
@@ -66,6 +57,10 @@
         const maxAttempts = 500;
         let attempts = 0;
         const intervalId = setInterval(() => {
+          if (++attempts >= maxAttempts) {
+            clearInterval(intervalId);
+            return;
+          }
           const viewerId = '#' + drupalSettings.mirador_view_id;
           if (typeof Drupal.IslandoraMirador !== 'undefined' &&
               typeof Drupal.IslandoraMirador.instances !== 'undefined' &&
@@ -98,11 +93,6 @@
               setTimeout(() => {
                 Drupal.behaviors.lehighNode.applyCdmzoom(instance, windowId, cdmzoomValue);
               }, 500);
-            }
-          } else {
-            attempts++;
-            if (attempts >= maxAttempts) {
-              clearInterval(intervalId);
             }
           }
         }, checkInterval);
@@ -337,4 +327,4 @@
       return null;
     }
   };
-})(jQuery, Drupal, window.Cookies);
+})(jQuery, Drupal, once);

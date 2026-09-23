@@ -1,0 +1,14 @@
+--- a/js/islandora_dxpr.js
++++ b/js/islandora_dxpr.js
+@@ -9,9 +9,9 @@
+   const tooltipSelector = '[data-islandora-tooltip]';
+   const headerSearchSelector = '.islandora-header-search';
+   const facetFormSelector =
+-    'form[id^="views-exposed-form-solr-search-content-"]';
++    '.islandora-search-filters';
+   const mobileFiltersSelector =
+-    '.main-container > .row > aside[data-islandora-sidebar="primary"]';
++    'aside[data-islandora-sidebar="primary"]';
+   const resultsPerPageSelector = '[data-islandora-results-per-page]';
+   const headerSearchCleanups = new WeakMap();
+   const mobileFilterCleanups = new WeakMap();
