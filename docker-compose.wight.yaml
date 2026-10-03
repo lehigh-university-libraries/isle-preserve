@@ -8,13 +8,13 @@ services:
       ALPACA_DERIVATIVE_MERGEPDF_URL: http://mergepdf:8080
       ALPACA_DERIVATIVE_COVERPAGE_URL: http://coverpage:8080
   coverpage:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:2530ccfafa9f6abcc78a7bc77edfc094a89a67798fca1779f3c314fa2e107f36
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:8214f33bead1db3a9637dc2b6e05e33a0adcd64398bb38e35696a8156210a72f
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   mergepdf:
-    image: islandora/mergepdf:7.0.17@sha256:6577ac6099f25ba8547507f2d4643f1b0741ff02a21c533aa14192eb349a61f2
+    image: islandora/mergepdf:7.0.18@sha256:931bc96cd574ddb69bc47fab04389cad418df2010b71f688d4009cca6ec8e7c9
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
@@ -23,7 +23,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   libreoffice:
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:52181ee0a4241d75ce31510e267c874d651a83b5574191cb619ecc4230e3e7dd
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:66930e1345ab579dce9387251e36b201b2665e65149bd7bf64d606537c0c0122
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -31,7 +31,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   houdini:
-    image: islandora/houdini:7.0.17@sha256:7f31df805deb85fd3b28f7bb869fca84e71dc8a7cec6984747e3c703ef952b33
+    image: islandora/houdini:7.0.18@sha256:786532755b3421454ba092a6f0de9b1b059176f068f35c182e424c208fd3ce36
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
