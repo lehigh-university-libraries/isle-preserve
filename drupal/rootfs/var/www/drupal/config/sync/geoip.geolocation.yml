@@ -1,0 +1,5 @@
+plugin_id: cdn
+debug: false
+account_id: ''
+license_key: ''
+custom_header: ''

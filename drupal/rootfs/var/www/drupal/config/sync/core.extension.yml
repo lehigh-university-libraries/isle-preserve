@@ -60,6 +60,8 @@ module:
   flysystem_gcs_cors: 0
   focal_point: 0
   form_mode_control: 0
+  geoip: 0
+  geoip_autoupdate: 0
   geolocation: 0
   geolocation_google_maps: 0
   google_tag: 0

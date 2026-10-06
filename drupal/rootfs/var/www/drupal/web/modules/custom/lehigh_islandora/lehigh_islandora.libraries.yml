@@ -57,3 +57,5 @@ source-browser:
   dependencies:
     - core/drupal
     - core/once
+    - core/drupalSettings
+    - islandora_mirador/viewer

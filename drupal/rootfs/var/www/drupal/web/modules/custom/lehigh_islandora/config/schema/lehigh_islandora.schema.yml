@@ -148,3 +148,17 @@ field.value.part_detail:
     title:
       type: string
       label: Title
+
+lehigh_islandora.journal_browser:
+  type: config_object
+  label: 'Source browser settings'
+  mapping:
+    page_size:
+      type: integer
+      label: 'Search results per page'
+    search_index:
+      type: string
+      label: 'Search API index ID'
+    default_tab:
+      type: string
+      label: 'Default item view'

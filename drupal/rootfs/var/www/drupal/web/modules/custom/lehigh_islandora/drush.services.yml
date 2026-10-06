@@ -6,3 +6,8 @@ services:
       - '@entity_type.manager'
     tags:
       - { name: drush.command }
+  lehigh_islandora.source_browser.import_commands:
+    class: Drupal\lehigh_islandora\Commands\SourceBrowserImport
+    arguments: ['@lehigh_islandora.source_browser.importer', '@entity_type.manager']
+    tags:
+      - { name: drush.command }

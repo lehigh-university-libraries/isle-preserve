@@ -34,6 +34,9 @@ final class CacheBookManifests implements EventSubscriberInterface {
     // see if we have a cached response on disk.
     $path = $request->getPathInfo();
     $file_path = self::getCachedFilePath($request, $path);
+    if ($file_path === '') {
+      return;
+    }
     if (file_exists($file_path)) {
       $file_contents = file_get_contents($file_path);
       $response = new Response($file_contents, Response::HTTP_OK);
@@ -62,6 +65,9 @@ final class CacheBookManifests implements EventSubscriberInterface {
 
     $path = $request->getPathInfo();
     $file_path = self::getCachedFilePath($request, $path);
+    if ($file_path === '') {
+      return;
+    }
 
     // don't save non-200 responses.
     $response = $event->getResponse();
@@ -132,7 +138,8 @@ final class CacheBookManifests implements EventSubscriberInterface {
     $base_dir = dirname($filepath);
     $filesystem->prepareDirectory($base_dir, FileSystemInterface::CREATE_DIRECTORY);
 
-    return $filesystem->realpath($filepath);
+    $file = $filesystem->realpath($filepath);
+    return $file ?: '';
   }
 
 }

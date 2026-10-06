@@ -33,6 +33,7 @@ lehigh_islandora.source_browser:
     _title_callback: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::title'
   requirements:
     _permission: "access content"
+    _entity_access: "node.view"
   options:
     parameters:
       node:
@@ -45,6 +46,7 @@ lehigh_islandora.source_browser_json:
     _title: "Source Browser"
   requirements:
     _permission: "access content"
+    _entity_access: "node.view"
   options:
     parameters:
       node:
@@ -57,6 +59,7 @@ lehigh_islandora.source_browser_search:
     _title: "Source Browser Search"
   requirements:
     _permission: "access content"
+    _entity_access: "node.view"
   options:
     parameters:
       node:
@@ -69,6 +72,20 @@ lehigh_islandora.source_browser_index:
     _title: "Source Browser Index"
   requirements:
     _permission: "access content"
+    _entity_access: "node.view"
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+lehigh_islandora.source_browser_index_hits:
+  path: "/api/v1/source-browser/{node}/index/{term_id}"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::index'
+  requirements:
+    _permission: "access content"
+    _entity_access: "node.view"
+    term_id: '\d+'
   options:
     parameters:
       node:
@@ -81,6 +98,7 @@ lehigh_islandora.source_browser_downloads:
     _title: "Source Browser Downloads"
   requirements:
     _permission: "access content"
+    _entity_access: "node.view"
   options:
     parameters:
       node:

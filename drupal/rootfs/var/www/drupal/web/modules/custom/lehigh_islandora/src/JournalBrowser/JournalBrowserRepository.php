@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Drupal\lehigh_islandora\JournalBrowser;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\file\FileInterface;
@@ -29,6 +31,9 @@ final class JournalBrowserRepository {
   public function __construct(
     protected EntityTypeManagerInterface $entityTypeManager,
     protected Connection $database,
+    protected BrowserAccess $access,
+    protected DownloadResolver $downloadResolver,
+    protected ConfigFactoryInterface $configFactory,
   ) {}
 
   /**
@@ -37,19 +42,45 @@ final class JournalBrowserRepository {
    * @return \Drupal\node\NodeInterface[]
    *   Source nodes keyed by node ID.
    */
-  public function getSources(NodeInterface $current): array {
-    $sources = [(int) $current->id() => $current];
-    $root = $this->entityTypeManager->getStorage('node')->load(1);
-    if ($root instanceof NodeInterface) {
-      $root_children = $this->loadNodesByIds($this->getDirectChildIds((int) $root->id()));
-      if ($root_children) {
-        $sources = $root_children;
-        $sources[(int) $current->id()] = $current;
-      }
-    }
+  public function getSources(?NodeInterface $current = NULL): array {
+    $ids = $this->entityTypeManager->getStorage('node')->getQuery()
+      ->accessCheck(TRUE)
+      ->condition('status', 1)
+      ->condition('field_display_hints.entity:taxonomy_term.name', 'Journal Browser')
+      ->execute();
+    $sources = array_filter($this->loadNodesByIds(array_values($ids)), fn(NodeInterface $node): bool => $this->isBrowserSource($node));
 
     uasort($sources, static fn(NodeInterface $a, NodeInterface $b): int => strcasecmp($a->label(), $b->label()));
     return $sources;
+  }
+
+  /**
+   * The collection metadata switch that enables this view.
+   */
+  public function isBrowserSource(NodeInterface $node): bool {
+    return $this->access->canView($node)
+      && lehigh_site_support_identify_collection($node, TRUE)
+      && lehigh_site_support_has_display_hint($node, 'Journal Browser');
+  }
+
+  /**
+   * Returns the date metadata, including diary creation dates.
+   */
+  public function getDate(NodeInterface $node): string {
+    foreach (['field_edtf_date_issued', 'field_edtf_date_created', 'field_edtf_date'] as $field) {
+      if ($node->hasField($field) && !$node->get($field)->isEmpty()) {
+        return (string) $node->get($field)->value;
+      }
+    }
+    return '';
+  }
+
+  /**
+   * Returns direct, accessible subcollections, including newly imported ones.
+   */
+  public function getSubcollections(NodeInterface $source): array {
+    return array_filter($this->loadNodesByIds($this->getDirectChildIds((int) $source->id())),
+      static fn(NodeInterface $node): bool => lehigh_site_support_identify_collection($node, TRUE));
   }
 
   /**
@@ -68,16 +99,28 @@ final class JournalBrowserRepository {
       return [(int) $source->id() => $source];
     }
 
-    $candidate_ids = $this->getDescendantIds((int) $source->id(), 4);
-    if (!$candidate_ids) {
-      $candidate_ids = $this->getDirectChildIds((int) $source->id());
+    $candidate_ids = $this->getDescendantIds((int) $source->id());
+    $issues = $this->loadNodesByIds($this->filterNodeIdsByModel($candidate_ids, $issue_models));
+    // Containers with Publication Issues are volumes.
+    foreach ($issues as $id => $issue) {
+      if ($this->getModel($issue) !== 'Publication Issue') {
+        foreach ($issues as $other) {
+          if ($this->getModel($other) === 'Publication Issue' && $this->isDescendantOf($other, $issue)) {
+            unset($issues[$id]);
+            break;
+          }
+        }
+      }
     }
-    $issue_ids = $this->filterNodeIdsByModel($candidate_ids, $issue_models);
-    if (!$issue_ids) {
-      $issue_ids = $this->getDirectChildIds((int) $source->id());
+    if (!$issues) {
+      $issues = array_filter($this->getDescendants($source), fn(NodeInterface $node): bool =>
+        !lehigh_site_support_identify_collection($node, TRUE) && $this->getModel($node) !== 'Page');
     }
-
-    return $this->loadNodesByIds($issue_ids);
+    if (!$issues && $this->getDirectChildIds((int) $source->id())) {
+      // Flat collections of pages use the source as their enclosing document.
+      $issues = [(int) $source->id() => $source];
+    }
+    return $issues;
   }
 
   /**
@@ -87,28 +130,15 @@ final class JournalBrowserRepository {
    *   Entries and pages keyed by node ID.
    */
   public function getIssueItems(NodeInterface $issue): array {
-    $children = $this->loadNodesByIds($this->getDirectChildIds((int) $issue->id()));
-    $entries = [];
-    $pages = [];
-
-    foreach ($children as $child) {
-      if ($this->getModel($child) === 'Page') {
-        $pages[(int) $child->id()] = $child;
-        continue;
-      }
-      $entries[(int) $child->id()] = $child;
-      $grandchildren = $this->loadNodesByIds($this->getDirectChildIds((int) $child->id()));
-      foreach ($grandchildren as $grandchild) {
-        if ($this->getModel($grandchild) === 'Page') {
-          $pages[(int) $grandchild->id()] = $grandchild;
-        }
-      }
-    }
-
-    return [
-      'entries' => $entries,
-      'pages' => $pages,
-    ];
+    $nodes = $this->getDescendants($issue);
+    $pages = array_filter($nodes, fn(NodeInterface $node): bool => $this->getModel($node) === 'Page');
+    $entries = array_diff_key($nodes, $pages);
+    uasort($pages, function (NodeInterface $a, NodeInterface $b): int {
+      $weight_a = $a->hasField('field_weight') ? (float) $a->get('field_weight')->value : 0;
+      $weight_b = $b->hasField('field_weight') ? (float) $b->get('field_weight')->value : 0;
+      return ($weight_a <=> $weight_b) ?: strnatcasecmp($this->getPartDetail($a, 'page')['number'], $this->getPartDetail($b, 'page')['number']) ?: strnatcasecmp($a->label(), $b->label());
+    });
+    return ['entries' => $entries, 'pages' => $pages];
   }
 
   /**
@@ -117,101 +147,65 @@ final class JournalBrowserRepository {
    * @return \Drupal\node\NodeInterface[]
    *   Descendants keyed by node ID.
    */
-  public function getDescendants(NodeInterface $source, int $max_depth = 8): array {
-    $source_id = (int) $source->id();
-    if (isset($this->descendants[$source_id])) {
-      return $this->descendants[$source_id];
+  public function getDescendants(NodeInterface $source): array {
+    $id = (int) $source->id();
+    if (!isset($this->descendants[$id])) {
+      $this->descendants[$id] = $this->loadNodesByIds($this->getDescendantIds($id));
     }
-
-    $seen = [$source_id => TRUE];
-    $frontier = [$source_id];
-    $descendant_ids = [];
-    $depth = 0;
-
-    while ($frontier && $depth < $max_depth) {
-      $children = $this->database->select('node__field_member_of', 'm')
-        ->fields('m', ['entity_id'])
-        ->condition('m.field_member_of_target_id', $frontier, 'IN')
-        ->execute()
-        ->fetchCol();
-
-      $frontier = [];
-      foreach ($children as $child_id) {
-        $child_id = (int) $child_id;
-        if (isset($seen[$child_id])) {
-          continue;
-        }
-        $seen[$child_id] = TRUE;
-        $descendant_ids[] = $child_id;
-        $frontier[] = $child_id;
-      }
-      ++$depth;
+    foreach ($this->descendants[$id] as $node) {
+      $this->access->canView($node);
     }
-
-    if (!$descendant_ids) {
-      return $this->descendants[$source_id] = [];
-    }
-
-    /** @var \Drupal\node\NodeInterface[] $nodes */
-    $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($descendant_ids);
-    $nodes = array_filter($nodes, static function (NodeInterface $node): bool {
-      return $node->isPublished() && $node->access('view');
-    });
-
-    uasort($nodes, fn(NodeInterface $a, NodeInterface $b): int => $this->compareNodes($a, $b));
-    return $this->descendants[$source_id] = $nodes;
+    return $this->descendants[$id];
   }
 
   /**
-   * Returns direct published child node IDs for a parent.
-   *
-   * @return int[]
-   *   Child node IDs.
+   * Returns direct published, viewable child IDs.
    */
   protected function getDirectChildIds(int $parent_id): array {
-    $query = $this->database->select('node__field_member_of', 'm');
-    $query->innerJoin('node_field_data', 'n', 'n.nid = m.entity_id');
-    $query->fields('m', ['entity_id']);
-    $query->condition('m.field_member_of_target_id', $parent_id);
-    $query->condition('n.status', 1);
-    $query->orderBy('n.title');
-    return array_map('intval', $query->execute()->fetchCol());
+    return array_map('intval', array_values($this->entityTypeManager->getStorage('node')->getQuery()
+      ->accessCheck(TRUE)->condition('status', 1)->condition('field_member_of', $parent_id)->execute()));
   }
 
   /**
-   * Returns descendant IDs without loading entities.
-   *
-   * @return int[]
-   *   Descendant node IDs.
+   * Walks accessible relationships, guarding against cycles and missing levels.
    */
-  protected function getDescendantIds(int $source_id, int $max_depth = 4): array {
+  protected function getDescendantIds(int $source_id): array {
     $seen = [$source_id => TRUE];
     $frontier = [$source_id];
-    $descendant_ids = [];
-    $depth = 0;
-
-    while ($frontier && $depth < $max_depth) {
-      $query = $this->database->select('node__field_member_of', 'm');
-      $query->innerJoin('node_field_data', 'n', 'n.nid = m.entity_id');
-      $query->fields('m', ['entity_id']);
-      $query->condition('m.field_member_of_target_id', $frontier, 'IN');
-      $query->condition('n.status', 1);
-      $children = $query->execute()->fetchCol();
-
+    while ($frontier) {
+      $children = $this->entityTypeManager->getStorage('node')->getQuery()
+        ->accessCheck(TRUE)->condition('status', 1)->condition('field_member_of', $frontier, 'IN')->execute();
       $frontier = [];
-      foreach ($children as $child_id) {
-        $child_id = (int) $child_id;
-        if (isset($seen[$child_id])) {
-          continue;
+      foreach ($children as $id) {
+        $id = (int) $id;
+        if (!isset($seen[$id])) {
+          $seen[$id] = TRUE;
+          $frontier[] = $id;
         }
-        $seen[$child_id] = TRUE;
-        $descendant_ids[] = $child_id;
-        $frontier[] = $child_id;
       }
-      ++$depth;
     }
+    unset($seen[$source_id]);
+    return array_keys($seen);
+  }
 
-    return $descendant_ids;
+  /**
+   * Checks membership through every parent, including multi-parent objects.
+   */
+  public function isDescendantOf(NodeInterface $node, NodeInterface $source, array $seen = []): bool {
+    $id = (int) $node->id();
+    if ($id === (int) $source->id()) {
+      return TRUE;
+    }
+    if (isset($seen[$id]) || !$this->access->canView($node) || !$node->hasField('field_member_of')) {
+      return FALSE;
+    }
+    $seen[$id] = TRUE;
+    foreach ($node->get('field_member_of')->referencedEntities() as $parent) {
+      if ($parent instanceof NodeInterface && $this->isDescendantOf($parent, $source, $seen)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
   /**
@@ -254,8 +248,8 @@ final class JournalBrowserRepository {
 
     /** @var \Drupal\node\NodeInterface[] $nodes */
     $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($node_ids);
-    $nodes = array_filter($nodes, static function (NodeInterface $node): bool {
-      return $node->isPublished() && $node->access('view');
+    $nodes = array_filter($nodes, function (NodeInterface $node): bool {
+      return $this->access->canView($node);
     });
     uasort($nodes, fn(NodeInterface $a, NodeInterface $b): int => $this->compareNodes($a, $b));
     return $nodes;
@@ -295,18 +289,114 @@ final class JournalBrowserRepository {
    * @return array<int, array<string, mixed>>
    *   Normalized search result rows.
    */
-  public function searchWithinSource(NodeInterface $source, string $query, int $limit = 25): array {
+  public function searchWithinSource(NodeInterface $source, string $query, int $limit = 25, int $offset = 0, ?NodeInterface $issue = NULL): array {
     $query = trim($query);
     if ($query === '') {
       return [];
     }
-
-    $results = $this->searchApiWithinSource($source, $query, $limit);
-    if ($results) {
-      return $results;
+    $scope = $issue ?? $source;
+    if (!$this->isDescendantOf($scope, $source)) {
+      return [];
     }
+    $results = $this->searchApiWithinSource($scope, $query, $limit, $offset);
+    return $results ?? $this->metadataSearchWithinSource($scope, $query, $limit, $offset);
+  }
 
-    return $this->metadataSearchWithinSource($source, $query, $limit);
+  /**
+   * Lists subject terms without loading every page or every curated range.
+   */
+  public function getSubjectCatalog(NodeInterface $source): array {
+    $ids = $this->getDescendantIds((int) $source->id());
+    if (!$ids) {
+      return [];
+    }
+    $tids = [];
+    foreach ($this->subjectFields() as $field) {
+      $table = 'node__' . $field;
+      if ($this->database->schema()->tableExists($table)) {
+        $found = $this->database->select($table, 's')->distinct()
+          ->fields('s', [$field . '_target_id'])->condition('entity_id', $ids, 'IN')
+          ->condition('deleted', 0)->execute()->fetchCol();
+        $tids = array_merge($tids, $found);
+      }
+    }
+    $this->access->track(new CacheableMetadata(['tags' => ['lehigh_source_index_entry_list']]));
+    if ($this->database->schema()->tableExists('lehigh_source_index_entry')) {
+      $found = $this->database->select('lehigh_source_index_entry', 'i')->distinct()
+        ->fields('i', ['subject'])->condition('source', (int) $source->id())
+        ->condition('page', $ids, 'IN')->condition('issue', $ids, 'IN')->execute()->fetchCol();
+      $tids = array_merge($tids, $found);
+    }
+    $index = [];
+    $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadMultiple(array_unique($tids));
+    foreach ($terms as $term) {
+      if (!$this->access->canView($term)) {
+        continue;
+      }
+      $letter = mb_strtoupper(mb_substr($term->label(), 0, 1));
+      $letter = preg_match('/^[A-Z]$/', $letter) ? $letter : '#';
+      $index[$letter][] = [
+        'tid' => (int) $term->id(),
+        'title' => $term->label(),
+        'url' => $term->toUrl()->toString(),
+        'hits' => [],
+      ];
+    }
+    ksort($index);
+    foreach ($index as &$terms) {
+      usort($terms, static fn(array $a, array $b): int => strnatcasecmp($a['title'], $b['title']));
+    }
+    return $index;
+  }
+
+  /**
+   * Loads only pages that reference the requested subject.
+   */
+  public function getSubjectNodes(NodeInterface $source, int $tid): array {
+    $ids = $this->getDescendantIds((int) $source->id());
+    if (!$ids) {
+      return [];
+    }
+    $query = $this->entityTypeManager->getStorage('node')->getQuery()->accessCheck(TRUE)
+      ->condition('status', 1)->condition('nid', $ids, 'IN');
+    $group = $query->orConditionGroup();
+    foreach ($this->subjectFields() as $field) {
+      if ($this->database->schema()->tableExists('node__' . $field)) {
+        $group->condition($field, $tid);
+      }
+    }
+    $query->condition($group);
+    return $this->loadNodesByIds(array_values($query->execute()));
+  }
+
+  /**
+   * Subject reference fields included in native and curated browsing.
+   */
+  protected function subjectFields(): array {
+    return [
+      'field_subject', 'field_subject_general', 'field_subject_lcsh',
+      'field_subjects_name', 'field_geographic_subject', 'field_temporal_subject',
+    ];
+  }
+
+  /**
+   * Checks transcript availability without reading attached text files.
+   */
+  public function hasTranscriptions(array $nodes): bool {
+    foreach ($nodes as $node) {
+      if (!$this->canReadFiles($node)) {
+        continue;
+      }
+      $query = $this->entityTypeManager->getStorage('media')->getQuery()->accessCheck(TRUE)
+        ->condition('status', 1)->condition('bundle', 'extracted_text')
+        ->condition('field_media_of', $node->id());
+      foreach ($this->entityTypeManager->getStorage('media')->loadMultiple($query->execute()) as $media) {
+        if ($this->access->canView($media) && $this->downloadResolver->getFile($media)) {
+          return TRUE;
+        }
+      }
+    }
+    return FALSE;
   }
 
   /**
@@ -319,22 +409,83 @@ final class JournalBrowserRepository {
    *   Index entries grouped by first letter.
    */
   public function buildAlphabeticalIndex(array $nodes): array {
-    $index = [];
+    $terms = [];
     foreach ($nodes as $node) {
-      $letter = strtoupper(substr($node->label(), 0, 1));
-      if (!preg_match('/[A-Z]/', $letter)) {
-        $letter = '#';
+      foreach ([
+        'field_subject',
+        'field_subject_general',
+        'field_subject_lcsh',
+        'field_subjects_name',
+        'field_geographic_subject',
+        'field_temporal_subject',
+      ] as $field) {
+        if (!$node->hasField($field)) {
+          continue;
+        }
+        foreach ($node->get($field)->referencedEntities() as $term) {
+          if (!$this->access->canView($term)) {
+            continue;
+          }
+          $tid = (int) $term->id();
+          $terms[$tid]['title'] = $term->label();
+          $terms[$tid]['tid'] = $tid;
+          $terms[$tid]['url'] = $term->toUrl()->toString();
+          $terms[$tid]['hits'][(int) $node->id()] = [
+            'nid' => (int) $node->id(),
+            'title' => $node->label(),
+            'url' => $node->toUrl()->toString(),
+          ];
+        }
       }
-      $index[$letter][] = [
-        'title' => $node->label(),
-        'model' => $this->getModel($node),
-        'url' => $node->toUrl()->toString(),
-      ];
+    }
+    $index = [];
+    foreach ($terms as $term) {
+      $letter = mb_strtoupper(mb_substr($term['title'], 0, 1));
+      $letter = preg_match('/^[A-Z]$/', $letter) ? $letter : '#';
+      $term['hits'] = array_values($term['hits']);
+      $index[$letter][] = $term;
     }
 
     ksort($index);
     foreach ($index as &$entries) {
       usort($entries, static fn(array $a, array $b): int => strnatcasecmp($a['title'], $b['title']));
+    }
+    return $index;
+  }
+
+  /**
+   * Reads migrated ranges, checking each referenced entity before output.
+   */
+  public function getCuratedIndex(NodeInterface $source, ?int $tid = NULL): array {
+    $this->access->track(new CacheableMetadata(['tags' => ['lehigh_source_index_entry_list']]));
+    if (!$this->database->schema()->tableExists('lehigh_source_index_entry')) {
+      return [];
+    }
+    $query = $this->database->select('lehigh_source_index_entry', 'i')->fields('i')
+      ->condition('source', (int) $source->id())->orderBy('volume')->orderBy('start_page');
+    if ($tid !== NULL) {
+      $query->condition('subject', $tid);
+    }
+    $rows = $query->execute();
+    $index = [];
+    foreach ($rows as $row) {
+      $page = $this->entityTypeManager->getStorage('node')->load($row->page);
+      $issue = $this->entityTypeManager->getStorage('node')->load($row->issue);
+      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($row->subject);
+      if (!$page instanceof NodeInterface || !$issue instanceof NodeInterface || !$term
+        || !$this->access->canView($page) || !$this->access->canView($issue) || !$this->access->canView($term)
+        || !$this->isDescendantOf($page, $issue) || !$this->isDescendantOf($issue, $source)) {
+        continue;
+      }
+      $tid = (int) $term->id();
+      $index[$tid] ??= ['tid' => $tid, 'title' => $term->label(), 'url' => $term->toUrl()->toString(), 'hits' => []];
+      $range = $row->start_page == $row->end_page ? (string) $row->start_page : $row->start_page . '–' . $row->end_page;
+      $index[$tid]['hits'][] = [
+        'nid' => (int) $page->id(),
+        'issue' => (int) $issue->id(),
+        'title' => 'Vol. ' . $row->volume . ', pp. ' . $range,
+        'url' => $page->toUrl()->toString(),
+      ];
     }
     return $index;
   }
@@ -355,16 +506,8 @@ final class JournalBrowserRepository {
     }
 
     $media_storage = $this->entityTypeManager->getStorage('media');
-    $query = $media_storage->getQuery()
-      ->condition('field_media_of', $node_ids, 'IN')
-      ->accessCheck(TRUE)
-      ->sort('name');
-    $or = $query->orConditionGroup()
-      ->condition('bundle', 'extracted_text')
-      ->condition('field_media_use.entity:taxonomy_term.name', 'Extracted Text');
-    $query->condition($or);
-
-    $mids = $query->execute();
+    $mids = $media_storage->getQuery()->condition('field_media_of', $node_ids, 'IN')
+      ->condition('bundle', 'extracted_text')->condition('status', 1)->accessCheck(TRUE)->sort('name')->execute();
     if (!$mids) {
       return [];
     }
@@ -379,7 +522,10 @@ final class JournalBrowserRepository {
     $media_items = $media_storage->loadMultiple($mids);
     foreach ($media_items as $media) {
       $parent = $this->getMediaParent($media, $nodes_by_id);
-      $file = $this->getMediaFile($media);
+      if (!$parent || !$this->access->canView($media) || !$this->canReadFiles($parent)) {
+        continue;
+      }
+      $file = $this->downloadResolver->getFile($media);
       $transcriptions[] = [
         'mid' => (int) $media->id(),
         'title' => $media->label(),
@@ -388,6 +534,7 @@ final class JournalBrowserRepository {
         'url' => $media->toUrl()->toString(),
         'file_url' => $file ? $file->createFileUrl(FALSE) : '',
         'text' => $file ? $this->readTextFile($file) : '',
+        'truncated' => $file && $file->getSize() > 100000,
       ];
     }
 
@@ -434,10 +581,10 @@ final class JournalBrowserRepository {
    * @return array<int, array<string, mixed>>
    *   Normalized search result rows.
    */
-  protected function searchApiWithinSource(NodeInterface $source, string $query, int $limit): array {
+  protected function searchApiWithinSource(NodeInterface $source, string $query, int $limit, int $offset = 0): ?array {
     return $this->searchApi($query, $limit, [
       'field_descendant_of' => (int) $source->id(),
-    ]);
+    ], $offset, $source);
   }
 
   /**
@@ -453,7 +600,7 @@ final class JournalBrowserRepository {
    * @return array<int, array<string, mixed>>
    *   Normalized search result rows.
    */
-  protected function searchApiWithinNode(NodeInterface $node, string $query, int $limit): array {
+  protected function searchApiWithinNode(NodeInterface $node, string $query, int $limit): ?array {
     return $this->searchApi($query, $limit, [
       'nid' => (int) $node->id(),
     ]);
@@ -468,26 +615,30 @@ final class JournalBrowserRepository {
    *   Maximum result count.
    * @param array<string, int> $conditions
    *   Search API field conditions.
+   * @param int $offset
+   *   Result offset.
+   * @param \Drupal\node\NodeInterface|null $scope
+   *   Optional hierarchy scope, verified again on each returned entity.
    *
    * @return array<int, array<string, mixed>>
    *   Normalized search result rows.
    */
-  protected function searchApi(string $query, int $limit, array $conditions): array {
+  protected function searchApi(string $query, int $limit, array $conditions, int $offset = 0, ?NodeInterface $scope = NULL): ?array {
     try {
       /** @var \Drupal\search_api\IndexInterface|null $index */
-      $index = $this->entityTypeManager->getStorage('search_api_index')->load('default_solr_index');
+      $index = $this->entityTypeManager->getStorage('search_api_index')->load($this->configFactory->get('lehigh_islandora.journal_browser')->get('search_index') ?? 'default_solr_index');
       if (!$index || !$index->status()) {
-        return [];
+        return NULL;
       }
+      $this->access->track($index);
+      $this->access->track($index->getServerInstance());
+      $this->access->track($this->configFactory->get('lehigh_islandora.journal_browser'));
 
       $available_fields = array_keys($index->getFields());
-      $fulltext_fields = array_values(array_intersect($available_fields, [
-        'ocr_text',
-        'rendered_item',
-        'field_description',
-        'field_full_title',
-        'title',
-      ]));
+      if (array_diff(array_keys($conditions), $available_fields)) {
+        return NULL;
+      }
+      $fulltext_fields = $index->getFulltextFields();
 
       $search = $index->query([
         'search id' => 'lehigh_islandora_source_browser',
@@ -497,18 +648,27 @@ final class JournalBrowserRepository {
         $search->setFulltextFields($fulltext_fields);
       }
       foreach ($conditions as $field => $value) {
-        $search->addCondition($field, $value);
+        if ($field === 'field_descendant_of' && in_array('nid', $available_fields, TRUE)) {
+          $group = $search->createConditionGroup('OR');
+          $group->addCondition($field, $value);
+          $group->addCondition('nid', $value);
+          $search->addConditionGroup($group);
+        }
+        else {
+          $search->addCondition($field, $value);
+        }
       }
-      $search->range(0, $limit);
+      $search->range($offset, $limit);
       $search->sort('search_api_relevance', 'DESC');
 
       $result_set = $search->execute();
+      $this->access->track(new CacheableMetadata(['tags' => ['search_api_list']]));
       $result_set->preLoadResultItems();
       $results = [];
       foreach ($result_set->getResultItems() as $item) {
         $object = $item->getOriginalObject(TRUE);
         $node = $object ? $object->getValue() : NULL;
-        if (!$node instanceof NodeInterface || !$node->access('view')) {
+        if (!$node instanceof NodeInterface || !$this->access->canView($node) || !$this->canReadFiles($node) || ($scope && !$this->isDescendantOf($node, $scope))) {
           continue;
         }
         $results[] = $this->normalizeSearchResult($node, $item->getExcerpt(), 'full_text');
@@ -516,8 +676,8 @@ final class JournalBrowserRepository {
 
       return $results;
     }
-    catch (\Throwable) {
-      return [];
+    catch (\Exception) {
+      return NULL;
     }
   }
 
@@ -527,17 +687,25 @@ final class JournalBrowserRepository {
    * @return array<int, array<string, mixed>>
    *   Normalized search result rows.
    */
-  protected function metadataSearchWithinSource(NodeInterface $source, string $query, int $limit): array {
+  protected function metadataSearchWithinSource(NodeInterface $source, string $query, int $limit, int $offset = 0): array {
     $matches = [];
-    foreach ($this->getDescendants($source) as $node) {
-      if (stripos($node->label(), $query) !== FALSE || stripos($this->getDescription($node), $query) !== FALSE) {
-        $matches[(int) $node->id()] = $this->normalizeSearchResult($node, $this->getDescription($node), 'metadata');
+    $nodes = [(int) $source->id() => $source] + $this->getDescendants($source);
+    foreach ($nodes as $node) {
+      $text = $node->label() . "\n" . $this->getDescription($node);
+      foreach (['field_subject', 'field_subject_general', 'field_subjects_name'] as $field) {
+        if ($node->hasField($field)) {
+          foreach ($node->get($field)->referencedEntities() as $term) {
+            if ($this->access->canView($term)) {
+              $text .= "\n" . $term->label();
+            }
+          }
+        }
       }
-      if (count($matches) >= $limit) {
-        break;
+      if (mb_stripos($text, $query) !== FALSE) {
+        $matches[] = $this->normalizeSearchResult($node, $this->buildSnippet($text, $query), 'metadata');
       }
     }
-    return array_values($matches);
+    return array_slice($matches, $offset, $limit);
   }
 
   /**
@@ -566,7 +734,7 @@ final class JournalBrowserRepository {
    */
   protected function buildSnippet(string $text, string $query): string {
     $text = trim(strip_tags($text));
-    $position = stripos($text, $query);
+    $position = mb_stripos($text, $query);
     if ($position === FALSE) {
       return mb_substr($text, 0, 300);
     }
@@ -611,25 +779,29 @@ final class JournalBrowserRepository {
    * Builds available download links for a node.
    */
   public function getDownloads(NodeInterface $node): array {
-    $downloads = [];
-    if (function_exists('lehigh_site_support_get_node_file')) {
-      $uses = [
-        'http://pcdm.org/use#ServiceFile' => 'Service PDF',
-        'http://pcdm.org/use#OriginalFile' => 'Original File',
-        'http://pcdm.org/use#PreservationMasterFile' => 'Preservation Master',
-      ];
-      foreach ($uses as $uri => $label) {
-        $file = lehigh_site_support_get_node_file($node, $uri);
-        if ($file) {
-          $downloads[] = [
-            'label' => $label,
-            'url' => $file->createFileUrl(FALSE),
-          ];
-        }
-      }
-    }
+    return $this->downloadResolver->resolve($node);
+  }
 
-    return $downloads;
+  /**
+   * Uses the common file/viewer access policy.
+   */
+  public function canReadFiles(NodeInterface $node): bool {
+    return $this->access->canReadFiles($node);
+  }
+
+  /**
+   * Returns an accessible thumbnail URL without exposing restricted media.
+   */
+  public function getThumbnail(NodeInterface $node): string {
+    if (!$this->canReadFiles($node) || !$node->hasField('field_thumbnail')) {
+      return '';
+    }
+    $media = $node->get('field_thumbnail')->entity;
+    if (!$media instanceof MediaInterface || !$this->access->canView($media)) {
+      return '';
+    }
+    $file = $this->downloadResolver->getFile($media);
+    return $file && str_starts_with($file->getMimeType(), 'image/') ? $file->createFileUrl(FALSE) : '';
   }
 
   /**
@@ -662,21 +834,6 @@ final class JournalBrowserRepository {
   }
 
   /**
-   * Returns the file entity backing a media item.
-   */
-  protected function getMediaFile(MediaInterface $media): ?FileInterface {
-    $source = $media->getSource();
-    $configuration = $source->getConfiguration();
-    $field_name = $configuration['source_field'] ?? NULL;
-    if (!$field_name || !$media->hasField($field_name) || $media->get($field_name)->isEmpty()) {
-      return NULL;
-    }
-
-    $file = $media->get($field_name)->entity;
-    return $file instanceof FileInterface ? $file : NULL;
-  }
-
-  /**
    * Reads a bounded text preview from a file when it is plain text.
    */
   protected function readTextFile(FileInterface $file): string {
@@ -691,17 +848,20 @@ final class JournalBrowserRepository {
       return '';
     }
 
-    return trim(strip_tags($text));
+    if (in_array($extension, ['txt', 'text'], TRUE)) {
+      return trim($text);
+    }
+    return trim(strip_tags(preg_replace('/<\/(p|div|br|li)>/i', "\n", $text)));
   }
 
   /**
    * Sorts nodes chronologically, then by part detail, then title.
    */
   protected function compareNodes(NodeInterface $a, NodeInterface $b): int {
-    $date_a = $a->hasField('field_edtf_date_issued') && !$a->get('field_edtf_date_issued')->isEmpty() ? (string) $a->get('field_edtf_date_issued')->value : '';
-    $date_b = $b->hasField('field_edtf_date_issued') && !$b->get('field_edtf_date_issued')->isEmpty() ? (string) $b->get('field_edtf_date_issued')->value : '';
+    $date_a = $this->getDate($a);
+    $date_b = $this->getDate($b);
     if ($date_a !== $date_b) {
-      return strcmp($date_a, $date_b);
+      return $date_a === '' ? 1 : ($date_b === '' ? -1 : strcmp($date_a, $date_b));
     }
 
     $page_a = $this->getPartDetail($a, 'page')['number'];

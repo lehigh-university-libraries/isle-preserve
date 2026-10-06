@@ -636,7 +636,7 @@ function lehigh_islandora_get_ocfl_dir(string $objectId) : string {
  * Implements hook_views_query_alter().
  */
 function lehigh_islandora_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
-  if (!in_array($view->id(), ['browse', 'journal_browser'], TRUE)) {
+  if ($view->id() !== 'browse') {
     return;
   }
   $request = \Drupal::request();
@@ -662,23 +662,6 @@ function lehigh_islandora_views_query_alter(ViewExecutable $view, QueryPluginBas
     'sub-collection' => lehigh_islandora_get_tid_by_name('Sub-Collection', 'islandora_models'),
     'page' => lehigh_islandora_get_tid_by_name('Page', 'islandora_models'),
   ];
-
-  if ($view->id() === 'journal_browser') {
-    if ($arg > 0) {
-      $query->addCondition('field_model', [
-        $models['collection'],
-        $models['sub-collection'],
-        $models['page'],
-      ], 'NOT IN');
-      $query->addCondition('field_descendant_of', [$arg], 'IN');
-      $query->sort('field_edtf_date_issued', 'DESC');
-      $query->sort('title', 'ASC');
-    }
-    else {
-      $query->addCondition('search_api_id', ['__invalid__'], 'IN');
-    }
-    return;
-  }
 
   // /browse-items/-1 -> all non-collection items
   // browse all items
@@ -1128,4 +1111,20 @@ function lehigh_islandora_on_campus() {
   return $account->hasPermission('administer media')
     || str_starts_with($ip, '128.180.')
     || isset($allowed_ips[$ip]);
+}
+
+/**
+ * Implements hook_preprocess_mirador().
+ */
+function lehigh_islandora_preprocess_mirador(array &$variables): void {
+  // Mirador's canvas selection belongs to the individual window configuration.
+  if (!empty($variables['window_config']['canvasId'])) {
+    $selector = '#' . $variables['mirador_view_id'];
+    $variables['#attached']['drupalSettings']['mirador']['viewers'][$selector]['windows'][0]['canvasId'] = $variables['window_config']['canvasId'];
+  }
+  // Apply the source browser override after the global plugin configuration.
+  if (isset($variables['window_config']['textOverlay'])) {
+    $selector = '#' . $variables['mirador_view_id'];
+    $variables['#attached']['drupalSettings']['mirador']['viewers'][$selector]['windows'][0]['textOverlay'] = $variables['window_config']['textOverlay'];
+  }
 }

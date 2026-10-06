@@ -6,17 +6,17 @@ namespace Drupal\lehigh_islandora\Controller;
 
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
+use Drupal\lehigh_islandora\JournalBrowser\BrowserAccess;
 use Drupal\lehigh_islandora\JournalBrowser\JournalBrowserBuilder;
 use Drupal\lehigh_islandora\JournalBrowser\JournalBrowserRepository;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Controller for the Islandora source browser.
+ * Serves the same accessible source-browser state as HTML and JSON.
  */
 final class SourceBrowserController extends ControllerBase {
 
@@ -26,6 +26,7 @@ final class SourceBrowserController extends ControllerBase {
   public function __construct(
     protected JournalBrowserBuilder $builder,
     protected JournalBrowserRepository $repository,
+    protected BrowserAccess $browserAccess,
   ) {}
 
   /**
@@ -35,180 +36,157 @@ final class SourceBrowserController extends ControllerBase {
     return new static(
       $container->get('lehigh_islandora.journal_browser.builder'),
       $container->get('lehigh_islandora.journal_browser.repository'),
+      $container->get('lehigh_islandora.source_browser.access'),
     );
   }
 
   /**
-   * Route title callback.
+   * Supplies the source-specific route title.
    */
   public function title(NodeInterface $node): string {
     return $node->label();
   }
 
   /**
-   * Landing route title callback.
+   * Supplies the landing route title.
    */
   public function landingTitle(): string {
-    return $this->t('Source Browser')->render();
+    return (string) $this->t('Source Browser');
   }
 
   /**
-   * Redirects old source-specific browser URLs to the canonical browser page.
+   * Preserves shared query state on the source-specific entry point.
    */
   public function legacy(NodeInterface $node, Request $request): RedirectResponse {
-    $query = $request->query->all();
-    $query['source'] = (int) $node->id();
+    $this->assertSource($node);
     return $this->redirect('lehigh_islandora.source_browser_landing', [], [
-      'query' => $query,
+      'query' => ['source' => (int) $node->id()] + $request->query->all(),
     ]);
   }
 
   /**
-   * Renders the canonical source browser landing page.
+   * Resolves an explicitly requested or the first metadata-enabled source.
    */
   public function landing(Request $request): array {
-    $node = $this->resolveSource($request);
-    if (!$node) {
-      return [
-        '#markup' => $this->t('No browsable sources were found.'),
-        '#cache' => [
-          'contexts' => ['url.query_args', 'user.permissions'],
-          'tags' => ['node_list'],
-          'max-age' => 300,
-        ],
-      ];
-    }
-
-    return $this->view($node);
-  }
-
-  /**
-   * Renders the source browser.
-   */
-  public function view(NodeInterface $node): array {
-    $browser = $this->builder->build($node);
-    $selected_issue_viewer = [];
-    if (!empty($browser['selected_issue']['nid'])) {
-      $issue = $this->entityTypeManager()->getStorage('node')->load((int) $browser['selected_issue']['nid']);
-      if ($issue instanceof NodeInterface && $issue->access('view') && $this->canDisplayViewer($issue)) {
-        $selected_issue_viewer = [
-          '#theme' => 'mirador',
-          '#mirador_view_id' => 'mirador_' . $issue->id(),
-          '#iiif_manifest_url' => Url::fromUserInput('/node/' . $issue->id() . '/book-manifest', [
-            'absolute' => TRUE,
-          ])->toString(),
-          '#settings' => [],
-          '#cache' => [
-            'contexts' => ['url.site', 'user.permissions'],
-            'tags' => ['node:' . $issue->id(), 'media_list'],
-            'max-age' => 300,
-          ],
-        ];
+    $requested = (int) $request->query->get('source');
+    if ($requested > 0) {
+      $node = $this->entityTypeManager()->getStorage('node')->load($requested);
+      if (!$node instanceof NodeInterface) {
+        throw new NotFoundHttpException();
       }
+      return $this->view($node);
     }
-    $build = [
-      '#theme' => 'lehigh_source_browser',
-      '#browser' => $browser,
-      '#selected_issue_viewer' => $selected_issue_viewer,
-      '#attached' => [
-        'library' => [
-          'lehigh_islandora/source-browser',
-        ],
-      ],
-    ];
-    if (!empty($browser['#cacheability'])) {
-      $browser['#cacheability']->applyTo($build);
+    $sources = $this->repository->getSources();
+    if ($node = reset($sources)) {
+      return $this->view($node);
     }
+    $build = ['#markup' => $this->t('No browsable sources were found.')];
+    $this->browserAccess->getCacheability()->applyTo($build);
     return $build;
   }
 
   /**
-   * Checks whether the selected issue's viewer can be displayed.
+   * Renders the browser and current Islandora viewer.
    */
-  protected function canDisplayViewer(NodeInterface $node): bool {
-    if (function_exists('lehigh_embargo_node_is_embargoed') && lehigh_embargo_node_is_embargoed($node)) {
-      return FALSE;
-    }
-    if (function_exists('lehigh_islandora_node_is_locally_restricted') &&
-      function_exists('lehigh_islandora_on_campus') &&
-      lehigh_islandora_node_is_locally_restricted($node) &&
-      !lehigh_islandora_on_campus()) {
-      return FALSE;
-    }
-    return TRUE;
-  }
-
-  /**
-   * Resolves the selected source from the root source list.
-   */
-  protected function resolveSource(Request $request): ?NodeInterface {
-    $storage = $this->entityTypeManager()->getStorage('node');
-    $requested = (int) $request->query->get('source');
-    if ($requested > 0) {
-      $node = $storage->load($requested);
-      if ($node instanceof NodeInterface && $node->access('view')) {
-        return $node;
-      }
-    }
-
-    $root = $storage->load(1);
-    if (!$root instanceof NodeInterface) {
-      return NULL;
-    }
-
-    $sources = $this->repository->getSources($root);
-    return reset($sources) ?: NULL;
-  }
-
-  /**
-   * Returns the normalized browser model as JSON.
-   */
-  public function json(NodeInterface $node): CacheableJsonResponse {
+  public function view(NodeInterface $node): array {
+    $this->assertSource($node);
     $browser = $this->builder->build($node);
-    $cacheability = $browser['#cacheability'] ?? NULL;
-    unset($browser['#cacheability']);
-    $response = new CacheableJsonResponse($browser);
-    if ($cacheability) {
-      $response->addCacheableDependency($cacheability);
-    }
-    return $response;
-  }
-
-  /**
-   * Returns scoped search results.
-   */
-  public function search(NodeInterface $node, Request $request): JsonResponse {
-    $query = trim((string) $request->query->get('q', ''));
-    $results = [];
-    foreach ($this->repository->searchWithinSource($node, $query) as $result) {
-      $results[] = [
-        'nid' => $result['nid'],
-        'title' => $result['title'],
-        'model' => $result['model'],
-        'description' => $result['description'],
-        'snippet' => $result['snippet'],
-        'match_source' => $result['match_source'],
-        'url' => $result['url'],
+    $selected = $browser['selected_issue'];
+    $viewer = [];
+    if ($selected && $selected['can_view']) {
+      $viewer = [
+        '#theme' => 'mirador',
+        '#mirador_view_id' => 'mirador_' . $selected['nid'],
+        '#iiif_manifest_url' => $selected['manifest_url'],
+        '#thumbnail_navigation_position' => 'far-right',
+        '#window_config' => [
+          'canvasId' => $selected['selected_page']['canvas'] ?? '',
+          'sideBarOpen' => FALSE,
+          'textOverlay' => [
+            'enabled' => FALSE,
+            'selectable' => FALSE,
+            'visible' => FALSE,
+          ],
+        ],
       ];
     }
-    return new JsonResponse([
-      'query' => $query,
-      'results' => $results,
-    ]);
+    $build = [
+      '#theme' => 'lehigh_source_browser',
+      '#browser' => $browser,
+      '#selected_issue_viewer' => $viewer,
+      '#attached' => [
+        'library' => ['lehigh_islandora/source-browser'],
+        // Loading these on every tab lets AJAX enter the viewer without reload.
+        'drupalSettings' => ['mirador' => ['viewers' => []]],
+      ],
+    ];
+    $browser['#cacheability']->applyTo($build);
+    return $build;
   }
 
   /**
-   * Returns available index entries.
+   * Returns the browser model with complete aggregate cache metadata.
    */
-  public function index(NodeInterface $node): JsonResponse {
-    return new JsonResponse($this->builder->buildIndex($node));
+  public function json(NodeInterface $node): CacheableJsonResponse {
+    $this->assertSource($node);
+    $browser = $this->builder->build($node);
+    $cacheability = $browser['#cacheability'];
+    unset($browser['#cacheability']);
+    return (new CacheableJsonResponse($browser))->addCacheableDependency($cacheability);
   }
 
   /**
-   * Returns source-level download choices.
+   * Returns scoped search results and stable pagination URLs.
    */
-  public function downloads(NodeInterface $node): JsonResponse {
-    return new JsonResponse($this->repository->getDownloads($node));
+  public function search(NodeInterface $node): CacheableJsonResponse {
+    $this->assertSource($node);
+    $browser = $this->builder->build($node);
+    return (new CacheableJsonResponse([
+      'query' => $browser['query'],
+      'scope' => $browser['scope'],
+      'offset' => $browser['offset'],
+      'results' => $browser['search_results'],
+      'previous_url' => $browser['previous_results_url'],
+      'next_url' => $browser['next_results_url'],
+    ]))->addCacheableDependency($browser['#cacheability']);
+  }
+
+  /**
+   * Returns source-local index facets or one term's page/range hits.
+   */
+  public function index(NodeInterface $node, ?int $term_id = NULL): CacheableJsonResponse {
+    $this->assertSource($node);
+    $index = $this->builder->buildIndex($node, NULL, $term_id);
+    if ($term_id !== NULL) {
+      foreach ($index as $terms) {
+        foreach ($terms as $term) {
+          if ($term['tid'] === $term_id) {
+            return (new CacheableJsonResponse($term))->addCacheableDependency($this->browserAccess->getCacheability());
+          }
+        }
+      }
+      throw new NotFoundHttpException();
+    }
+    return (new CacheableJsonResponse($index))->addCacheableDependency($this->browserAccess->getCacheability());
+  }
+
+  /**
+   * Returns accessible PDFs for the selected issue, or the source itself.
+   */
+  public function downloads(NodeInterface $node): CacheableJsonResponse {
+    $this->assertSource($node);
+    $browser = $this->builder->build($node);
+    $downloads = $browser['selected_issue']['downloads'] ?? $this->repository->getDownloads($node);
+    return (new CacheableJsonResponse($downloads))->addCacheableDependency($this->browserAccess->getCacheability());
+  }
+
+  /**
+   * Every entry point uses the collection metadata switch and view access.
+   */
+  protected function assertSource(NodeInterface $node): void {
+    if (!$this->repository->isBrowserSource($node)) {
+      throw new NotFoundHttpException();
+    }
   }
 
 }

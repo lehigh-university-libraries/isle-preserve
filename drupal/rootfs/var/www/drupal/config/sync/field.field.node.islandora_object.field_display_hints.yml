@@ -11,7 +11,7 @@ field_name: field_display_hints
 entity_type: node
 bundle: islandora_object
 label: 'Display Hints'
-description: ''
+description: 'Select Journal Browser on a collection to use date, issue, page, subject index, and transcription browsing instead of the standard collection listing.'
 required: false
 translatable: false
 default_value: {  }

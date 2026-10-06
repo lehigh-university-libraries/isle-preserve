@@ -136,3 +136,36 @@ function lehigh_islandora_post_update_fix_collection_456219_original_files(&$san
     return "Updated {$sandbox['counts']['updated_nodes']} nodes, deleted {$sandbox['counts']['deleted_media']} original media entities, deleted {$sandbox['counts']['deleted_files']} files, and retagged {$sandbox['counts']['updated_media']} preservation master media entities.";
   }
 }
+
+/**
+ * Provide the collection-level source browser display hint.
+ */
+function lehigh_islandora_post_update_source_browser_display_hint(): string {
+  $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  if (!$storage->loadByProperties(['vid' => 'islandora_display', 'name' => 'Journal Browser'])) {
+    $storage->create([
+      'vid' => 'islandora_display',
+      'name' => 'Journal Browser',
+      'description' => 'Use the source browser for this collection and its contents.',
+    ])->save();
+  }
+  return 'Select Journal Browser in a collection’s Display Hints to enable the source browser.';
+}
+
+/**
+ * Install curated source-index storage and browser configuration.
+ */
+function lehigh_islandora_post_update_source_browser_storage(): string {
+  $manager = \Drupal::entityDefinitionUpdateManager();
+  if (!$manager->getEntityType('lehigh_source_index_entry')) {
+    $manager->installEntityType(\Drupal::entityTypeManager()->getDefinition('lehigh_source_index_entry'));
+  }
+  $config = \Drupal::configFactory()->getEditable('lehigh_islandora.journal_browser');
+  foreach (['page_size' => 25, 'search_index' => 'default_solr_index', 'default_tab' => 'pages'] as $key => $value) {
+    if ($config->get($key) === NULL) {
+      $config->set($key, $value);
+    }
+  }
+  $config->save();
+  return 'Source index storage and browser settings installed.';
+}

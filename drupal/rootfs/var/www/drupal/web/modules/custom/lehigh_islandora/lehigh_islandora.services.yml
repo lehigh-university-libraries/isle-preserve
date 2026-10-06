@@ -16,10 +16,10 @@ services:
       - { name: event_subscriber }
   lehigh_islandora.journal_browser.repository:
     class: Drupal\lehigh_islandora\JournalBrowser\JournalBrowserRepository
-    arguments: ['@entity_type.manager', '@database']
+    arguments: ['@entity_type.manager', '@database', '@lehigh_islandora.source_browser.access', '@lehigh_islandora.download_resolver', '@config.factory']
   lehigh_islandora.journal_browser.builder:
     class: Drupal\lehigh_islandora\JournalBrowser\JournalBrowserBuilder
-    arguments: ['@lehigh_islandora.journal_browser.repository', '@request_stack']
+    arguments: ['@lehigh_islandora.journal_browser.repository', '@request_stack', '@lehigh_islandora.source_browser.access', '@lehigh_islandora.source_browser.target_resolver', '@config.factory']
   lehigh_islandora.uriports:
     class: Drupal\lehigh_islandora\EventSubscriber\Uriports
     arguments: ["@config.factory"]
@@ -48,3 +48,14 @@ services:
     arguments: ['@request_stack']
     tags:
       - { name: cache.context, provider: lehigh_islandora }
+  lehigh_islandora.source_browser.access:
+    class: Drupal\lehigh_islandora\JournalBrowser\BrowserAccess
+  lehigh_islandora.download_resolver:
+    class: Drupal\lehigh_islandora\JournalBrowser\DownloadResolver
+    arguments: ['@entity_type.manager', '@lehigh_islandora.source_browser.access']
+  lehigh_islandora.source_browser.target_resolver:
+    class: Drupal\lehigh_islandora\JournalBrowser\BrowserTargetResolver
+    arguments: ['@entity_type.manager', '@views.executable', '@lehigh_islandora.source_browser.access']
+  lehigh_islandora.source_browser.importer:
+    class: Drupal\lehigh_islandora\JournalBrowser\SourceBrowserImporter
+    arguments: ['@entity_type.manager', '@lehigh_islandora.journal_browser.repository', '@database', '@file.repository', '@file_system', '@http_client']

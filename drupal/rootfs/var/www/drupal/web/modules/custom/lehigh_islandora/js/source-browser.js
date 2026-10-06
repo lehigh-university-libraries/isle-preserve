@@ -1,97 +1,101 @@
 (function (Drupal, once) {
-  function findViewerSelector(browser, settings) {
-    if (!settings || !settings.mirador || !settings.mirador.viewers) {
-      return null;
-    }
-
-    return Object.keys(settings.mirador.viewers).find((selector) => {
-      const element = document.querySelector(selector);
-      return element && browser.contains(element);
-    }) || null;
+  let pending;
+  function setLoading(browser, loading) {
+    browser.setAttribute('aria-busy', String(loading));
+    [...browser.children].forEach((element) => {
+      if (!element.matches('[data-source-browser-status], .source-browser__loading')) element.inert = loading;
+    });
   }
-
-  function cloneViewerConfig(config, manifestUrl) {
-    const next = JSON.parse(JSON.stringify(config));
-    const windowConfig = Object.assign({}, next.windows && next.windows[0] ? next.windows[0] : {});
-
-    windowConfig.manifestId = manifestUrl;
-    next.manifests = {};
-    next.manifests[manifestUrl] = {
-      provider: 'Islandora',
-    };
-    next.windows = [windowConfig];
-    if (next.selectedTheme === 'system') {
-      next.selectedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-
-    return next;
-  }
-
-  function updateViewer(browser, settings, option) {
-    const manifestUrl = option.dataset.manifest;
-    const viewerSelector = findViewerSelector(browser, settings);
-    if (!manifestUrl || !viewerSelector || typeof Mirador === 'undefined') {
-      return false;
-    }
-
-    const viewerElement = document.querySelector(viewerSelector);
-    const currentConfig = settings.mirador.viewers[viewerSelector];
-    if (!viewerElement || !currentConfig) {
-      return false;
-    }
-
-    const nextConfig = cloneViewerConfig(currentConfig, manifestUrl);
-    viewerElement.innerHTML = '';
-    Drupal.IslandoraMirador = Drupal.IslandoraMirador || {};
-    Drupal.IslandoraMirador.instances = Drupal.IslandoraMirador.instances || {};
-    delete Drupal.IslandoraMirador.instances[viewerSelector];
-    settings.mirador.viewers[viewerSelector] = nextConfig;
-    Drupal.IslandoraMirador.instances[viewerSelector] = Mirador.viewer(nextConfig, window.miradorPlugins || {});
-
-    return true;
-  }
-
-  function updateHeading(browser, option) {
-    const heading = browser.querySelector('[data-source-browser-heading] h1');
-    if (heading && option.dataset.heading) {
-      heading.textContent = option.dataset.heading;
+  async function navigate(browser, url, push = true) {
+    if (pending) pending.abort();
+    pending = new AbortController();
+    setLoading(browser, true);
+    browser.querySelector('[data-source-browser-status]').textContent = Drupal.t('Loading…');
+    try {
+      const response = await fetch(url, { signal: pending.signal });
+      if (!response.ok) throw new Error('Unable to load browser');
+      const documentNext = new DOMParser().parseFromString(await response.text(), 'text/html');
+      const next = documentNext.querySelector('[data-source-browser]');
+      if (!next) throw new Error('Missing browser');
+      // Use the complete server-rendered state so metadata and viewer stay aligned.
+      const settingsScript = documentNext.querySelector('script[data-drupal-selector="drupal-settings-json"]');
+      const settings = settingsScript ? JSON.parse(settingsScript.textContent) : window.drupalSettings;
+      if (next.querySelector('[id^="mirador-"]') && typeof Mirador === 'undefined') {
+        window.location.assign(url);
+        return;
+      }
+      settings.mirador = settings.mirador || { viewers: {} };
+      if (window.drupalSettings.mirador) {
+        const instances = Drupal.IslandoraMirador && Drupal.IslandoraMirador.instances;
+        Object.entries(instances || {}).forEach(([selector, viewer]) => {
+          if (browser.querySelector(selector) && typeof viewer.unmount === 'function') viewer.unmount();
+        });
+        Drupal.detachBehaviors(browser, window.drupalSettings, 'unload');
+      }
+      Object.assign(window.drupalSettings, settings);
+      next.classList.add('source-browser--updated');
+      browser.replaceWith(next);
+      Drupal.attachBehaviors(next, settings);
+      if (push) window.history.pushState({}, '', url);
+      next.querySelector('[data-source-browser-status]').textContent = Drupal.t('Browser updated.');
+      const heading = next.querySelector('[data-source-browser-focus]') || next.querySelector('h2');
+      if (heading) {
+        heading.tabIndex = -1;
+        heading.focus();
+      }
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+      setLoading(browser, false);
+      browser.querySelector('[data-source-browser-status]').textContent = Drupal.t('Unable to update the browser. Please retry or reload the page.');
     }
   }
-
-  function updateLocation(option) {
-    if (option.dataset.url && window.history && window.history.replaceState) {
-      window.history.replaceState({}, '', option.dataset.url);
-    }
-  }
-
   Drupal.behaviors.lehighSourceBrowser = {
-    attach(context, settings) {
-      once('lehigh-source-browser', '[data-source-browser]', context).forEach((browser) => {
-        browser.querySelectorAll('[data-source-browser-source]').forEach((select) => {
-          select.addEventListener('change', () => {
-            if (select.value) {
-              window.location.href = select.value;
-            }
+    attach(context) {
+      const browsers = [...context.querySelectorAll('[data-source-browser]')];
+      if (context.matches && context.matches('[data-source-browser]')) browsers.unshift(context);
+      once('lehigh-source-browser', browsers).forEach((browser) => {
+        browser.querySelector('[data-source-browser-navigation]').open = window.matchMedia('(min-width: 768px)').matches;
+        const form = browser.querySelector('form');
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const url = new URL(form.action, window.location.href);
+          url.search = new URLSearchParams(new FormData(form)).toString();
+          navigate(browser, url.href);
+        });
+        browser.querySelector('[data-source-browser-source]').addEventListener('change', (event) => {
+          const url = new URL(form.action, window.location.href);
+          url.search = new URLSearchParams({ source: event.target.value }).toString();
+          navigate(browser, url.href);
+        });
+        browser.querySelector('[data-source-browser-issue]').addEventListener('change', (event) => {
+          const option = event.target.selectedOptions[0];
+          if (option) navigate(browser, option.dataset.url);
+        });
+        const pageSelect = browser.querySelector('[data-source-browser-page]');
+        if (pageSelect) pageSelect.addEventListener('change', () => navigate(browser, pageSelect.selectedOptions[0].dataset.url));
+        const pageForm = browser.querySelector('[data-source-browser-page-form]');
+        if (pageForm) pageForm.addEventListener('submit', (event) => {
+          event.preventDefault();
+          const url = new URL(form.action, window.location.href);
+          url.search = new URLSearchParams(new FormData(pageForm)).toString();
+          navigate(browser, url.href);
+        });
+        browser.querySelectorAll('[data-source-browser-link]').forEach((link) => {
+          link.addEventListener('click', (event) => {
+            if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0) return;
+            event.preventDefault();
+            navigate(browser, link.href);
           });
         });
-
-        browser.querySelectorAll('[data-source-browser-manifest]').forEach((select) => {
-          select.addEventListener('change', () => {
-            const option = select.selectedOptions[0];
-            if (!option) {
-              return;
-            }
-
-            if (!updateViewer(browser, settings, option)) {
-              if (option.dataset.url) {
-                window.location.href = option.dataset.url;
-              }
-              return;
-            }
-
-            updateHeading(browser, option);
-            updateLocation(option);
-          });
+      });
+      once('lehigh-source-browser-history', 'html', context).forEach(() => {
+        window.matchMedia('(min-width: 768px)').addEventListener('change', (event) => {
+          const navigation = document.querySelector('[data-source-browser-navigation]');
+          if (navigation) navigation.open = event.matches;
+        });
+        window.addEventListener('popstate', () => {
+          const browser = document.querySelector('[data-source-browser]');
+          if (browser) navigate(browser, window.location.href, false);
         });
       });
     },

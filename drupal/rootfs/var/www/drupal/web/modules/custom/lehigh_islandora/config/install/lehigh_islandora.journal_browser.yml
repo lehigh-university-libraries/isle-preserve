@@ -1,0 +1,3 @@
+page_size: 25
+search_index: default_solr_index
+default_tab: pages
