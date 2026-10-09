@@ -754,7 +754,6 @@ function lehigh_preprocess_mirador(&$variables) {
   // remove the close button since that just leaves a blank viewer
   $viewer['windows'][0]['allowClose'] = FALSE;
   $viewer['windows'][0]['thumbnailNavigationPosition'] = 'far-right';
-
   $viewer['workspace']['showZoomControls'] = TRUE;
   // allow skipping to a default page
   if (isset($_GET['pageNumber']) && is_numeric($_GET['pageNumber'])) {
@@ -764,12 +763,15 @@ function lehigh_preprocess_mirador(&$variables) {
   // add a download option
   $viewer['miradorDownloadPlugin']['restrictDownloadOnSizeDefinition'] = TRUE;
 
+  // always make the text not selectable
+  // to avoid bug described in https://lehigh.atlassian.net/browse/IS-208
+  $viewer['windows'][0]['textOverlay']['selectable'] = FALSE;
+
   // see if we should hide the hOCR for this mirador view
   $hide_hocr = lehigh_islandora_hide_hocr($node);
   if ($hide_hocr) {
     foreach ($variables['#attached']['drupalSettings']['mirador']['viewers'] as &$viewer) {
       $viewer['window']['textOverlay']['enabled'] = FALSE;
-      $viewer['window']['textOverlay']['selectable'] = FALSE;
     }
   }
 
