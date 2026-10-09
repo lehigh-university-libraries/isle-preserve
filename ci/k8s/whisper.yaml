@@ -43,7 +43,7 @@ spec:
                 path: ca.pem
       containers:
         - name: scyllaridae-whisper
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-whisper:main@sha256:692db5a8a4c7bf256634fe9919b738ce634dca7935bc097342e3b81bd708aa1c
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-whisper:main@sha256:ecd77b58f86b37e4937bd74cb72962fa99ad1ee02e5a9877a0019a98d7fc188b
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
