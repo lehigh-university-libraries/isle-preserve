@@ -1,0 +1,10 @@
+services:
+  islandora_scribe.settings:
+    class: Drupal\islandora_scribe\RuntimeSettings
+    arguments: ['@settings']
+  islandora_scribe.integration:
+    class: Drupal\islandora_scribe\Integration
+    arguments: ['@database', '@queue', '@lock', '@entity_type.manager', '@islandora.media_source_service', '@http_client', '@islandora_scribe.settings', '@file.repository', '@file_system', '@logger.channel.islandora_scribe']
+  logger.channel.islandora_scribe:
+    parent: logger.channel_base
+    arguments: [islandora_scribe]

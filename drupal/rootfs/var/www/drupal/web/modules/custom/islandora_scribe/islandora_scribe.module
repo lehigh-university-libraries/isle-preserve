@@ -1,0 +1,51 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Url;
+use Drupal\media\MediaInterface;
+
+/** Implements hook_media_insert(). */
+function islandora_scribe_media_insert(MediaInterface $media) {
+  \Drupal::service('islandora_scribe.integration')->bind($media);
+}
+
+/** Implements hook_media_update(). */
+function islandora_scribe_media_update(MediaInterface $media) {
+  \Drupal::service('islandora_scribe.integration')->bind($media);
+}
+
+/** Implements hook_ENTITY_TYPE_view(). */
+function islandora_scribe_media_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $mapping = \Drupal::service('islandora_scribe.integration')->forMedia((int) $entity->id());
+  if (!$mapping || !$mapping['item_id']) {
+    return;
+  }
+  // Vary visibility by entity update access; normal media view access is upstream.
+  $access = $entity->access('update', NULL, TRUE);
+  \Drupal::service('renderer')->addCacheableDependency($build, $access);
+  if (!$access->isAllowed()) {
+    return;
+  }
+  try {
+    $settings = \Drupal::service('islandora_scribe.settings')->get();
+  }
+  catch (\RuntimeException $e) {
+    return;
+  }
+  if ((int) $mapping['workspace_id'] !== $settings['workspace_id']) {
+    return;
+  }
+  $build['scribe_editor'] = [
+    '#type' => 'link',
+    '#title' => t('Edit transcription'),
+    '#url' => Url::fromUri($settings['base_url'] . '/editor', ['query' => [
+      'itemImageId' => $mapping['item_image_id'],
+      'itemId' => $mapping['item_id'],
+      'workspace_id' => $mapping['workspace_id'],
+    ]]),
+    '#weight' => 100,
+    '#cache' => ['max-age' => 0],
+  ];
+}
+

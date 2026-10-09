@@ -46,7 +46,7 @@ triplestore.indexer.max-concurrent-consumers={{ getenv "ALPACA_TRIPLESTORE_INDEX
 triplestore.indexer.async-consumer={{ getenv "ALPACA_TRIPLESTORE_INDEXER_ASYNC_CONSUMER" }}
 
 # Derivative services
-derivative.systems.installed=fits,homarus,houdini,ocr,coverpage,mergepdf,libreoffice,whisper,ocrpdf,htr,cleanpdf,warc,zip
+derivative.systems.installed=fits,homarus,houdini,ocr,coverpage,mergepdf,libreoffice,whisper,ocrpdf,htr,scribe,cleanpdf,warc,zip
 
 derivative.fits.enabled={{ getenv "ALPACA_DERIVATIVE_FITS_ENABLED" }}
 derivative.fits.in.stream={{ getenv "ALPACA_DERIVATIVE_FITS_QUEUE" }}
@@ -103,6 +103,13 @@ derivative.htr.service.url={{ getenv "ALPACA_DERIVATIVE_HTR_URL" }}
 derivative.htr.concurrent-consumers=3
 derivative.htr.max-concurrent-consumers=-1
 derivative.htr.async-consumer=true
+
+derivative.scribe.enabled=true
+derivative.scribe.in.stream=queue:islandora-scribe-hocr
+derivative.scribe.service.url={{ getenv "ALPACA_DERIVATIVE_SCRIBE_URL" }}
+derivative.scribe.concurrent-consumers=1
+derivative.scribe.max-concurrent-consumers=-1
+derivative.scribe.async-consumer=true
 
 derivative.cleanpdf.enabled=true
 derivative.cleanpdf.in.stream=queue:islandora-clean-pdf

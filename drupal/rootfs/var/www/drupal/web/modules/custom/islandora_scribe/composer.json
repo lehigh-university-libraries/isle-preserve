@@ -1,0 +1,7 @@
+{
+  "name": "lehigh-university-libraries/islandora_scribe",
+  "description": "Islandora Scribe transcription integration",
+  "type": "drupal-module",
+  "license": "GPL-2.0-or-later",
+  "require": {"php": ">=8.1", "drupal/core": "^10.3 || ^11", "drupal/islandora": "^2", "discoverygarden/islandora_hocr": "^1.3"}
+}

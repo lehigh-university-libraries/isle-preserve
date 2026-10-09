@@ -1,0 +1,74 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: islandora-scribe
+spec:
+  selector:
+    app: islandora-scribe
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: islandora-scribe
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: islandora-scribe
+  template:
+    metadata:
+      labels:
+        app: islandora-scribe
+    spec:
+      containers:
+        - name: scyllaridae-scribe
+          image: lehighlts/scyllaridae-scribe:main@sha256:a63a05e119fe3c432d529fad182efc334552704aa3ab756b374312f235e63fb1
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: SCRIBE_API_URL
+              valueFrom:
+                secretKeyRef:
+                  name: scribe
+                  key: api-url
+            - name: SCRIBE_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: scribe
+                  key: api-token
+            - name: SCRIBE_WORKSPACE_ID
+              valueFrom:
+                secretKeyRef:
+                  name: scribe
+                  key: workspace-id
+            - name: ISLANDORA_SCRIBE_CORRELATION_URL
+              value: "https://preserve.lehigh.edu/islandora-scribe/correlation"
+            - name: ISLANDORA_SCRIBE_CORRELATION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: scribe
+                  key: correlation-secret
+            - name: JWKS_URI
+              value: "https://preserve.lehigh.edu/oauth/discovery/keys"
+            - name: CERT_PUBLIC_KEY
+              valueFrom:
+                configMapKeyRef:
+                  name: islandora-prod-ca
+                  key: islandora-prod.pem
+          resources:
+            requests:
+              memory: "2Gi"
+              cpu: "250m"
+            limits:
+              memory: "2Gi"
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /healthcheck
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10

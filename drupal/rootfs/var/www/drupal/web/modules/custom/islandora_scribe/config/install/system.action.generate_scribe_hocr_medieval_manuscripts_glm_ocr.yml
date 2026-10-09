@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_scribe
+id: generate_scribe_hocr_medieval_manuscripts_glm_ocr
+label: 'Generate hOCR: Medieval manuscripts + GLM-OCR'
+type: node
+plugin: generate_scribe_hocr_derivative
+configuration:
+  queue: islandora-scribe-hocr
+  event: 'Generate Derivative'
+  source_term_uri: 'http://pcdm.org/use#OriginalFile'
+  derivative_term_uri: 'https://discoverygarden.ca/use#hocr'
+  mimetype: text/vnd.hocr+html
+  context_id: 14
+  args: ''
+  destination_media_type: file
+  scheme: private
+  path: 'derivatives/hocr/[node:nid]/[node:nid]-scribe.hocr'

@@ -1,0 +1,35 @@
+islandora_scribe.webhook:
+  path: '/islandora-scribe/webhook'
+  defaults:
+    _controller: '\Drupal\islandora_scribe\Controller\WebhookController::publication'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+  options:
+    no_cache: TRUE
+islandora_scribe.correlation:
+  path: '/islandora-scribe/correlation'
+  defaults:
+    _controller: '\Drupal\islandora_scribe\Controller\WebhookController::correlation'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+  options:
+    no_cache: TRUE
+islandora_scribe.derivative:
+  path: '/islandora-scribe/derivative/{operation}/node/{node}/media/{media_type}/{taxonomy_term}'
+  defaults:
+    _controller: '\Drupal\islandora_scribe\Controller\DerivativeController::receive'
+  methods: [PUT]
+  requirements:
+    operation: '[a-f0-9]{32}'
+    _custom_access: '\Drupal\islandora\Controller\MediaSourceController::putToNodeAccess'
+  options:
+    _auth: ['basic_auth', 'cookie', 'jwt_auth']
+    parameters:
+      node:
+        type: entity:node
+      media_type:
+        type: entity:media_type
+      taxonomy_term:
+        type: entity:taxonomy_term

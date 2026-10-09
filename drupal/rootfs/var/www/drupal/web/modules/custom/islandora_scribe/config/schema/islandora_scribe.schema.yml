@@ -1,0 +1,34 @@
+action.configuration.generate_scribe_hocr_derivative:
+  type: mapping
+  label: Scribe hOCR derivative
+  mapping:
+    queue:
+      type: string
+      label: Queue
+    event:
+      type: string
+      label: Event
+    source_term_uri:
+      type: string
+      label: Source media use
+    derivative_term_uri:
+      type: string
+      label: Derivative media use
+    mimetype:
+      type: string
+      label: MIME type
+    context_id:
+      type: integer
+      label: Scribe processing context ID
+    args:
+      type: string
+      label: Arguments
+    destination_media_type:
+      type: string
+      label: Destination media type
+    scheme:
+      type: string
+      label: File scheme
+    path:
+      type: string
+      label: Destination path

@@ -63,6 +63,17 @@ $settings['trusted_host_patterns'] = [
   'islandora-test.lib.lehigh.edu',
 ];
 
+// Scribe credentials stay in Docker secrets rather than configuration sync.
+if (getenv('SCRIBE_API_URL')) {
+  $settings['islandora_scribe'] = [
+    'base_url' => getenv('SCRIBE_API_URL'),
+    'workspace_id' => (int) getenv('SCRIBE_WORKSPACE_ID'),
+    'api_key' => is_readable('/run/secrets/SCRIBE_READ_API_KEY') ? trim(file_get_contents('/run/secrets/SCRIBE_READ_API_KEY')) : '',
+    'webhook_secret' => is_readable('/run/secrets/SCRIBE_WEBHOOK_SECRET') ? file_get_contents('/run/secrets/SCRIBE_WEBHOOK_SECRET') : '',
+    'correlation_secret' => is_readable('/run/secrets/SCRIBE_CORRELATION_SECRET') ? file_get_contents('/run/secrets/SCRIBE_CORRELATION_SECRET') : '',
+  ];
+}
+
 // Database settings are also derived from environment variables.
 $databases['default']['default'] = [
   'database' => getenv('DRUPAL_DEFAULT_DB_NAME'),

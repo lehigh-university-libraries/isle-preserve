@@ -1,0 +1,8 @@
+name: Islandora Scribe
+type: module
+description: Scribe transcription editing and signed publication updates.
+core_version_requirement: ^10.3 || ^11
+package: Islandora
+dependencies:
+  - islandora:islandora
+  - islandora_hocr:islandora_hocr

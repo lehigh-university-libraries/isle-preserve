@@ -1,0 +1,97 @@
+<?php
+
+/** Implements hook_schema(). */
+function islandora_scribe_schema() {
+  $id = ['type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0];
+  $text = ['type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''];
+  return [
+    'islandora_scribe_mapping' => [
+      'description' => 'Immutable source operation and Scribe resource association.',
+      'fields' => [
+        'operation_id' => $text,
+        'source_media_id' => $id,
+        'node_id' => $id,
+        'media_bundle' => $text,
+        'term_id' => $id,
+        'context_id' => $id,
+        'ingest_complete' => ['type' => 'int', 'not null' => TRUE, 'default' => 0],
+        'source_file_id' => $id,
+        'derivative_media_id' => ['type' => 'int', 'size' => 'big', 'not null' => FALSE],
+        'derivative_file_id' => $id,
+        'workspace_id' => $id,
+        'item_id' => $text,
+        'item_image_id' => ['type' => 'int', 'size' => 'big', 'not null' => FALSE],
+        'external_reference_id' => $text,
+        'uri_hash' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
+        'file_uri' => ['type' => 'varchar', 'length' => 2048, 'not null' => TRUE],
+        'last_revision' => $id,
+      ],
+      'primary key' => ['operation_id'],
+      'unique keys' => ['destination' => ['uri_hash'], 'resource' => ['workspace_id', 'item_image_id'], 'derivative' => ['derivative_media_id'], 'node_term' => ['node_id', 'term_id']],
+    ],
+    'islandora_scribe_event' => [
+      'description' => 'Durably accepted publication events.',
+      'fields' => ['event_id' => $text, 'operation_id' => $text, 'revision' => $id, 'applied' => ['type' => 'int', 'not null' => TRUE, 'default' => 0]],
+      'primary key' => ['event_id'],
+    ],
+  ];
+}
+
+/** Implements hook_requirements(). */
+function islandora_scribe_requirements($phase) {
+  if ($phase !== 'runtime') {
+    return [];
+  }
+  try {
+    \Drupal::service('islandora_scribe.settings')->get();
+    $description = t('Runtime settings are valid. Verify read API-key scopes, Scyllaridae correlation delivery, workspace membership, HTTPS webhook registration and queue processing using the module README.');
+    $severity = REQUIREMENT_INFO;
+  }
+  catch (\Throwable $e) {
+    $description = t('Configure protected islandora_scribe runtime settings. See the module README.');
+    $severity = REQUIREMENT_ERROR;
+  }
+  return ['islandora_scribe' => ['title' => t('Islandora Scribe'), 'value' => $severity === REQUIREMENT_INFO ? t('Configured') : t('Setup required'), 'description' => $description, 'severity' => $severity]];
+}
+
+/** Persist immutable processing contexts for existing ingest mappings. */
+function islandora_scribe_update_10001() {
+  $schema = \Drupal::database()->schema();
+  if (!$schema->fieldExists('islandora_scribe_mapping', 'context_id')) {
+    $schema->addField('islandora_scribe_mapping', 'context_id', [
+      'type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0,
+    ]);
+  }
+}
+
+/** Add named context actions and support replacing the node's existing hOCR. */
+function islandora_scribe_update_10002() {
+  $database = \Drupal::database();
+  $schema = $database->schema();
+  if (!$schema->fieldExists('islandora_scribe_mapping', 'ingest_complete')) {
+    $schema->addField('islandora_scribe_mapping', 'ingest_complete', [
+      'type' => 'int', 'not null' => TRUE, 'default' => 0,
+    ]);
+    $database->update('islandora_scribe_mapping')->fields(['ingest_complete' => 1])
+      ->condition('derivative_media_id', 0, '>')->execute();
+  }
+  if (!$schema->indexExists('islandora_scribe_mapping', 'node_term')) {
+    $schema->addUniqueKey('islandora_scribe_mapping', 'node_term', ['node_id', 'term_id']);
+  }
+  $defaults = new \Drupal\Core\Config\FileStorage(__DIR__ . '/config/install');
+  $actions = \Drupal::entityTypeManager()->getStorage('action');
+  $default = $actions->load('generate_hocr_from_an_image_scribe');
+  if ($default) {
+    $configuration = $default->get('configuration');
+    if (($configuration['derivative_term_uri'] ?? '') === 'https://scribe.lehigh.edu/use#hocr') {
+      $configuration['derivative_term_uri'] = 'https://discoverygarden.ca/use#hocr';
+      $default->set('configuration', $configuration)->save();
+    }
+  }
+  foreach ($defaults->listAll('system.action.generate_scribe_hocr_') as $name) {
+    $data = $defaults->read($name);
+    if (!$actions->load($data['id'])) {
+      $actions->create($data)->save();
+    }
+  }
+}

@@ -9,6 +9,7 @@ services:
       ALPACA_DERIVATIVE_WHISPER_URL: http://whisper:8080
       ALPACA_DERIVATIVE_OCRPDF_URL: http://ocrpdf:8080
       ALPACA_DERIVATIVE_HTR_URL: http://ocrpdf:8080
+      ALPACA_DERIVATIVE_SCRIBE_URL: http://scribe:8080
   drupal-cron:
     profiles: [none]
   rollout:
@@ -91,6 +92,17 @@ services:
     image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:74f310b6657219ceafe86b689a28bdf32d9090dd6ca4bae995177d05860e3d16
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+  scribe:
+    image: lehighlts/scyllaridae-scribe:main@sha256:a63a05e119fe3c432d529fad182efc334552704aa3ab756b374312f235e63fb1
+    environment:
+      JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
+      SCRIBE_API_URL: ${SCRIBE_API_URL}
+      SCRIBE_API_TOKEN: ${SCRIBE_API_TOKEN}
+      SCRIBE_WORKSPACE_ID: ${SCRIBE_WORKSPACE_ID}
+      ISLANDORA_SCRIBE_CORRELATION_URL: https://${DOMAIN}/islandora-scribe/correlation
+      ISLANDORA_SCRIBE_CORRELATION_SECRET: ${ISLANDORA_SCRIBE_CORRELATION_SECRET}
+    volumes:
+      - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
     image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:52181ee0a4241d75ce31510e267c874d651a83b5574191cb619ecc4230e3e7dd
     environment:

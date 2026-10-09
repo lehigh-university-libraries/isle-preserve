@@ -14,6 +14,12 @@ volumes:
   actions-runner-data: {}
 
 secrets:
+  SCRIBE_READ_API_KEY:
+    file: ./secrets/SCRIBE_READ_API_KEY
+  SCRIBE_WEBHOOK_SECRET:
+    file: ./secrets/SCRIBE_WEBHOOK_SECRET
+  SCRIBE_CORRELATION_SECRET:
+    file: ./secrets/SCRIBE_CORRELATION_SECRET
   CERT_PUBLIC_KEY:
     file: ./certs/cert.pem
   CERT_PRIVATE_KEY:
@@ -80,6 +86,7 @@ services:
       ALPACA_DERIVATIVE_WHISPER_MAX_CONSUMERS: 1
       ALPACA_DERIVATIVE_OCRPDF_URL: https://isle-microservices.cc.lehigh.edu/ocrpdf
       ALPACA_DERIVATIVE_HTR_URL: https://isle-microservices.cc.lehigh.edu/openai-htr
+      ALPACA_DERIVATIVE_SCRIBE_URL: https://isle-microservices.cc.lehigh.edu/scribe
       ALPACA_DERIVATIVE_CLEAN_PDF_URL: https://isle-microservices.cc.lehigh.edu/cleanpdf
       ALPACA_DERIVATIVE_TN_WARC_URL: https://isle-microservices.cc.lehigh.edu/warc
       ALPACA_DERIVATIVE_TN_ZIP_URL: https://isle-microservices.cc.lehigh.edu/zip
@@ -205,7 +212,12 @@ services:
       SLACK_WEBHOOK: "${SLACK_WEBHOOK_SUBMISSION}"
       SLACK_WEBHOOK_LIBTECH: "${SLACK_WEBHOOK_LIBTECH}"
       GOOGLE_MAPS_API_KEY: "${GOOGLE_MAPS_API_KEY}"
+      SCRIBE_API_URL: ${SCRIBE_API_URL:-}
+      SCRIBE_WORKSPACE_ID: ${SCRIBE_WORKSPACE_ID:-}
     secrets:
+      - source: SCRIBE_READ_API_KEY
+      - source: SCRIBE_WEBHOOK_SECRET
+      - source: SCRIBE_CORRELATION_SECRET
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
       - source: DB_ROOT_PASSWORD
       - source: DRUPAL_DEFAULT_ACCOUNT_PASSWORD
@@ -262,6 +274,9 @@ services:
     environment:
       <<: [*drupal-environment]
     secrets:
+      - source: SCRIBE_READ_API_KEY
+      - source: SCRIBE_WEBHOOK_SECRET
+      - source: SCRIBE_CORRELATION_SECRET
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
       - source: DB_ROOT_PASSWORD
       - source: DRUPAL_DEFAULT_ACCOUNT_PASSWORD
