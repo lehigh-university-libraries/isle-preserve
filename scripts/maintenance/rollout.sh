@@ -71,8 +71,8 @@ git fetch origin
 
 send_slack_message "Rolling out changes to https://$DOMAIN :rocket: :shipit: :rocket:"
 
-# check for any commit messages that start with a JIRA tag for our project
-JIRA_TICKETS=$(git log --format="%s" HEAD..origin/main | grep -E "^IS-[0-9]+" | sort || echo "")
+# Check for commit messages that start with a JIRA tag for either project.
+JIRA_TICKETS=$(git log --format="%s" HEAD..origin/main | grep -E "^(IS|LT)-[0-9]+" | sort || echo "")
 if [ "$JIRA_TICKETS" != "" ]; then
   MSG="Changes include:\n"
   MSG+=$(echo "$JIRA_TICKETS"| sed 's/^/https:\/\/lehigh.atlassian.net\/browse\//; s/$/\\n/')
