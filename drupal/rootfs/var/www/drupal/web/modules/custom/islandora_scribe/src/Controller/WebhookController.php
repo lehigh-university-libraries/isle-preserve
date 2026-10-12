@@ -10,21 +10,37 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Receives signed Scribe publication and correlation callbacks.
+ */
 final class WebhookController extends ControllerBase {
+
   public function __construct(private Integration $integration, private RuntimeSettings $settings) {}
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container) {
     return new static($container->get('islandora_scribe.integration'), $container->get('islandora_scribe.settings'));
   }
 
+  /**
+   * Receives a signed publication event.
+   */
   public function publication(Request $request): Response {
     return $this->receive($request, FALSE);
   }
 
+  /**
+   * Receives a signed resource correlation.
+   */
   public function correlation(Request $request): Response {
     return $this->receive($request, TRUE);
   }
 
+  /**
+   * Verifies and dispatches a signed callback.
+   */
   private function receive(Request $request, bool $correlation): Response {
     if (!$request->isSecure()) {
       return new Response('', 400);
@@ -50,4 +66,5 @@ final class WebhookController extends ControllerBase {
       return new Response('', 503);
     }
   }
+
 }

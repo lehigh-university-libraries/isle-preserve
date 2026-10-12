@@ -4,9 +4,16 @@ namespace Drupal\islandora_scribe;
 
 use Drupal\Core\Site\Settings;
 
+/**
+ * Validates protected Scribe runtime settings.
+ */
 final class RuntimeSettings {
+
   public function __construct(private Settings $settings) {}
 
+  /**
+   * Returns validated Scribe settings.
+   */
   public function get(): array {
     $values = $this->settings->get('islandora_scribe', []);
     $url = $values['base_url'] ?? '';
@@ -30,4 +37,5 @@ final class RuntimeSettings {
     $values['base_url'] = rtrim($url, '/');
     return $values;
   }
+
 }

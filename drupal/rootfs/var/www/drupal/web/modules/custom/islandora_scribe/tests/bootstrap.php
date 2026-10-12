@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Bootstraps the Scribe kernel tests.
+ */
+
 $drupalRoot = getenv('DRUPAL_ROOT');
 if (!$drupalRoot || !is_file($drupalRoot . '/core/tests/bootstrap.php')) {
   throw new RuntimeException('Set DRUPAL_ROOT to the Drupal web directory.');

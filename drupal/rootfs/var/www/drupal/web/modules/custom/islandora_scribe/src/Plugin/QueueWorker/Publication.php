@@ -17,15 +17,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 final class Publication extends QueueWorkerBase implements ContainerFactoryPluginInterface {
+
   public function __construct(array $configuration, $plugin_id, $plugin_definition, private Integration $integration) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static($configuration, $plugin_id, $plugin_definition, $container->get('islandora_scribe.integration'));
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function processItem($data) {
     $this->integration->apply($data['event_id']);
   }
+
 }

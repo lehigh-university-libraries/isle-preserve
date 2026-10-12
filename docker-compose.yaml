@@ -1,4 +1,10 @@
 ---
+x-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "100m"
+    max-file: "3"
+
 networks:
   default:
 
@@ -69,6 +75,7 @@ secrets:
     file: "./secrets/UID"
 services:
   alpaca:
+    logging: *logging
     image: islandora/alpaca:7.0.17@sha256:23088f45e941afbd9add7449eecc17238efa847b7d70b20419c23178319b1cf8
     environment:
       ALPACA_MAX_REDELIVERIES: 1
@@ -106,6 +113,7 @@ services:
       activemq:
         condition: service_healthy
   fabricator:
+    logging: *logging
     image: ghcr.io/lehigh-university-libraries/fabricator:v0.4.5@sha256:c40507c253d47880e176c74f3eed52e22d07d197d95df7625f3895eb6922fa9b
     environment:
       FABRICATOR_DATA_MOUNT: /data
@@ -114,6 +122,7 @@ services:
       test: curl -s http://localhost:8080/healthcheck | grep OK
       start_period: 1s
   mariadb:
+    logging: *logging
     image: islandora/mariadb:7.0.17@sha256:246c8d14d9564b48bbfcc87106009fe4c5e9db96532f83dd8b32dcf8cca2d3be
     environment:
       MYSQL_MAX_ALLOWED_PACKET: 512000000
@@ -127,6 +136,7 @@ services:
       - ./conf/mariadb/mariadb-server.cnf:/etc/my.cnf.d/mariadb-server.cnf:r
       - mariadb-data:/var/lib/mysql:Z,rZ
   activemq:
+    logging: *logging
     image: islandora/activemq:7.0.17@sha256:1391913f124b5953d102819820d93c1649efd4180f7156f0717d5c3fa8abe632
     secrets:
       - source: ACTIVEMQ_PASSWORD
@@ -135,12 +145,8 @@ services:
       - activemq-data:/opt/activemq/data:Z,rw
     healthcheck:
       start_period: 5s
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "3"
   triplet:
+    logging: *logging
     image: ghcr.io/libops/triplet:v1.2.4@sha256:1a1abbae387129c6a157005fdab43f0256adc6a1652a0144df58cdcce825cd20
     environment:
       TRIPLET_PUBLIC_BASE_URL: https://${DOMAIN}
@@ -152,6 +158,7 @@ services:
       - ./conf/triplet/config.yaml:/etc/triplet/config.yaml:r
       - /opt/islandora/volumes/triplet-cache:/var/lib/triplet/cache:rw
   memcached:
+    logging: *logging
     image: memcached:1.6.45@sha256:d956c0a57fd7a9f2903fa6d6f7fb4a3c4ed31857c8c22f52cbea3d0ae0bfe4f0
     command: memcached -m 2048 -I 5m
     healthcheck:
@@ -159,6 +166,7 @@ services:
         bash -c "echo stats | (exec 3<>/dev/tcp/localhost/11211; cat >&3; timeout 0.1 cat <&3; exec 3<&-) | grep pid"
       start_period: 3s
   drupal: &drupal
+    logging: *logging
     image: ghcr.io/lehigh-university-libraries/isle-preserve:${DRUPAL_DOCKER_TAG}
     environment: &drupal-environment
       DEVELOPMENT_ENVIRONMENT: ${DEVELOPMENT_ENVIRONMENT:-false}
@@ -253,6 +261,7 @@ services:
         condition: service_healthy
   drupal-lehigh: *drupal
   drupal-static:
+    logging: *logging
     image: nginx:1.31.6@sha256:908dc23e643a1447dbfb2e189ed268bfde6a51a5bf9a34d3dd3440a24f58ccf7
     restart: always
     volumes:
@@ -268,6 +277,7 @@ services:
       test: curl -sfo /dev/null http://localhost/themes/custom/lehigh/favicon.ico
       start_period: 5s
   drupal-cron:
+    logging: *logging
     image: ghcr.io/lehigh-university-libraries/isle-preserve:${DRUPAL_DOCKER_TAG}
     entrypoint: /bin/bash
     command: /var/www/drupal/scripts/cron.sh
@@ -299,6 +309,7 @@ services:
       drupal:
         condition: service_healthy
   fcrepo:
+    logging: *logging
     image: islandora/fcrepo:7.0.17@sha256:3f5c71a3cedc9db242ea0b77770597ca3582bc87291be91d6a0355a5a8b66c7e
     environment:
       FCREPO_ALLOW_EXTERNAL_DEFAULT: "http://default/"
@@ -321,6 +332,7 @@ services:
       activemq:
         condition: service_healthy
   init:
+    logging: *logging
     entrypoint: /scripts/init-entrypoint.sh
     image: islandora/base:7.0.17@sha256:b38963f9c9e2a605c36c82251f2ea2f3f930cbe8d4be8a285d882a55f75a0227
     networks:
@@ -340,6 +352,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:z
 
   solr:
+    logging: *logging
     image: islandora/solr:7.0.17@sha256:bef56ed5ddb05b96568b91f7e069e8c59e322e9d984a163ad1dd253af8df08ce
     volumes:
       - solr-data:/opt/solr/server/solr/default/data:Z,rw
@@ -352,6 +365,7 @@ services:
     healthcheck:
       start_period: 5s
   rollout:
+    logging: *logging
     image: ghcr.io/lehigh-university-libraries/rollout:0.5.17@sha256:07ed99b704a06419d60cee01f16a065727237fefc57c0c8e9ca1bcfad7c7ea87
     restart: always
     volumes:
@@ -368,6 +382,7 @@ services:
     healthcheck:
       start_period: 1s
   traefik:
+    logging: *logging
     image: traefik:v3.7.13@sha256:24841fe2de7304c149343d877d2923b4c8800a38ba015dea9174c23b20e344a0
     restart: always
     command: >-
@@ -410,11 +425,6 @@ services:
       - ./tmp/traefik:/tmp:rw
       - /var/run/docker.sock:/var/run/docker.sock:z
       - ./conf/traefik/challenge.tmpl.html:/challenge.tmpl.html:ro
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "3"
     healthcheck:
       test: traefik healthcheck --ping
       start_period: 5s

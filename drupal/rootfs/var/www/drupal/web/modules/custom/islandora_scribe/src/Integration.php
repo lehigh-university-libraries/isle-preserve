@@ -2,6 +2,12 @@
 
 namespace Drupal\islandora_scribe;
 
+use Drupal\Core\File\FileExists;
+use Drupal\file\FileInterface;
+use Drupal\Core\Queue\DatabaseQueue;
+use Drupal\islandora\IslandoraUtils;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\file\FileRepositoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Lock\LockBackendInterface;
@@ -11,7 +17,11 @@ use Drupal\media\MediaInterface;
 use GuzzleHttp\ClientInterface;
 use Psr\Log\LoggerInterface;
 
+/**
+ * Coordinates Scribe ingestion and publication updates.
+ */
 final class Integration {
+
   public function __construct(
     private Connection $database,
     private QueueFactory $queues,
@@ -20,20 +30,27 @@ final class Integration {
     private MediaSourceService $mediaSource,
     private ClientInterface $http,
     private RuntimeSettings $settings,
-    private \Drupal\file\FileRepositoryInterface $files,
-    private \Drupal\Core\File\FileSystemInterface $fileSystem,
+    private FileRepositoryInterface $files,
+    private FileSystemInterface $fileSystem,
     private LoggerInterface $logger,
   ) {}
 
+  /**
+   * Loads the mapping for an operation.
+   */
   public function mapping(string $operation): array|false {
     return $this->database->select('islandora_scribe_mapping', 'm')->fields('m')->condition('operation_id', $operation)->execute()->fetchAssoc();
   }
 
+  /**
+   * Loads the mapping for a derivative media entity.
+   */
   public function forMedia(int $id): array|false {
     return $this->database->select('islandora_scribe_mapping', 'm')->fields('m')->condition('derivative_media_id', $id)->execute()->fetchAssoc();
   }
 
-  /** Reserve the destination before emitting a derivative request. */
+  /**
+   * Reserve the destination before emitting a derivative request. */
   public function reserve(MediaInterface $source, string $uri, int $nodeId, string $bundle, int $termId, int $contextId = 0): array {
     if ($contextId < 0) {
       throw new \InvalidArgumentException('Invalid Scribe processing context ID.');
@@ -86,7 +103,8 @@ final class Integration {
     }
   }
 
-  /** Called only by the separately signed Scyllaridae callback. */
+  /**
+   * Called only by the separately signed Scyllaridae callback. */
   public function correlate(array $data): void {
     $operation = $data['operationId'] ?? '';
     if (!is_string($operation) || !preg_match('/^[a-f0-9]{32}$/D', $operation)) {
@@ -110,7 +128,10 @@ final class Integration {
       if ($other) {
         throw new \InvalidArgumentException('Resource already associated.');
       }
-      $this->database->update('islandora_scribe_mapping')->fields(['item_id' => $data['itemId'], 'item_image_id' => $data['itemImageId']])->condition('operation_id', $operation)->execute();
+      $this->database->update('islandora_scribe_mapping')->fields([
+        'item_id' => $data['itemId'],
+        'item_image_id' => $data['itemImageId'],
+      ])->condition('operation_id', $operation)->execute();
     }
     catch (\Throwable $e) {
       $transaction?->rollBack();
@@ -122,7 +143,8 @@ final class Integration {
     }
   }
 
-  /** Bind the reserved file destination on media creation/update. */
+  /**
+   * Bind the reserved file destination on media creation/update. */
   public function bind(MediaInterface $media): void {
     $file = $this->mediaSource->getSourceFile($media);
     if (!$file) {
@@ -135,20 +157,24 @@ final class Integration {
     if ($mapping['derivative_media_id'] && (int) $mapping['derivative_media_id'] !== (int) $media->id()) {
       throw new \RuntimeException('Scribe destination belongs to another derivative.');
     }
-    if ($media->bundle() !== $mapping['media_bundle'] || !$media->hasField(\Drupal\islandora\IslandoraUtils::MEDIA_OF_FIELD) || (int) $media->get(\Drupal\islandora\IslandoraUtils::MEDIA_OF_FIELD)->target_id !== (int) $mapping['node_id'] || !$media->hasField(\Drupal\islandora\IslandoraUtils::MEDIA_USAGE_FIELD)) {
+    if ($media->bundle() !== $mapping['media_bundle'] || !$media->hasField(IslandoraUtils::MEDIA_OF_FIELD) || (int) $media->get(IslandoraUtils::MEDIA_OF_FIELD)->target_id !== (int) $mapping['node_id'] || !$media->hasField(IslandoraUtils::MEDIA_USAGE_FIELD)) {
       throw new \RuntimeException('Scribe derivative entity association mismatch.');
     }
-    $terms = array_column($media->get(\Drupal\islandora\IslandoraUtils::MEDIA_USAGE_FIELD)->getValue(), 'target_id');
+    $terms = array_column($media->get(IslandoraUtils::MEDIA_USAGE_FIELD)->getValue(), 'target_id');
     if (!in_array((string) $mapping['term_id'], array_map('strval', $terms), TRUE)) {
       throw new \RuntimeException('Scribe derivative media-use mismatch.');
     }
     if ((int) $mapping['source_media_id'] === (int) $media->id()) {
       throw new \RuntimeException('Scribe source cannot be its derivative.');
     }
-    $this->database->update('islandora_scribe_mapping')->fields(['derivative_media_id' => (int) $media->id(), 'derivative_file_id' => (int) $file->id()])->condition('operation_id', $mapping['operation_id'])->execute();
+    $this->database->update('islandora_scribe_mapping')->fields([
+      'derivative_media_id' => (int) $media->id(),
+      'derivative_file_id' => (int) $file->id(),
+    ])->condition('operation_id', $mapping['operation_id'])->execute();
   }
 
-  /** Serialize initial delivery with later publication writes. */
+  /**
+   * Serialize initial delivery with later publication writes. */
   public function initialDerivative(string $operation, $node, $mediaType, $term, $stream, string $uri): void {
     $key = 'islandora_scribe:' . $operation;
     if (!$this->lock->acquire($key, 180)) {
@@ -167,8 +193,8 @@ final class Integration {
       }
       $storage = $this->entities->getStorage('media');
       $ids = $storage->getQuery()->accessCheck(FALSE)
-        ->condition(\Drupal\islandora\IslandoraUtils::MEDIA_OF_FIELD, $node->id())
-        ->condition(\Drupal\islandora\IslandoraUtils::MEDIA_USAGE_FIELD, $term->id())
+        ->condition(IslandoraUtils::MEDIA_OF_FIELD, $node->id())
+        ->condition(IslandoraUtils::MEDIA_USAGE_FIELD, $term->id())
         ->range(0, 2)->execute();
       if (count($ids) > 1) {
         throw new \RuntimeException('Multiple hOCR media exist for this node; resolve before ingest.');
@@ -196,7 +222,8 @@ final class Integration {
         $file = $this->mediaSource->getSourceFile($media);
       }
       $this->database->update('islandora_scribe_mapping')->fields([
-        'derivative_media_id' => (int) $media->id(), 'derivative_file_id' => (int) $file->id(),
+        'derivative_media_id' => (int) $media->id(),
+        'derivative_file_id' => (int) $file->id(),
         'ingest_complete' => 1,
       ])->condition('operation_id', $operation)->execute();
     }
@@ -210,6 +237,9 @@ final class Integration {
     }
   }
 
+  /**
+   * Queues a verified publication event for its mapped derivative.
+   */
   public function accept(array $event): void {
     $data = $event['data'] ?? [];
     if (!is_array($data) || !is_int($data['workspaceId'] ?? NULL) || $data['workspaceId'] !== $this->settings->get()['workspace_id'] || !is_int($data['itemImageId'] ?? NULL)) {
@@ -234,10 +264,14 @@ final class Integration {
           }
           return;
         }
-        $this->database->insert('islandora_scribe_event')->fields(['event_id' => $event['id'], 'operation_id' => $mapping['operation_id'], 'revision' => $revision])->execute();
+        $this->database->insert('islandora_scribe_event')->fields([
+          'event_id' => $event['id'],
+          'operation_id' => $mapping['operation_id'],
+          'revision' => $revision,
+        ])->execute();
         // Explicitly use the database queue: event and queue item commit together.
         $queue = $this->queues->get('islandora_scribe_publication', TRUE);
-        if (!$queue instanceof \Drupal\Core\Queue\DatabaseQueue || !$queue->createItem(['event_id' => $event['id']])) {
+        if (!$queue instanceof DatabaseQueue || !$queue->createItem(['event_id' => $event['id']])) {
           throw new \RuntimeException('Scribe requires the durable database queue.');
         }
       }
@@ -254,6 +288,9 @@ final class Integration {
     }
   }
 
+  /**
+   * Applies a queued revision to the mapped derivative.
+   */
   public function apply(string $eventId): void {
     $event = $this->database->select('islandora_scribe_event', 'e')->fields('e')->condition('event_id', $eventId)->execute()->fetchAssoc();
     if (!$event || $event['applied']) {
@@ -310,25 +347,43 @@ final class Integration {
     }
   }
 
-  private function stage(string $bytes, string $destination): \Drupal\file\FileInterface {
+  /**
+   * Writes a permanent hOCR file at the staging destination.
+   */
+  private function stage(string $bytes, string $destination): FileInterface {
     $directory = $this->fileSystem->dirname($destination);
-    if (!$this->fileSystem->prepareDirectory($directory, \Drupal\Core\File\FileSystemInterface::CREATE_DIRECTORY | \Drupal\Core\File\FileSystemInterface::MODIFY_PERMISSIONS)) {
+    if (!$this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
       throw new \RuntimeException('hOCR destination directory is unavailable.');
     }
-    $file = $this->files->writeData($bytes, $destination, \Drupal\Core\File\FileExists::Replace);
+    $file = $this->files->writeData($bytes, $destination, FileExists::Replace);
     $file->setMimeType('text/vnd.hocr+html');
     $file->setPermanent();
     $file->save();
     return $file;
   }
 
+  /**
+   * Exports the expected published revision from Scribe.
+   */
   private function export(array $mapping, int $revision): string {
     $settings = $this->settings->get();
     $deadline = microtime(TRUE) + 100;
     $response = $this->http->request('POST', $settings['base_url'] . '/scribe.v1.AnnotationService/ExportAnnotationPage', [
-      'headers' => ['X-Scribe-API-Key' => $settings['api_key'], 'X-Scribe-Workspace-ID' => (string) $settings['workspace_id'], 'Connect-Protocol-Version' => '1'],
-      'json' => ['itemImageId' => (string) $mapping['item_image_id'], 'expectedRevision' => (string) $revision, 'format' => 'ANNOTATION_EXPORT_FORMAT_HOCR'],
-      'connect_timeout' => 10, 'timeout' => 100, 'read_timeout' => 10, 'allow_redirects' => FALSE, 'stream' => TRUE,
+      'headers' => [
+        'X-Scribe-API-Key' => $settings['api_key'],
+        'X-Scribe-Workspace-ID' => (string) $settings['workspace_id'],
+        'Connect-Protocol-Version' => '1',
+      ],
+      'json' => [
+        'itemImageId' => (string) $mapping['item_image_id'],
+        'expectedRevision' => (string) $revision,
+        'format' => 'ANNOTATION_EXPORT_FORMAT_HOCR',
+      ],
+      'connect_timeout' => 10,
+      'timeout' => 100,
+      'read_timeout' => 10,
+      'allow_redirects' => FALSE,
+      'stream' => TRUE,
     ]);
     if ($response->getStatusCode() !== 200) {
       throw new \RuntimeException('Export failed.');
@@ -358,4 +413,5 @@ final class Integration {
     }
     return $bytes;
   }
+
 }

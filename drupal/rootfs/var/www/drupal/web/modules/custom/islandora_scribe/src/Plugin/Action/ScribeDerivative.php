@@ -2,6 +2,8 @@
 
 namespace Drupal\islandora_scribe\Plugin\Action;
 
+use Drupal\Core\Url;
+use Drupal\islandora_scribe\Integration;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\islandora_hocr\Plugin\Action\HocrDerivative;
@@ -17,14 +19,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 final class ScribeDerivative extends HocrDerivative {
-  private \Drupal\islandora_scribe\Integration $integration;
+  /**
+   * The Scribe integration service.
+   */
+  private Integration $integration;
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $action = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $action->integration = $container->get('islandora_scribe.integration');
     return $action;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function defaultConfiguration() {
     return array_replace(parent::defaultConfiguration(), [
       'queue' => 'islandora-scribe-hocr',
@@ -36,6 +47,9 @@ final class ScribeDerivative extends HocrDerivative {
     ]);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildConfigurationForm($form, $form_state);
     $form['context_id'] = [
@@ -53,6 +67,9 @@ final class ScribeDerivative extends HocrDerivative {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::validateConfigurationForm($form, $form_state);
     if (filter_var($form_state->getValue('context_id'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]) === FALSE) {
@@ -60,12 +77,18 @@ final class ScribeDerivative extends HocrDerivative {
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
     $this->configuration['context_id'] = (int) $form_state->getValue('context_id');
     $this->configuration['args'] = '';
   }
 
+  /**
+   * {@inheritdoc}
+   */
   protected function generateData(EntityInterface $entity) {
     $context = filter_var($this->configuration['context_id'] ?? 0, FILTER_VALIDATE_INT, ['options' => ['min_range' => 0]]);
     if ($context === FALSE) {
@@ -76,9 +99,11 @@ final class ScribeDerivative extends HocrDerivative {
     $source = $this->utils->getMediaWithTerm($entity, $this->utils->getTermForUri($this->configuration['source_term_uri']));
     $term = $this->utils->getTermForUri($this->configuration['derivative_term_uri']);
     $mapping = $this->integration->reserve($source, $data['file_upload_uri'], (int) $entity->id(), $this->configuration['destination_media_type'], (int) $term->id(), $context);
-    $data['destination_uri'] = \Drupal\Core\Url::fromRoute('islandora_scribe.derivative', [
-      'operation' => $mapping['operation_id'], 'node' => $entity->id(),
-      'media_type' => $this->configuration['destination_media_type'], 'taxonomy_term' => $term->id(),
+    $data['destination_uri'] = Url::fromRoute('islandora_scribe.derivative', [
+      'operation' => $mapping['operation_id'],
+      'node' => $entity->id(),
+      'media_type' => $this->configuration['destination_media_type'],
+      'taxonomy_term' => $term->id(),
     ])->setAbsolute()->toString();
     // Strict hexadecimal operation IDs and UUIDs are safe command arguments.
     if (!preg_match('/^[a-f0-9-]{36}$/D', $source->uuid())) {
@@ -87,4 +112,5 @@ final class ScribeDerivative extends HocrDerivative {
     $data['args'] = $mapping['operation_id'] . ' ' . $source->uuid() . ' ' . $mapping['context_id'];
     return $data;
   }
+
 }

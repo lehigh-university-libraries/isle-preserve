@@ -1,6 +1,17 @@
 <?php
 
-/** Implements hook_schema(). */
+/**
+ * @file
+ */
+
+/**
+ * Implements hook_schema(). */
+
+use Drupal\Core\Config\FileStorage;
+
+/**
+ *
+ */
 function islandora_scribe_schema() {
   $id = ['type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0];
   $text = ['type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''];
@@ -37,7 +48,8 @@ function islandora_scribe_schema() {
   ];
 }
 
-/** Implements hook_requirements(). */
+/**
+ * Implements hook_requirements(). */
 function islandora_scribe_requirements($phase) {
   if ($phase !== 'runtime') {
     return [];
@@ -54,23 +66,30 @@ function islandora_scribe_requirements($phase) {
   return ['islandora_scribe' => ['title' => t('Islandora Scribe'), 'value' => $severity === REQUIREMENT_INFO ? t('Configured') : t('Setup required'), 'description' => $description, 'severity' => $severity]];
 }
 
-/** Persist immutable processing contexts for existing ingest mappings. */
+/**
+ * Persist immutable processing contexts for existing ingest mappings. */
 function islandora_scribe_update_10001() {
   $schema = \Drupal::database()->schema();
   if (!$schema->fieldExists('islandora_scribe_mapping', 'context_id')) {
     $schema->addField('islandora_scribe_mapping', 'context_id', [
-      'type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0,
+      'type' => 'int',
+      'size' => 'big',
+      'not null' => TRUE,
+      'default' => 0,
     ]);
   }
 }
 
-/** Add named context actions and support replacing the node's existing hOCR. */
+/**
+ * Add named context actions and support replacing the node's existing hOCR. */
 function islandora_scribe_update_10002() {
   $database = \Drupal::database();
   $schema = $database->schema();
   if (!$schema->fieldExists('islandora_scribe_mapping', 'ingest_complete')) {
     $schema->addField('islandora_scribe_mapping', 'ingest_complete', [
-      'type' => 'int', 'not null' => TRUE, 'default' => 0,
+      'type' => 'int',
+      'not null' => TRUE,
+      'default' => 0,
     ]);
     $database->update('islandora_scribe_mapping')->fields(['ingest_complete' => 1])
       ->condition('derivative_media_id', 0, '>')->execute();
@@ -78,7 +97,7 @@ function islandora_scribe_update_10002() {
   if (!$schema->indexExists('islandora_scribe_mapping', 'node_term')) {
     $schema->addUniqueKey('islandora_scribe_mapping', 'node_term', ['node_id', 'term_id']);
   }
-  $defaults = new \Drupal\Core\Config\FileStorage(__DIR__ . '/config/install');
+  $defaults = new FileStorage(__DIR__ . '/config/install');
   $actions = \Drupal::entityTypeManager()->getStorage('action');
   $default = $actions->load('generate_hocr_from_an_image_scribe');
   if ($default) {

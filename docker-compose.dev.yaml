@@ -1,3 +1,9 @@
+x-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "100m"
+    max-file: "3"
+
 services:
   alpaca:
     environment:
@@ -49,10 +55,12 @@ services:
   memcached:
     command: memcached -m 256 -I 5m
   fits:
+    logging: *logging
     image: islandora/fits:7.0.17@sha256:d603ee546f66eef4986dcd11ce354bf8751365602ad17a741b426918d0e590ca
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
+    logging: *logging
     image: islandora/crayfits:7.0.17@sha256:6e95541a02937b76ea2ee2fd43ad5c4a21c91db99d383baa7ae68e21b768441b
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
@@ -60,6 +68,7 @@ services:
       - ./tmp/crayfits:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
+    logging: *logging
     image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:99e944891f513ea6379466efce2f0474e8f7f55701e5740b1d6cb700bf541283
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
@@ -68,6 +77,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   homarus:
+    logging: *logging
     image: islandora/homarus:7.0.17@sha256:afabc4287f0154a5ddbba19012cc9c65a62eb02e73f7a2667cf3597f27a5a1c6
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
@@ -75,6 +85,7 @@ services:
       - ./tmp/homarus:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
+    logging: *logging
     image: islandora/houdini:7.0.17@sha256:7f31df805deb85fd3b28f7bb869fca84e71dc8a7cec6984747e3c703ef952b33
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
@@ -82,6 +93,7 @@ services:
       - ./tmp/houdini:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
+    logging: *logging
     image: islandora/hypercube:7.0.17@sha256:7f6b12de663df8cb045f159598f7fad3f1c3435249e5cc9369068a3217d27c71
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
@@ -89,10 +101,12 @@ services:
       - ./tmp/hypercube:/tmp:rw
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
+    logging: *logging
     image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:74f310b6657219ceafe86b689a28bdf32d9090dd6ca4bae995177d05860e3d16
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   scribe:
+    logging: *logging
     image: lehighlts/scyllaridae-scribe:main@sha256:a63a05e119fe3c432d529fad182efc334552704aa3ab756b374312f235e63fb1
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
@@ -104,6 +118,7 @@ services:
     volumes:
       - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
+    logging: *logging
     image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:52181ee0a4241d75ce31510e267c874d651a83b5574191cb619ecc4230e3e7dd
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
@@ -112,6 +127,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   coverpage:
+    logging: *logging
     image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:2530ccfafa9f6abcc78a7bc77edfc094a89a67798fca1779f3c314fa2e107f36
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
@@ -120,6 +136,7 @@ services:
       - source: CERT_AUTHORITY
       - source: JWT_PUBLIC_KEY
   mergepdf:
+    logging: *logging
     image: islandora/mergepdf:7.0.17@sha256:6577ac6099f25ba8547507f2d4643f1b0741ff02a21c533aa14192eb349a61f2
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys

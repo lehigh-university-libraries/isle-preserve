@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\islandora_scribe\Kernel;
 
+use GuzzleHttp\Middleware;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -25,20 +27,49 @@ use Psr\Log\NullLogger;
 
 /**
  * Exercises durable acceptance, ordering, replacement and storage retry.
- *
  */
 #[\PHPUnit\Framework\Attributes\Group('islandora_scribe')]
 final class PublicationTest extends KernelTestBase {
+  /**
+   * {@inheritdoc}
+   */
   protected static $modules = ['system'];
+  /**
+   * The integration under test.
+   */
   private Integration $integration;
+  /**
+   * The mock HTTP handler.
+   */
   private MockHandler $http;
+  /**
+   * Captured export requests.
+   */
   private array $requests = [];
+  /**
+   * Whether to simulate a storage failure.
+   */
   private bool $failStorage = FALSE;
+  /**
+   * The number of file writes.
+   */
   private int $writes = 0;
+  /**
+   * The number of media saves.
+   */
   private int $mediaSaves = 0;
+  /**
+   * The file currently referenced by the media.
+   */
   private int $mediaFileId = 20;
+  /**
+   * The stored derivative mapping.
+   */
   private array $mapping;
 
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
     $root = dirname(__DIR__, 3);
@@ -50,11 +81,15 @@ final class PublicationTest extends KernelTestBase {
     foreach (islandora_scribe_schema() as $table => $schema) {
       $database->schema()->createTable($table, $schema);
     }
-    $settings = new RuntimeSettings(new Settings(['islandora_scribe' => [
-      'base_url' => 'https://scribe.example', 'workspace_id' => 42,
-      'webhook_secret' => str_repeat('w', 32), 'correlation_secret' => str_repeat('c', 32),
-      'api_key' => 'test-read-key',
-    ]]));
+    $settings = new RuntimeSettings(new Settings([
+      'islandora_scribe' => [
+        'base_url' => 'https://scribe.example',
+        'workspace_id' => 42,
+        'webhook_secret' => str_repeat('w', 32),
+        'correlation_secret' => str_repeat('c', 32),
+        'api_key' => 'test-read-key',
+      ],
+    ]));
     $old = $this->createMock(FileInterface::class);
     $old->method('id')->willReturn(20);
     $old->method('getFileUri')->willReturn('public://test.hocr');
@@ -95,44 +130,74 @@ final class PublicationTest extends KernelTestBase {
       $this->writes++;
       return $new;
     });
-    $fileSystem = $this->createMock(\Drupal\Core\File\FileSystemInterface::class);
+    $fileSystem = $this->createMock(FileSystemInterface::class);
     $fileSystem->method('dirname')->willReturn('public://');
     $fileSystem->method('prepareDirectory')->willReturn(TRUE);
     $this->http = new MockHandler();
     $handler = HandlerStack::create($this->http);
-    $handler->push(\GuzzleHttp\Middleware::history($this->requests));
+    $handler->push(Middleware::history($this->requests));
     $this->integration = new Integration($database, $this->container->get('queue'), $this->container->get('lock'), $entities, $source, new Client(['handler' => $handler]), $settings, $files, $fileSystem, new NullLogger());
     $this->mapping = [
-      'operation_id' => str_repeat('a', 32), 'workspace_id' => 42,
-      'source_media_id' => 1, 'source_file_id' => 2,
-      'derivative_media_id' => 10, 'derivative_file_id' => 20, 'ingest_complete' => 1,
-      'external_reference_id' => 'source-uuid', 'item_id' => 'item-1', 'item_image_id' => 7,
-      'file_uri' => 'public://test.hocr', 'uri_hash' => hash('sha256', 'public://test.hocr'),
+      'operation_id' => str_repeat('a', 32),
+      'workspace_id' => 42,
+      'source_media_id' => 1,
+      'source_file_id' => 2,
+      'derivative_media_id' => 10,
+      'derivative_file_id' => 20,
+      'ingest_complete' => 1,
+      'external_reference_id' => 'source-uuid',
+      'item_id' => 'item-1',
+      'item_image_id' => 7,
+      'file_uri' => 'public://test.hocr',
+      'uri_hash' => hash('sha256', 'public://test.hocr'),
     ];
     $database->insert('islandora_scribe_mapping')->fields($this->mapping)->execute();
   }
 
+  /**
+   * Builds a publication event for testing.
+   */
   private function event(string $id, int $revision): array {
-    return ['id' => $id, 'specversion' => '1.0', 'type' => 'dev.scribe.annotations.published', 'data' => [
-      'workspaceId' => 42, 'itemId' => 'item-1', 'itemImageId' => 7,
-      'externalReferenceId' => 'source-uuid', 'publishedRevision' => $revision,
-    ]];
+    return [
+      'id' => $id,
+      'specversion' => '1.0',
+      'type' => 'dev.scribe.annotations.published',
+      'data' => [
+        'workspaceId' => 42,
+        'itemId' => 'item-1',
+        'itemImageId' => 7,
+        'externalReferenceId' => 'source-uuid',
+        'publishedRevision' => $revision,
+      ],
+    ];
   }
 
+  /**
+   * Queues a mock response for the requested published revision.
+   */
   private function export(int $revision): void {
     $this->http->append(new Response(200, [], json_encode([
-      'itemImageId' => '7', 'revision' => (string) $revision,
-      'mediaType' => 'text/vnd.hocr+html; charset=utf-8', 'content' => base64_encode('<html>published</html>'),
+      'itemImageId' => '7',
+      'revision' => (string) $revision,
+      'mediaType' => 'text/vnd.hocr+html; charset=utf-8',
+      'content' => base64_encode('<html>published</html>'),
     ])));
   }
 
+  /**
+   * Tests read key validation.
+   */
   public function testReadKeyValidation(): void {
     foreach ([NULL, '', "key\r\nInjected: header", ' key ', str_repeat('x', 4097)] as $key) {
-      $settings = new RuntimeSettings(new Settings(['islandora_scribe' => [
-        'base_url' => 'https://scribe.example', 'workspace_id' => 42,
-        'webhook_secret' => str_repeat('w', 32), 'correlation_secret' => str_repeat('c', 32),
-        'api_key' => $key,
-      ]]));
+      $settings = new RuntimeSettings(new Settings([
+        'islandora_scribe' => [
+          'base_url' => 'https://scribe.example',
+          'workspace_id' => 42,
+          'webhook_secret' => str_repeat('w', 32),
+          'correlation_secret' => str_repeat('c', 32),
+          'api_key' => $key,
+        ],
+      ]));
       try {
         $settings->get();
         self::fail('Invalid read key accepted');
@@ -143,20 +208,32 @@ final class PublicationTest extends KernelTestBase {
     }
   }
 
+  /**
+   * Tests signatures.
+   */
   public function testSignatures(): void {
     $body = json_encode($this->event('one', 1));
     $secret = str_repeat('w', 32);
     $signature = 'v1=' . hash_hmac('sha256', '1000.' . $body, $secret);
     self::assertSame($this->event('one', 1), SignedEvent::decode($body, '1000', $signature, $secret, 1000));
-    foreach ([[$body . ' ', '1000', $signature, 1000], [$body, '1000', $signature, 1301], [$body, '1000', 'v2=bad', 1000], [str_repeat('x', 65537), '1000', $signature, 1000]] as [$bytes, $timestamp, $sig, $now]) {
+    foreach ([
+      [$body . ' ', '1000', $signature, 1000],
+      [$body, '1000', $signature, 1301],
+      [$body, '1000', 'v2=bad', 1000],
+      [str_repeat('x', 65537), '1000', $signature, 1000],
+    ] as [$bytes, $timestamp, $sig, $now]) {
       try {
         SignedEvent::decode($bytes, $timestamp, $sig, $secret, $now);
         self::fail('Invalid signature accepted');
       }
-      catch (\InvalidArgumentException $e) {}
+      catch (\InvalidArgumentException $e) {
+      }
     }
   }
 
+  /**
+   * Tests replay ordering and replacement.
+   */
   public function testReplayOrderingAndReplacement(): void {
     $this->integration->accept($this->event('new', 3));
     $this->integration->accept($this->event('new', 3));
@@ -180,6 +257,9 @@ final class PublicationTest extends KernelTestBase {
     self::assertSame(21, (int) $mapping['derivative_file_id']);
   }
 
+  /**
+   * Tests cross resource rejection.
+   */
   public function testCrossResourceRejection(): void {
     foreach (['workspaceId' => 43, 'itemId' => 'other', 'itemImageId' => 8, 'externalReferenceId' => 'other'] as $key => $value) {
       $event = $this->event('invalid', 1);
@@ -188,11 +268,15 @@ final class PublicationTest extends KernelTestBase {
         $this->integration->accept($event);
         self::fail('Cross-resource event accepted');
       }
-      catch (\InvalidArgumentException $e) {}
+      catch (\InvalidArgumentException $e) {
+      }
     }
     self::assertSame(0, (int) $this->container->get('database')->select('islandora_scribe_event')->countQuery()->execute()->fetchField());
   }
 
+  /**
+   * Tests context selection is immutable.
+   */
   public function testContextSelectionIsImmutable(): void {
     $source = $this->createMock(MediaInterface::class);
     $source->method('id')->willReturn(100);
@@ -202,21 +286,33 @@ final class PublicationTest extends KernelTestBase {
     $replay = $this->integration->reserve($source, 'public://context-55.hocr', 3, 'file', 4, 55);
     self::assertSame($mapping['operation_id'], $replay['operation_id']);
     $this->integration->correlate([
-      'operationId' => $mapping['operation_id'], 'externalReferenceId' => 'source-context-uuid',
-      'workspaceId' => 42, 'itemId' => 'context-item', 'itemImageId' => 99, 'contextId' => '55',
+      'operationId' => $mapping['operation_id'],
+      'externalReferenceId' => 'source-context-uuid',
+      'workspaceId' => 42,
+      'itemId' => 'context-item',
+      'itemImageId' => 99,
+      'contextId' => '55',
     ]);
     try {
       $this->integration->correlate([
-        'operationId' => $mapping['operation_id'], 'externalReferenceId' => 'source-context-uuid',
-        'workspaceId' => 42, 'itemId' => 'context-item', 'itemImageId' => 99, 'contextId' => '56',
+        'operationId' => $mapping['operation_id'],
+        'externalReferenceId' => 'source-context-uuid',
+        'workspaceId' => 42,
+        'itemId' => 'context-item',
+        'itemImageId' => 99,
+        'contextId' => '56',
       ]);
       self::fail('Changed callback context accepted');
     }
-    catch (\InvalidArgumentException $e) {}
+    catch (\InvalidArgumentException $e) {
+    }
     $this->expectException(\RuntimeException::class);
     $this->integration->reserve($source, 'public://context-55.hocr', 3, 'file', 4, 56);
   }
 
+  /**
+   * Tests new context replaces same derivative and fences old events.
+   */
   public function testNewContextReplacesSameDerivativeAndFencesOldEvents(): void {
     $this->container->get('database')->delete('islandora_scribe_mapping')->condition('operation_id', $this->mapping['operation_id'])->execute();
     $source = $this->createMock(MediaInterface::class);
@@ -231,8 +327,12 @@ final class PublicationTest extends KernelTestBase {
     $uri = 'public://single-hocr.hocr';
     $old = $this->integration->reserve($source, $uri, 3, 'file', 4, 11);
     $this->integration->correlate([
-      'operationId' => $old['operation_id'], 'externalReferenceId' => 'source-context-uuid',
-      'workspaceId' => 42, 'itemId' => 'old-item', 'itemImageId' => 99, 'contextId' => 11,
+      'operationId' => $old['operation_id'],
+      'externalReferenceId' => 'source-context-uuid',
+      'workspaceId' => 42,
+      'itemId' => 'old-item',
+      'itemImageId' => 99,
+      'contextId' => 11,
     ]);
     $stream = fopen('php://temp', 'w+b');
     fwrite($stream, '<html>published</html>');
@@ -251,8 +351,12 @@ final class PublicationTest extends KernelTestBase {
     $this->integration->apply('superseded');
     self::assertSame(1, $this->writes);
     $this->integration->correlate([
-      'operationId' => $new['operation_id'], 'externalReferenceId' => 'source-context-uuid',
-      'workspaceId' => 42, 'itemId' => 'new-item', 'itemImageId' => 100, 'contextId' => 10,
+      'operationId' => $new['operation_id'],
+      'externalReferenceId' => 'source-context-uuid',
+      'workspaceId' => 42,
+      'itemId' => 'new-item',
+      'itemImageId' => 100,
+      'contextId' => 10,
     ]);
     rewind($stream);
     $this->integration->initialDerivative($new['operation_id'], $node, $type, $term, $stream, $uri);
@@ -264,12 +368,18 @@ final class PublicationTest extends KernelTestBase {
     $this->integration->accept($event);
   }
 
+  /**
+   * Tests conflicting replay is rejected.
+   */
   public function testConflictingReplayIsRejected(): void {
     $this->integration->accept($this->event('same-id', 1));
     $this->expectException(\InvalidArgumentException::class);
     $this->integration->accept($this->event('same-id', 2));
   }
 
+  /**
+   * Tests export failure retries.
+   */
   public function testExportFailureRetries(): void {
     $this->integration->accept($this->event('export-retry', 5));
     $this->http->append(new Response(503, [], '{"code":"unavailable"}'));
@@ -277,7 +387,8 @@ final class PublicationTest extends KernelTestBase {
       $this->integration->apply('export-retry');
       self::fail('Failed export acknowledged');
     }
-    catch (\RuntimeException $e) {}
+    catch (\RuntimeException $e) {
+    }
     self::assertSame(0, $this->writes);
     self::assertSame(0, (int) $this->integration->mapping($this->mapping['operation_id'])['last_revision']);
     $this->export(5);
@@ -285,6 +396,9 @@ final class PublicationTest extends KernelTestBase {
     self::assertSame(5, (int) $this->integration->mapping($this->mapping['operation_id'])['last_revision']);
   }
 
+  /**
+   * Tests storage failure retries.
+   */
   public function testStorageFailureRetries(): void {
     $this->integration->accept($this->event('retry', 4));
     $this->export(4);
@@ -293,11 +407,13 @@ final class PublicationTest extends KernelTestBase {
       $this->integration->apply('retry');
       self::fail('Storage failure acknowledged');
     }
-    catch (\RuntimeException $e) {}
+    catch (\RuntimeException $e) {
+    }
     self::assertSame(0, (int) $this->integration->mapping($this->mapping['operation_id'])['last_revision']);
     $this->failStorage = FALSE;
     $this->export(4);
     $this->integration->apply('retry');
     self::assertSame(4, (int) $this->integration->mapping($this->mapping['operation_id'])['last_revision']);
   }
+
 }

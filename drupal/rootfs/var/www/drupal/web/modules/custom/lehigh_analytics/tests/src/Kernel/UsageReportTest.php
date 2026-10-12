@@ -95,20 +95,20 @@ final class UsageReportTest extends KernelTestBase {
     // Only the media columns read by the reporting join are needed here.
     $schema = $this->container->get('database')->schema();
     $schema->createTable('media__field_media_of', [
-    'fields' => [
-      'entity_id' => ['type' => 'int'],
-      'field_media_of_target_id' => ['type' => 'int'],
-      'deleted' => ['type' => 'int', 'default' => 0],
-      'langcode' => ['type' => 'varchar', 'length' => 12],
-    ]
-]);
+      'fields' => [
+        'entity_id' => ['type' => 'int'],
+        'field_media_of_target_id' => ['type' => 'int'],
+        'deleted' => ['type' => 'int', 'default' => 0],
+        'langcode' => ['type' => 'varchar', 'length' => 12],
+      ],
+    ]);
     $schema->createTable('media_field_data', [
-    'fields' => [
-      'mid' => ['type' => 'int'],
-      'langcode' => ['type' => 'varchar', 'length' => 12],
-      'default_langcode' => ['type' => 'int'],
-    ]
-]);
+      'fields' => [
+        'mid' => ['type' => 'int'],
+        'langcode' => ['type' => 'varchar', 'length' => 12],
+        'default_langcode' => ['type' => 'int'],
+      ],
+    ]);
   }
 
   /**

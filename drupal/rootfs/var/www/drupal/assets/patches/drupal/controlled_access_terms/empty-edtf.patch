@@ -1,0 +1,13 @@
+diff --git a/src/EDTFConverter.php b/src/EDTFConverter.php
+--- a/src/EDTFConverter.php
++++ b/src/EDTFConverter.php
+@@ -22,5 +22,9 @@ class EDTFConverter extends CommonDataConverter {
+    */
+   public static function datetimeIso8601Value($data) {
+
++    if (!isset($data['value']) || $data['value'] === '') {
++      return '';
++    }
++
+     // Take first possible date.
+     $date = preg_split('/(,|\.\.|\/)/', trim($data['value'], '{}[]'))[0];

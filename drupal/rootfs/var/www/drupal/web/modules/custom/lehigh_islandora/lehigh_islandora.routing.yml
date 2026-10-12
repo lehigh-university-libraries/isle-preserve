@@ -25,6 +25,7 @@ lehigh_islandora.source_browser_landing:
     _title_callback: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::landingTitle'
   requirements:
     _permission: "access content"
+    _role: "authenticated"
 
 lehigh_islandora.source_browser:
   path: "/browse-source/{node}"
@@ -33,6 +34,7 @@ lehigh_islandora.source_browser:
     _title_callback: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::title'
   requirements:
     _permission: "access content"
+    _role: "authenticated"
     _entity_access: "node.view"
   options:
     parameters:
@@ -46,6 +48,7 @@ lehigh_islandora.source_browser_json:
     _title: "Source Browser"
   requirements:
     _permission: "access content"
+    _role: "authenticated"
     _entity_access: "node.view"
   options:
     parameters:
@@ -59,6 +62,7 @@ lehigh_islandora.source_browser_search:
     _title: "Source Browser Search"
   requirements:
     _permission: "access content"
+    _role: "authenticated"
     _entity_access: "node.view"
   options:
     parameters:
@@ -72,6 +76,7 @@ lehigh_islandora.source_browser_index:
     _title: "Source Browser Index"
   requirements:
     _permission: "access content"
+    _role: "authenticated"
     _entity_access: "node.view"
   options:
     parameters:
@@ -84,6 +89,7 @@ lehigh_islandora.source_browser_index_hits:
     _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::index'
   requirements:
     _permission: "access content"
+    _role: "authenticated"
     _entity_access: "node.view"
     term_id: '\d+'
   options:
@@ -98,6 +104,7 @@ lehigh_islandora.source_browser_downloads:
     _title: "Source Browser Downloads"
   requirements:
     _permission: "access content"
+    _role: "authenticated"
     _entity_access: "node.view"
   options:
     parameters:
@@ -189,14 +196,6 @@ lehigh_islandora.gunn_bepress:
     parameters:
       id:
         type: integer
-
-lehigh_islandora.transform_search:
-  path: "/tsearch"
-  defaults:
-    _title: "Transform Search"
-    _form: 'Drupal\lehigh_islandora\Form\TransformSearchForm'
-  requirements:
-    _permission: "access content"
 
 lehigh_islandora.queue:
   path: "/admin/reports/queue"
