@@ -71,6 +71,7 @@ type Config struct {
 	ProtectRoutes         []string `json:"protectRoutes"`
 	ExcludeRoutes         []string `json:"excludeRoutes"`
 	ProtectFileExtensions []string `json:"protectFileExtensions"`
+	ProtectAllExtensions  string   `json:"protectAllExtensions"`
 	ProtectHttpMethods    []string `json:"protectHttpMethods"`
 	GoodBots              []string `json:"goodBots"`
 	ExemptIPs             []string `json:"exemptIps"`
@@ -82,14 +83,15 @@ type Config struct {
 	SiteKey               string   `json:"siteKey"`
 	SecretKey             string   `json:"secretKey"`
 	// EnableStatsPage is a string instead of bool due to Traefik's label parsing limitations
-	EnableStatsPage         string `json:"enableStatsPage"`
-	LogLevel                string `json:"loglevel,omitempty"`
-	PersistentStateFile     string `json:"persistentStateFile"`
-	EnableGooglebotIPCheck  string `json:"enableGooglebotIPCheck"`
-	EnableUptimeRobotBypass string `json:"enableUptimeRobotBypass"`
-	Mode                    string `json:"mode"`
-	PeriodSeconds           int    `json:"periodSeconds"`
-	FailureThreshold        int    `json:"failureThreshold"`
+	EnableStatsPage          string `json:"enableStatsPage"`
+	LogLevel                 string `json:"loglevel,omitempty"`
+	PersistentStateFile      string `json:"persistentStateFile"`
+	EnableGooglebotIPCheck   string `json:"enableGooglebotIPCheck"`
+	EnableCommonCrawlIPCheck string `json:"enableCommonCrawlIPCheck"`
+	EnableUptimeRobotBypass  string `json:"enableUptimeRobotBypass"`
+	Mode                     string `json:"mode"`
+	PeriodSeconds            int    `json:"periodSeconds"`
+	FailureThreshold         int    `json:"failureThreshold"`
 }
 
 type CaptchaProtect struct {
@@ -101,6 +103,7 @@ type CaptchaProtect struct {
 	verifiedCache      *lru.Cache
 	botCache           *lru.Cache
 	googlebotIPs       *helper.GooglebotIPs
+	commonCrawlIPs     *helper.CommonCrawlIPs
 	uptimeRobotIPs     *helper.UptimeRobotIPs
 	captchaConfig      CaptchaConfig
 	exemptIps          []*net.IPNet
@@ -141,28 +144,30 @@ type challengeData struct {
 
 func CreateConfig() *Config {
 	return &Config{
-		Window:                  86400,
-		IPForwardedHeader:       "",
-		ProtectParameters:       "false",
-		ProtectRoutes:           []string{},
-		ExcludeRoutes:           []string{},
-		ProtectHttpMethods:      []string{},
-		ProtectFileExtensions:   []string{},
-		GoodBots:                []string{},
-		ExemptIPs:               []string{},
-		ExemptUserAgents:        []string{},
-		ChallengeURL:            "/challenge",
-		ChallengeTmpl:           "challenge.tmpl.html",
-		ChallengeStatusCode:     0,
-		EnableStatsPage:         "false",
-		LogLevel:                "INFO",
-		IPDepth:                 0,
-		CaptchaProvider:         "turnstile",
-		Mode:                    "prefix",
-		EnableGooglebotIPCheck:  "false",
-		EnableUptimeRobotBypass: "false",
-		PeriodSeconds:           DefaultHealthCheckPeriodSeconds,
-		FailureThreshold:        DefaultHealthCheckFailureThreshold,
+		Window:                   86400,
+		IPForwardedHeader:        "",
+		ProtectParameters:        "false",
+		ProtectRoutes:            []string{},
+		ExcludeRoutes:            []string{},
+		ProtectHttpMethods:       []string{},
+		ProtectFileExtensions:    []string{},
+		ProtectAllExtensions:     "false",
+		GoodBots:                 []string{},
+		ExemptIPs:                []string{},
+		ExemptUserAgents:         []string{},
+		ChallengeURL:             "/challenge",
+		ChallengeTmpl:            "challenge.tmpl.html",
+		ChallengeStatusCode:      0,
+		EnableStatsPage:          "false",
+		LogLevel:                 "INFO",
+		IPDepth:                  0,
+		CaptchaProvider:          "turnstile",
+		Mode:                     "prefix",
+		EnableGooglebotIPCheck:   "false",
+		EnableCommonCrawlIPCheck: "true",
+		EnableUptimeRobotBypass:  "false",
+		PeriodSeconds:            DefaultHealthCheckPeriodSeconds,
+		FailureThreshold:         DefaultHealthCheckFailureThreshold,
 	}
 }
 
@@ -342,6 +347,11 @@ func NewCaptchaProtect(ctx context.Context, next http.Handler, config *Config, n
 		bc.googlebotIPs = helper.NewGooglebotIPs()
 		go bc.googlebotIPCheckLoop(ctx)
 	}
+	if config.EnableCommonCrawlIPCheck == "true" {
+		log.Info("Common Crawl IP check enabled")
+		bc.commonCrawlIPs = helper.NewCommonCrawlIPs()
+		go commonCrawlIPCheckLoop(ctx, log, bc.httpClient, bc.commonCrawlIPs)
+	}
 	if config.EnableUptimeRobotBypass == "true" {
 		log.Info("UptimeRobot bypass enabled")
 		bc.uptimeRobotIPs = helper.NewUptimeRobotIPs()
@@ -349,6 +359,35 @@ func NewCaptchaProtect(ctx context.Context, next http.Handler, config *Config, n
 	}
 
 	return &bc, nil
+}
+
+func commonCrawlIPCheckLoop(ctx context.Context, log *slog.Logger, httpClient *http.Client, commonCrawlIPs *helper.CommonCrawlIPs) {
+	ticker := time.NewTicker(24 * time.Hour)
+	defer ticker.Stop()
+
+	if ctx.Err() != nil {
+		return
+	}
+	count, err := helper.RefreshCommonCrawlIPs(ctx, log, httpClient, commonCrawlIPs, helper.CommonCrawlIPRangeURL)
+	if err != nil {
+		log.Error("failed to fetch Common Crawl IPs", "err", err)
+	} else {
+		log.Info("Updated Common Crawl IPs", "count", count)
+	}
+
+	for {
+		select {
+		case <-ticker.C:
+			count, err := helper.RefreshCommonCrawlIPs(ctx, log, httpClient, commonCrawlIPs, helper.CommonCrawlIPRangeURL)
+			if err != nil {
+				log.Error("failed to fetch Common Crawl IPs", "err", err)
+				continue
+			}
+			log.Info("Updated Common Crawl IPs", "count", count)
+		case <-ctx.Done():
+			return
+		}
+	}
 }
 
 func uptimeRobotIPCheckLoop(ctx context.Context, log *slog.Logger, httpClient *http.Client, uptimeRobotIPs *helper.UptimeRobotIPs) {
@@ -884,6 +923,11 @@ func (bc *CaptchaProtect) shouldApply(req *http.Request, clientIP string) bool {
 // isExtensionProtected checks if a file extension should be protected based on the configured list.
 // Returns true if the path has no extension (likely HTML) or if the extension matches the protected list.
 func (bc *CaptchaProtect) isExtensionProtected(path string) bool {
+	// When enabled, protect any matched route regardless of extension (filepath.Ext misreads dotted
+	// content IDs as static assets).
+	if bc.config.ProtectAllExtensions == "true" {
+		return true
+	}
 	ext := filepath.Ext(path)
 	ext = strings.TrimPrefix(ext, ".")
 	if ext == "" {
@@ -1014,14 +1058,20 @@ func (bc *CaptchaProtect) getClientIP(req *http.Request) string {
 }
 
 func (bc *CaptchaProtect) isGoodBot(req *http.Request, clientIP string) bool {
-	if bc.config.ProtectParameters == "true" {
-		if len(req.URL.Query()) > 0 {
-			return false
+	ip := net.ParseIP(clientIP)
+	if bc.config.EnableUptimeRobotBypass == "true" && bc.uptimeRobotIPs != nil {
+		if ip != nil && bc.uptimeRobotIPs.Contains(ip) {
+			return true
 		}
 	}
-	if bc.config.EnableUptimeRobotBypass == "true" && bc.uptimeRobotIPs != nil {
-		ip := net.ParseIP(clientIP)
-		if ip != nil && bc.uptimeRobotIPs.Contains(ip) {
+	if bc.config.ProtectParameters == "true" && len(req.URL.Query()) > 0 {
+		return false
+	}
+	if ip != nil {
+		if bc.config.EnableCommonCrawlIPCheck == "true" && bc.commonCrawlIPs != nil && bc.commonCrawlIPs.Contains(ip) {
+			return true
+		}
+		if bc.config.EnableGooglebotIPCheck == "true" && bc.googlebotIPs != nil && bc.googlebotIPs.Contains(ip) {
 			return true
 		}
 	}
@@ -1030,19 +1080,9 @@ func (bc *CaptchaProtect) isGoodBot(req *http.Request, clientIP string) bool {
 	if ok {
 		return bot.(bool)
 	}
-	v := false
-	if bc.config.EnableGooglebotIPCheck == "true" {
-		slog.Debug("Checking if a google IP")
-		ip := net.ParseIP(clientIP)
-		if ip != nil {
-			v = bc.googlebotIPs.Contains(ip)
-		}
-	}
-	if !v {
-		ctx, cancel := context.WithTimeout(req.Context(), goodBotLookupTimeout)
-		defer cancel()
-		v = bc.goodBotLookup(ctx, clientIP, bc.config.GoodBots)
-	}
+	ctx, cancel := context.WithTimeout(req.Context(), goodBotLookupTimeout)
+	defer cancel()
+	v := bc.goodBotLookup(ctx, clientIP, bc.config.GoodBots)
 	bc.botCache.Set(clientIP, v, lru.DefaultExpiration)
 	return v
 }
