@@ -2,15 +2,13 @@
 
 /**
  * @file
+ * Installs and upgrades Scribe mappings, events, and processing contexts.
  */
-
-/**
- * Implements hook_schema(). */
 
 use Drupal\Core\Config\FileStorage;
 
 /**
- *
+ * Implements hook_schema().
  */
 function islandora_scribe_schema() {
   $id = ['type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0];
@@ -69,6 +67,7 @@ function islandora_scribe_requirements($phase) {
 /**
  * Persist immutable processing contexts for existing ingest mappings. */
 function islandora_scribe_update_10001() {
+  _islandora_scribe_ensure_schema();
   $schema = \Drupal::database()->schema();
   if (!$schema->fieldExists('islandora_scribe_mapping', 'context_id')) {
     $schema->addField('islandora_scribe_mapping', 'context_id', [
@@ -83,6 +82,7 @@ function islandora_scribe_update_10001() {
 /**
  * Add named context actions and support replacing the node's existing hOCR. */
 function islandora_scribe_update_10002() {
+  _islandora_scribe_ensure_schema();
   $database = \Drupal::database();
   $schema = $database->schema();
   if (!$schema->fieldExists('islandora_scribe_mapping', 'ingest_complete')) {
@@ -111,6 +111,25 @@ function islandora_scribe_update_10002() {
     $data = $defaults->read($name);
     if (!$actions->load($data['id'])) {
       $actions->create($data)->save();
+    }
+  }
+}
+
+/**
+ * Repairs missing tables on sites where Scribe was already enabled.
+ */
+function islandora_scribe_update_10003(): void {
+  _islandora_scribe_ensure_schema();
+}
+
+/**
+ * Creates missing Scribe tables without replacing existing mappings or events.
+ */
+function _islandora_scribe_ensure_schema(): void {
+  $schema = \Drupal::database()->schema();
+  foreach (islandora_scribe_schema() as $table => $definition) {
+    if (!$schema->tableExists($table)) {
+      $schema->createTable($table, $definition);
     }
   }
 }
