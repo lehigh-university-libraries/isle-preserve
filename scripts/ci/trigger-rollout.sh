@@ -2,18 +2,7 @@
 
 set -eou pipefail
 
-echo "Fetching GitHub OIDC token"
-TOKEN=$(curl -s \
-    -H "Accept: application/json; api-version=2.0" \
-    -H "Content-Type: application/json" -d "{}"  \
-    -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-    "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -er '.value')
-
-# add some buffer to avoid iat issues
-sleep 5
-
 echo "Triggering rollout via $ROLLOUT_URL"
-echo "${TOKEN}" | jq -rR 'split(".") | .[1] | @base64d | fromjson | .aud'
 
 PAYLOAD=$(cat <<EOF
 {
@@ -25,6 +14,17 @@ EOF
 
 COUNT=0
 while true; do
+  # Deployment and backoff can outlive GitHub's short-lived OIDC token.
+  echo "Fetching GitHub OIDC token"
+  TOKEN=$(curl -fsS \
+    -H "Accept: application/json; api-version=2.0" \
+    -H "Content-Type: application/json" -d "{}" \
+    -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+    "$ACTIONS_ID_TOKEN_REQUEST_URL" | jq -er '.value')
+
+  # Add some buffer to avoid iat issues.
+  sleep 5
+
   STATUS=$(curl -sk \
     --max-time 300 \
     -w '%{http_code}' \
