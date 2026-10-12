@@ -195,6 +195,9 @@
             ]
         },
         "patches": {
+            "codementality/flysystem-stream-wrapper": {
+                "Use an explicit nullable configuration type for PHP 8.4": "assets/patches/codementality/flysystem-stream-wrapper/explicit-nullable-configuration.patch"
+            },
             "drupal/entity_metrics": {
                 "Allow Drush upgrade commands before the GeoIP updater is available": "assets/patches/drupal/entity_metrics/optional-geoip-updater.patch"
             },

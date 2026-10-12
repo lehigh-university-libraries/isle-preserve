@@ -102,3 +102,15 @@ function lehigh_analytics_schema(): array {
     ],
   ];
 }
+
+/**
+ * Creates missing usage tables on sites where analytics is already installed.
+ */
+function lehigh_analytics_update_11001(): void {
+  $schema = \Drupal::database()->schema();
+  foreach (lehigh_analytics_schema() as $table => $definition) {
+    if (!$schema->tableExists($table)) {
+      $schema->createTable($table, $definition);
+    }
+  }
+}

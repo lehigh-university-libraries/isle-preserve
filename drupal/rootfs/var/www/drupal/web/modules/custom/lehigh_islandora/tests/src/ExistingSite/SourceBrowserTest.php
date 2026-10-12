@@ -20,6 +20,36 @@ final class SourceBrowserTest extends ExistingSiteBase {
   use \weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 
   /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
+    $this->drupalLogin($this->createUser(['access content']));
+  }
+
+  /**
+   * Anonymous requests cannot access preview pages or API endpoints.
+   */
+  public function testAuthenticationRequired(): void {
+    $source = $this->collection('Authenticated preview');
+    $subject = $this->browserTerm(['vid' => 'subject', 'name' => 'Preview subject']);
+    $this->drupalLogout();
+    $api = '/api/v1/source-browser/' . $source->id();
+    foreach ([
+      '/browse-source',
+      '/browse-source/' . $source->id(),
+      $api,
+      $api . '/search',
+      $api . '/index',
+      $api . '/index/' . $subject->id(),
+      $api . '/downloads',
+    ] as $path) {
+      $this->drupalGet($path);
+      $this->assertSession()->statusCodeEquals(403);
+    }
+  }
+
+  /**
    * Creates a tracked term in an existing Islandora vocabulary.
    */
   private function browserTerm(array $values) {

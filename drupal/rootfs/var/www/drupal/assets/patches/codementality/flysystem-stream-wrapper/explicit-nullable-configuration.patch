@@ -1,0 +1,6 @@
+diff --git a/src/FlysystemStreamWrapper.php b/src/FlysystemStreamWrapper.php
+--- a/src/FlysystemStreamWrapper.php
++++ b/src/FlysystemStreamWrapper.php
+@@ -166 +166 @@
+-    public static function register($protocol, FilesystemInterface $filesystem, array $configuration = null, $flags = 0)
++    public static function register($protocol, FilesystemInterface $filesystem, ?array $configuration = null, $flags = 0)

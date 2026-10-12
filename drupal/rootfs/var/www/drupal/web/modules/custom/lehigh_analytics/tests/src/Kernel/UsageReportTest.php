@@ -340,10 +340,18 @@ final class UsageReportTest extends KernelTestBase {
     }
     $this->container->get('router.builder')->rebuild();
     $access = $this->container->get('access_manager');
-    foreach (['lehigh_analytics.explorer', 'lehigh_analytics.data'] as $route) {
-      $this->assertTrue($access->checkNamedRoute($route, [], new AnonymousUserSession()));
+    $reviewer = $this->createMock(AccountInterface::class);
+    $reviewer->method('hasPermission')->willReturnMap([['view lehigh analytics', TRUE]]);
+    foreach ([
+      'lehigh_analytics.explorer' => [],
+      'lehigh_analytics.data' => [],
+      'lehigh_analytics.fields' => [],
+      'lehigh_analytics.options' => ['field' => 'field_model'],
+      'lehigh_analytics.public_export' => ['report' => 'views'],
+    ] as $route => $parameters) {
+      $this->assertFalse($access->checkNamedRoute($route, $parameters, new AnonymousUserSession()));
+      $this->assertTrue($access->checkNamedRoute($route, $parameters, $reviewer));
     }
-    $this->assertTrue($access->checkNamedRoute('lehigh_analytics.public_export', ['report' => 'views'], new AnonymousUserSession()));
     $this->assertFalse($access->checkNamedRoute('lehigh_analytics.review', [], new AnonymousUserSession()));
     // Rebuilding derived counts leaves the source intact and produces the same sum.
     $rollup->refresh(5000, TRUE);
