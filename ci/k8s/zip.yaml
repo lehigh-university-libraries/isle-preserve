@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-tn-zip
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-tn-zip:main@sha256:792340741e113271c9c61b1df376d6a72c79ac1053ce49e9ef18f2dc59fa851d
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-tn-zip:main@sha256:900696c5deac12f64bb56a4fcc0c5de885c23929bc6cd8031ba32fcc3df36e8b
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"
