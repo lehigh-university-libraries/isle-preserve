@@ -114,3 +114,10 @@ function lehigh_analytics_update_11001(): void {
     }
   }
 }
+
+/**
+ * Adds work attribution tables after the original two-table analytics install.
+ */
+function lehigh_analytics_update_11002(): void {
+  lehigh_analytics_update_11001();
+}

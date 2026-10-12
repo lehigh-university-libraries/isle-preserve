@@ -25,9 +25,10 @@ final class SchemaUpdateTest extends KernelTestBase {
     require_once dirname(__DIR__, 3) . '/lehigh_analytics.install';
     $database = $this->container->get('database');
     $schema = $database->schema();
-    lehigh_analytics_update_11001();
-    foreach (lehigh_analytics_schema() as $table => $definition) {
-      self::assertTrue($schema->tableExists($table));
+    // The original 11001 update created only these two tables.
+    $definitions = lehigh_analytics_schema();
+    foreach (['lehigh_analytics_totals', 'lehigh_analytics_progress'] as $table) {
+      $schema->createTable($table, $definitions[$table]);
     }
     $database->insert('lehigh_analytics_progress')->fields([
       'id' => 1,
@@ -35,9 +36,16 @@ final class SchemaUpdateTest extends KernelTestBase {
       'ready' => 1,
       'signature' => 'UTC:7',
     ])->execute();
+    $registry = $this->container->get('update.update_hook_registry');
+    $registry->setInstalledVersion('lehigh_analytics', 11001);
+    self::assertContains(11002, $registry->getAvailableUpdates('lehigh_analytics'));
+    lehigh_analytics_update_11002();
+    foreach ($definitions as $table => $definition) {
+      self::assertTrue($schema->tableExists($table));
+    }
     $schema->dropTable('lehigh_analytics_work_totals');
-    lehigh_analytics_update_11001();
-    lehigh_analytics_update_11001();
+    lehigh_analytics_update_11002();
+    lehigh_analytics_update_11002();
     self::assertTrue($schema->tableExists('lehigh_analytics_work_totals'));
     self::assertSame(1234, (int) $database->select('lehigh_analytics_progress', 'p')->fields('p', ['cursor'])->condition('id', 1)->execute()->fetchField());
   }
