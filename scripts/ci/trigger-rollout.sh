@@ -45,7 +45,7 @@ while true; do
     break
   fi
 
-  SLEEP_INTERVAL=$(( 60 * COUNT ))
+  SLEEP_INTERVAL=$(( 10 * COUNT ))
   echo "trying again in ${SLEEP_INTERVAL}s"
   sleep "${SLEEP_INTERVAL}"
 done

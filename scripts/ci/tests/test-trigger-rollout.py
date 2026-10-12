@@ -23,17 +23,18 @@ with tempfile.TemporaryDirectory() as directory:
         "    print(json.dumps({'value': f'token-{count}'}))\n"
         "else:\n"
         "    count = sum(c[-1] == 'https://rollout.example' for c in calls)\n"
-        "    print('500' if count == 1 else '200')\n"
+        "    print('500' if count < 4 else '200')\n"
     )
     mock_curl.chmod(0o755)
     mock_sleep = mock_bin / "sleep"
-    mock_sleep.write_text("#!/bin/sh\nexit 0\n")
+    mock_sleep.write_text('#!/bin/sh\nprintf "%s\\n" "$1" >> "$MOCK_SLEEPS"\n')
     mock_sleep.chmod(0o755)
     log = mock_bin / "requests.json"
     environment = {
         **os.environ,
         "PATH": f"{mock_bin}:{os.environ['PATH']}",
         "MOCK_REQUESTS": str(log),
+        "MOCK_SLEEPS": str(mock_bin / "sleeps"),
         "ACTIONS_ID_TOKEN_REQUEST_TOKEN": "test-request-token",
         "ACTIONS_ID_TOKEN_REQUEST_URL": "https://oidc.example",
         "ROLLOUT_URL": "https://rollout.example",
@@ -44,8 +45,10 @@ with tempfile.TemporaryDirectory() as directory:
     calls = json.loads(log.read_text())
     assert [call[-1] for call in calls] == [
         "https://oidc.example", "https://rollout.example",
-        "https://oidc.example", "https://rollout.example",
+    ] * 4
+    for attempt in range(1, 5):
+        assert f"Authorization: bearer token-{attempt}" in calls[attempt * 2 - 1]
+    assert (mock_bin / "sleeps").read_text().splitlines() == [
+        "5", "10", "5", "20", "5", "30", "5",
     ]
-    assert "Authorization: bearer token-1" in calls[1]
-    assert "Authorization: bearer token-2" in calls[3]
-    print("Rollout retries use fresh OIDC tokens.")
+    print("Rollout retries use fresh OIDC tokens and 10/20/30-second backoff.")
