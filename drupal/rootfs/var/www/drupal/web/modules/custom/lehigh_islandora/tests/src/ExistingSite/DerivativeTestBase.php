@@ -4,6 +4,8 @@ namespace Drupal\Tests\lehigh_islandora\ExistingSite;
 
 use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\media\Entity\Media;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -16,6 +18,41 @@ class DerivativeTestBase extends ExistingSiteBase {
 
   use MediaCreationTrait;
   use NodeCreationTrait;
+
+  /**
+   * Deletes derivative fixtures before their source nodes and handles deadlocks.
+   */
+  public function tearDownDrupal() {
+    \Drupal::service('cache_tags.invalidator')->resetChecksums();
+    while ($entity = array_pop($this->cleanupEntities)) {
+      $this->deleteEntityWithRetry($entity);
+    }
+    parent::tearDownDrupal();
+  }
+
+  /**
+   * Retries a rolled-back delete when workers contend for the same entity.
+   */
+  protected function deleteEntityWithRetry(EntityInterface $entity): void {
+    for ($attempt = 0;; $attempt++) {
+      try {
+        $entity->delete();
+        return;
+      }
+      catch (EntityStorageException $exception) {
+        // Storage exceptions can wrap the database exception more than once.
+        for ($cause = $exception; $cause; $cause = $cause->getPrevious()) {
+          if ((string) $cause->getCode() === '40001') {
+            break;
+          }
+        }
+        if (!$cause || $attempt === 3) {
+          throw $exception;
+        }
+        usleep(100000 * ($attempt + 1));
+      }
+    }
+  }
 
   /**
    * {@inheritdoc}
