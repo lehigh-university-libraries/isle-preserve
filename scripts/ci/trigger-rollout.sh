@@ -25,17 +25,17 @@ while true; do
   # Add some buffer to avoid iat issues.
   sleep 5
 
-  STATUS=$(curl -sk \
+  STATUS=$(curl -sSk \
     --max-time 300 \
     -w '%{http_code}' \
     -o /dev/null  \
     -d "$PAYLOAD" \
     -H "Authorization: bearer ${TOKEN}" \
     -H "X-Forwarded-For: 128.180.2.69" \
-    "${ROLLOUT_URL}" || echo 0)
+    "${ROLLOUT_URL}") || STATUS=000
 
   echo "Received $STATUS"
-  if [ ${STATUS} = 200 ]; then
+  if [ "$STATUS" = 200 ]; then
     echo "Rollout complete"
     exit 0
   fi

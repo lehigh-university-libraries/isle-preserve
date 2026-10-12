@@ -23,6 +23,9 @@ with tempfile.TemporaryDirectory() as directory:
         "    print(json.dumps({'value': f'token-{count}'}))\n"
         "else:\n"
         "    count = sum(c[-1] == 'https://rollout.example' for c in calls)\n"
+        "    if count == 1:\n"
+        "        print('000')\n"
+        "        sys.exit(7)\n"
         "    print('500' if count < 4 else '200')\n"
     )
     mock_curl.chmod(0o755)
@@ -41,7 +44,12 @@ with tempfile.TemporaryDirectory() as directory:
         "GITHUB_REF_NAME": "main",
     }
     script = Path(__file__).resolve().parents[1] / "trigger-rollout.sh"
-    subprocess.run(["bash", str(script)], env=environment, check=True)
+    result = subprocess.run(
+        ["bash", str(script)], env=environment, check=True,
+        capture_output=True, text=True,
+    )
+    assert "Received 000\n" in result.stdout
+    assert "Received 0000" not in result.stdout
     calls = json.loads(log.read_text())
     assert [call[-1] for call in calls] == [
         "https://oidc.example", "https://rollout.example",
