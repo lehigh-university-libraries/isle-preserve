@@ -1,0 +1,33 @@
+diff --git a/drush.services.yml b/drush.services.yml
+--- a/drush.services.yml
++++ b/drush.services.yml
+@@ -1,6 +1,6 @@
+ services:
+   entity_metrics.commands:
+     class: Drupal\entity_metrics\Commands\GeolocationCommands
+-    arguments: ['@entity_metrics.geolocation', '@geoip_autoupdate.updater']
++    arguments: ['@entity_metrics.geolocation', '@?geoip_autoupdate.updater']
+     tags:
+       - { name: drush.command }
+diff --git a/src/Commands/GeolocationCommands.php b/src/Commands/GeolocationCommands.php
+--- a/src/Commands/GeolocationCommands.php
++++ b/src/Commands/GeolocationCommands.php
+@@ -13,7 +13,7 @@
+
+   public function __construct(
+     protected GeolocationBackfill $backfill,
+-    protected GeoIpUpdaterService $updater,
++    protected ?GeoIpUpdaterService $updater,
+   ) {
+     parent::__construct();
+   }
+@@ -50,6 +50,9 @@
+    * @command entity-metrics:geoip-update
+    */
+   public function update(): void {
++    if (!$this->updater) {
++      throw new \RuntimeException('Enable GeoIP Auto-Update and rebuild caches before updating the database.');
++    }
+     $this->updater->forceUpdate();
+     $this->logger()->success('Local geolocation database updated.');
+   }

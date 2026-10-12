@@ -195,6 +195,9 @@
             ]
         },
         "patches": {
+            "drupal/entity_metrics": {
+                "Allow Drush upgrade commands before the GeoIP updater is available": "assets/patches/drupal/entity_metrics/optional-geoip-updater.patch"
+            },
             "drupal/controlled_access_terms": {
                 "Handle empty EDTF fields in RDF and OAI-PMH exports": "assets/patches/drupal/controlled_access_terms/empty-edtf.patch"
             },
