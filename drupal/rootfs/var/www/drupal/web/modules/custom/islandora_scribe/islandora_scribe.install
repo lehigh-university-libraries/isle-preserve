@@ -35,9 +35,15 @@ function islandora_scribe_schema() {
         'uri_hash' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
         'file_uri' => ['type' => 'varchar', 'length' => 2048, 'not null' => TRUE],
         'last_revision' => $id,
+        'reprocess_revision' => $id,
       ],
       'primary key' => ['operation_id'],
       'unique keys' => ['destination' => ['uri_hash'], 'resource' => ['workspace_id', 'item_image_id'], 'derivative' => ['derivative_media_id'], 'node_term' => ['node_id', 'term_id']],
+    ],
+    'islandora_scribe_book' => [
+      'description' => 'The active Scribe item and operation for each book.',
+      'fields' => ['book_node_id' => $id, 'workspace_id' => $id, 'item_id' => $text, 'source_signature' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE], 'operation_id' => $text],
+      'primary key' => ['book_node_id', 'workspace_id'],
     ],
     'islandora_scribe_event' => [
       'description' => 'Durably accepted publication events.',
@@ -149,5 +155,16 @@ function islandora_scribe_update_10004(): void {
   foreach ($defaults->listAll('system.action.') as $name) {
     $data = $defaults->read($name);
     if (!$actions->load($data['id'])) { $actions->create($data)->save(); }
+  }
+}
+
+/**
+ * Track active book membership and fixed reprocess revisions.
+ */
+function islandora_scribe_update_10005(): void {
+  _islandora_scribe_ensure_schema();
+  $schema = \Drupal::database()->schema();
+  if (!$schema->fieldExists('islandora_scribe_mapping', 'reprocess_revision')) {
+    $schema->addField('islandora_scribe_mapping', 'reprocess_revision', ['type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0]);
   }
 }

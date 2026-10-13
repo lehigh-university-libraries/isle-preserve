@@ -434,51 +434,114 @@ final class Integration {
     }
   }
 
-  /** Imports the public book manifest and atomically maps its page images. */
+  /** Imports new book membership or reprocesses the existing Scribe item. */
   public function importBook(array $operation): void {
     if (!is_int($operation['node_id'] ?? NULL) || !is_int($operation['context_id'] ?? NULL) || $operation['context_id'] < 1 || !preg_match('/^[a-f0-9]{32}$/D', $operation['operation_id'] ?? '')) {
       throw new \InvalidArgumentException('Invalid book operation.');
     }
     $book = $this->entities->getStorage('node')->load($operation['node_id']);
-    if (!$book || !$this->isPagedContent($book)) { throw new \InvalidArgumentException('Select a paged-content node.'); }
+    if (!$book || !$this->isPagedContent($book)) {
+      throw new \InvalidArgumentException('Select a paged-content node.');
+    }
+    $settings = $this->settings->get();
     $manifest = Url::fromUserInput('/node/' . $book->id() . '/book-manifest', ['absolute' => TRUE])->toString();
     $key = 'islandora_scribe:book:' . $book->id();
-    if (!$this->lock->acquire($key, 180)) { throw new \RuntimeException('Book busy; retry.'); }
+    if (!$this->lock->acquire($key, 180)) {
+      throw new \RuntimeException('Book busy; retry.');
+    }
     $transaction = NULL;
     try {
-      $result = $this->rpc('ItemService/ImportManifest', [
-        'manifestUrl' => $manifest, 'name' => $book->label(), 'contextId' => (string) $operation['context_id'],
-        'externalReferenceId' => $book->uuid(), 'idempotencyKey' => $operation['operation_id'], 'ignoreExistingOcr' => TRUE,
+      // Read the same anonymous manifest Scribe will use. Existing hOCR and
+      // descriptive metadata do not change the painting/membership signature.
+      $response = $this->http->request('GET', $manifest, ['connect_timeout' => 10, 'timeout' => 100, 'allow_redirects' => FALSE, 'http_errors' => FALSE, 'stream' => TRUE]);
+      if ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500 && $response->getStatusCode() !== 429) {
+        throw new \InvalidArgumentException('Book manifest must be publicly viewable.');
+      }
+      if ($response->getStatusCode() !== 200) {
+        throw new \RuntimeException('Public book manifest unavailable; retry.');
+      }
+      $source = json_decode($this->readBounded($response->getBody(), 20971520), TRUE, 64, JSON_THROW_ON_ERROR);
+      $canvases = $source['items'] ?? $source['sequences'][0]['canvases'] ?? [];
+      if (!$canvases || count($canvases) > 1000) {
+        throw new \InvalidArgumentException('Invalid public book manifest.');
+      }
+      $painting = array_map(fn($canvas) => [$canvas['id'] ?? $canvas['@id'] ?? '', $canvas['width'] ?? 0, $canvas['height'] ?? 0, $canvas['items'] ?? $canvas['images'] ?? []], $canvases);
+      $signature = hash('sha256', json_encode($painting, JSON_THROW_ON_ERROR));
+      $state = $this->database->select('islandora_scribe_book', 'b')->fields('b')->condition('book_node_id', $book->id())->condition('workspace_id', $settings['workspace_id'])->execute()->fetchAssoc();
+      if ($state && $state['operation_id'] === $operation['operation_id'] && $state['source_signature'] !== $signature) {
+        throw new \InvalidArgumentException('Book pages changed during this operation; run the action again.');
+      }
+      $reuse = $state && $state['source_signature'] === $signature;
+      $result = $reuse ? $this->rpc('ItemService/GetItem', ['itemId' => $state['item_id']]) : $this->rpc('ItemService/ImportManifest', [
+        'manifestUrl' => $manifest,
+        'name' => $book->label(),
+        'contextId' => (string) $operation['context_id'],
+        'externalReferenceId' => $book->uuid(),
+        'idempotencyKey' => 'book-' . hash('sha256', $book->uuid() . ':' . $signature . ':' . $operation['context_id']),
+        'ignoreExistingOcr' => TRUE,
       ]);
       $item = $result['item'] ?? [];
-      if (!is_string($item['id'] ?? NULL) || !$item['id'] || ($item['externalReferenceId'] ?? '') !== $book->uuid() || empty($item['images']) || count($item['images']) > 1000) { throw new \RuntimeException('Book import response mismatch.'); }
-      $term = $this->termForUri('https://discoverygarden.ca/use#hocr');
-      $pages = []; $seen = [];
-      foreach ($item['images'] as $image) {
-        $source = $this->sourceForCanvas($book, $manifest, $image['canvasUri'] ?? '');
-        $pageId = (int) $source->get(IslandoraUtils::MEDIA_OF_FIELD)->target_id;
-        $imageId = filter_var($image['id'] ?? NULL, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if ($imageId === FALSE || isset($seen[$pageId])) { throw new \RuntimeException('Duplicate or invalid page image.'); }
-        $seen[$pageId] = TRUE; $pages[] = [$source, $pageId, $imageId];
+      if (!is_string($item['id'] ?? NULL) || !$item['id'] || ($item['externalReferenceId'] ?? '') !== $book->uuid() || count($item['images'] ?? []) !== count($canvases)) {
+        throw new \InvalidArgumentException('Book import response mismatch.');
       }
-      $transaction = $this->database->startTransaction();
-      foreach ($pages as [$source, $pageId, $imageId]) {
-        $pageOperation = substr(hash('sha256', $operation['operation_id'] . ':' . $source->id()), 0, 32);
-        $existing = $this->mapping($pageOperation);
-        if ($existing) {
-          if ($existing['item_id'] !== $item['id'] || (int) $existing['item_image_id'] !== $imageId) { throw new \RuntimeException('Book replay resource mismatch.'); }
-          continue;
+      $revisions = array_column($result['annotationRevisions'] ?? [], 'revision', 'itemImageId');
+      $pages = [];
+      $seen = [];
+      foreach ($item['images'] as $index => $image) {
+        if (($image['canvasUri'] ?? '') !== ($canvases[$index]['id'] ?? $canvases[$index]['@id'] ?? '')) {
+          throw new \InvalidArgumentException('Book Canvas order or membership changed.');
         }
-        $uri = 'private://derivatives/hocr/' . $pageId . '/' . $pageId . '-scribe.hocr';
-        $mapping = $this->reserve($source, $uri, $pageId, 'file', (int) $term->id(), $operation['context_id']);
-        $this->database->update('islandora_scribe_mapping')->fields([
-          'operation_id' => $pageOperation, 'book_node_id' => (int) $book->id(), 'external_reference_id' => $book->uuid(),
-          'item_id' => $item['id'], 'item_image_id' => $imageId, 'ingest_complete' => 1,
-        ])->condition('operation_id', $mapping['operation_id'])->execute();
+        $media = $this->sourceForCanvas($book, $manifest, $image['canvasUri']);
+        $pageId = (int) $media->get(IslandoraUtils::MEDIA_OF_FIELD)->target_id;
+        $imageId = filter_var($image['id'] ?? NULL, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        $revision = $reuse ? filter_var($revisions[$imageId] ?? NULL, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) : 0;
+        if ($imageId === FALSE || $revision === FALSE || isset($seen[$pageId])) {
+          throw new \InvalidArgumentException('Duplicate, incomplete or invalid page image.');
+        }
+        $seen[$pageId] = TRUE;
+        $pages[] = [$media, $pageId, $imageId, $revision];
+      }
+      if (!$state || $state['operation_id'] !== $operation['operation_id']) {
+        $term = $this->termForUri('https://discoverygarden.ca/use#hocr');
+        $transaction = $this->database->startTransaction();
+        foreach ($pages as [$media, $pageId, $imageId, $revision]) {
+          $old = $this->database->select('islandora_scribe_mapping', 'm')->fields('m')->condition('node_id', $pageId)->condition('term_id', $term->id())->execute()->fetchAssoc();
+          $uri = 'private://derivatives/hocr/' . $pageId . '/' . $pageId . '-scribe.hocr';
+          $mapping = $this->reserve($media, $uri, $pageId, 'file', (int) $term->id(), $operation['context_id']);
+          $this->database->update('islandora_scribe_mapping')->fields([
+            'operation_id' => substr(hash('sha256', $operation['operation_id'] . ':' . $media->id()), 0, 32),
+            'book_node_id' => (int) $book->id(),
+            'external_reference_id' => $book->uuid(),
+            'item_id' => $item['id'],
+            'item_image_id' => $imageId,
+            'ingest_complete' => 1,
+            'reprocess_revision' => $revision,
+            'last_revision' => $reuse && $old ? (int) $old['last_revision'] : 0,
+          ])->condition('operation_id', $mapping['operation_id'])->execute();
+        }
+        // Retire mappings for removed pages before exposing the new book item.
+        $this->database->delete('islandora_scribe_mapping')->condition('book_node_id', $book->id())->condition('workspace_id', $settings['workspace_id'])->condition('node_id', array_keys($seen), 'NOT IN')->execute();
+        $this->database->merge('islandora_scribe_book')->keys(['book_node_id' => $book->id(), 'workspace_id' => $settings['workspace_id']])->fields(['item_id' => $item['id'], 'source_signature' => $signature, 'operation_id' => $operation['operation_id']])->execute();
+        unset($transaction);
+        $transaction = NULL;
+      }
+      $mappings = $this->database->select('islandora_scribe_mapping', 'm')->fields('m')->condition('book_node_id', $book->id())->condition('workspace_id', $settings['workspace_id'])->execute()->fetchAll(\PDO::FETCH_ASSOC);
+      foreach ($mappings as $mapping) {
+        if ((int) $mapping['reprocess_revision'] > 0) {
+          // The saved base revision is the Scribe operation's idempotency key.
+          // A queue retry cannot re-read a newer revision and transcribe twice.
+          $this->rpc('ImageProcessingService/ReprocessItemImage', ['itemImageId' => (string) $mapping['item_image_id'], 'contextId' => (string) $operation['context_id'], 'expectedRevision' => (string) $mapping['reprocess_revision']]);
+        }
       }
     }
-    catch (\Throwable $e) { $transaction?->rollBack(); throw $e; }
-    finally { unset($transaction); $this->lock->release($key); }
+    catch (\Throwable $e) {
+      $transaction?->rollBack();
+      throw $e;
+    }
+    finally {
+      unset($transaction);
+      $this->lock->release($key);
+    }
   }
 
   /** Validates a manifest Canvas against service-file and book membership. */

@@ -125,21 +125,72 @@ final class PagedContentTest extends KernelTestBase {
     catch (\RuntimeException $e) { self::assertStringContainsString('retry', $e->getMessage()); }
     self::assertSame(0, $this->attachments);
   }
+  private function bookManifest(): Response {
+    return new Response(200, [], json_encode(['items' => [['id' => 'http://localhost/node/100/canvas/300', 'width' => 1000, 'height' => 2000, 'items' => []]]]));
+  }
+
+  private function bookItem(int $revision = 1): Response {
+    return new Response(200, [], json_encode(['item' => ['id' => 'book-item', 'externalReferenceId' => 'book-uuid', 'images' => [['id' => '7', 'canvasUri' => 'http://localhost/node/100/canvas/300']]], 'annotationRevisions' => [['itemImageId' => '7', 'revision' => (string) $revision]]]));
+  }
+
   public function testBookImportMapsCanvasAndReplaysTheOperation(): void {
-    $response = function ($request) {
-      $body = json_decode((string) $request->getBody(), TRUE);
-      self::assertTrue($body['ignoreExistingOcr']);
-      self::assertSame('book-uuid', $body['externalReferenceId']);
-      self::assertSame(str_repeat('c',32), $body['idempotencyKey']);
-      self::assertSame('123', $body['contextId']);
-      return new Response(200, [], json_encode(['item' => ['id' => 'book-item', 'externalReferenceId' => 'book-uuid', 'images' => [['id' => '7', 'canvasUri' => preg_replace('~/book-manifest$~', '/canvas/300', $body['manifestUrl'])]]]]));
-    };
-    $operation = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c',32)];
-    $this->http->append($response); $this->integration->importBook($operation);
-    $this->http->append($response); $this->integration->importBook($operation);
-    $mapping = $this->integration->mapping(substr(hash('sha256', str_repeat('c',32) . ':300'),0,32));
-    self::assertSame(100,(int) $mapping['book_node_id']); self::assertSame(200,(int) $mapping['node_id']);
-    self::assertSame(7,(int) $mapping['item_image_id']); self::assertSame(1,(int) $mapping['ingest_complete']);
+    $operation = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)];
+    $this->http->append($this->bookManifest(), $this->bookItem());
+    $this->integration->importBook($operation);
+    $this->http->append($this->bookManifest(), $this->bookItem());
+    $this->integration->importBook($operation);
+    self::assertSame('', $this->requests[0]['request']->getHeaderLine('X-Scribe-API-Key'));
+    $body = json_decode((string) $this->requests[1]['request']->getBody(), TRUE);
+    self::assertTrue($body['ignoreExistingOcr']);
+    self::assertSame('book-uuid', $body['externalReferenceId']);
+    self::assertStringStartsWith('book-', $body['idempotencyKey']);
+    self::assertSame('123', $body['contextId']);
+    self::assertStringEndsWith('/GetItem', $this->requests[3]['request']->getUri()->getPath());
+    $mapping = $this->integration->mapping(substr(hash('sha256', str_repeat('c', 32) . ':300'), 0, 32));
+    self::assertSame(100, (int) $mapping['book_node_id']);
+    self::assertSame(200, (int) $mapping['node_id']);
+    self::assertSame(7, (int) $mapping['item_image_id']);
+    self::assertSame(1, (int) $mapping['ingest_complete']);
+    // The obsolete mapping seeded by setUp has been retired.
+    self::assertFalse($this->integration->mapping(str_repeat('a', 32)));
+  }
+
+  public function testRerunReusesItemAndRetriesWithTheSameBaseRevision(): void {
+    $operation = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)];
+    $this->http->append($this->bookManifest(), $this->bookItem());
+    $this->integration->importBook($operation);
+    $operation['operation_id'] = str_repeat('d', 32);
+    $this->http->append($this->bookManifest(), $this->bookItem(3), new Response(200, [], '{}'));
+    $this->integration->importBook($operation);
+    $this->http->append($this->bookManifest(), $this->bookItem(4), new Response(200, [], '{}'));
+    $this->integration->importBook($operation);
+    foreach ([4, 7] as $index) {
+      $body = json_decode((string) $this->requests[$index]['request']->getBody(), TRUE);
+      self::assertSame('3', $body['expectedRevision']);
+      self::assertSame('7', $body['itemImageId']);
+    }
+    $state = $this->container->get('database')->select('islandora_scribe_book', 'b')->fields('b')->execute()->fetchAll();
+    self::assertCount(1, $state);
+    self::assertSame('book-item', $state[0]->item_id);
+  }
+
+  public function testChangedPaintingReplacesTheActiveItem(): void {
+    $operation = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)];
+    $this->http->append($this->bookManifest(), $this->bookItem());
+    $this->integration->importBook($operation);
+    $manifest = json_decode((string) $this->bookManifest()->getBody(), TRUE);
+    $manifest['items'][0]['width'] = 2000;
+    $item = json_decode((string) $this->bookItem()->getBody(), TRUE);
+    $item['item']['id'] = 'new-book-item';
+    $item['item']['images'][0]['id'] = '8';
+    $operation['operation_id'] = str_repeat('d', 32);
+    $this->http->append(new Response(200, [], json_encode($manifest)), new Response(200, [], json_encode($item)));
+    $this->integration->importBook($operation);
+    self::assertStringEndsWith('/ImportManifest', $this->requests[3]['request']->getUri()->getPath());
+    $rows = $this->container->get('database')->select('islandora_scribe_mapping', 'm')->fields('m')->condition('book_node_id', 100)->execute()->fetchAll();
+    self::assertCount(1, $rows);
+    self::assertSame('new-book-item', $rows[0]->item_id);
+    self::assertSame(8, (int) $rows[0]->item_image_id);
   }
 
   public function testPermanentBookRequestIsNotRequeued(): void {

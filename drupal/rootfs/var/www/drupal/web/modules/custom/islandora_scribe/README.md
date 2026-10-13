@@ -17,7 +17,7 @@ $settings['islandora_scribe'] = [
   'workspace_id' => 42, // PHP integer.
   'webhook_secret' => file_get_contents('/run/secrets/SCRIBE_WEBHOOK_SECRET'),
   'correlation_secret' => file_get_contents('/run/secrets/SCRIBE_CORRELATION_SECRET'),
-  // A protected workspace key with items:create, items:read, annotations:read.
+  // A protected workspace key with items:create, items:write, items:read, annotations:read.
   'api_key' => trim(file_get_contents('/run/secrets/SCRIBE_API_KEY')),
 ];
 ```
@@ -28,7 +28,7 @@ The correlation secret is shared only with the Scyllaridae service; the
 webhook secret is shared only with Scribe's webhook subscription.
 
 Create a protected API key for Drupal in the configured Scribe
-workspace, granting `items:create`, `items:read`, and `annotations:read`. Drupal sends it server-side as
+workspace, granting `items:create`, `items:write`, `items:read`, and `annotations:read`. Drupal sends it server-side as
 `X-Scribe-API-Key` with `X-Scribe-Workspace-ID` when exporting published hOCR.
 Keep this key in protected settings or a mounted secret; it never goes into
 configuration sync or editor links. Drupal does not require JWT issuance or
@@ -233,12 +233,12 @@ containers when adding the mounts; rebuild Drupal's cache after configuration.
 
 ## Paged content and explicit PDF attachment
 
-Drupal's protected `api_key` now needs `items:create`, `items:read`, and
+Drupal's protected `api_key` now needs `items:create`, `items:write`, `items:read`, and
 `annotations:read`. Keep ingestion credentials used by Scyllaridae separately
 configured as before. The book worker calls Scribe directly, so it requires no
 buildkit change. Only anonymously viewable book manifests and images work.
 
-Run database updates to add `book_node_id` and install the four paged-content
+Run database updates to add active book state and fixed reprocess revisions alongside `book_node_id` and install the four paged-content
 context actions, two single-image Kraken actions, and `attach_scribe_pdf`.
 Seed Scribe's system contexts first, then set each Kraken action's `context_id`
 to the seeded ID for **Medieval manuscripts + Kraken CATMuS** or
@@ -247,7 +247,13 @@ remain disabled until configured. Gemini actions use the site's existing
 Letters/Medieval Pro context IDs (11/15); verify those against your workspace.
 
 The `transcribe_scribe_paged_content` action requires a positive context ID and
-enqueues `islandora_scribe_book`. A retry keeps the operation's idempotency key.
+enqueues `islandora_scribe_book`. Permanent errors (private manifest, invalid
+context or Canvas mismatch) finish without retrying; transient errors retry up
+to three attempts with a delay. Both actions require a paged-content node.
+An unchanged painting/membership signature reuses the book's Scribe item and
+reprocesses its pages with fixed expected revisions. A queue retry keeps those
+revisions. Changed painting or membership imports one new item and removes
+obsolete page mappings, so PDF export sees only the current item.
 The worker ignores existing manifest hOCR and maps each imported Canvas to a
 Service File media on a page belonging to that book. Signed
 `dev.scribe.transcription.completed` events update only book mappings using
@@ -255,7 +261,8 @@ Service File media on a page belonging to that book. Signed
 both event types with Scribe and run the book and publication queues.
 
 Run **Attach searchable PDF from Scribe** explicitly after transcription (or
-correction). It snapshots the complete page revision vector, prepares a PDF,
+correction). The action queues export and shows a status message; it uses the
+same bounded retry policy. The worker snapshots the complete page revision vector, prepares a PDF,
 and downloads it with the protected API-key headers. Only a complete valid
 PDF reaches the book's `document`/Original File slot at
 `private://derivatives/YYYY/MM/pc/NID.pdf`. A revision conflict reports retry
