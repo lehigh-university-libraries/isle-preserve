@@ -32,3 +32,16 @@ action.configuration.generate_scribe_hocr_derivative:
     path:
       type: string
       label: Destination path
+
+action.configuration.transcribe_scribe_paged_content:
+  type: mapping
+  label: Scribe paged-content transcription
+  mapping:
+    context_id:
+      type: integer
+      label: Scribe processing context ID
+
+action.configuration.attach_scribe_pdf:
+  type: mapping
+  label: Attach searchable PDF from Scribe
+  mapping: {}

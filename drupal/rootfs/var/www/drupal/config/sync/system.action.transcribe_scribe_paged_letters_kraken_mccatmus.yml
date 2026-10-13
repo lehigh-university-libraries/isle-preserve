@@ -1,0 +1,11 @@
+langcode: en
+status: false
+dependencies:
+  module:
+    - islandora_scribe
+id: transcribe_scribe_paged_letters_kraken_mccatmus
+label: 'Transcribe paged content: Letters + Kraken McCATMuS'
+type: node
+plugin: transcribe_scribe_paged_content
+configuration:
+  context_id: 0

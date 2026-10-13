@@ -20,6 +20,7 @@ function islandora_scribe_schema() {
         'operation_id' => $text,
         'source_media_id' => $id,
         'node_id' => $id,
+        'book_node_id' => $id,
         'media_bundle' => $text,
         'term_id' => $id,
         'context_id' => $id,
@@ -54,7 +55,7 @@ function islandora_scribe_requirements($phase) {
   }
   try {
     \Drupal::service('islandora_scribe.settings')->get();
-    $description = t('Runtime settings are valid. Verify read API-key scopes, Scyllaridae correlation delivery, workspace membership, HTTPS webhook registration and queue processing using the module README.');
+    $description = t('Runtime settings are valid. Verify items:create, items:read and annotations:read API-key scopes, Scyllaridae correlation delivery, workspace membership, HTTPS webhook registration and queue processing using the module README.');
     $severity = REQUIREMENT_INFO;
   }
   catch (\Throwable $e) {
@@ -131,5 +132,22 @@ function _islandora_scribe_ensure_schema(): void {
     if (!$schema->tableExists($table)) {
       $schema->createTable($table, $definition);
     }
+  }
+}
+
+/**
+ * Add book association and paged-content actions.
+ */
+function islandora_scribe_update_10004(): void {
+  _islandora_scribe_ensure_schema();
+  $schema = \Drupal::database()->schema();
+  if (!$schema->fieldExists('islandora_scribe_mapping', 'book_node_id')) {
+    $schema->addField('islandora_scribe_mapping', 'book_node_id', ['type' => 'int', 'size' => 'big', 'not null' => TRUE, 'default' => 0]);
+  }
+  $defaults = new FileStorage(__DIR__ . '/config/install');
+  $actions = \Drupal::entityTypeManager()->getStorage('action');
+  foreach ($defaults->listAll('system.action.') as $name) {
+    $data = $defaults->read($name);
+    if (!$actions->load($data['id'])) { $actions->create($data)->save(); }
   }
 }

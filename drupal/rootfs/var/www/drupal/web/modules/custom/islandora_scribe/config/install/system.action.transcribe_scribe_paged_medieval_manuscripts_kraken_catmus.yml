@@ -1,0 +1,11 @@
+langcode: en
+status: false
+dependencies:
+  module:
+    - islandora_scribe
+id: transcribe_scribe_paged_medieval_manuscripts_kraken_catmus
+label: 'Transcribe paged content: Medieval manuscripts + Kraken CATMuS'
+type: node
+plugin: transcribe_scribe_paged_content
+configuration:
+  context_id: 0

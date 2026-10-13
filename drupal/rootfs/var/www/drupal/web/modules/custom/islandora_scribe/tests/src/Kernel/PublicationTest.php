@@ -203,7 +203,7 @@ final class PublicationTest extends KernelTestBase {
         self::fail('Invalid read key accepted');
       }
       catch (\RuntimeException $e) {
-        self::assertSame('Configure a protected Scribe read API key.', $e->getMessage());
+        self::assertSame('Configure a protected Scribe API key.', $e->getMessage());
       }
     }
   }
@@ -414,6 +414,21 @@ final class PublicationTest extends KernelTestBase {
     $this->export(4);
     $this->integration->apply('retry');
     self::assertSame(4, (int) $this->integration->mapping($this->mapping['operation_id'])['last_revision']);
+  }
+
+  public function testBookCompletionUsesCommittedRevisionAndOrdering(): void {
+    $this->container->get('database')->update('islandora_scribe_mapping')->fields(['book_node_id' => 123])->condition('operation_id', $this->mapping['operation_id'])->execute();
+    $event = $this->event('book-completed', 3);
+    $event['type'] = 'dev.scribe.transcription.completed';
+    $event['data']['revision'] = 3;
+    unset($event['data']['publishedRevision']);
+    $this->export(3);
+    $this->integration->accept($event);
+    $this->integration->apply('book-completed');
+    self::assertSame(3, (int) $this->integration->mapping($this->mapping['operation_id'])['last_revision']);
+    $single = $this->mapping;
+    $this->expectException(\InvalidArgumentException::class);
+    SignedEvent::publication($event, $single);
   }
 
 }
