@@ -11,25 +11,28 @@ use Drupal\Core\Url;
 use Drupal\media\MediaInterface;
 
 /**
- * Implements hook_media_insert(). */
+ * Implements hook_media_insert().
+ */
 function islandora_scribe_media_insert(MediaInterface $media) {
   \Drupal::service('islandora_scribe.integration')->bind($media);
 }
 
 /**
- * Implements hook_media_update(). */
+ * Implements hook_media_update().
+ */
 function islandora_scribe_media_update(MediaInterface $media) {
   \Drupal::service('islandora_scribe.integration')->bind($media);
 }
 
 /**
- * Implements hook_ENTITY_TYPE_view(). */
+ * Implements hook_ENTITY_TYPE_view().
+ */
 function islandora_scribe_media_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   $mapping = \Drupal::service('islandora_scribe.integration')->forMedia((int) $entity->id());
   if (!$mapping || !$mapping['item_id']) {
     return;
   }
-  // Vary visibility by entity update access; normal media view access is upstream.
+  // Vary visibility by update access; media view access is upstream.
   $access = $entity->access('update', NULL, TRUE);
   \Drupal::service('renderer')->addCacheableDependency($build, $access);
   if (!$access->isAllowed()) {

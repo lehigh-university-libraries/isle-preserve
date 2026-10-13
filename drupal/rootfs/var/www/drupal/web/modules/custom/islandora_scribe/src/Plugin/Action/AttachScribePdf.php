@@ -2,6 +2,7 @@
 
 namespace Drupal\islandora_scribe\Plugin\Action;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -23,10 +24,16 @@ final class AttachScribePdf extends ActionBase implements ContainerFactoryPlugin
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static($configuration, $plugin_id, $plugin_definition, $container->get('islandora_scribe.integration'));
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function execute($entity = NULL) {
     try {
       $this->integration->enqueuePdf($entity);
@@ -37,7 +44,12 @@ final class AttachScribePdf extends ActionBase implements ContainerFactoryPlugin
     }
   }
 
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) { $access = $object->access('update', $account, TRUE)->andIf(\Drupal\Core\Access\AccessResult::allowedIf($this->integration->isPagedContent($object)))->addCacheableDependency($object);
-    return $return_as_object ? $access : $access->isAllowed(); }
+  /**
+   * {@inheritdoc}
+   */
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
+    $access = $object->access('update', $account, TRUE)->andIf(AccessResult::allowedIf($this->integration->isPagedContent($object)))->addCacheableDependency($object);
+    return $return_as_object ? $access : $access->isAllowed();
+  }
 
 }

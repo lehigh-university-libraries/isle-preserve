@@ -2,6 +2,7 @@
 
 namespace Drupal\islandora_scribe\Plugin\Action;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Action\ConfigurableActionBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -24,23 +25,58 @@ final class TranscribePagedContent extends ConfigurableActionBase implements Con
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static($configuration, $plugin_id, $plugin_definition, $container->get('islandora_scribe.integration'));
   }
 
-  public function defaultConfiguration() { return ['context_id' => 0]; }
+  /**
+   * {@inheritdoc}
+   */
+  public function defaultConfiguration() {
+    return ['context_id' => 0];
+  }
 
+  /**
+   * {@inheritdoc}
+   */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    $form['context_id'] = ['#type' => 'number', '#title' => $this->t('Scribe context ID'), '#min' => 1, '#step' => 1, '#required' => TRUE, '#default_value' => $this->configuration['context_id']];
+    $form['context_id'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Scribe context ID'),
+      '#min' => 1,
+      '#step' => 1,
+      '#required' => TRUE,
+      '#default_value' => $this->configuration['context_id'],
+    ];
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
-    if (filter_var($form_state->getValue('context_id'), FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) === FALSE) { $form_state->setErrorByName('context_id', $this->t('Select a positive Scribe context ID.')); }
+    if (filter_var($form_state->getValue('context_id'), FILTER_VALIDATE_INT, [
+      'options' => [
+        'min_range' => 1,
+      ],
+    ]) === FALSE) {
+      $form_state->setErrorByName('context_id', $this->t('Select a positive Scribe context ID.'));
+    }
   }
 
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) { $this->configuration['context_id'] = (int) $form_state->getValue('context_id'); }
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    $this->configuration['context_id'] = (int) $form_state->getValue('context_id');
+  }
 
+  /**
+   * {@inheritdoc}
+   */
   public function execute($entity = NULL) {
     try {
       $this->integration->enqueueBook($entity, (int) $this->configuration['context_id']);
@@ -51,7 +87,12 @@ final class TranscribePagedContent extends ConfigurableActionBase implements Con
     }
   }
 
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) { $access = $object->access('update', $account, TRUE)->andIf(\Drupal\Core\Access\AccessResult::allowedIf($this->integration->isPagedContent($object)))->addCacheableDependency($object);
-    return $return_as_object ? $access : $access->isAllowed(); }
+  /**
+   * {@inheritdoc}
+   */
+  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
+    $access = $object->access('update', $account, TRUE)->andIf(AccessResult::allowedIf($this->integration->isPagedContent($object)))->addCacheableDependency($object);
+    return $return_as_object ? $access : $access->isAllowed();
+  }
 
 }

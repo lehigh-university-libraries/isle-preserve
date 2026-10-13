@@ -38,7 +38,10 @@ final class SignedEvent {
    */
   public static function publication(array $event, array $mapping): int {
     $data = $event['data'] ?? [];
-    if (($event['specversion'] ?? '') !== '1.0' || !in_array($event['type'] ?? '', ['dev.scribe.annotations.published', 'dev.scribe.transcription.completed'], TRUE) || !is_string($event['id'] ?? NULL) || !$event['id'] || strlen($event['id']) > 255) {
+    if (($event['specversion'] ?? '') !== '1.0' || !in_array($event['type'] ?? '', [
+      'dev.scribe.annotations.published',
+      'dev.scribe.transcription.completed',
+    ], TRUE) || !is_string($event['id'] ?? NULL) || !$event['id'] || strlen($event['id']) > 255) {
       throw new \InvalidArgumentException('Invalid publication event.');
     }
     foreach ([
@@ -52,7 +55,9 @@ final class SignedEvent {
       }
     }
     $field = $event['type'] === 'dev.scribe.transcription.completed' ? 'revision' : 'publishedRevision';
-    if ($field === 'revision' && empty($mapping['book_node_id'])) { throw new \InvalidArgumentException('Completion requires a book mapping.'); }
+    if ($field === 'revision' && empty($mapping['book_node_id'])) {
+      throw new \InvalidArgumentException('Completion requires a book mapping.');
+    }
     if (!is_int($data[$field] ?? NULL) || $data[$field] < 1) {
       throw new \InvalidArgumentException('Invalid publication revision.');
     }

@@ -51,6 +51,9 @@ final class PublicationTest extends KernelTestBase {
    * Whether to simulate a storage failure.
    */
   private bool $failStorage = FALSE;
+  /**
+   * Whether the derivative media already exists.
+   */
   private bool $targetExists = TRUE;
   /**
    * The number of file writes.
@@ -119,20 +122,38 @@ final class PublicationTest extends KernelTestBase {
     $storage->method('getQuery')->willReturn($query);
     $storage->expects(self::never())->method('create');
     $entities = $this->createMock(EntityTypeManagerInterface::class);
-    $node = $this->createMock(NodeInterface::class); $node->method('id')->willReturn(200);
-    $type = $this->createMock(MediaTypeInterface::class); $type->method('id')->willReturn('file');
-    $term = $this->createMock(TermInterface::class); $term->method('id')->willReturn(5);
-    $nodeStorage = $this->createMock(EntityStorageInterface::class); $nodeStorage->method('load')->willReturn($node);
-    $typeStorage = $this->createMock(EntityStorageInterface::class); $typeStorage->method('load')->willReturn($type);
-    $termStorage = $this->createMock(EntityStorageInterface::class); $termStorage->method('load')->willReturn($term);
-    $entities->method('getStorage')->willReturnMap([['media', $storage], ['node', $nodeStorage], ['media_type', $typeStorage], ['taxonomy_term', $termStorage]]);
+    $node = $this->createMock(NodeInterface::class);
+    $node->method('id')->willReturn(200);
+    $type = $this->createMock(MediaTypeInterface::class);
+    $type->method('id')->willReturn('file');
+    $term = $this->createMock(TermInterface::class);
+    $term->method('id')->willReturn(5);
+    $nodeStorage = $this->createMock(EntityStorageInterface::class);
+    $nodeStorage->method('load')->willReturn($node);
+    $typeStorage = $this->createMock(EntityStorageInterface::class);
+    $typeStorage->method('load')->willReturn($type);
+    $termStorage = $this->createMock(EntityStorageInterface::class);
+    $termStorage->method('load')->willReturn($term);
+    $entities->method('getStorage')->willReturnMap([
+    ['media', $storage],
+    ['node', $nodeStorage],
+    [
+      'media_type',
+      $typeStorage,
+    ],
+    [
+      'taxonomy_term',
+      $termStorage,
+    ],
+    ]);
     $source = $this->createMock(MediaSourceService::class);
     $source->method('getSourceFile')->willReturnCallback(fn() => $this->writes ? $new : $old);
     $source->method('getSourceFieldName')->willReturn('field_media_file');
     $source->method('putToNode')->willReturnCallback(function ($node, $type, $term, $stream, $mime) use ($media) {
       self::assertSame('text/vnd.hocr+html', $mime);
       self::assertSame('<html>published</html>', stream_get_contents($stream));
-      $this->writes++; $this->mediaFileId = 21;
+      $this->writes++;
+      $this->mediaFileId = 21;
       return $media;
     });
     $files = $this->createMock(FileRepositoryInterface::class);
@@ -150,7 +171,9 @@ final class PublicationTest extends KernelTestBase {
     $this->http = new MockHandler();
     $handler = HandlerStack::create($this->http);
     $handler->push(Middleware::history($this->requests));
-    $this->integration = new Integration($database, $this->container->get('queue'), $this->container->get('lock'), $entities, $source, new Client(['handler' => $handler]), $settings, $files, $fileSystem, new NullLogger(), $this->createMock(IslandoraUtils::class));
+    $this->integration = new Integration($database, $this->container->get('queue'), $this->container->get('lock'), $entities, $source, new Client([
+      'handler' => $handler,
+    ]), $settings, $files, $fileSystem, new NullLogger(), $this->createMock(IslandoraUtils::class));
     $this->mapping = [
       'operation_id' => str_repeat('a', 32),
       'workspace_id' => 42,
@@ -430,8 +453,13 @@ final class PublicationTest extends KernelTestBase {
     self::assertSame(4, (int) $this->integration->mapping($this->mapping['operation_id'])['last_revision']);
   }
 
+  /**
+   * Tests book completion uses committed revision and ordering.
+   */
   public function testBookCompletionUsesCommittedRevisionAndOrdering(): void {
-    $this->container->get('database')->update('islandora_scribe_mapping')->fields(['book_node_id' => 123])->condition('operation_id', $this->mapping['operation_id'])->execute();
+    $this->container->get('database')->update('islandora_scribe_mapping')->fields([
+      'book_node_id' => 123,
+    ])->condition('operation_id', $this->mapping['operation_id'])->execute();
     $event = $this->event('book-completed', 3);
     $event['type'] = 'dev.scribe.transcription.completed';
     $event['data']['revision'] = 3;
@@ -445,6 +473,9 @@ final class PublicationTest extends KernelTestBase {
     SignedEvent::publication($event, $single);
   }
 
+  /**
+   * Tests unmapped completion and publication are acknowledged.
+   */
   public function testUnmappedCompletionAndPublicationAreAcknowledged(): void {
     foreach (['dev.scribe.transcription.completed', 'dev.scribe.annotations.published'] as $type) {
       $event = $this->event('unrelated-' . $type, 1);
@@ -455,9 +486,19 @@ final class PublicationTest extends KernelTestBase {
     self::assertSame(0, (int) $this->container->get('database')->select('islandora_scribe_event')->countQuery()->execute()->fetchField());
   }
 
+  /**
+   * Tests first book completion creates hocr media with one write.
+   */
   public function testFirstBookCompletionCreatesHocrMediaWithOneWrite(): void {
     $this->targetExists = FALSE;
-    $this->container->get('database')->update('islandora_scribe_mapping')->fields(['book_node_id' => 100, 'node_id' => 200, 'media_bundle' => 'file', 'term_id' => 5, 'derivative_media_id' => NULL, 'derivative_file_id' => 0])->condition('operation_id', $this->mapping['operation_id'])->execute();
+    $this->container->get('database')->update('islandora_scribe_mapping')->fields([
+      'book_node_id' => 100,
+      'node_id' => 200,
+      'media_bundle' => 'file',
+      'term_id' => 5,
+      'derivative_media_id' => NULL,
+      'derivative_file_id' => 0,
+    ])->condition('operation_id', $this->mapping['operation_id'])->execute();
     $event = $this->event('first-book-completion', 3);
     $event['type'] = 'dev.scribe.transcription.completed';
     $event['data']['revision'] = 3;

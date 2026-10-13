@@ -52,7 +52,7 @@ final class WebhookController extends ControllerBase {
     try {
       $settings = $this->settings->get();
       $stage = 'body';
-      // Read at most limit + 1 bytes, including requests without Content-Length.
+      // Bound the body even for requests without Content-Length.
       $stream = $request->getContent(TRUE);
       $body = stream_get_contents($stream, SignedEvent::MAX_BODY + 1);
       $stage = 'signed_delivery';
