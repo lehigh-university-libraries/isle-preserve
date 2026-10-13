@@ -20,8 +20,8 @@ volumes:
   actions-runner-data: {}
 
 secrets:
-  SCRIBE_READ_API_KEY:
-    file: ./secrets/SCRIBE_READ_API_KEY
+  SCRIBE_API_KEY:
+    file: ./secrets/SCRIBE_API_KEY
   SCRIBE_WEBHOOK_SECRET:
     file: ./secrets/SCRIBE_WEBHOOK_SECRET
   SCRIBE_CORRELATION_SECRET:
@@ -223,7 +223,7 @@ services:
       SCRIBE_API_URL: ${SCRIBE_API_URL:-}
       SCRIBE_WORKSPACE_ID: ${SCRIBE_WORKSPACE_ID:-}
     secrets:
-      - source: SCRIBE_READ_API_KEY
+      - source: SCRIBE_API_KEY
       - source: SCRIBE_WEBHOOK_SECRET
       - source: SCRIBE_CORRELATION_SECRET
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD
@@ -284,7 +284,7 @@ services:
     environment:
       <<: [*drupal-environment]
     secrets:
-      - source: SCRIBE_READ_API_KEY
+      - source: SCRIBE_API_KEY
       - source: SCRIBE_WEBHOOK_SECRET
       - source: SCRIBE_CORRELATION_SECRET
       - source: ACTIVEMQ_WEB_ADMIN_PASSWORD

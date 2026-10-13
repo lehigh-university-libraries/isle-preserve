@@ -220,11 +220,11 @@ Drupal's cache. No database schema change is needed for this authentication chan
 
 Create these files on the Compose host, outside Git:
 
-- `secrets/SCRIBE_READ_API_KEY`: a workspace-scoped read key with `annotations:read`.
+- `secrets/SCRIBE_API_KEY`: a workspace key with `items:create`, `items:write`, `items:read`, and `annotations:read`.
 - `secrets/SCRIBE_WEBHOOK_SECRET`: the signing secret registered with Scribe.
 - `secrets/SCRIBE_CORRELATION_SECRET`: the same correlation signing secret used by Scyllaridae.
 
-Compose mounts them into Drupal and Drupal cron as `/run/secrets/SCRIBE_READ_API_KEY`,
+Compose mounts them into Drupal and Drupal cron as `/run/secrets/SCRIBE_API_KEY`,
 `/run/secrets/SCRIBE_WEBHOOK_SECRET`, and `/run/secrets/SCRIBE_CORRELATION_SECRET`. Set
 `SCRIBE_API_URL` and `SCRIBE_WORKSPACE_ID` in the deployment environment. The
 site's scaffolded settings read these files into protected runtime settings.
