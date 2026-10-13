@@ -253,7 +253,7 @@
         "drupal/core-dev": "^11.1",
         "drupal/devel": "^5.0",
         "drupal/restui": "^1.21",
-        "palantirnet/drupal-rector": "^0.21.0",
+        "palantirnet/drupal-rector": "^1.0.0",
         "phpspec/prophecy-phpunit": "^2.1",
         "weitzman/drupal-test-traits": "^2.5"
     },
