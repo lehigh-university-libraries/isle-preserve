@@ -233,13 +233,15 @@ Our staging server has read only access to our production filesystem to keep fil
 If upperdir gets full, you can clear it by doing this on `islandora-test.lib.lehigh.edu`
 
 ```
-cd ~/
+cd
+sudo cp /opt/islandora/d10_lehigh_agile/.env env.bak
 sudo umount /opt/islandora
 sudo umount /mnt/islandora-prod-readonly
 sudo rm -rf /opt/prod_overlay/upper /opt/prod_overlay/work
 sudo mkdir /opt/prod_overlay/upper /opt/prod_overlay/work
 sudo mount /mnt/islandora-prod-readonly
 sudo mount /opt/islandora
+sudo mv env.bak /opt/islandora/d10_lehigh_agile/.env
 ```
 
 #### Google Cloud Storage
