@@ -308,22 +308,26 @@ final class Integration {
           if (!$node || !$type || !$term) { throw new \RuntimeException('Page derivative target unavailable.'); }
           $stream = fopen('php://temp', 'w+'); fwrite($stream, $bytes); rewind($stream);
           try { [$media, $file] = $this->writeHocrTarget($mapping, $node, $type, $term, $stream, $mapping['file_uri']); } finally { fclose($stream); }
-          $mapping['derivative_media_id'] = (int) $media->id(); $mapping['derivative_file_id'] = (int) $file->id();
+          $mapping['derivative_media_id'] = (int) $media->id();
+          $mapping['derivative_file_id'] = (int) $file->id();
+          $replacement = $file;
           $this->database->update('islandora_scribe_mapping')->fields(['derivative_media_id' => $mapping['derivative_media_id'], 'derivative_file_id' => $mapping['derivative_file_id']])->condition('operation_id', $mapping['operation_id'])->execute();
         }
-        $storage = $this->entities->getStorage('media');
-        $storage->resetCache([$mapping['derivative_media_id']]);
-        $media = $storage->load($mapping['derivative_media_id']);
-        $file = $media ? $this->mediaSource->getSourceFile($media) : NULL;
-        if (!$file || (int) $file->id() !== (int) $mapping['derivative_file_id']) {
-          throw new \RuntimeException('Derivative file association changed.');
+        else {
+          $storage = $this->entities->getStorage('media');
+          $storage->resetCache([$mapping['derivative_media_id']]);
+          $media = $storage->load($mapping['derivative_media_id']);
+          $file = $media ? $this->mediaSource->getSourceFile($media) : NULL;
+          if (!$file || (int) $file->id() !== (int) $mapping['derivative_file_id']) {
+            throw new \RuntimeException('Derivative file association changed.');
+          }
+          // Stage a new managed file; failed storage cannot truncate the live hOCR.
+          $destination = $mapping['file_uri'] . '.' . $mapping['operation_id'] . '.revision-' . $event['revision'] . '.hocr';
+          $replacement = $this->stage($bytes, $destination);
+          $field = $this->mediaSource->getSourceFieldName($media->bundle());
+          $media->set($field, ['target_id' => $replacement->id()]);
+          $media->save();
         }
-        // Stage a new managed file; failed storage cannot truncate the live hOCR.
-        $destination = $mapping['file_uri'] . '.' . $mapping['operation_id'] . '.revision-' . $event['revision'] . '.hocr';
-        $replacement = $this->stage($bytes, $destination);
-        $field = $this->mediaSource->getSourceFieldName($media->bundle());
-        $media->set($field, ['target_id' => $replacement->id()]);
-        $media->save();
         $this->database->update('islandora_scribe_mapping')->fields([
           'last_revision' => (int) $event['revision'],
           'derivative_file_id' => (int) $replacement->id(),

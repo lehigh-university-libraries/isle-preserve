@@ -50,6 +50,7 @@ final class PublicationTest extends KernelTestBase {
    * Whether to simulate a storage failure.
    */
   private bool $failStorage = FALSE;
+  private bool $targetExists = TRUE;
   /**
    * The number of file writes.
    */
@@ -113,14 +114,26 @@ final class PublicationTest extends KernelTestBase {
     foreach (['accessCheck', 'condition', 'range'] as $method) {
       $query->method($method)->willReturnSelf();
     }
-    $query->method('execute')->willReturn([10 => 10]);
+    $query->method('execute')->willReturnCallback(fn() => $this->targetExists ? [10 => 10] : []);
     $storage->method('getQuery')->willReturn($query);
     $storage->expects(self::never())->method('create');
     $entities = $this->createMock(EntityTypeManagerInterface::class);
-    $entities->method('getStorage')->with('media')->willReturn($storage);
+    $node = $this->createMock(NodeInterface::class); $node->method('id')->willReturn(200);
+    $type = $this->createMock(MediaTypeInterface::class); $type->method('id')->willReturn('file');
+    $term = $this->createMock(TermInterface::class); $term->method('id')->willReturn(5);
+    $nodeStorage = $this->createMock(EntityStorageInterface::class); $nodeStorage->method('load')->willReturn($node);
+    $typeStorage = $this->createMock(EntityStorageInterface::class); $typeStorage->method('load')->willReturn($type);
+    $termStorage = $this->createMock(EntityStorageInterface::class); $termStorage->method('load')->willReturn($term);
+    $entities->method('getStorage')->willReturnMap([['media', $storage], ['node', $nodeStorage], ['media_type', $typeStorage], ['taxonomy_term', $termStorage]]);
     $source = $this->createMock(MediaSourceService::class);
     $source->method('getSourceFile')->willReturnCallback(fn() => $this->writes ? $new : $old);
     $source->method('getSourceFieldName')->willReturn('field_media_file');
+    $source->method('putToNode')->willReturnCallback(function ($node, $type, $term, $stream, $mime) use ($media) {
+      self::assertSame('text/vnd.hocr+html', $mime);
+      self::assertSame('<html>published</html>', stream_get_contents($stream));
+      $this->writes++; $this->mediaFileId = 21;
+      return $media;
+    });
     $files = $this->createMock(FileRepositoryInterface::class);
     $files->method('writeData')->willReturnCallback(function ($bytes) use ($new) {
       self::assertSame('<html>published</html>', $bytes);
@@ -439,6 +452,25 @@ final class PublicationTest extends KernelTestBase {
       $this->integration->accept($event);
     }
     self::assertSame(0, (int) $this->container->get('database')->select('islandora_scribe_event')->countQuery()->execute()->fetchField());
+  }
+
+  public function testFirstBookCompletionCreatesHocrMediaWithOneWrite(): void {
+    $this->targetExists = FALSE;
+    $this->container->get('database')->update('islandora_scribe_mapping')->fields(['book_node_id' => 100, 'node_id' => 200, 'media_bundle' => 'file', 'term_id' => 5, 'derivative_media_id' => NULL, 'derivative_file_id' => 0])->condition('operation_id', $this->mapping['operation_id'])->execute();
+    $event = $this->event('first-book-completion', 3);
+    $event['type'] = 'dev.scribe.transcription.completed';
+    $event['data']['revision'] = 3;
+    unset($event['data']['publishedRevision']);
+    $this->export(3);
+    $this->integration->accept($event);
+    $this->integration->apply($event['id']);
+    $mapping = $this->integration->mapping($this->mapping['operation_id']);
+    self::assertSame(1, $this->writes);
+    self::assertSame(10, (int) $mapping['derivative_media_id']);
+    self::assertSame(21, (int) $mapping['derivative_file_id']);
+    self::assertSame(3, (int) $mapping['last_revision']);
+    $this->integration->apply($event['id']);
+    self::assertSame(1, $this->writes);
   }
 
 }
