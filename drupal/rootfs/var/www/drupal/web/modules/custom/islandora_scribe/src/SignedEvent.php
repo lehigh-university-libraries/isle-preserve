@@ -11,8 +11,20 @@ final class SignedEvent {
    * Verifies the signature and decodes the event body.
    */
   public static function decode(string $body, string $timestamp, string $signature, string $secret, int $now): array {
-    if (strlen($body) > self::MAX_BODY || !preg_match('/^[0-9]{1,12}$/D', $timestamp) || abs($now - (int) $timestamp) > 300 || !preg_match('/^v1=[a-f0-9]{64}$/D', $signature) || !hash_equals('v1=' . hash_hmac('sha256', $timestamp . '.' . $body, $secret), $signature)) {
-      throw new \InvalidArgumentException('Invalid signed delivery.');
+    if (strlen($body) > self::MAX_BODY) {
+      throw new \InvalidArgumentException('Delivery body exceeds limit.');
+    }
+    if (!preg_match('/^[0-9]{1,12}$/D', $timestamp)) {
+      throw new \InvalidArgumentException('Invalid delivery timestamp.');
+    }
+    if (abs($now - (int) $timestamp) > 300) {
+      throw new \InvalidArgumentException('Delivery timestamp outside allowed window.');
+    }
+    if (!preg_match('/^v1=[a-f0-9]{64}$/D', $signature)) {
+      throw new \InvalidArgumentException('Invalid delivery signature format.');
+    }
+    if (!hash_equals('v1=' . hash_hmac('sha256', $timestamp . '.' . $body, $secret), $signature)) {
+      throw new \InvalidArgumentException('Delivery signature mismatch.');
     }
     $event = json_decode($body, TRUE, 16, JSON_THROW_ON_ERROR);
     if (!is_array($event)) {
