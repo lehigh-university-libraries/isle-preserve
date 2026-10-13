@@ -241,6 +241,11 @@ final class Integration {
    * Queues a verified publication event for its mapped derivative.
    */
   public function accept(array $event): void {
+    // The controller verifies signatures first. Only publication events update
+    // derivatives; acknowledge unrelated events so Scribe does not retry them.
+    if (($event['type'] ?? '') !== 'dev.scribe.annotations.published') {
+      return;
+    }
     $data = $event['data'] ?? [];
     if (!is_array($data) || !is_int($data['workspaceId'] ?? NULL) || $data['workspaceId'] !== $this->settings->get()['workspace_id'] || !is_int($data['itemImageId'] ?? NULL)) {
       throw new \InvalidArgumentException('Invalid workspace or image.');
