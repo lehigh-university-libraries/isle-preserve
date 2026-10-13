@@ -27,8 +27,17 @@ final class AttachScribePdf extends ActionBase implements ContainerFactoryPlugin
     return new static($configuration, $plugin_id, $plugin_definition, $container->get('islandora_scribe.integration'));
   }
 
-  public function execute($entity = NULL) { $this->integration->attachPdf($entity); }
+  public function execute($entity = NULL) {
+    try {
+      $this->integration->enqueuePdf($entity);
+      $this->messenger()->addStatus($this->t('PDF export queued.'));
+    }
+    catch (\Throwable $e) {
+      $this->messenger()->addError($this->t('Select paged content and check the Scribe configuration before trying again.'));
+    }
+  }
 
-  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) { return $object->access('update', $account, $return_as_object); }
+  public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) { $access = $object->access('update', $account, TRUE)->andIf(\Drupal\Core\Access\AccessResult::allowedIf($this->integration->isPagedContent($object)))->addCacheableDependency($object);
+    return $return_as_object ? $access : $access->isAllowed(); }
 
 }

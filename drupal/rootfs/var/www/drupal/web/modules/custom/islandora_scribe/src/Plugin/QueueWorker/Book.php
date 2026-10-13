@@ -33,7 +33,7 @@ final class Book extends QueueWorkerBase implements ContainerFactoryPluginInterf
    * {@inheritdoc}
    */
   public function processItem($data) {
-    $this->integration->importBook($data);
+    $this->integration->processBookOperation($data);
   }
 
 }

@@ -48,6 +48,10 @@ final class PagedContentTest extends KernelTestBase {
     $this->book->method('id')->willReturn(100);
     $this->book->method('uuid')->willReturn('book-uuid');
     $this->book->method('label')->willReturn('Test book');
+    $model = $this->getMockBuilder(FieldItemList::class)->disableOriginalConstructor()->onlyMethods(['getValue'])->getMock();
+    $model->method('getValue')->willReturn([['target_id' => 5]]);
+    $this->book->method('hasField')->willReturn(TRUE);
+    $this->book->method('get')->willReturn($model);
     $members = $this->getMockBuilder(FieldItemList::class)->disableOriginalConstructor()->onlyMethods(['getValue'])->getMock();
     $members->method('getValue')->willReturnCallback(fn() => [['target_id' => $this->member ? 100 : 999]]);
     $page = $this->createMock(NodeInterface::class);
@@ -82,19 +86,20 @@ final class PagedContentTest extends KernelTestBase {
     });
     $this->http = new MockHandler(); $stack = HandlerStack::create($this->http); $stack->push(Middleware::history($this->requests));
     $settings = new RuntimeSettings(new Settings(['islandora_scribe' => ['base_url' => 'https://scribe.example', 'workspace_id' => 42, 'api_key' => 'test-key', 'webhook_secret' => str_repeat('w',32), 'correlation_secret' => str_repeat('c',32)]]));
-    $this->integration = new Integration($this->container->get('database'), $this->container->get('queue'), $this->container->get('lock'), $entities, $mediaSource, new Client(['handler' => $stack]), $settings, $this->createMock(FileRepositoryInterface::class), $this->createMock(FileSystemInterface::class), new NullLogger());
+    $utils = $this->createMock(IslandoraUtils::class); $utils->method('getTermForUri')->willReturn($term);
+    $this->integration = new Integration($this->container->get('database'), $this->container->get('queue'), $this->container->get('lock'), $entities, $mediaSource, new Client(['handler' => $stack]), $settings, $this->createMock(FileRepositoryInterface::class), $this->createMock(FileSystemInterface::class), new NullLogger(), $utils);
     $this->container->get('database')->insert('islandora_scribe_mapping')->fields(['operation_id' => str_repeat('a',32), 'book_node_id' => 100, 'workspace_id' => 42, 'ingest_complete' => 1, 'item_id' => 'book-item', 'file_uri' => 'private://page.hocr', 'uri_hash' => str_repeat('b',64)])->execute();
   }
 
   public function testCanvasMustReferenceServiceMediaOnBookPage(): void {
     self::assertInstanceOf(MediaInterface::class, $this->integration->sourceForCanvas($this->book, 'https://repository.example/node/100/book-manifest', 'https://repository.example/node/100/canvas/300'));
     $this->member = FALSE;
-    $this->expectException(\RuntimeException::class);
+    $this->expectException(\InvalidArgumentException::class);
     $this->integration->sourceForCanvas($this->book, 'https://repository.example/node/100/book-manifest', 'https://repository.example/node/100/canvas/300');
   }
 
   public function testForeignCanvasRejectedBeforeLoadingMedia(): void {
-    $this->expectException(\RuntimeException::class);
+    $this->expectException(\InvalidArgumentException::class);
     $this->integration->sourceForCanvas($this->book, 'https://repository.example/node/100/book-manifest', 'https://repository.example/node/999/canvas/300');
   }
 
@@ -135,6 +140,30 @@ final class PagedContentTest extends KernelTestBase {
     $mapping = $this->integration->mapping(substr(hash('sha256', str_repeat('c',32) . ':300'),0,32));
     self::assertSame(100,(int) $mapping['book_node_id']); self::assertSame(200,(int) $mapping['node_id']);
     self::assertSame(7,(int) $mapping['item_image_id']); self::assertSame(1,(int) $mapping['ingest_complete']);
+  }
+
+  public function testPermanentBookRequestIsNotRequeued(): void {
+    $this->http->append(new Response(400));
+    $this->integration->processBookOperation(['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)]);
+    self::assertSame(0, $this->container->get('queue')->get('islandora_scribe_book', TRUE)->numberOfItems());
+  }
+
+  public function testTransientBookRetriesStopAfterThreeAttempts(): void {
+    $data = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)];
+    $this->http->append(new Response(503));
+    $this->integration->processBookOperation($data);
+    $queue = $this->container->get('queue')->get('islandora_scribe_book', TRUE);
+    self::assertSame(1, $queue->numberOfItems());
+    $data['attempt'] = 2;
+    $this->http->append(new Response(503));
+    $this->integration->processBookOperation($data);
+    self::assertSame(1, $queue->numberOfItems());
+  }
+
+  public function testPdfActionOnlyQueuesWork(): void {
+    $this->integration->enqueuePdf($this->book);
+    self::assertSame(1, $this->container->get('queue')->get('islandora_scribe_book', TRUE)->numberOfItems());
+    self::assertSame([], $this->requests);
   }
 
 }

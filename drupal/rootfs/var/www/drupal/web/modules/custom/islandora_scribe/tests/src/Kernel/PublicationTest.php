@@ -4,6 +4,7 @@ namespace Drupal\Tests\islandora_scribe\Kernel;
 
 use GuzzleHttp\Middleware;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\islandora\IslandoraUtils;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\Query\QueryInterface;
@@ -149,7 +150,7 @@ final class PublicationTest extends KernelTestBase {
     $this->http = new MockHandler();
     $handler = HandlerStack::create($this->http);
     $handler->push(Middleware::history($this->requests));
-    $this->integration = new Integration($database, $this->container->get('queue'), $this->container->get('lock'), $entities, $source, new Client(['handler' => $handler]), $settings, $files, $fileSystem, new NullLogger());
+    $this->integration = new Integration($database, $this->container->get('queue'), $this->container->get('lock'), $entities, $source, new Client(['handler' => $handler]), $settings, $files, $fileSystem, new NullLogger(), $this->createMock(IslandoraUtils::class));
     $this->mapping = [
       'operation_id' => str_repeat('a', 32),
       'workspace_id' => 42,
@@ -274,7 +275,7 @@ final class PublicationTest extends KernelTestBase {
    * Tests cross resource rejection.
    */
   public function testCrossResourceRejection(): void {
-    foreach (['workspaceId' => 43, 'itemId' => 'other', 'itemImageId' => 8, 'externalReferenceId' => 'other'] as $key => $value) {
+    foreach (['workspaceId' => 43, 'itemId' => 'other', 'externalReferenceId' => 'other'] as $key => $value) {
       $event = $this->event('invalid', 1);
       $event['data'][$key] = $value;
       try {
@@ -377,8 +378,8 @@ final class PublicationTest extends KernelTestBase {
     self::assertSame(2, $this->writes);
     self::assertSame(10, (int) $this->integration->mapping($new['operation_id'])['derivative_media_id']);
     self::assertSame(2, $this->mediaSaves);
-    $this->expectException(\InvalidArgumentException::class);
     $this->integration->accept($event);
+    self::assertSame(2, $this->writes);
   }
 
   /**

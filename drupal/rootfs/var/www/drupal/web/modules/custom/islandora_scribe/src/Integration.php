@@ -35,6 +35,7 @@ final class Integration {
     private FileRepositoryInterface $files,
     private FileSystemInterface $fileSystem,
     private LoggerInterface $logger,
+    private IslandoraUtils $utils,
   ) {}
 
   /**
@@ -386,10 +387,50 @@ final class Integration {
 
   /** Queues an explicit book operation; retries retain the operation ID. */
   public function enqueueBook(NodeInterface $book, int $contextId): void {
+    if (!$this->isPagedContent($book)) { throw new \InvalidArgumentException('Select a paged-content node.'); }
     if ($contextId < 1) { throw new \InvalidArgumentException('Select a Scribe context before transcribing a book.'); }
     $queue = $this->queues->get('islandora_scribe_book', TRUE);
     if (!$queue instanceof DatabaseQueue || !$queue->createItem(['node_id' => (int) $book->id(), 'context_id' => $contextId, 'operation_id' => bin2hex(random_bytes(16))])) {
       throw new \RuntimeException('Scribe requires the durable database queue.');
+    }
+  }
+
+  /** Checks the Islandora model before either book action runs. */
+  public function isPagedContent(NodeInterface $node): bool {
+    $term = $this->utils->getTermForUri('https://schema.org/Book');
+    if (!$term || !$node->hasField(IslandoraUtils::MODEL_FIELD)) { return FALSE; }
+    $ids = array_column($node->get(IslandoraUtils::MODEL_FIELD)->getValue(), 'target_id');
+    return in_array((string) $term->id(), array_map('strval', $ids), TRUE);
+  }
+
+  /** Queues the explicit PDF action without blocking the browser. */
+  public function enqueuePdf(NodeInterface $book): void {
+    if (!$this->isPagedContent($book)) { throw new \InvalidArgumentException('Select a paged-content node.'); }
+    $queue = $this->queues->get('islandora_scribe_book', TRUE);
+    if (!$queue instanceof DatabaseQueue || !$queue->createItem(['type' => 'pdf', 'node_id' => (int) $book->id(), 'operation_id' => bin2hex(random_bytes(16))])) { throw new \RuntimeException('Scribe requires the durable database queue.'); }
+  }
+
+  /** Applies queued book work, with at most three delayed transient attempts. */
+  public function processBookOperation(array $data): void {
+    $attempt = (int) ($data['attempt'] ?? 0) + 1;
+    try {
+      if (($data['type'] ?? '') === 'pdf') {
+        $book = $this->entities->getStorage('node')->load($data['node_id'] ?? 0);
+        if (!$book) { throw new \InvalidArgumentException('Book unavailable.'); }
+        $this->attachPdf($book);
+      }
+      else { $this->importBook($data); }
+    }
+    catch (\Throwable $e) {
+      if (!$e instanceof \InvalidArgumentException && $attempt < 3) {
+        $queue = $this->queues->get('islandora_scribe_book', TRUE);
+        if (!$queue instanceof DatabaseQueue) { throw new \RuntimeException('Scribe requires the durable database queue.'); }
+        $data['attempt'] = $attempt;
+        $id = $queue->createItem($data);
+        if (!$id) { throw new \RuntimeException('Unable to queue book retry.'); }
+        $queue->delayItem((object) ['item_id' => $id], 60 * $attempt);
+      }
+      $this->logger->warning('Scribe book operation failed for node @node on attempt @attempt. Check public access, context and credentials before running the action again.', ['@node' => (int) ($data['node_id'] ?? 0), '@attempt' => $attempt]);
     }
   }
 
@@ -399,7 +440,7 @@ final class Integration {
       throw new \InvalidArgumentException('Invalid book operation.');
     }
     $book = $this->entities->getStorage('node')->load($operation['node_id']);
-    if (!$book) { throw new \RuntimeException('Book unavailable.'); }
+    if (!$book || !$this->isPagedContent($book)) { throw new \InvalidArgumentException('Select a paged-content node.'); }
     $manifest = Url::fromUserInput('/node/' . $book->id() . '/book-manifest', ['absolute' => TRUE])->toString();
     $key = 'islandora_scribe:book:' . $book->id();
     if (!$this->lock->acquire($key, 180)) { throw new \RuntimeException('Book busy; retry.'); }
@@ -443,18 +484,19 @@ final class Integration {
   /** Validates a manifest Canvas against service-file and book membership. */
   public function sourceForCanvas(NodeInterface $book, string $manifest, string $canvas): MediaInterface {
     $base = preg_replace('~/book-manifest$~D', '', $manifest);
-    if (!preg_match('~^' . preg_quote($base, '~') . '/canvas/([1-9][0-9]*)$~D', $canvas, $matches)) { throw new \RuntimeException('Canvas is outside the book.'); }
+    if (!preg_match('~^' . preg_quote($base, '~') . '/canvas/([1-9][0-9]*)$~D', $canvas, $matches)) { throw new \InvalidArgumentException('Canvas is outside the book.'); }
     $media = $this->entities->getStorage('media')->load($matches[1]);
     $page = $media && $media->hasField(IslandoraUtils::MEDIA_OF_FIELD) ? $this->entities->getStorage('node')->load($media->get(IslandoraUtils::MEDIA_OF_FIELD)->target_id) : NULL;
     $members = $page && $page->hasField(IslandoraUtils::MEMBER_OF_FIELD) ? array_column($page->get(IslandoraUtils::MEMBER_OF_FIELD)->getValue(), 'target_id') : [];
     $service = $this->termForUri('http://pcdm.org/use#ServiceFile');
     $uses = $media && $media->hasField(IslandoraUtils::MEDIA_USAGE_FIELD) ? array_column($media->get(IslandoraUtils::MEDIA_USAGE_FIELD)->getValue(), 'target_id') : [];
-    if (!$page || !in_array((string) $book->id(), array_map('strval', $members), TRUE) || !in_array((string) $service->id(), array_map('strval', $uses), TRUE)) { throw new \RuntimeException('Canvas source is not a service file on a page of this book.'); }
+    if (!$page || !in_array((string) $book->id(), array_map('strval', $members), TRUE) || !in_array((string) $service->id(), array_map('strval', $uses), TRUE)) { throw new \InvalidArgumentException('Canvas source is not a service file on a page of this book.'); }
     return $media;
   }
 
   /** Attaches a revision-checked searchable PDF only on explicit action. */
   public function attachPdf(NodeInterface $book): void {
+    if (!$this->isPagedContent($book)) { throw new \InvalidArgumentException('Select a paged-content node.'); }
     $settings = $this->settings->get();
     $ids = $this->database->select('islandora_scribe_mapping', 'm')->fields('m', ['item_id'])
       ->condition('book_node_id', $book->id())->condition('workspace_id', $settings['workspace_id'])->condition('ingest_complete', 1)->distinct()->execute()->fetchCol();
@@ -483,10 +525,9 @@ final class Integration {
   }
 
   private function termForUri(string $uri) {
-    $storage = $this->entities->getStorage('taxonomy_term');
-    $ids = $storage->getQuery()->accessCheck(FALSE)->condition('field_external_uri.uri', $uri)->range(0, 2)->execute();
-    if (count($ids) !== 1) { throw new \RuntimeException('Required media-use term unavailable.'); }
-    return $storage->load(reset($ids));
+    $term = $this->utils->getTermForUri($uri);
+    if (!$term) { throw new \InvalidArgumentException('Required media-use term unavailable.'); }
+    return $term;
   }
 
   private function requestOptions(): array {
@@ -498,6 +539,7 @@ final class Integration {
     $settings = $this->settings->get();
     $response = $this->http->request('POST', $settings['base_url'] . '/scribe.v1.' . $method, $this->requestOptions() + ['json' => $body]);
     if ($response->getStatusCode() === 409) { throw new \RuntimeException('Book changed; retry.'); }
+    if ($response->getStatusCode() >= 400 && $response->getStatusCode() < 500 && $response->getStatusCode() !== 429) { throw new \InvalidArgumentException('Scribe rejected the book request; check access and context.'); }
     if ($response->getStatusCode() !== 200) { throw new \RuntimeException('Scribe request failed; retry.'); }
     return json_decode($this->readBounded($response->getBody(), 20971520), TRUE, 32, JSON_THROW_ON_ERROR);
   }
