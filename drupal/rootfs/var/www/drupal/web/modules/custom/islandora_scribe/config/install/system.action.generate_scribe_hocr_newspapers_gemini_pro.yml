@@ -10,7 +10,7 @@ plugin: generate_scribe_hocr_derivative
 configuration:
   queue: islandora-scribe-hocr
   event: 'Generate Derivative'
-  source_term_uri: 'http://pcdm.org/use#OriginalFile'
+  source_term_uri: 'http://pcdm.org/use#ServiceFile'
   derivative_term_uri: 'https://discoverygarden.ca/use#hocr'
   mimetype: text/vnd.hocr+html
   context_id: 19

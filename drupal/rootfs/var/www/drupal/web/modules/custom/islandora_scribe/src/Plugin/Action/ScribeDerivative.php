@@ -39,6 +39,7 @@ final class ScribeDerivative extends HocrDerivative {
   public function defaultConfiguration() {
     return array_replace(parent::defaultConfiguration(), [
       'queue' => 'islandora-scribe-hocr',
+      'source_term_uri' => 'http://pcdm.org/use#ServiceFile',
       'derivative_term_uri' => 'https://discoverygarden.ca/use#hocr',
       'args' => '',
       'context_id' => 0,
