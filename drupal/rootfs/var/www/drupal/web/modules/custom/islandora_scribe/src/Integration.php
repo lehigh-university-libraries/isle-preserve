@@ -225,8 +225,13 @@ final class Integration {
       throw new \InvalidArgumentException('Invalid workspace or image.');
     }
     $mapping = $this->database->select('islandora_scribe_mapping', 'm')->fields('m')->condition('workspace_id', $data['workspaceId'])->condition('item_image_id', $data['itemImageId'])->execute()->fetchAssoc();
-    if ($mapping && ($event['type'] ?? '') === 'dev.scribe.transcription.completed' && empty($mapping['book_node_id'])) { return; }
-    if (!$mapping || (!$mapping['derivative_media_id'] && empty($mapping['book_node_id'])) || !$mapping['ingest_complete']) {
+    if (!$mapping) {
+      return;
+    }
+    if (($event['type'] ?? '') === 'dev.scribe.transcription.completed' && empty($mapping['book_node_id'])) {
+      return;
+    }
+    if ((!$mapping['derivative_media_id'] && empty($mapping['book_node_id'])) || !$mapping['ingest_complete']) {
       throw new \InvalidArgumentException('Unknown derivative.');
     }
     $revision = SignedEvent::publication($event, $mapping);

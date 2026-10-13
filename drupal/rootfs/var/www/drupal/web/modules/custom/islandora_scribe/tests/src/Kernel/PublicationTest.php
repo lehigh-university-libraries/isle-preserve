@@ -431,4 +431,14 @@ final class PublicationTest extends KernelTestBase {
     SignedEvent::publication($event, $single);
   }
 
+  public function testUnmappedCompletionAndPublicationAreAcknowledged(): void {
+    foreach (['dev.scribe.transcription.completed', 'dev.scribe.annotations.published'] as $type) {
+      $event = $this->event('unrelated-' . $type, 1);
+      $event['type'] = $type;
+      $event['data']['itemImageId'] = 999999;
+      $this->integration->accept($event);
+    }
+    self::assertSame(0, (int) $this->container->get('database')->select('islandora_scribe_event')->countQuery()->execute()->fetchField());
+  }
+
 }
