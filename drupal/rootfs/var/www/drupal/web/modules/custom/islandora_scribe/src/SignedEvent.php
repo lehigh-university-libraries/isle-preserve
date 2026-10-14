@@ -10,8 +10,8 @@ final class SignedEvent {
   /**
    * Verifies the signature and decodes the event body.
    */
-  public static function decode(string $body, string $timestamp, string $signature, string $secret, int $now): array {
-    if (strlen($body) > self::MAX_BODY) {
+  public static function decode(string $body, string $timestamp, string $signature, string $secret, int $now, int $maxBody = self::MAX_BODY): array {
+    if (strlen($body) > $maxBody) {
       throw new \InvalidArgumentException('Delivery body exceeds limit.');
     }
     if (!preg_match('/^[0-9]{1,12}$/D', $timestamp)) {
@@ -38,7 +38,10 @@ final class SignedEvent {
    */
   public static function publication(array $event, array $mapping): int {
     $data = $event['data'] ?? [];
-    if (($event['specversion'] ?? '') !== '1.0' || ($event['type'] ?? '') !== 'dev.scribe.annotations.published' || !is_string($event['id'] ?? NULL) || !$event['id'] || strlen($event['id']) > 255) {
+    if (($event['specversion'] ?? '') !== '1.0' || !in_array($event['type'] ?? '', [
+      'dev.scribe.annotations.published',
+      'dev.scribe.transcription.completed',
+    ], TRUE) || !is_string($event['id'] ?? NULL) || !$event['id'] || strlen($event['id']) > 255) {
       throw new \InvalidArgumentException('Invalid publication event.');
     }
     foreach ([
@@ -51,10 +54,14 @@ final class SignedEvent {
         throw new \InvalidArgumentException('Publication resource mismatch.');
       }
     }
-    if (!is_int($data['publishedRevision'] ?? NULL) || $data['publishedRevision'] < 1) {
+    $field = $event['type'] === 'dev.scribe.transcription.completed' ? 'revision' : 'publishedRevision';
+    if ($field === 'revision' && empty($mapping['book_node_id'])) {
+      throw new \InvalidArgumentException('Completion requires a book mapping.');
+    }
+    if (!is_int($data[$field] ?? NULL) || $data[$field] < 1) {
       throw new \InvalidArgumentException('Invalid publication revision.');
     }
-    return $data['publishedRevision'];
+    return $data[$field];
   }
 
 }

@@ -9,6 +9,7 @@ use Drupal\islandora_scribe\SignedEvent;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -40,10 +41,17 @@ final class WebhookController extends ControllerBase {
   }
 
   /**
+   * Receives a signed book metadata or correlation request from Scyllaridae.
+   */
+  public function book(Request $request): Response {
+    return $this->receive($request, TRUE, TRUE);
+  }
+
+  /**
    * Verifies and dispatches a signed callback.
    */
-  private function receive(Request $request, bool $correlation): Response {
-    $endpoint = $correlation ? 'correlation' : 'webhook';
+  private function receive(Request $request, bool $correlation, bool $book = FALSE): Response {
+    $endpoint = $book ? 'book' : ($correlation ? 'correlation' : 'webhook');
     if (!$request->isSecure()) {
       $this->callbackLogger->warning('Scribe @endpoint callback rejected: insecure_request.', ['@endpoint' => $endpoint]);
       return new Response('', 400);
@@ -52,12 +60,16 @@ final class WebhookController extends ControllerBase {
     try {
       $settings = $this->settings->get();
       $stage = 'body';
-      // Read at most limit + 1 bytes, including requests without Content-Length.
+      // Bound the body even for requests without Content-Length.
       $stream = $request->getContent(TRUE);
-      $body = stream_get_contents($stream, SignedEvent::MAX_BODY + 1);
+      $limit = $book ? 1048576 : SignedEvent::MAX_BODY;
+      $body = stream_get_contents($stream, $limit + 1);
       $stage = 'signed_delivery';
-      $data = SignedEvent::decode($body, $request->headers->get('X-Scribe-Timestamp', ''), $request->headers->get('X-Scribe-Signature', ''), $settings[$correlation ? 'correlation_secret' : 'webhook_secret'], time());
+      $data = SignedEvent::decode($body, $request->headers->get('X-Scribe-Timestamp', ''), $request->headers->get('X-Scribe-Signature', ''), $settings[$correlation ? 'correlation_secret' : 'webhook_secret'], time(), $limit);
       $stage = $correlation ? 'correlation' : 'publication';
+      if ($book) {
+        return new JsonResponse($this->integration->bookCallback($data));
+      }
       if ($correlation) {
         $this->integration->correlate($data);
       }

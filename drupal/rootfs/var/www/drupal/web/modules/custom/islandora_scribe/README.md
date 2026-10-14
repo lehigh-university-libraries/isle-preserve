@@ -17,7 +17,7 @@ $settings['islandora_scribe'] = [
   'workspace_id' => 42, // PHP integer.
   'webhook_secret' => file_get_contents('/run/secrets/SCRIBE_WEBHOOK_SECRET'),
   'correlation_secret' => file_get_contents('/run/secrets/SCRIBE_CORRELATION_SECRET'),
-  // A separate workspace-scoped read key with annotations:read.
+  // A protected workspace key with annotations:read only.
   'api_key' => trim(file_get_contents('/run/secrets/SCRIBE_READ_API_KEY')),
 ];
 ```
@@ -27,8 +27,8 @@ webhook or starting ingestion. Do not append a newline to the secret files.
 The correlation secret is shared only with the Scyllaridae service; the
 webhook secret is shared only with Scribe's webhook subscription.
 
-Create a separate **read** API key for Drupal in the configured Scribe
-workspace, granting `annotations:read`. Drupal sends it server-side as
+Create a protected API key for Drupal in the configured Scribe
+workspace, granting only `annotations:read`. Drupal sends it server-side as
 `X-Scribe-API-Key` with `X-Scribe-Workspace-ID` when exporting published hOCR.
 Keep this key in protected settings or a mounted secret; it never goes into
 configuration sync or editor links. Drupal does not require JWT issuance or
@@ -220,7 +220,7 @@ Drupal's cache. No database schema change is needed for this authentication chan
 
 Create these files on the Compose host, outside Git:
 
-- `secrets/SCRIBE_READ_API_KEY`: a workspace-scoped read key with `annotations:read`.
+- `secrets/SCRIBE_READ_API_KEY`: a workspace key with only `annotations:read`.
 - `secrets/SCRIBE_WEBHOOK_SECRET`: the signing secret registered with Scribe.
 - `secrets/SCRIBE_CORRELATION_SECRET`: the same correlation signing secret used by Scyllaridae.
 
@@ -230,3 +230,52 @@ Compose mounts them into Drupal and Drupal cron as `/run/secrets/SCRIBE_READ_API
 site's scaffolded settings read these files into protected runtime settings.
 Do not append newlines to either signing secret. Recreate Drupal and Drupal cron
 containers when adding the mounts; rebuild Drupal's cache after configuration.
+
+## Paged content and explicit PDF attachment
+
+Drupal retains its existing **read-only** `SCRIBE_READ_API_KEY` with
+`annotations:read`. Book imports, reprocessing, and PDF preparation run
+in the Scyllaridae microservice, not in a Drupal cron worker.
+
+Build and deploy `scyllaridae-scribe-book` from the BuildKit repository, then
+apply `ci/k8s/scribe-book.yaml` and the `/scribe-book` ingress route. Its Scribe
+key needs `items:create`, `items:write`, `items:read`, `transcription:read`,
+and `annotations:read`; keep it in the microservice's Kubernetes secret.
+Use the existing Scyllaridae JWT/JWKS authentication and correlation secret.
+The service validates node URLs against its configured Islandora origin.
+
+Run database updates through `islandora_scribe_update_10006` and rebuild
+Drupal's cache. The update retires the former Drupal book queue. Both actions
+now emit node events to `islandora-scribe-book`, following mergepdf. Alpaca
+routes these to `ALPACA_DERIVATIVE_SCRIBE_BOOK_URL`. The event carries the
+canonical node URL, operation ID and context, never Scribe credentials.
+
+Both actions require paged content. Configure each transcription action with
+a positive Scribe context ID. Seed Scribe system contexts first and use the
+actual IDs for **Medieval manuscripts + Kraken CATMuS** and **Letters + Kraken
+McCATMuS**. The new Kraken actions remain disabled until configured. Existing
+Gemini actions retain site context IDs 11/15; verify them in your workspace.
+
+The transcription command fetches the public book manifest anonymously and
+imports it with `ignoreExistingOcr`. It reuses the active Scribe item when the
+painting and membership signature is unchanged. Reprocessing uses revisions
+saved by the signed correlation callback before any processing request, so a
+broker retry cannot transcribe a newer revision again. Changed pages replace
+the active item and retire obsolete mappings. Drupal verifies every Canvas
+belongs to a Service File on a page of this book before committing mappings.
+A superseded operation cannot replace newer mappings.
+
+Permanent errors such as a private manifest, invalid context or Canvas
+mismatch are acknowledged and logged without broker retries. Transport, rate
+limit and server failures return an error and use Alpaca's bounded redelivery
+policy (the deployment sets one redelivery). Signed completion and publication
+events still use Drupal's durable `islandora_scribe_publication` queue. The
+microservice reconciles completions that raced ahead of correlation.
+
+**Attach searchable PDF from Scribe** emits an explicit PDF request through
+the same node-event queue. The PDF command obtains the complete revision
+vector, prepares and downloads the export, then uploads it with
+`SCYLLARIDAE_AUTH` to the book's document/Original File endpoint, following
+mergepdf. The destination is `private://derivatives/YYYY/MM/pc/NID.pdf`.
+A revision conflict or invalid export leaves the existing PDF untouched.
+PDFs are never attached automatically.

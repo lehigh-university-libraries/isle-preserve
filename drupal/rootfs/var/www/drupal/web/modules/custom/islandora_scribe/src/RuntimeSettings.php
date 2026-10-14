@@ -32,7 +32,7 @@ final class RuntimeSettings {
     }
     $key = $values['api_key'] ?? NULL;
     if (!is_string($key) || $key === '' || strlen($key) > 4096 || preg_match('/[\x00-\x20\x7f]/', $key)) {
-      throw new \RuntimeException('Configure a protected Scribe read API key.');
+      throw new \RuntimeException('Configure a protected Scribe API key.');
     }
     $values['base_url'] = rtrim($url, '/');
     return $values;

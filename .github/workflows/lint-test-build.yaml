@@ -51,6 +51,12 @@ jobs:
 
       - run: ./scripts/ci/lint.sh
 
+      - name: Run Scribe kernel regressions without a deployed site
+        env:
+          DRUPAL_ROOT: ${{ github.workspace }}/codebase/web
+        run: |
+          codebase/vendor/bin/phpunit -c drupal/rootfs/var/www/drupal/web/modules/custom/islandora_scribe/phpunit.xml.dist
+
   build-push:
     needs:
       - lint

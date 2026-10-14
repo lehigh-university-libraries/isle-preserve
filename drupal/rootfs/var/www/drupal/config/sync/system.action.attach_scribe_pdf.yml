@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_scribe
+id: attach_scribe_pdf
+label: 'Attach searchable PDF from Scribe'
+type: node
+plugin: attach_scribe_pdf
+configuration: {}

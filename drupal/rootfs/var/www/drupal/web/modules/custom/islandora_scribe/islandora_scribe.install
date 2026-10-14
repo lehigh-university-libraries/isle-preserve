@@ -20,6 +20,7 @@ function islandora_scribe_schema() {
         'operation_id' => $text,
         'source_media_id' => $id,
         'node_id' => $id,
+        'book_node_id' => $id,
         'media_bundle' => $text,
         'term_id' => $id,
         'context_id' => $id,
@@ -34,38 +35,89 @@ function islandora_scribe_schema() {
         'uri_hash' => ['type' => 'varchar', 'length' => 64, 'not null' => TRUE],
         'file_uri' => ['type' => 'varchar', 'length' => 2048, 'not null' => TRUE],
         'last_revision' => $id,
+        'reprocess_revision' => $id,
       ],
       'primary key' => ['operation_id'],
-      'unique keys' => ['destination' => ['uri_hash'], 'resource' => ['workspace_id', 'item_image_id'], 'derivative' => ['derivative_media_id'], 'node_term' => ['node_id', 'term_id']],
+      'unique keys' => [
+        'destination' => ['uri_hash'],
+        'resource' => [
+          'workspace_id',
+          'item_image_id',
+        ],
+        'derivative' => [
+          'derivative_media_id',
+        ],
+        'node_term' => [
+          'node_id',
+          'term_id',
+        ],
+      ],
+    ],
+    'islandora_scribe_book' => [
+      'description' => 'The active Scribe item and operation for each book.',
+      'fields' => [
+        'book_node_id' => $id,
+        'workspace_id' => $id,
+        'item_id' => $text,
+        'source_signature' => [
+          'type' => 'varchar',
+          'length' => 64,
+          'not null' => TRUE,
+          'default' => '',
+        ],
+        'operation_id' => $text,
+        'requested_operation_id' => $text,
+        'requested_context_id' => $id,
+        'requested_mode' => $text,
+      ],
+      'primary key' => ['book_node_id', 'workspace_id'],
     ],
     'islandora_scribe_event' => [
       'description' => 'Durably accepted publication events.',
-      'fields' => ['event_id' => $text, 'operation_id' => $text, 'revision' => $id, 'applied' => ['type' => 'int', 'not null' => TRUE, 'default' => 0]],
+      'fields' => [
+        'event_id' => $text,
+        'operation_id' => $text,
+        'revision' => $id,
+        'applied' => [
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 0,
+        ],
+      ],
       'primary key' => ['event_id'],
     ],
   ];
 }
 
 /**
- * Implements hook_requirements(). */
+ * Implements hook_requirements().
+ */
 function islandora_scribe_requirements($phase) {
   if ($phase !== 'runtime') {
     return [];
   }
   try {
     \Drupal::service('islandora_scribe.settings')->get();
-    $description = t('Runtime settings are valid. Verify read API-key scopes, Scyllaridae correlation delivery, workspace membership, HTTPS webhook registration and queue processing using the module README.');
+    $description = t('Runtime settings are valid. Verify the Drupal annotations:read key and Scyllaridae write-key scopes, Scyllaridae correlation delivery, workspace membership, HTTPS webhook registration and queue processing using the module README.');
     $severity = REQUIREMENT_INFO;
   }
   catch (\Throwable $e) {
     $description = t('Configure protected islandora_scribe runtime settings. See the module README.');
     $severity = REQUIREMENT_ERROR;
   }
-  return ['islandora_scribe' => ['title' => t('Islandora Scribe'), 'value' => $severity === REQUIREMENT_INFO ? t('Configured') : t('Setup required'), 'description' => $description, 'severity' => $severity]];
+  return [
+    'islandora_scribe' => [
+      'title' => t('Islandora Scribe'),
+      'value' => $severity === REQUIREMENT_INFO ? t('Configured') : t('Setup required'),
+      'description' => $description,
+      'severity' => $severity,
+    ],
+  ];
 }
 
 /**
- * Persist immutable processing contexts for existing ingest mappings. */
+ * Persist immutable processing contexts for existing ingest mappings.
+ */
 function islandora_scribe_update_10001() {
   _islandora_scribe_ensure_schema();
   $schema = \Drupal::database()->schema();
@@ -80,7 +132,8 @@ function islandora_scribe_update_10001() {
 }
 
 /**
- * Add named context actions and support replacing the node's existing hOCR. */
+ * Add named context actions and support replacing the node's existing hOCR.
+ */
 function islandora_scribe_update_10002() {
   _islandora_scribe_ensure_schema();
   $database = \Drupal::database();
@@ -132,4 +185,59 @@ function _islandora_scribe_ensure_schema(): void {
       $schema->createTable($table, $definition);
     }
   }
+}
+
+/**
+ * Add book association and paged-content actions.
+ */
+function islandora_scribe_update_10004(): void {
+  _islandora_scribe_ensure_schema();
+  $schema = \Drupal::database()->schema();
+  if (!$schema->fieldExists('islandora_scribe_mapping', 'book_node_id')) {
+    $schema->addField('islandora_scribe_mapping', 'book_node_id', [
+      'type' => 'int',
+      'size' => 'big',
+      'not null' => TRUE,
+      'default' => 0,
+    ]);
+  }
+  $defaults = new FileStorage(__DIR__ . '/config/install');
+  $actions = \Drupal::entityTypeManager()->getStorage('action');
+  foreach ($defaults->listAll('system.action.') as $name) {
+    $data = $defaults->read($name);
+    if (!$actions->load($data['id'])) {
+      $actions->create($data)->save();
+    }
+  }
+}
+
+/**
+ * Track active book membership and fixed reprocess revisions.
+ */
+function islandora_scribe_update_10005(): void {
+  _islandora_scribe_ensure_schema();
+  $schema = \Drupal::database()->schema();
+  if (!$schema->fieldExists('islandora_scribe_mapping', 'reprocess_revision')) {
+    $schema->addField('islandora_scribe_mapping', 'reprocess_revision', [
+      'type' => 'int',
+      'size' => 'big',
+      'not null' => TRUE,
+      'default' => 0,
+    ]);
+  }
+}
+
+/**
+ * Move book submission to the Scyllaridae node-event workflow.
+ */
+function islandora_scribe_update_10006(): void {
+  _islandora_scribe_ensure_schema();
+  $schema = \Drupal::database()->schema();
+  foreach (['requested_operation_id', 'requested_context_id', 'requested_mode'] as $field) {
+    if (!$schema->fieldExists('islandora_scribe_book', $field)) {
+      $schema->addField('islandora_scribe_book', $field, islandora_scribe_schema()['islandora_scribe_book']['fields'][$field]);
+    }
+  }
+  $schema->changeField('islandora_scribe_book', 'source_signature', 'source_signature', islandora_scribe_schema()['islandora_scribe_book']['fields']['source_signature']);
+  \Drupal::queue('islandora_scribe_book')->deleteQueue();
 }

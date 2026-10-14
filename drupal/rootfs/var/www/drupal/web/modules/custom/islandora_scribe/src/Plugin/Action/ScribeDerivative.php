@@ -63,7 +63,7 @@ final class ScribeDerivative extends HocrDerivative {
       '#step' => 1,
       '#required' => TRUE,
     ];
-    // Correlation and context arguments are generated from the persisted operation.
+    // Generate correlation and context from the persisted operation.
     unset($form['args']);
     return $form;
   }

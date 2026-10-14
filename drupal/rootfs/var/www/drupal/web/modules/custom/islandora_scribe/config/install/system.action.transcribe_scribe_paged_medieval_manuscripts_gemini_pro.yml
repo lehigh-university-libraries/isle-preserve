@@ -1,0 +1,11 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - islandora_scribe
+id: transcribe_scribe_paged_medieval_manuscripts_gemini_pro
+label: 'Transcribe paged content: Medieval manuscripts + Gemini Pro'
+type: node
+plugin: transcribe_scribe_paged_content
+configuration:
+  context_id: 15

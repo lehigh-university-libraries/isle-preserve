@@ -3,6 +3,8 @@
 namespace Drupal\islandora_scribe;
 
 use Drupal\Core\File\FileExists;
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Drupal\file\FileInterface;
 use Drupal\Core\Queue\DatabaseQueue;
 use Drupal\islandora\IslandoraUtils;
@@ -33,6 +35,7 @@ final class Integration {
     private FileRepositoryInterface $files,
     private FileSystemInterface $fileSystem,
     private LoggerInterface $logger,
+    private IslandoraUtils $utils,
   ) {}
 
   /**
@@ -50,7 +53,8 @@ final class Integration {
   }
 
   /**
-   * Reserve the destination before emitting a derivative request. */
+   * Reserve the destination before emitting a derivative request.
+   */
   public function reserve(MediaInterface $source, string $uri, int $nodeId, string $bundle, int $termId, int $contextId = 0): array {
     if ($contextId < 0) {
       throw new \InvalidArgumentException('Invalid Scribe processing context ID.');
@@ -71,6 +75,7 @@ final class Integration {
         'operation_id' => bin2hex(random_bytes(16)),
         'source_media_id' => (int) $source->id(),
         'node_id' => $nodeId,
+        'book_node_id' => 0,
         'media_bundle' => $bundle,
         'term_id' => $termId,
         'context_id' => $contextId,
@@ -85,7 +90,7 @@ final class Integration {
         'ingest_complete' => 0,
       ];
       if ($existing) {
-        // Supersede the resource tuple; late events retain the old operation ID.
+        // Supersede the tuple; late events retain the old operation ID.
         $this->database->update('islandora_scribe_mapping')->fields($record)
           ->condition('operation_id', $existing['operation_id'])->execute();
       }
@@ -104,7 +109,8 @@ final class Integration {
   }
 
   /**
-   * Called only by the separately signed Scyllaridae callback. */
+   * Called only by the separately signed Scyllaridae callback.
+   */
   public function correlate(array $data): void {
     $operation = $data['operationId'] ?? '';
     if (!is_string($operation) || !preg_match('/^[a-f0-9]{32}$/D', $operation)) {
@@ -124,7 +130,9 @@ final class Integration {
       if ($mapping['item_id'] && ($mapping['item_id'] !== $data['itemId'] || (int) $mapping['item_image_id'] !== $data['itemImageId'])) {
         throw new \InvalidArgumentException('Operation already associated.');
       }
-      $other = $this->database->select('islandora_scribe_mapping', 'm')->fields('m', ['operation_id'])->condition('workspace_id', $mapping['workspace_id'])->condition('item_image_id', $data['itemImageId'])->condition('operation_id', $operation, '<>')->execute()->fetchField();
+      $other = $this->database->select('islandora_scribe_mapping', 'm')->fields('m', [
+        'operation_id',
+      ])->condition('workspace_id', $mapping['workspace_id'])->condition('item_image_id', $data['itemImageId'])->condition('operation_id', $operation, '<>')->execute()->fetchField();
       if ($other) {
         throw new \InvalidArgumentException('Resource already associated.');
       }
@@ -144,7 +152,8 @@ final class Integration {
   }
 
   /**
-   * Bind the reserved file destination on media creation/update. */
+   * Bind the reserved file destination on media creation/update.
+   */
   public function bind(MediaInterface $media): void {
     $file = $this->mediaSource->getSourceFile($media);
     if (!$file) {
@@ -174,7 +183,8 @@ final class Integration {
   }
 
   /**
-   * Serialize initial delivery with later publication writes. */
+   * Serialize initial delivery with later publication writes.
+   */
   public function initialDerivative(string $operation, $node, $mediaType, $term, $stream, string $uri): void {
     $key = 'islandora_scribe:' . $operation;
     if (!$this->lock->acquire($key, 180)) {
@@ -191,36 +201,7 @@ final class Integration {
       if ($mapping['ingest_complete']) {
         return;
       }
-      $storage = $this->entities->getStorage('media');
-      $ids = $storage->getQuery()->accessCheck(FALSE)
-        ->condition(IslandoraUtils::MEDIA_OF_FIELD, $node->id())
-        ->condition(IslandoraUtils::MEDIA_USAGE_FIELD, $term->id())
-        ->range(0, 2)->execute();
-      if (count($ids) > 1) {
-        throw new \RuntimeException('Multiple hOCR media exist for this node; resolve before ingest.');
-      }
-      if ($ids) {
-        $storage->resetCache(array_values($ids));
-        $media = $storage->load(reset($ids));
-        if ($media->bundle() !== $mediaType->id() || (int) $media->id() === (int) $mapping['source_media_id']) {
-          throw new \RuntimeException('Invalid hOCR derivative target.');
-        }
-        $bytes = stream_get_contents($stream, 33554433);
-        if ($bytes === FALSE || $bytes === '' || strlen($bytes) > 33554432) {
-          throw new \InvalidArgumentException('Invalid hOCR upload size.');
-        }
-        // Stage replacement bytes so failed ingest leaves the current hOCR intact.
-        $file = $this->stage($bytes, $uri . '.ingest-' . $operation . '.hocr');
-        $media->set($this->mediaSource->getSourceFieldName($media->bundle()), ['target_id' => $file->id()]);
-        $media->save();
-      }
-      else {
-        $media = $this->mediaSource->putToNode($node, $mediaType, $term, $stream, 'text/vnd.hocr+html', $uri);
-        if (!$media) {
-          throw new \RuntimeException('hOCR target changed during ingest; retry.');
-        }
-        $file = $this->mediaSource->getSourceFile($media);
-      }
+      [$media, $file] = $this->writeHocrTarget($mapping, $node, $mediaType, $term, $stream, $uri);
       $this->database->update('islandora_scribe_mapping')->fields([
         'derivative_media_id' => (int) $media->id(),
         'derivative_file_id' => (int) $file->id(),
@@ -243,7 +224,10 @@ final class Integration {
   public function accept(array $event): void {
     // The controller verifies signatures first. Only publication events update
     // derivatives; acknowledge unrelated events so Scribe does not retry them.
-    if (($event['type'] ?? '') !== 'dev.scribe.annotations.published') {
+    if (!in_array($event['type'] ?? '', [
+      'dev.scribe.annotations.published',
+      'dev.scribe.transcription.completed',
+    ], TRUE)) {
       return;
     }
     $data = $event['data'] ?? [];
@@ -251,7 +235,13 @@ final class Integration {
       throw new \InvalidArgumentException('Invalid workspace or image.');
     }
     $mapping = $this->database->select('islandora_scribe_mapping', 'm')->fields('m')->condition('workspace_id', $data['workspaceId'])->condition('item_image_id', $data['itemImageId'])->execute()->fetchAssoc();
-    if (!$mapping || !$mapping['derivative_media_id'] || !$mapping['ingest_complete']) {
+    if (!$mapping) {
+      return;
+    }
+    if (($event['type'] ?? '') === 'dev.scribe.transcription.completed' && empty($mapping['book_node_id'])) {
+      return;
+    }
+    if ((!$mapping['derivative_media_id'] && empty($mapping['book_node_id'])) || !$mapping['ingest_complete']) {
       throw new \InvalidArgumentException('Unknown derivative.');
     }
     $revision = SignedEvent::publication($event, $mapping);
@@ -274,7 +264,7 @@ final class Integration {
           'operation_id' => $mapping['operation_id'],
           'revision' => $revision,
         ])->execute();
-        // Explicitly use the database queue: event and queue item commit together.
+        // Use the database queue so event and queue item commit together.
         $queue = $this->queues->get('islandora_scribe_publication', TRUE);
         if (!$queue instanceof DatabaseQueue || !$queue->createItem(['event_id' => $event['id']])) {
           throw new \RuntimeException('Scribe requires the durable database queue.');
@@ -321,19 +311,45 @@ final class Integration {
       }
       if ((int) $event['revision'] > (int) $mapping['last_revision']) {
         $bytes = $this->export($mapping, (int) $event['revision']);
-        $storage = $this->entities->getStorage('media');
-        $storage->resetCache([$mapping['derivative_media_id']]);
-        $media = $storage->load($mapping['derivative_media_id']);
-        $file = $media ? $this->mediaSource->getSourceFile($media) : NULL;
-        if (!$file || (int) $file->id() !== (int) $mapping['derivative_file_id']) {
-          throw new \RuntimeException('Derivative file association changed.');
+        if (!$mapping['derivative_media_id'] && !empty($mapping['book_node_id'])) {
+          $node = $this->entities->getStorage('node')->load($mapping['node_id']);
+          $type = $this->entities->getStorage('media_type')->load($mapping['media_bundle']);
+          $term = $this->entities->getStorage('taxonomy_term')->load($mapping['term_id']);
+          if (!$node || !$type || !$term) {
+            throw new \RuntimeException('Page derivative target unavailable.');
+          }
+          $stream = fopen('php://temp', 'w+');
+          fwrite($stream, $bytes);
+          rewind($stream);
+          try {
+            [$media, $file] = $this->writeHocrTarget($mapping, $node, $type, $term, $stream, $mapping['file_uri']);
+          }
+          finally {
+            fclose($stream);
+          }
+          $mapping['derivative_media_id'] = (int) $media->id();
+          $mapping['derivative_file_id'] = (int) $file->id();
+          $replacement = $file;
+          $this->database->update('islandora_scribe_mapping')->fields([
+            'derivative_media_id' => $mapping['derivative_media_id'],
+            'derivative_file_id' => $mapping['derivative_file_id'],
+          ])->condition('operation_id', $mapping['operation_id'])->execute();
         }
-        // Stage a new managed file; failed storage cannot truncate the live hOCR.
-        $destination = $mapping['file_uri'] . '.' . $mapping['operation_id'] . '.revision-' . $event['revision'] . '.hocr';
-        $replacement = $this->stage($bytes, $destination);
-        $field = $this->mediaSource->getSourceFieldName($media->bundle());
-        $media->set($field, ['target_id' => $replacement->id()]);
-        $media->save();
+        else {
+          $storage = $this->entities->getStorage('media');
+          $storage->resetCache([$mapping['derivative_media_id']]);
+          $media = $storage->load($mapping['derivative_media_id']);
+          $file = $media ? $this->mediaSource->getSourceFile($media) : NULL;
+          if (!$file || (int) $file->id() !== (int) $mapping['derivative_file_id']) {
+            throw new \RuntimeException('Derivative file association changed.');
+          }
+          // Stage a managed file so failed storage preserves the live hOCR.
+          $destination = $mapping['file_uri'] . '.' . $mapping['operation_id'] . '.revision-' . $event['revision'] . '.hocr';
+          $replacement = $this->stage($bytes, $destination);
+          $field = $this->mediaSource->getSourceFieldName($media->bundle());
+          $media->set($field, ['target_id' => $replacement->id()]);
+          $media->save();
+        }
         $this->database->update('islandora_scribe_mapping')->fields([
           'last_revision' => (int) $event['revision'],
           'derivative_file_id' => (int) $replacement->id(),
@@ -343,13 +359,247 @@ final class Integration {
     }
     catch (\Throwable $e) {
       $transaction?->rollBack();
-      $this->logger->warning('Scribe publication failed for operation @operation; queued for retry.', ['@operation' => $event['operation_id']]);
+      $this->logger->warning('Scribe publication failed for operation @operation; queued for retry.', [
+        '@operation' => $event['operation_id'],
+      ]);
       throw new \RuntimeException('Scribe publication requires retry.');
     }
     finally {
       unset($transaction);
       $this->lock->release($key);
     }
+  }
+
+  /**
+   * Finds or creates the page hOCR media and its managed file.
+   */
+  private function writeHocrTarget(array $mapping, $node, $mediaType, $term, $stream, string $uri): array {
+    $storage = $this->entities->getStorage('media');
+    $ids = $storage->getQuery()->accessCheck(FALSE)
+      ->condition(IslandoraUtils::MEDIA_OF_FIELD, $node->id())
+      ->condition(IslandoraUtils::MEDIA_USAGE_FIELD, $term->id())
+      ->range(0, 2)->execute();
+    if (count($ids) > 1) {
+      throw new \RuntimeException('Multiple hOCR media exist for this node; resolve before ingest.');
+    }
+    if ($ids) {
+      $storage->resetCache(array_values($ids));
+      $media = $storage->load(reset($ids));
+      if ($media->bundle() !== $mediaType->id() || (int) $media->id() === (int) $mapping['source_media_id']) {
+        throw new \RuntimeException('Invalid hOCR derivative target.');
+      }
+      $bytes = stream_get_contents($stream, 33554433);
+      if ($bytes === FALSE || $bytes === '' || strlen($bytes) > 33554432) {
+        throw new \InvalidArgumentException('Invalid hOCR upload size.');
+      }
+      // Stage replacement bytes so failed ingest preserves the hOCR.
+      $file = $this->stage($bytes, $uri . '.ingest-' . $mapping['operation_id'] . '.hocr');
+      $media->set($this->mediaSource->getSourceFieldName($media->bundle()), [
+        'target_id' => $file->id(),
+      ]);
+      $media->save();
+    }
+    else {
+      $media = $this->mediaSource->putToNode($node, $mediaType, $term, $stream, 'text/vnd.hocr+html', $uri);
+      if (!$media) {
+        throw new \RuntimeException('hOCR target changed during ingest; retry.');
+      }
+      $file = $this->mediaSource->getSourceFile($media);
+    }
+
+    return [$media, $file];
+  }
+
+  /**
+   * Checks the Islandora model before either book action runs.
+   */
+  public function isPagedContent(NodeInterface $node): bool {
+    $term = $this->utils->getTermForUri('https://schema.org/Book');
+    if (!$term || !$node->hasField(IslandoraUtils::MODEL_FIELD)) {
+      return FALSE;
+    }
+    $ids = array_column($node->get(IslandoraUtils::MODEL_FIELD)->getValue(), 'target_id');
+    return in_array((string) $term->id(), array_map('strval', $ids), TRUE);
+  }
+
+  /**
+   * Reserves correlation metadata before emitting the node event to Alpaca.
+   */
+  public function reserveBook(NodeInterface $book, string $mode, int $contextId): string {
+    if (!$this->isPagedContent($book) || !in_array($mode, ['transcribe', 'pdf'], TRUE) || ($mode === 'transcribe' && $contextId < 1)) {
+      throw new \RuntimeException('Select paged content and a valid Scribe context.');
+    }
+    $settings = $this->settings->get();
+    $operation = bin2hex(random_bytes(16));
+    $this->database->merge('islandora_scribe_book')->keys([
+      'book_node_id' => $book->id(),
+      'workspace_id' => $settings['workspace_id'],
+    ])->fields([
+      'requested_operation_id' => $operation,
+      'requested_context_id' => $contextId,
+      'requested_mode' => $mode,
+    ])->execute();
+    return $operation;
+  }
+
+  /**
+   * Returns metadata or records a separately signed microservice correlation.
+   *
+   * Drupal never submits Scribe work or prepares a PDF in this path.
+   */
+  public function bookCallback(array $data): array {
+    $settings = $this->settings->get();
+    $nodeId = $data['nodeId'] ?? 0;
+    $operation = $data['operationId'] ?? '';
+    if (!is_int($nodeId) || $nodeId < 1 || !is_string($operation) || !preg_match('/^[a-f0-9]{32}$/D', $operation) || ($data['workspaceId'] ?? 0) !== $settings['workspace_id']) {
+      throw new \InvalidArgumentException('Invalid book operation.');
+    }
+    $key = 'islandora_scribe:book:' . $nodeId;
+    if (!$this->lock->acquire($key, 120)) {
+      throw new \RuntimeException('Book correlation busy.');
+    }
+    $transaction = NULL;
+    try {
+      $transaction = $this->database->startTransaction();
+      $state = $this->database->select('islandora_scribe_book', 'b')->fields('b')->condition('book_node_id', $nodeId)->condition('workspace_id', $settings['workspace_id'])->forUpdate()->execute()->fetchAssoc();
+      $book = $this->entities->getStorage('node')->load($nodeId);
+      if (!$book || !$this->isPagedContent($book) || !$state || $state['requested_operation_id'] !== $operation || $state['requested_mode'] !== ($data['mode'] ?? '') || (int) $state['requested_context_id'] !== ($data['contextId'] ?? -1)) {
+        throw new \InvalidArgumentException('Book operation superseded or invalid.');
+      }
+      $manifest = Url::fromUserInput('/node/' . $nodeId . '/book-manifest', ['absolute' => TRUE])->toString();
+      if (($data['phase'] ?? '') === 'correlate') {
+        if ($state['requested_mode'] !== 'transcribe' || !is_string($data['itemId'] ?? NULL) || !$data['itemId'] || strlen($data['itemId']) > 255 || ($data['externalReferenceId'] ?? '') !== $book->uuid() || !preg_match('/^[a-f0-9]{64}$/D', $data['sourceSignature'] ?? '') || !is_array($data['images'] ?? NULL) || !$data['images'] || count($data['images']) > 1000) {
+          throw new \InvalidArgumentException('Invalid book correlation.');
+        }
+        if ($state['operation_id'] === $operation && $state['item_id'] !== $data['itemId']) {
+          throw new \InvalidArgumentException('Book operation already associated.');
+        }
+        if ($state['operation_id'] !== $operation) {
+          $term = $this->termForUri('https://discoverygarden.ca/use#hocr');
+          $seen = [];
+          foreach ($data['images'] as $image) {
+            if (!is_int($image['id'] ?? NULL) || $image['id'] < 1 || !is_string($image['canvasUri'] ?? NULL) || !is_int($image['revision'] ?? NULL) || $image['revision'] < 0) {
+              throw new \InvalidArgumentException('Invalid book page.');
+            }
+            $media = $this->sourceForCanvas($book, $manifest, $image['canvasUri']);
+            $pageId = (int) $media->get(IslandoraUtils::MEDIA_OF_FIELD)->target_id;
+            if (isset($seen[$pageId])) {
+              throw new \InvalidArgumentException('Duplicate book page.');
+            }
+            $seen[$pageId] = TRUE;
+            $reuse = $state['item_id'] === $data['itemId'];
+            if ($reuse && ($state['source_signature'] !== $data['sourceSignature'] || $image['revision'] < 1)) {
+              throw new \InvalidArgumentException('Invalid reused book revision.');
+            }
+            $old = $this->database->select('islandora_scribe_mapping', 'm')->fields('m')->condition('node_id', $pageId)->condition('term_id', $term->id())->execute()->fetchAssoc();
+            $uri = 'private://derivatives/hocr/' . $pageId . '/' . $pageId . '-scribe.hocr';
+            $mapping = $this->reserve($media, $uri, $pageId, 'file', (int) $term->id(), $data['contextId']);
+            $this->database->update('islandora_scribe_mapping')->fields([
+              'operation_id' => substr(hash('sha256', $operation . ':' . $media->id()), 0, 32),
+              'book_node_id' => $nodeId,
+              'external_reference_id' => $book->uuid(),
+              'item_id' => $data['itemId'],
+              'item_image_id' => $image['id'],
+              'ingest_complete' => 1,
+              'reprocess_revision' => $image['revision'],
+              'last_revision' => $reuse && $old ? (int) $old['last_revision'] : 0,
+            ])->condition('operation_id', $mapping['operation_id'])->execute();
+          }
+          $this->database->delete('islandora_scribe_mapping')->condition('book_node_id', $nodeId)->condition('workspace_id', $settings['workspace_id'])->condition('node_id', array_keys($seen), 'NOT IN')->execute();
+          $this->database->update('islandora_scribe_book')->fields([
+            'item_id' => $data['itemId'],
+            'source_signature' => $data['sourceSignature'],
+            'operation_id' => $operation,
+          ])->condition('book_node_id', $nodeId)->condition('workspace_id', $settings['workspace_id'])->execute();
+          $state['item_id'] = $data['itemId'];
+          $state['source_signature'] = $data['sourceSignature'];
+          $state['operation_id'] = $operation;
+        }
+      }
+      elseif (($data['phase'] ?? '') === 'reconcile') {
+        if ($state['operation_id'] !== $operation || !is_array($data['pages'] ?? NULL) || count($data['pages']) > 1000) {
+          throw new \InvalidArgumentException('Invalid book reconciliation.');
+        }
+        foreach ($data['pages'] as $page) {
+          if (!is_int($page['id'] ?? NULL) || !is_int($page['revision'] ?? NULL) || $page['revision'] < 1) {
+            throw new \InvalidArgumentException('Invalid completed book page.');
+          }
+          $this->accept([
+            'specversion' => '1.0',
+            'type' => 'dev.scribe.transcription.completed',
+            'id' => 'book-' . $operation . '-' . $page['id'] . '-' . $page['revision'],
+            'data' => [
+              'workspaceId' => $settings['workspace_id'],
+              'itemId' => $state['item_id'],
+              'itemImageId' => $page['id'],
+              'externalReferenceId' => $book->uuid(),
+              'revision' => $page['revision'],
+            ],
+          ]);
+        }
+      }
+      elseif (($data['phase'] ?? '') !== 'plan') {
+        throw new \InvalidArgumentException('Invalid book callback phase.');
+      }
+      $mappings = $this->database->select('islandora_scribe_mapping', 'm')->fields('m', [
+        'item_image_id',
+        'reprocess_revision',
+      ])->condition('book_node_id', $nodeId)->condition('workspace_id', $settings['workspace_id'])->execute()->fetchAll(\PDO::FETCH_ASSOC);
+      $original = $this->termForUri('http://pcdm.org/use#OriginalFile');
+      return [
+        'name' => $book->label(),
+        'externalReferenceId' => $book->uuid(),
+        'itemId' => $state['item_id'],
+        'sourceSignature' => $state['source_signature'],
+        'operationId' => $state['operation_id'],
+        'reprocess' => array_map(fn($row) => [
+          'id' => (int) $row['item_image_id'],
+          'revision' => (int) $row['reprocess_revision'],
+        ], $mappings),
+        'uploadUrl' => Url::fromUserInput('/node/' . $nodeId . '/media/document/' . $original->id(), [
+          'absolute' => TRUE,
+        ])->toString(),
+        'fileUri' => 'private://derivatives/' . gmdate('Y/m') . '/pc/' . $nodeId . '.pdf',
+      ];
+    }
+    catch (\Throwable $e) {
+      $transaction?->rollBack();
+      throw $e;
+    }
+    finally {
+      unset($transaction);
+      $this->lock->release($key);
+    }
+  }
+
+  /**
+   * Validates a manifest Canvas against service-file and book membership.
+   */
+  public function sourceForCanvas(NodeInterface $book, string $manifest, string $canvas): MediaInterface {
+    $base = preg_replace('~/book-manifest$~D', '', $manifest);
+    if (!preg_match('~^' . preg_quote($base, '~') . '/canvas/([1-9][0-9]*)$~D', $canvas, $matches)) {
+      throw new \InvalidArgumentException('Canvas is outside the book.');
+    }
+    $media = $this->entities->getStorage('media')->load($matches[1]);
+    $page = $media && $media->hasField(IslandoraUtils::MEDIA_OF_FIELD) ? $this->entities->getStorage('node')->load($media->get(IslandoraUtils::MEDIA_OF_FIELD)->target_id) : NULL;
+    $members = $page && $page->hasField(IslandoraUtils::MEMBER_OF_FIELD) ? array_column($page->get(IslandoraUtils::MEMBER_OF_FIELD)->getValue(), 'target_id') : [];
+    $service = $this->termForUri('http://pcdm.org/use#ServiceFile');
+    $uses = $media && $media->hasField(IslandoraUtils::MEDIA_USAGE_FIELD) ? array_column($media->get(IslandoraUtils::MEDIA_USAGE_FIELD)->getValue(), 'target_id') : [];
+    if (!$page || !in_array((string) $book->id(), array_map('strval', $members), TRUE) || !in_array((string) $service->id(), array_map('strval', $uses), TRUE)) {
+      throw new \InvalidArgumentException('Canvas source is not a service file on a page of this book.');
+    }
+    return $media;
+  }
+
+  /**
+   * Resolves a required media-use term through Islandora utilities.
+   */
+  private function termForUri(string $uri) {
+    $term = $this->utils->getTermForUri($uri);
+    if (!$term) {
+      throw new \InvalidArgumentException('Required media-use term unavailable.');
+    }
+    return $term;
   }
 
   /**
