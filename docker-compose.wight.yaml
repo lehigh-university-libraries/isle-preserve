@@ -15,7 +15,7 @@ services:
       ALPACA_DERIVATIVE_COVERPAGE_URL: http://coverpage:8080
   coverpage:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:3a30e40bd1dde5d957636a6792dbdd389757250b5aaf11d11926511b817955d8
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:c8a859998a7cb1065ec73c2eb3871e269106e00a2913d9adb5a33f9c55a60dde
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -32,7 +32,7 @@ services:
       - source: JWT_PUBLIC_KEY
   libreoffice:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:e8f8787d297120f3d369fbf705c74cf9c99176b12e1cb03a72c7ce69cf9cb992
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:bce8dc34745573e3eaf1d6fef6722494a0053e3e589524bb51423c7965a0643a
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:

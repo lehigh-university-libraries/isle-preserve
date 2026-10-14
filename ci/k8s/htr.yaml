@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-htr
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-openai-htr:main@sha256:992c390509d6caeb8488d2596b18c7fb2d4d6fc5f350e1d4989ceda11bee313d
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-openai-htr:main@sha256:0f2cf2865ea15a288af9bf7e8698800c92f3fab2849838803e013f3cdd9840ee
           imagePullPolicy: IfNotPresent
           env:
             - name: OPENAI_API_KEY
