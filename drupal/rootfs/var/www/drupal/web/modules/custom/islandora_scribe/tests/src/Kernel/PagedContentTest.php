@@ -354,6 +354,13 @@ final class PagedContentTest extends KernelTestBase {
     self::assertCount(1, $rows);
     self::assertSame('new-book-item', $rows[0]->item_id);
     self::assertSame(8, (int) $rows[0]->item_image_id);
+    // Restoring the original source must start a fresh import operation.
+    $operation['operation_id'] = str_repeat('e', 32);
+    $this->http->append($this->bookManifest(), $this->bookItem());
+    $this->integration->importBook($operation);
+    $first = json_decode((string) $this->requests[1]['request']->getBody(), TRUE);
+    $restored = json_decode((string) $this->requests[5]['request']->getBody(), TRUE);
+    self::assertNotSame($first['idempotencyKey'], $restored['idempotencyKey']);
   }
 
   /**

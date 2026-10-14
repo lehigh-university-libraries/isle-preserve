@@ -552,7 +552,7 @@ final class Integration {
         'name' => $book->label(),
         'contextId' => (string) $operation['context_id'],
         'externalReferenceId' => $book->uuid(),
-        'idempotencyKey' => 'book-' . hash('sha256', $book->uuid() . ':' . $signature . ':' . $operation['context_id']),
+        'idempotencyKey' => 'book-' . hash('sha256', $book->uuid() . ':' . $signature . ':' . $operation['context_id'] . ':' . $operation['operation_id']),
         'ignoreExistingOcr' => TRUE,
       ]);
       $item = $result['item'] ?? [];
