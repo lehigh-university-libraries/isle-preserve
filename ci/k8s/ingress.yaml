@@ -96,6 +96,13 @@ spec:
                 name: islandora-openai-htr
                 port:
                   number: 8080
+          - path: /scribe-book
+            pathType: Prefix
+            backend:
+              service:
+                name: islandora-scribe-book
+                port:
+                  number: 8080
           - path: /scribe
             pathType: Prefix
             backend:
