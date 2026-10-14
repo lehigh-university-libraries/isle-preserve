@@ -23,7 +23,6 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Middleware;
-use GuzzleHttp\Psr7\Response;
 use Psr\Log\NullLogger;
 
 /**
@@ -200,204 +199,105 @@ final class PagedContentTest extends KernelTestBase {
   }
 
   /**
-   * Queues a completed revision vector for the PDF export fixture.
+   * Builds a signed book callback payload after the action reserves its ID.
    */
-  private function preparePdf(): void {
-    $this->http->append(new Response(200, [], json_encode([
-      'item' => ['images' => [['id' => '7']]],
-      'annotationRevisions' => [
-    [
-      'itemImageId' => '7',
-      'revision' => '3',
-    ],
+  private function bookRequest(string $mode = 'transcribe', int $context = 123): array {
+    return [
+      'nodeId' => 100,
+      'workspaceId' => 42,
+      'contextId' => $context,
+      'operationId' => $this->integration->reserveBook($this->book, $mode, $context),
+      'phase' => 'plan',
+      'mode' => $mode,
+    ];
+  }
+
+  /**
+   * Builds the page mapping returned by the Scribe microservice.
+   */
+  private function correlation(array $request, string $item = 'book-item', int $revision = 0): array {
+    return array_replace($request, [
+      'phase' => 'correlate',
+      'itemId' => $item,
+      'externalReferenceId' => 'book-uuid',
+      'sourceSignature' => str_repeat('f', 64),
+      'images' => [
+        ['id' => 7, 'revision' => $revision, 'canvasUri' => 'http://localhost/node/100/canvas/300'],
       ],
-    ])));
-  }
-
-  /**
-   * Tests explicit pdf uses complete revision vector and original file slot.
-   */
-  public function testExplicitPdfUsesCompleteRevisionVectorAndOriginalFileSlot(): void {
-    $this->preparePdf();
-    $this->http->append(new Response(200, [], json_encode([
-      'downloadUrl' => '/v1/item-exports/token',
-    ])));
-    $this->http->append(new Response(200, ['Content-Type' => 'application/pdf'], '%PDF-fixture'));
-    $this->integration->attachPdf($this->book);
-    self::assertSame(1, $this->attachments);
-    self::assertSame('private://derivatives/' . gmdate('Y/m') . '/pc/100.pdf', $this->destination);
-    $body = json_decode((string) $this->requests[1]['request']->getBody(), TRUE);
-    self::assertSame([['itemImageId' => '7', 'revision' => '3']], $body['expectedRevisions']);
-    self::assertSame('test-key', $this->requests[2]['request']->getHeaderLine('X-Scribe-API-Key'));
-  }
-
-  /**
-   * Tests revision conflict leaves existing pdf in place.
-   */
-  public function testRevisionConflictLeavesExistingPdfInPlace(): void {
-    $this->preparePdf();
-    $this->http->append(new Response(409));
-    try {
-      $this->integration->attachPdf($this->book);
-      self::fail('Conflict accepted');
-    }
-    catch (\RuntimeException $e) {
-      self::assertStringContainsString('retry', $e->getMessage());
-    }
-    self::assertSame(0, $this->attachments);
-  }
-
-  /**
-   * Builds the anonymous public manifest fixture.
-   */
-  private function bookManifest(): Response {
-    return new Response(200, [], json_encode([
-      'items' => [
-    [
-      'id' => 'http://localhost/node/100/canvas/300',
-      'width' => 1000,
-      'height' => 2000,
-      'items' => [],
-    ],
-      ],
-    ]));
-  }
-
-  /**
-   * Builds the imported item and revision fixture.
-   */
-  private function bookItem(int $revision = 1): Response {
-    return new Response(200, [], json_encode([
-      'item' => [
-        'id' => 'book-item',
-        'externalReferenceId' => 'book-uuid',
-        'images' => [
-    [
-      'id' => '7',
-      'canvasUri' => 'http://localhost/node/100/canvas/300',
-    ],
-        ],
-      ],
-      'annotationRevisions' => [
-      [
-        'itemImageId' => '7',
-        'revision' => (string) $revision,
-      ],
-      ],
-    ]));
-  }
-
-  /**
-   * Tests book import maps canvas and replays the operation.
-   */
-  public function testBookImportMapsCanvasAndReplaysTheOperation(): void {
-    $operation = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)];
-    $this->http->append($this->bookManifest(), $this->bookItem());
-    $this->integration->importBook($operation);
-    $this->http->append($this->bookManifest(), $this->bookItem());
-    $this->integration->importBook($operation);
-    self::assertSame('', $this->requests[0]['request']->getHeaderLine('X-Scribe-API-Key'));
-    $body = json_decode((string) $this->requests[1]['request']->getBody(), TRUE);
-    self::assertTrue($body['ignoreExistingOcr']);
-    self::assertSame('book-uuid', $body['externalReferenceId']);
-    self::assertStringStartsWith('book-', $body['idempotencyKey']);
-    self::assertSame('123', $body['contextId']);
-    self::assertStringEndsWith('/GetItem', $this->requests[3]['request']->getUri()->getPath());
-    $mapping = $this->integration->mapping(substr(hash('sha256', str_repeat('c', 32) . ':300'), 0, 32));
-    self::assertSame(100, (int) $mapping['book_node_id']);
-    self::assertSame(200, (int) $mapping['node_id']);
-    self::assertSame(7, (int) $mapping['item_image_id']);
-    self::assertSame(1, (int) $mapping['ingest_complete']);
-    // The obsolete mapping seeded by setUp has been retired.
-    self::assertFalse($this->integration->mapping(str_repeat('a', 32)));
-  }
-
-  /**
-   * Tests rerun reuses item and retries with the same base revision.
-   */
-  public function testRerunReusesItemAndRetriesWithTheSameBaseRevision(): void {
-    $operation = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)];
-    $this->http->append($this->bookManifest(), $this->bookItem());
-    $this->integration->importBook($operation);
-    $operation['operation_id'] = str_repeat('d', 32);
-    $this->http->append($this->bookManifest(), $this->bookItem(3), new Response(200, [], '{}'));
-    $this->integration->importBook($operation);
-    $this->http->append($this->bookManifest(), $this->bookItem(4), new Response(200, [], '{}'));
-    $this->integration->importBook($operation);
-    foreach ([4, 7] as $index) {
-      $body = json_decode((string) $this->requests[$index]['request']->getBody(), TRUE);
-      self::assertSame('3', $body['expectedRevision']);
-      self::assertSame('7', $body['itemImageId']);
-    }
-    $state = $this->container->get('database')->select('islandora_scribe_book', 'b')->fields('b')->execute()->fetchAll();
-    self::assertCount(1, $state);
-    self::assertSame('book-item', $state[0]->item_id);
-  }
-
-  /**
-   * Tests changed painting replaces the active item.
-   */
-  public function testChangedPaintingReplacesTheActiveItem(): void {
-    $operation = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)];
-    $this->http->append($this->bookManifest(), $this->bookItem());
-    $this->integration->importBook($operation);
-    $manifest = json_decode((string) $this->bookManifest()->getBody(), TRUE);
-    $manifest['items'][0]['width'] = 2000;
-    $item = json_decode((string) $this->bookItem()->getBody(), TRUE);
-    $item['item']['id'] = 'new-book-item';
-    $item['item']['images'][0]['id'] = '8';
-    $operation['operation_id'] = str_repeat('d', 32);
-    $this->http->append(new Response(200, [], json_encode($manifest)), new Response(200, [], json_encode($item)));
-    $this->integration->importBook($operation);
-    self::assertStringEndsWith('/ImportManifest', $this->requests[3]['request']->getUri()->getPath());
-    $rows = $this->container->get('database')->select('islandora_scribe_mapping', 'm')->fields('m')->condition('book_node_id', 100)->execute()->fetchAll();
-    self::assertCount(1, $rows);
-    self::assertSame('new-book-item', $rows[0]->item_id);
-    self::assertSame(8, (int) $rows[0]->item_image_id);
-    // Restoring the original source must start a fresh import operation.
-    $operation['operation_id'] = str_repeat('e', 32);
-    $this->http->append($this->bookManifest(), $this->bookItem());
-    $this->integration->importBook($operation);
-    $first = json_decode((string) $this->requests[1]['request']->getBody(), TRUE);
-    $restored = json_decode((string) $this->requests[5]['request']->getBody(), TRUE);
-    self::assertNotSame($first['idempotencyKey'], $restored['idempotencyKey']);
-  }
-
-  /**
-   * Tests permanent book request is not requeued.
-   */
-  public function testPermanentBookRequestIsNotRequeued(): void {
-    $this->http->append(new Response(400));
-    $this->integration->processBookOperation([
-      'node_id' => 100,
-      'context_id' => 123,
-      'operation_id' => str_repeat('c', 32),
     ]);
+  }
+
+  /**
+   * Tests that Drupal returns metadata without calling Scribe.
+   */
+  public function testNodeEventReservesOnlyCorrelationMetadata(): void {
+    $request = $this->bookRequest();
+    $plan = $this->integration->bookCallback($request);
+    self::assertSame('book-uuid', $plan['externalReferenceId']);
+    self::assertSame('', $plan['itemId']);
+    self::assertSame([], $this->requests);
     self::assertSame(0, $this->container->get('queue')->get('islandora_scribe_book', TRUE)->numberOfItems());
   }
 
   /**
-   * Tests transient book retries stop after three attempts.
+   * Tests that a replay keeps its fixed revision and retires obsolete mappings.
    */
-  public function testTransientBookRetriesStopAfterThreeAttempts(): void {
-    $data = ['node_id' => 100, 'context_id' => 123, 'operation_id' => str_repeat('c', 32)];
-    $this->http->append(new Response(503));
-    $this->integration->processBookOperation($data);
-    $queue = $this->container->get('queue')->get('islandora_scribe_book', TRUE);
-    self::assertSame(1, $queue->numberOfItems());
-    $data['attempt'] = 2;
-    $this->http->append(new Response(503));
-    $this->integration->processBookOperation($data);
-    self::assertSame(1, $queue->numberOfItems());
+  public function testMicroserviceCorrelationIsIdempotentAcrossReruns(): void {
+    $request = $this->bookRequest();
+    $body = $this->correlation($request);
+    $this->integration->bookCallback($body);
+    $this->integration->bookCallback($body);
+    self::assertFalse($this->integration->mapping(str_repeat('a', 32)));
+    $next = $this->bookRequest('transcribe', 124);
+    $body = $this->correlation($next, 'book-item', 3);
+    $this->integration->bookCallback($body);
+    $body['images'][0]['revision'] = 4;
+    $plan = $this->integration->bookCallback($body);
+    self::assertSame([['id' => 7, 'revision' => 3]], $plan['reprocess']);
+    self::assertSame([], $this->requests);
+    $this->expectException(\InvalidArgumentException::class);
+    $this->integration->bookCallback($request);
   }
 
   /**
-   * Tests pdf action only queues work.
+   * Tests Canvas ownership before committing any page mapping.
    */
-  public function testPdfActionOnlyQueuesWork(): void {
-    $this->integration->enqueuePdf($this->book);
-    self::assertSame(1, $this->container->get('queue')->get('islandora_scribe_book', TRUE)->numberOfItems());
+  public function testMicroserviceCannotMapForeignCanvas(): void {
+    $body = $this->correlation($this->bookRequest());
+    $body['images'][0]['canvasUri'] = 'http://localhost/node/999/canvas/300';
+    try {
+      $this->integration->bookCallback($body);
+      self::fail('Foreign Canvas accepted.');
+    }
+    catch (\InvalidArgumentException $e) {
+      self::assertSame('', $this->integration->bookCallback(array_replace($body, ['phase' => 'plan']))['itemId']);
+    }
     self::assertSame([], $this->requests);
+  }
+
+  /**
+   * Tests that the PDF action only supplies the microservice upload destination.
+   */
+  public function testPdfNodeRequestReturnsTheOriginalFileDestination(): void {
+    $this->integration->bookCallback($this->correlation($this->bookRequest()));
+    $plan = $this->integration->bookCallback($this->bookRequest('pdf', 0));
+    self::assertSame('book-item', $plan['itemId']);
+    self::assertSame('http://localhost/node/100/media/document/5', $plan['uploadUrl']);
+    self::assertSame('private://derivatives/' . gmdate('Y/m') . '/pc/100.pdf', $plan['fileUri']);
+    self::assertSame([], $this->requests);
+  }
+
+  /**
+   * Tests that completed pages use the existing durable publication queue.
+   */
+  public function testCompletedBeforeCorrelationCanBeReconciled(): void {
+    $request = $this->bookRequest();
+    $this->integration->bookCallback($this->correlation($request));
+    $this->integration->bookCallback(array_replace($request, [
+      'phase' => 'reconcile',
+      'pages' => [['id' => 7, 'revision' => 3]],
+    ]));
+    self::assertSame(1, $this->container->get('queue')->get('islandora_scribe_publication', TRUE)->numberOfItems());
   }
 
 }

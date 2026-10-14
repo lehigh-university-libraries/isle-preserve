@@ -37,6 +37,12 @@ action.configuration.transcribe_scribe_paged_content:
   type: mapping
   label: Scribe paged-content transcription
   mapping:
+    queue:
+      type: string
+      label: Queue
+    event:
+      type: string
+      label: Event
     context_id:
       type: integer
       label: Scribe processing context ID
@@ -44,4 +50,13 @@ action.configuration.transcribe_scribe_paged_content:
 action.configuration.attach_scribe_pdf:
   type: mapping
   label: Attach searchable PDF from Scribe
-  mapping: {}
+  mapping:
+    queue:
+      type: string
+      label: Queue
+    event:
+      type: string
+      label: Event
+    context_id:
+      type: integer
+      label: Scribe processing context ID

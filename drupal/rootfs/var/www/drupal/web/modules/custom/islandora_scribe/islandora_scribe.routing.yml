@@ -33,3 +33,13 @@ islandora_scribe.derivative:
         type: entity:media_type
       taxonomy_term:
         type: entity:taxonomy_term
+
+islandora_scribe.book:
+  path: '/islandora-scribe/book'
+  defaults:
+    _controller: '\Drupal\islandora_scribe\Controller\WebhookController::book'
+  requirements:
+    _access: 'TRUE'
+  methods: [POST]
+  options:
+    no_cache: TRUE

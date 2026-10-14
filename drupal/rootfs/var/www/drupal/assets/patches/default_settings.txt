@@ -68,7 +68,7 @@ if (getenv('SCRIBE_API_URL')) {
   $settings['islandora_scribe'] = [
     'base_url' => getenv('SCRIBE_API_URL'),
     'workspace_id' => (int) getenv('SCRIBE_WORKSPACE_ID'),
-    'api_key' => is_readable('/run/secrets/SCRIBE_API_KEY') ? trim(file_get_contents('/run/secrets/SCRIBE_API_KEY')) : '',
+    'api_key' => is_readable('/run/secrets/SCRIBE_READ_API_KEY') ? trim(file_get_contents('/run/secrets/SCRIBE_READ_API_KEY')) : '',
     'webhook_secret' => is_readable('/run/secrets/SCRIBE_WEBHOOK_SECRET') ? file_get_contents('/run/secrets/SCRIBE_WEBHOOK_SECRET') : '',
     'correlation_secret' => is_readable('/run/secrets/SCRIBE_CORRELATION_SECRET') ? file_get_contents('/run/secrets/SCRIBE_CORRELATION_SECRET') : '',
   ];

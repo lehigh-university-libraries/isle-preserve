@@ -63,8 +63,12 @@ function islandora_scribe_schema() {
           'type' => 'varchar',
           'length' => 64,
           'not null' => TRUE,
+          'default' => '',
         ],
         'operation_id' => $text,
+        'requested_operation_id' => $text,
+        'requested_context_id' => $id,
+        'requested_mode' => $text,
       ],
       'primary key' => ['book_node_id', 'workspace_id'],
     ],
@@ -94,7 +98,7 @@ function islandora_scribe_requirements($phase) {
   }
   try {
     \Drupal::service('islandora_scribe.settings')->get();
-    $description = t('Runtime settings are valid. Verify items:create, items:read and annotations:read API-key scopes, Scyllaridae correlation delivery, workspace membership, HTTPS webhook registration and queue processing using the module README.');
+    $description = t('Runtime settings are valid. Verify the Drupal annotations:read key and Scyllaridae write-key scopes, Scyllaridae correlation delivery, workspace membership, HTTPS webhook registration and queue processing using the module README.');
     $severity = REQUIREMENT_INFO;
   }
   catch (\Throwable $e) {
@@ -221,4 +225,19 @@ function islandora_scribe_update_10005(): void {
       'default' => 0,
     ]);
   }
+}
+
+/**
+ * Move book submission to the Scyllaridae node-event workflow.
+ */
+function islandora_scribe_update_10006(): void {
+  _islandora_scribe_ensure_schema();
+  $schema = \Drupal::database()->schema();
+  foreach (['requested_operation_id', 'requested_context_id', 'requested_mode'] as $field) {
+    if (!$schema->fieldExists('islandora_scribe_book', $field)) {
+      $schema->addField('islandora_scribe_book', $field, islandora_scribe_schema()['islandora_scribe_book']['fields'][$field]);
+    }
+  }
+  $schema->changeField('islandora_scribe_book', 'source_signature', 'source_signature', islandora_scribe_schema()['islandora_scribe_book']['fields']['source_signature']);
+  \Drupal::queue('islandora_scribe_book')->deleteQueue();
 }

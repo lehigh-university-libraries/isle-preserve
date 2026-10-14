@@ -2,15 +2,8 @@
 
 namespace Drupal\islandora_scribe\Plugin\Action;
 
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Action\ActionBase;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\islandora_scribe\Integration;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-
 /**
- * Explicitly replaces a book PDF with its current Scribe export.
+ * Requests the Scribe PDF microservice through the node-event broker.
  *
  * @Action(
  *   id = "attach_scribe_pdf",
@@ -18,38 +11,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   type = "node"
  * )
  */
-final class AttachScribePdf extends ActionBase implements ContainerFactoryPluginInterface {
+final class AttachScribePdf extends BookAction {
 
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, private Integration $integration) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static($configuration, $plugin_id, $plugin_definition, $container->get('islandora_scribe.integration'));
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function execute($entity = NULL) {
-    try {
-      $this->integration->enqueuePdf($entity);
-      $this->messenger()->addStatus($this->t('PDF export queued.'));
-    }
-    catch (\Throwable $e) {
-      $this->messenger()->addError($this->t('Select paged content and check the Scribe configuration before trying again.'));
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
-    $access = $object->access('update', $account, TRUE)->andIf(AccessResult::allowedIf($this->integration->isPagedContent($object)))->addCacheableDependency($object);
-    return $return_as_object ? $access : $access->isAllowed();
-  }
+  protected const MODE = 'pdf';
 
 }

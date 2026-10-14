@@ -10,8 +10,8 @@ final class SignedEvent {
   /**
    * Verifies the signature and decodes the event body.
    */
-  public static function decode(string $body, string $timestamp, string $signature, string $secret, int $now): array {
-    if (strlen($body) > self::MAX_BODY) {
+  public static function decode(string $body, string $timestamp, string $signature, string $secret, int $now, int $maxBody = self::MAX_BODY): array {
+    if (strlen($body) > $maxBody) {
       throw new \InvalidArgumentException('Delivery body exceeds limit.');
     }
     if (!preg_match('/^[0-9]{1,12}$/D', $timestamp)) {

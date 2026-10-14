@@ -2,13 +2,7 @@
 
 namespace Drupal\islandora_scribe\Plugin\Action;
 
-use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Action\ConfigurableActionBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\islandora_scribe\Integration;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Enqueues public paged-content transcription.
@@ -19,25 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   type = "node"
  * )
  */
-final class TranscribePagedContent extends ConfigurableActionBase implements ContainerFactoryPluginInterface {
-
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, private Integration $integration) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static($configuration, $plugin_id, $plugin_definition, $container->get('islandora_scribe.integration'));
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function defaultConfiguration() {
-    return ['context_id' => 0];
-  }
+final class TranscribePagedContent extends BookAction {
 
   /**
    * {@inheritdoc}
@@ -72,27 +48,6 @@ final class TranscribePagedContent extends ConfigurableActionBase implements Con
    */
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     $this->configuration['context_id'] = (int) $form_state->getValue('context_id');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function execute($entity = NULL) {
-    try {
-      $this->integration->enqueueBook($entity, (int) $this->configuration['context_id']);
-      $this->messenger()->addStatus($this->t('Book transcription queued.'));
-    }
-    catch (\Throwable $e) {
-      $this->messenger()->addError($this->t('Select paged content and check the Scribe configuration before trying again.'));
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
-    $access = $object->access('update', $account, TRUE)->andIf(AccessResult::allowedIf($this->integration->isPagedContent($object)))->addCacheableDependency($object);
-    return $return_as_object ? $access : $access->isAllowed();
   }
 
 }
