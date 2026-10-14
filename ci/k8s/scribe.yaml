@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-scribe
-          image: lehighlts/scyllaridae-scribe:latest@sha256:a20d1771f215607f28035616e0b3fd7b18c29d9a6373904080ba6ab572eb4ff2
+          image: lehighlts/scyllaridae-scribe:latest@sha256:5f3ee111c8f97ab8c89adf31a161686dd8bf4ddcce52b762f74b46db1bcf7f29
           imagePullPolicy: IfNotPresent
           env:
             - name: SCRIBE_API_URL

@@ -69,7 +69,7 @@ services:
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:b6fbff29c32eed547976f370d4daed1ef9c620f36b1bff1d40756d2de5ebbfb8
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:d6b2425f6dae12bb65bc2fefa778f1a68e6bc1d57cd31c25b9f0ef27cd254c48
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -102,7 +102,7 @@ services:
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:d8fde5cb6a91b47ab220c093576beb01bc2ceb58c5f98365cd7ce58d2babf379
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:bf79aa57c5f0a4490a2f57a968490fb78daa286112a33cd1654b50b00a2cd7a3
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   scribe:
@@ -119,7 +119,7 @@ services:
       - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:e8f8787d297120f3d369fbf705c74cf9c99176b12e1cb03a72c7ce69cf9cb992
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:bce8dc34745573e3eaf1d6fef6722494a0053e3e589524bb51423c7965a0643a
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -128,7 +128,7 @@ services:
       - source: JWT_PUBLIC_KEY
   coverpage:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:3a30e40bd1dde5d957636a6792dbdd389757250b5aaf11d11926511b817955d8
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:c8a859998a7cb1065ec73c2eb3871e269106e00a2913d9adb5a33f9c55a60dde
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
