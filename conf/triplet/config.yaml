@@ -30,6 +30,7 @@ iiif:
       - https://wight.cc.lehigh.edu
       - https://islandora-stage.lib.lehigh.edu
       - https://preserve.lehigh.edu
+      - https://scribe-915966395449.us-east5.run.app
     max_output_pixels: 1000000000
     allow_unsafe_unlimited_output_pixels: false
     max_source_pixels: 5000000000
