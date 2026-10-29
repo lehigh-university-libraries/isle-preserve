@@ -110,7 +110,12 @@ final class ScribeDerivative extends HocrDerivative {
     if (!preg_match('/^[a-f0-9-]{36}$/D', $source->uuid())) {
       throw new \RuntimeException('Invalid source UUID.');
     }
-    $data['args'] = $mapping['operation_id'] . ' ' . $source->uuid() . ' ' . $mapping['context_id'] . ' ' . (int) $entity->id();
+    // Base64 keeps spaces, quotes, and shell syntax in titles out of arguments.
+    $metadata = base64_encode(json_encode([
+      'external_identifier' => (string) $entity->id(),
+      'title' => (string) $entity->label(),
+    ], JSON_THROW_ON_ERROR));
+    $data['args'] = $mapping['operation_id'] . ' ' . $source->uuid() . ' ' . $mapping['context_id'] . ' ' . (int) $entity->id() . ' ' . $metadata;
     return $data;
   }
 
