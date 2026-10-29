@@ -110,7 +110,7 @@ final class ScribeDerivative extends HocrDerivative {
     if (!preg_match('/^[a-f0-9-]{36}$/D', $source->uuid())) {
       throw new \RuntimeException('Invalid source UUID.');
     }
-    $data['args'] = $mapping['operation_id'] . ' ' . $source->uuid() . ' ' . $mapping['context_id'];
+    $data['args'] = $mapping['operation_id'] . ' ' . $source->uuid() . ' ' . $mapping['context_id'] . ' ' . (int) $entity->id();
     return $data;
   }
 
