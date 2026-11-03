@@ -763,10 +763,6 @@ function lehigh_preprocess_mirador(&$variables) {
   // add a download option
   $viewer['miradorDownloadPlugin']['restrictDownloadOnSizeDefinition'] = TRUE;
 
-  // always make the text not selectable
-  // to avoid bug described in https://lehigh.atlassian.net/browse/IS-208
-  $viewer['windows'][0]['textOverlay']['selectable'] = FALSE;
-
   // see if we should hide the hOCR for this mirador view
   $hide_hocr = lehigh_islandora_hide_hocr($node);
   if ($hide_hocr) {

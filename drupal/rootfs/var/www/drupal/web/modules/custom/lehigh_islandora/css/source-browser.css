@@ -112,3 +112,40 @@
   .source-browser__loading { transition: none; }
   .source-browser__spinner, .source-browser--updated { animation: none; }
 }
+
+.source-browser[data-source-browser] {
+  --bs-link-color: #502d0e;
+  --bs-link-color-rgb: 80, 45, 14;
+  --bs-link-hover-color: #12354c;
+  --bs-link-hover-color-rgb: 18, 53, 76;
+  --bs-focus-ring-color: rgba(18, 53, 76, .35);
+}
+.source-browser[data-source-browser] input[type="search"],
+.source-browser[data-source-browser] input[type="search"]:hover,
+.source-browser[data-source-browser] input[type="search"]:focus {
+  background: #fff;
+  color: #1f1a17;
+  border: 1px solid #502d0e;
+}
+.source-browser[data-source-browser] .form-select:focus,
+.source-browser[data-source-browser] .form-control:focus { border-color: #12354c; box-shadow: 0 0 0 .25rem rgba(18, 53, 76, .35); }
+.source-browser[data-source-browser] .btn-primary {
+  --bs-btn-bg: #502d0e; --bs-btn-border-color: #502d0e; --bs-btn-color: #fff;
+  --bs-btn-hover-bg: #3d2209; --bs-btn-hover-border-color: #3d2209; --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: #12354c; --bs-btn-active-border-color: #12354c; --bs-btn-focus-shadow-rgb: 18, 53, 76;
+}
+
+.source-browser[data-source-browser] .source-browser__reading { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 1.5rem; align-items: start; }
+.source-browser[data-source-browser] .source-browser__reading > div { max-height: 75vh; overflow: auto; }
+.source-browser[data-source-browser] .form-select { min-height: 50px; border: 1px solid #502d0e; }
+.source-browser[data-source-browser] .source-browser__toolbar button { min-height: 50px; }
+.source-browser[data-source-browser] a { text-decoration: underline; }
+.source-browser[data-source-browser] .source-browser__tabs a[aria-current="page"] { border-bottom: 3px solid #502d0e; }
+.source-browser[data-source-browser] .btn-primary,
+.source-browser[data-source-browser] .btn-primary:hover,
+.source-browser[data-source-browser] .btn-primary:focus,
+.source-browser[data-source-browser] .btn-primary:active { color: #fff; background-color: #502d0e; border-color: #502d0e; text-decoration: none; }
+@media (max-width: 767px) {
+  .source-browser[data-source-browser] .source-browser__reading { grid-template-columns: 1fr; }
+  .source-browser[data-source-browser] .source-browser__reading > div { max-height: none; }
+}

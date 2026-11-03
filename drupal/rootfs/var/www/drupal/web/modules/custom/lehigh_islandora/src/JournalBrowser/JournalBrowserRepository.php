@@ -483,7 +483,7 @@ final class JournalBrowserRepository {
       $index[$tid]['hits'][] = [
         'nid' => (int) $page->id(),
         'issue' => (int) $issue->id(),
-        'title' => 'Vol. ' . $row->volume . ', pp. ' . $range,
+        'title' => 'Vol. ' . $row->volume . ', ' . ($row->start_page == $row->end_page ? 'p. ' : 'pp. ') . $range,
         'url' => $page->toUrl()->toString(),
       ];
     }
@@ -780,6 +780,13 @@ final class JournalBrowserRepository {
    */
   public function getDownloads(NodeInterface $node): array {
     return $this->downloadResolver->resolve($node);
+  }
+
+  /**
+   * Resolves downloads for a set of pages or entries together.
+   */
+  public function getDownloadsForNodes(array $nodes): array {
+    return $this->downloadResolver->resolveMany($nodes);
   }
 
   /**

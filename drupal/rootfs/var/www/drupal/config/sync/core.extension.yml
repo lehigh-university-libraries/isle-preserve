@@ -79,7 +79,6 @@ module:
   islandora_csl: 0
   islandora_fits: 0
   islandora_hocr: 0
-  islandora_scribe: 0
   islandora_iiif: 0
   islandora_iiif_hocr: 0
   islandora_image: 0
@@ -87,6 +86,7 @@ module:
   islandora_microservice_rewrite: 0
   islandora_mirador: 0
   islandora_rights_statements: 0
+  islandora_scribe: 0
   islandora_text_extraction: 0
   islandora_text_extraction_defaults: 0
   islandora_video: 0

@@ -1,3 +1,4 @@
+uuid: aa492133-9ae1-4c96-a905-07912d8d901a
 langcode: en
 status: true
 dependencies:
@@ -7,4 +8,4 @@ id: attach_scribe_pdf
 label: 'Attach searchable PDF from Scribe'
 type: node
 plugin: attach_scribe_pdf
-configuration: {}
+configuration: {  }

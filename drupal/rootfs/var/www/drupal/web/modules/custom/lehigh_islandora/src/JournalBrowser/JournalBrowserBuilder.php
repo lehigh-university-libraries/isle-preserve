@@ -107,16 +107,19 @@ final class JournalBrowserBuilder {
         $tab = $available_tabs[0] ?? 'pages';
         $state['tab'] = $tab;
       }
-      $canvases = $tab === 'pages' ? $this->targets->getCanvases($issue) : [];
+      $canvases = in_array($tab, ['pages', 'transcription'], TRUE) ? $this->targets->getCanvases($issue) : [];
+      $download_nodes = in_array($tab, ['pages', 'entries'], TRUE)
+        ? array_merge([$issue], array_values($items['pages']), array_values($items['entries'])) : [$issue];
+      $downloads = $this->repository->getDownloadsForNodes($download_nodes);
       $pages = [];
       foreach ($items['pages'] as $id => $page) {
-        $pages[$id] = $this->item($source, $page, $state, $canvases[$id] ?? []);
+        $pages[$id] = $this->item($source, $page, $state, $canvases[$id] ?? [], $downloads[$id] ?? []);
         $pages[$id]['active'] = (int) $id === $page_id;
       }
       $entries = [];
       foreach ($items['entries'] as $entry) {
         $entry_page = $this->entryPage($entry, $items['pages']);
-        $entries[] = $this->item($source, $entry, array_replace($state, ['page' => $entry_page]), $canvases[$entry_page] ?? []);
+        $entries[] = $this->item($source, $entry, array_replace($state, ['page' => $entry_page]), $canvases[$entry_page] ?? [], $downloads[(int) $entry->id()] ?? []);
       }
       $selected = $summaries[$issue_id] + [
         'description' => $this->repository->getDescription($issue),
@@ -125,7 +128,7 @@ final class JournalBrowserBuilder {
         'url' => $issue->toUrl()->toString(),
       ];
       $selected['url'] = $issue->toUrl()->toString();
-      $selected['downloads'] = $this->repository->getDownloads($issue);
+      $selected['downloads'] = $downloads[$issue_id] ?? [];
       $selected['pages'] = array_values($pages);
       $selected['entries'] = $entries;
       $selected['selected_page'] = $pages[$page_id] ?? NULL;
@@ -134,7 +137,8 @@ final class JournalBrowserBuilder {
       $selected['previous_issue'] = $this->neighbor($summaries, $issue_id, -1);
       $selected['next_issue'] = $this->neighbor($summaries, $issue_id, 1);
       $selected['manifest_url'] = Url::fromUserInput('/node/' . $issue_id . '/book-manifest', ['absolute' => TRUE])->toString();
-      $selected['can_view'] = $this->repository->canReadFiles($issue) && (bool) $canvases;
+      $selected['can_view'] = $this->repository->canReadFiles($issue) && (bool) $canvases
+        && (!$page_node || isset($canvases[$page_id]));
       $selected['transcriptions'] = $tab === 'transcription' ? $this->repository->getTranscriptions(
         array_merge([$issue], isset($items['pages'][$page_id]) ? [$items['pages'][$page_id]] : [])
       ) : [];
@@ -271,6 +275,17 @@ final class JournalBrowserBuilder {
             continue;
           }
           $issue = $this->targets->getIssue($node, $issues);
+          if ($issue) {
+            $volume = $this->repository->getPartDetail($issue, 'volume')['number'];
+            $page = $this->repository->getPartDetail($node, 'page')['number'];
+            $parts = array_filter([
+              $volume !== '' ? 'Vol. ' . $volume : '',
+              $page !== '' ? 'p. ' . $page : '',
+            ]);
+            if ($parts) {
+              $hit['title'] = implode(', ', $parts) . ' — ' . $node->label();
+            }
+          }
           $hit['browser_url'] = $issue ? $this->browserUrl($source, [
             'issue' => (int) $issue->id(),
             'page' => $this->repository->getModel($node) === 'Page' ? (int) $node->id() : 0,
@@ -301,7 +316,7 @@ final class JournalBrowserBuilder {
   /**
    * Normalizes a page/entry and keeps page state in every link.
    */
-  protected function item(NodeInterface $source, NodeInterface $node, array $state, array $canvas): array {
+  protected function item(NodeInterface $source, NodeInterface $node, array $state, array $canvas, array $downloads): array {
     $id = (int) $node->id();
     $is_page = $this->repository->getModel($node) === 'Page';
     $state['page'] = $is_page ? $id : $state['page'];
@@ -318,7 +333,7 @@ final class JournalBrowserBuilder {
       'browser_url' => $this->browserUrl($source, array_replace($state, ['tab' => 'pages'])),
       'navigation_url' => $this->browserUrl($source, $state),
       'transcription_url' => $this->browserUrl($source, array_replace($state, ['tab' => 'transcription'])),
-      'downloads' => in_array($state['tab'], ['pages', 'entries'], TRUE) ? $this->repository->getDownloads($node) : [],
+      'downloads' => in_array($state['tab'], ['pages', 'entries'], TRUE) ? $downloads : [],
     ] + $canvas;
   }
 
@@ -340,15 +355,15 @@ final class JournalBrowserBuilder {
       foreach ($field as $item) {
         if (isset($item->target_id) && $item->entity) {
           if ($this->access->canView($item->entity)) {
-            $values[] = $item->entity->label();
+            $values[] = ['label' => $item->entity->label(), 'url' => $item->entity->toUrl()->toString()];
           }
         }
         elseif (isset($item->value)) {
-          $values[] = trim(strip_tags((string) $item->value));
+          $values[] = ['label' => trim(strip_tags((string) $item->value))];
         }
       }
       if ($values) {
-        $rows[] = ['label' => $field->getFieldDefinition()->getLabel(), 'value' => implode('; ', $values)];
+        $rows[] = ['label' => $field->getFieldDefinition()->getLabel(), 'values' => $values];
       }
     }
     return $rows;

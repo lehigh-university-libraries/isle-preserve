@@ -58,7 +58,7 @@ final class SourceBrowserTest extends ExistingSiteBase {
   }
 
   /**
-   * Enabling and removing metadata switches the collection view.
+   * The display hint enables direct browser access without changing collection views.
    */
   public function testCollectionDisplayHint(): void {
     $model = $this->browserTerm([
@@ -99,6 +99,8 @@ final class SourceBrowserTest extends ExistingSiteBase {
 
     $this->drupalGet('/browse-items/' . $source->id());
     $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->elementNotExists('css', '[data-source-browser]');
+    $this->drupalGet('/browse-source', ['query' => ['source' => $source->id()]]);
     $this->assertSession()->elementExists('css', '[data-source-browser]');
     $this->assertSession()->pageTextContains('1850-06-12');
     $this->drupalGet('/browse-source', ['query' => ['source' => $source->id(), 'tab' => 'index']]);
@@ -421,11 +423,25 @@ final class SourceBrowserTest extends ExistingSiteBase {
           'field_media_document' => $file->id(),
         ]);
       }
-      $downloads = \Drupal::service('lehigh_islandora.download_resolver')->resolve($volume);
+      $this->createMedia([
+        'bundle' => 'document',
+        'name' => 'Page PDF',
+        'status' => 1,
+        'field_media_of' => $page->id(),
+        'field_media_use' => $use->id(),
+        'field_media_document' => $file->id(),
+      ]);
+      $resolver = \Drupal::service('lehigh_islandora.download_resolver');
+      $batch = $resolver->resolveMany([$volume, $page]);
+      $this->assertCount(2, $batch[$volume->id()]);
+      $this->assertCount(1, $batch[$page->id()]);
+      $this->assertSame('Download generated page PDF', $batch[$page->id()][0]['label']);
+      $downloads = $resolver->resolve($volume);
       $this->assertSame('Download original PDF', $downloads[0]['label']);
       $this->assertSame('Download generated page PDF', $downloads[1]['label']);
       $volume->set('field_edtf_date_embargo', '2999-12-31')->save();
-      $this->assertSame([], \Drupal::service('lehigh_islandora.download_resolver')->resolve($volume));
+      $this->assertSame([], $resolver->resolveMany([$volume, $page]));
+      $this->assertSame([], $resolver->resolve($volume));
       $this->assertSame([], \Drupal::service('lehigh_islandora.journal_browser.repository')->getTranscriptions([$page]));
       $this->drupalGet('/browse-source', [
         'query' => [

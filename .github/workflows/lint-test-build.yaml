@@ -87,6 +87,11 @@ jobs:
         env:
           DOMAIN: wight.cc.lehigh.edu
 
+      - name: Test source browser in Chromium
+        run: ./scripts/ci/source-browser.sh
+        env:
+          DOMAIN: wight.cc.lehigh.edu
+
       - if: ${{ always() }}
         run: ./scripts/ci/cleanup.sh
 

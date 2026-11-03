@@ -1117,6 +1117,16 @@ function lehigh_islandora_on_campus() {
  * Implements hook_preprocess_mirador().
  */
 function lehigh_islandora_preprocess_mirador(array &$variables): void {
+  if (isset($variables['window_config']['textOverlay'])) {
+    $selector = '#' . $variables['mirador_view_id'];
+    $viewer = &$variables['#attached']['drupalSettings']['mirador']['viewers'][$selector];
+    $viewer['windows'][0]['allowClose'] = FALSE;
+    $viewer['windows'][0]['allowFullscreen'] = TRUE;
+    $viewer['workspaceControlPanel']['enabled'] = FALSE;
+    $viewer['workspace']['showZoomControls'] = TRUE;
+    $viewer['themes']['light']['palette']['primary']['main'] = '#502d0e';
+    $viewer['themes']['light']['palette']['secondary']['main'] = '#12354c';
+  }
   // Mirador's canvas selection belongs to the individual window configuration.
   if (!empty($variables['window_config']['canvasId'])) {
     $selector = '#' . $variables['mirador_view_id'];

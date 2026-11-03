@@ -8,11 +8,12 @@
   }
   async function navigate(browser, url, push = true) {
     if (pending) pending.abort();
-    pending = new AbortController();
+    const controller = new AbortController();
+    pending = controller;
     setLoading(browser, true);
     browser.querySelector('[data-source-browser-status]').textContent = Drupal.t('Loading…');
     try {
-      const response = await fetch(url, { signal: pending.signal });
+      const response = await fetch(url, { signal: controller.signal });
       if (!response.ok) throw new Error('Unable to load browser');
       const documentNext = new DOMParser().parseFromString(await response.text(), 'text/html');
       const next = documentNext.querySelector('[data-source-browser]');
@@ -35,18 +36,37 @@
       Object.assign(window.drupalSettings, settings);
       next.classList.add('source-browser--updated');
       browser.replaceWith(next);
+      // Mirador can autofocus after mounting. Protect the restored heading until
+      // the reader interacts, then allow normal focus behavior immediately.
+      const heading = next.querySelector('[data-source-browser-focus]') || next.querySelector('h2');
+      if (heading) heading.tabIndex = -1;
+      let restoreFocus = Boolean(heading);
+      const stopRestoring = () => { restoreFocus = false; };
+      next.addEventListener('pointerdown', stopRestoring, { once: true });
+      next.addEventListener('keydown', stopRestoring, { once: true });
+      next.addEventListener('focusin', (event) => {
+        if (restoreFocus && event.target.closest('.source-browser__viewer')) {
+          heading.focus({ preventScroll: true });
+          heading.scrollIntoView({ block: 'start' });
+        }
+      });
+      setTimeout(stopRestoring, 2000);
       Drupal.attachBehaviors(next, settings);
       if (push) window.history.pushState({}, '', url);
       next.querySelector('[data-source-browser-status]').textContent = Drupal.t('Browser updated.');
-      const heading = next.querySelector('[data-source-browser-focus]') || next.querySelector('h2');
       if (heading) {
         heading.tabIndex = -1;
-        heading.focus();
+        requestAnimationFrame(() => {
+          heading.focus({ preventScroll: true });
+          heading.scrollIntoView({ block: 'start' });
+        });
       }
     } catch (error) {
       if (error.name === 'AbortError') return;
       setLoading(browser, false);
       browser.querySelector('[data-source-browser-status]').textContent = Drupal.t('Unable to update the browser. Please retry or reload the page.');
+    } finally {
+      if (pending === controller) pending = null;
     }
   }
   Drupal.behaviors.lehighSourceBrowser = {
@@ -73,6 +93,57 @@
         });
         const pageSelect = browser.querySelector('[data-source-browser-page]');
         if (pageSelect) pageSelect.addEventListener('change', () => navigate(browser, pageSelect.selectedOptions[0].dataset.url));
+        // Keep browser links and URL aligned with Mirador's current canvas.
+        if (pageSelect) {
+          let attempts = 0;
+          const timer = setInterval(() => {
+            if (!browser.isConnected || ++attempts > 100) { clearInterval(timer); return; }
+            const instances = Drupal.IslandoraMirador && Drupal.IslandoraMirador.instances;
+            const entry = Object.entries(instances || {}).find(([selector]) => browser.querySelector(selector));
+            if (!entry) return;
+            clearInterval(timer);
+            const store = entry[1].store;
+            const initialWindows = Object.values(store.getState().windows || {});
+            let lastCanvas = initialWindows[0] && initialWindows[0].canvasId;
+            const unsubscribe = store.subscribe(() => {
+              if (!browser.isConnected) { unsubscribe(); return; }
+              const windows = Object.values(store.getState().windows || {});
+              const canvas = windows[0] && windows[0].canvasId;
+              if (!canvas || canvas === lastCanvas) return;
+              // The first canvas is initialization, not a reader navigation.
+              const initialCanvas = !lastCanvas;
+              lastCanvas = canvas;
+              if (initialCanvas || pending) return;
+              const option = [...pageSelect.options].find((item) => item.dataset.canvas && item.dataset.canvas === canvas);
+              if (!option || option.value === pageSelect.value) return;
+              if (new URL(window.location.href).searchParams.get('tab') === 'transcription') {
+                navigate(browser, option.dataset.url);
+                return;
+              }
+              pageSelect.value = option.value;
+              const url = new URL(window.location.href);
+              url.searchParams.set('page', option.value);
+              window.history.replaceState({}, '', url);
+              const toolbarPage = browser.querySelector('.source-browser__toolbar input[name="page"]');
+              if (toolbarPage) toolbarPage.value = option.value;
+              browser.querySelectorAll('.source-browser__tabs [data-source-browser-link]').forEach((link) => {
+                const target = new URL(link.href, window.location.href);
+                target.searchParams.set('page', option.value);
+                link.href = target.href;
+              });
+              [['[data-page-previous]', -1], ['[data-page-next]', 1]].forEach(([selector, direction]) => {
+                const link = browser.querySelector(selector);
+                const neighbor = pageSelect.options[pageSelect.selectedIndex + direction];
+                link.hidden = !neighbor;
+                link.href = neighbor ? neighbor.dataset.url : '#';
+              });
+              browser.querySelectorAll('[data-page-id]').forEach((row) => {
+                if (row.dataset.pageId === option.value) row.setAttribute('aria-current', 'page');
+                else row.removeAttribute('aria-current');
+              });
+            });
+          }, 50);
+        }
         const pageForm = browser.querySelector('[data-source-browser-page-form]');
         if (pageForm) pageForm.addEventListener('submit', (event) => {
           event.preventDefault();
