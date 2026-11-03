@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Drupal\lehigh_islandora\EventSubscriber;
 
-use Drupal\Core\Routing\RouteObjectInterface;
-use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -19,13 +17,6 @@ use Symfony\Component\HttpKernel\KernelEvents;
 final class RedirectCollections implements EventSubscriberInterface {
 
   /**
-   * Constructs the subscriber.
-   */
-  public function __construct(
-    protected RouteProviderInterface $routeProvider,
-  ) {}
-
-  /**
    * Redirect collections to their View.
    *
    * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
@@ -33,30 +24,6 @@ final class RedirectCollections implements EventSubscriberInterface {
    */
   public function rc(RequestEvent $event) : void {
     $request = $event->getRequest();
-    $route_name = $request->attributes->get(RouteObjectInterface::ROUTE_NAME);
-
-    if ($route_name === 'view.browse.main') {
-      $node = $request->attributes->get('node');
-      if (is_numeric($node)) {
-        $node_id = (int) $node;
-        $node = $node_id > 0 ? Node::load($node_id) : NULL;
-      }
-
-      if ($node instanceof Node
-        && lehigh_site_support_identify_collection($node, TRUE)
-        && lehigh_site_support_has_display_hint($node, 'Journal Browser')) {
-        $target_route_name = 'lehigh_islandora.source_browser';
-        $route = $this->routeProvider->getRouteByName($target_route_name);
-        $request->attributes->set(RouteObjectInterface::ROUTE_NAME, $target_route_name);
-        $request->attributes->set(RouteObjectInterface::ROUTE_OBJECT, $route);
-        foreach ($route->getDefaults() as $key => $value) {
-          $request->attributes->set($key, $value);
-        }
-        $request->attributes->set('node', $node);
-      }
-      return;
-    }
-
     // See if we're dealing with a canonical node request.
     $path = $request->getPathInfo();
     $regex = '/^\/node\/\d+$/';

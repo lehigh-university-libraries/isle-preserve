@@ -20,7 +20,7 @@ class DerivativeTestBase extends ExistingSiteBase {
   use NodeCreationTrait;
 
   /**
-   * Deletes derivative fixtures before their source nodes and handles deadlocks.
+   * Deletes derivative fixtures before source nodes and handles deadlocks.
    */
   public function tearDownDrupal() {
     \Drupal::service('cache_tags.invalidator')->resetChecksums();

@@ -19,7 +19,7 @@ lehigh_islandora.paged_content:
     _permission: "access content"
 
 lehigh_islandora.source_browser_landing:
-  path: "/browse-source"
+  path: "/pfaffs"
   defaults:
     _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::landing'
     _title_callback: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::landingTitle'
@@ -50,6 +50,21 @@ lehigh_islandora.source_browser_json:
     _permission: "access content"
     _role: "authenticated"
     _entity_access: "node.view"
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+lehigh_islandora.source_browser_transcription:
+  path: "/api/v1/source-browser/{node}/transcription/{issue_id}/{page_id}"
+  defaults:
+    _controller: '\Drupal\lehigh_islandora\Controller\SourceBrowserController::transcription'
+  requirements:
+    _permission: "access content"
+    _role: "authenticated"
+    _entity_access: "node.view"
+    issue_id: '\d+'
+    page_id: '\d+'
   options:
     parameters:
       node:

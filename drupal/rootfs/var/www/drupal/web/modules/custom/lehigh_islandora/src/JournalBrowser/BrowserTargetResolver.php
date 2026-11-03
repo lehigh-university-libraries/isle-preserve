@@ -47,6 +47,12 @@ final class BrowserTargetResolver {
       if (!$media instanceof MediaInterface || !$this->access->canView($media)) {
         continue;
       }
+      // The manifest View may also return ServiceFile documents, but its
+      // configured tile fields only produce canvases for file/image media.
+      if ((!$media->hasField('field_media_image') || $media->get('field_media_image')->isEmpty())
+        && (!$media->hasField('field_media_file') || $media->get('field_media_file')->isEmpty())) {
+        continue;
+      }
       $parents = $media->get('field_media_of')->referencedEntities();
       foreach ($parents as $page) {
         if (!$page instanceof NodeInterface || !$this->access->canReadFiles($page)) {

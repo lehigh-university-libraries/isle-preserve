@@ -51,7 +51,7 @@ final class SourceBrowserController extends ControllerBase {
    * Supplies the landing route title.
    */
   public function landingTitle(): string {
-    return (string) $this->t('Source Browser');
+    return (string) $this->t('Pfaffs');
   }
 
   /**
@@ -98,7 +98,7 @@ final class SourceBrowserController extends ControllerBase {
         '#theme' => 'mirador',
         '#mirador_view_id' => 'mirador_' . $selected['nid'],
         '#iiif_manifest_url' => $selected['manifest_url'],
-        '#thumbnail_navigation_position' => 'far-right',
+        '#thumbnail_navigation_position' => $browser['tab'] === 'transcription' ? 'far-bottom' : 'far-right',
         '#window_config' => [
           'canvasId' => $selected['selected_page']['canvas'] ?? '',
           'sideBarOpen' => FALSE,
@@ -133,6 +133,28 @@ final class SourceBrowserController extends ControllerBase {
     $cacheability = $browser['#cacheability'];
     unset($browser['#cacheability']);
     return (new CacheableJsonResponse($browser))->addCacheableDependency($cacheability);
+  }
+
+  /**
+   * Returns only the transcription and page details for an existing viewer.
+   */
+  public function transcription(NodeInterface $node, int $issue_id, int $page_id): CacheableJsonResponse {
+    $this->browserAccess->reset();
+    $this->assertSource($node);
+    $storage = $this->entityTypeManager()->getStorage('node');
+    $issue = $storage->load($issue_id);
+    $page = $storage->load($page_id);
+    if (!$issue instanceof NodeInterface || !$page instanceof NodeInterface
+      || !$this->repository->isDescendantOf($issue, $node)
+      || !$this->repository->isDescendantOf($page, $issue)
+      || $this->repository->getModel($page) !== 'Page'
+      || !$this->repository->canReadFiles($issue) || !$this->repository->canReadFiles($page)) {
+      throw new NotFoundHttpException();
+    }
+    $data = [
+      'transcriptions' => $this->repository->getTranscriptions([$page]),
+    ];
+    return (new CacheableJsonResponse($data))->addCacheableDependency($this->browserAccess->getCacheability());
   }
 
   /**

@@ -2,5 +2,6 @@ FROM ghcr.io/lehigh-university-libraries/drupal:main@sha256:f3681ad3d9b748862ea0
 
 COPY --link rootfs /
 
-RUN composer install -d /var/www/drupal && \
+RUN apk add --no-cache poppler-utils=25.12.0-r1 && \
+    composer install -d /var/www/drupal && \
     chown -R nginx:nginx /var/www/drupal

@@ -293,46 +293,10 @@ final class SourceBrowserImporter {
       return $report;
     }
     $this->assertValid($errors);
-    $destination = 'private://source-browser/transcriptions';
-    if (!$this->fileSystem->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
-      throw new \RuntimeException('Unable to prepare private transcription storage.');
-    }
-    $storage = $this->entityTypeManager->getStorage('media');
-    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-    $uses = $term_storage->loadByProperties([
-      'vid' => 'islandora_media_use',
-      'field_external_uri' => 'http://pcdm.org/use#ExtractedText',
-    ]);
-    $use = reset($uses);
-    if (!$use) {
-      $use = $term_storage->create([
-        'vid' => 'islandora_media_use',
-        'name' => 'Extracted Text',
-        'field_external_uri' => ['uri' => 'http://pcdm.org/use#ExtractedText'],
-      ]);
-      $use->save();
-    }
     foreach ($valid as [$node, $pid, $text]) {
-      $uri = $destination . '/' . hash('sha256', $pid) . '.txt';
-      $name = 'Gunn transcription: ' . $pid;
-      $existing = $storage->loadByProperties([
-        'bundle' => 'extracted_text',
-        'field_media_of' => $node->id(),
-        'name' => $name,
-      ]);
-      $media = reset($existing);
-      if ($media && is_file($uri) && file_get_contents($uri) === $text) {
-        continue;
+      if ($this->replaceTranscript($node, $text)) {
+        ++$report['written'];
       }
-      $file = $this->fileRepository->writeData($text, $uri, FileExists::Replace);
-      $file->setPermanent();
-      $file->save();
-      $media = $media ?: $storage->create(['bundle' => 'extracted_text', 'name' => $name, 'status' => 1]);
-      $media->set('field_media_of', $node->id());
-      $media->set('field_media_use', $use->id());
-      $media->set('field_media_file', $file->id());
-      $media->save();
-      ++$report['written'];
     }
     return $report;
   }
@@ -389,30 +353,7 @@ final class SourceBrowserImporter {
           ++$report['cached'];
         }
         else {
-          $response = $this->httpClient->request('GET', $url, [
-            'allow_redirects' => FALSE,
-            'timeout' => 30,
-            'connect_timeout' => 10,
-            'stream' => TRUE,
-          ]);
-          if ($response->getStatusCode() !== 200) {
-            throw new \RuntimeException('Transcript server did not return HTTP 200.');
-          }
-          $body = $response->getBody();
-          try {
-            $text = '';
-            while (!$body->eof() && strlen($text) <= 10000000) {
-              $chunk = $body->read(8192);
-              if ($chunk === '') {
-                throw new \RuntimeException('Incomplete transcript response.');
-              }
-              $text .= $chunk;
-            }
-          }
-          finally {
-            $body->close();
-          }
-          $this->validateTranscript($text);
+          $text = $this->downloadTranscript($url);
           $temporary = $cache_uri . '.part';
           $this->fileSystem->saveData($text, $temporary, FileExists::Replace);
           $this->fileSystem->move($temporary, $cache_uri, FileExists::Replace);
@@ -437,6 +378,50 @@ final class SourceBrowserImporter {
   }
 
   /**
+   * Downloads and validates a transcript with up to five retries.
+   */
+  protected function downloadTranscript(string $url): string {
+    for ($attempt = 0; $attempt <= 5; ++$attempt) {
+      try {
+        $response = $this->httpClient->request('GET', $url, [
+          'allow_redirects' => FALSE,
+          'timeout' => 30,
+          'connect_timeout' => 10,
+          'stream' => TRUE,
+        ]);
+        if ($response->getStatusCode() !== 200) {
+          throw new \RuntimeException('Transcript server did not return HTTP 200.');
+        }
+        $body = $response->getBody();
+        try {
+          $text = '';
+          while (!$body->eof() && strlen($text) <= 10000000) {
+            $chunk = $body->read(8192);
+            if ($chunk === '') {
+              if ($body->eof()) {
+                break;
+              }
+              throw new \RuntimeException('Incomplete transcript response.');
+            }
+            $text .= $chunk;
+          }
+        }
+        finally {
+          $body->close();
+        }
+        $this->validateTranscript($text);
+        return $text;
+      }
+      catch (\Exception $error) {
+        if ($attempt >= 5) {
+          throw $error;
+        }
+        usleep(250000 * (2 ** $attempt));
+      }
+    }
+  }
+
+  /**
    * Rejects failed web responses before caching or replacing existing media.
    */
   protected function validateTranscript(mixed $text): void {
@@ -457,65 +442,44 @@ final class SourceBrowserImporter {
   }
 
   /**
-   * Replaces extracted-text media after the new transcript saves.
+   * Creates or updates the importer-owned transcription document.
    */
   protected function replaceTranscript(NodeInterface $node, string $text): bool {
-    $action = $this->entityTypeManager->getStorage('action')->load('get_ocr_from_image');
-    $configuration = $action ? $action->get('configuration') : [];
-    $path = str_replace('[node:nid]', (string) $node->id(), $configuration['path'] ?? '');
-    if (($configuration['scheme'] ?? '') !== 'private' || !$path || str_contains($path, '[')
-      || str_contains($path, '..') || str_contains($path, ':') || str_contains($path, '\\') || str_starts_with($path, '/')) {
-      throw new \RuntimeException('OCR action requires a private path using only [node:nid] tokens.');
+    $term = $this->entityTypeManager->getStorage('taxonomy_term')->load(20);
+    if (!$term || $term->bundle() !== 'islandora_media_use') {
+      throw new \RuntimeException('Transcription media-use term 20 is missing.');
     }
-    $uri = 'private://' . $path;
-    $directory = dirname($uri);
+    $directory = 'private://source-browser/transcriptions';
     $this->prepareDirectory($directory);
+    $uri = $directory . '/' . hash('sha256', (string) $node->get('field_pid')->value) . '.txt';
     $storage = $this->entityTypeManager->getStorage('media');
+    $name = 'Gunn transcription: ' . $node->get('field_pid')->value;
     $existing = $storage->loadByProperties([
-      'bundle' => 'extracted_text',
+      'bundle' => 'document',
       'field_media_of' => $node->id(),
+      'field_media_use' => 20,
+      'name' => $name,
     ]);
-    if (count($existing) === 1) {
-      $current = reset($existing);
-      $file = $current->get('field_media_file')->entity;
-      if ($current->isPublished() && $file && $file->getFileUri() === $uri
-        && is_file($uri) && file_get_contents($uri) === $text) {
-        return FALSE;
-      }
+    if (count($existing) > 1) {
+      throw new \RuntimeException('Multiple imported Gunn transcriptions exist for node ' . $node->id());
     }
-    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
-    $uses = $term_storage->loadByProperties([
-      'vid' => 'islandora_media_use',
-      'field_external_uri' => 'http://pcdm.org/use#ExtractedText',
-    ]);
-    $use = reset($uses);
-    if (!$use) {
-      $use = $term_storage->create([
-        'vid' => 'islandora_media_use',
-        'name' => 'Extracted Text',
-        'field_external_uri' => ['uri' => 'http://pcdm.org/use#ExtractedText'],
-      ]);
-      $use->save();
+    $media = $existing ? reset($existing) : NULL;
+    $current_file = $media ? $media->get('field_media_document')->entity : NULL;
+    if ($media && $media->isPublished() && $current_file && $current_file->getFileUri() === $uri
+      && is_file($uri) && file_get_contents($uri) === $text) {
+      return FALSE;
     }
-    // Stage a separate file so media deletion cannot remove the new text.
-    $temporary = $directory . '/gunn-import-' . $node->id() . '-' . bin2hex(random_bytes(8)) . '.txt';
-    $file = $this->fileRepository->writeData($text, $temporary, FileExists::Error);
+    $file = $this->fileRepository->writeData($text, $uri, FileExists::Replace);
     $file->setPermanent();
     $file->save();
-    $media = $storage->create([
-      'bundle' => 'extracted_text',
-      'status' => 1,
-      'name' => 'Gunn transcription: ' . $node->get('field_pid')->value,
+    $media = $media ?: $storage->create([
+      'bundle' => 'document',
+      'name' => $name,
       'field_media_of' => $node->id(),
-      'field_media_use' => $use->id(),
-      'field_media_file' => $file->id(),
+      'field_media_use' => 20,
     ]);
-    $media->save();
-    foreach ($existing as $old) {
-      $old->delete();
-    }
-    $file = $this->fileRepository->move($file, $uri, FileExists::Replace);
-    $media->set('field_media_file', $file->id());
+    $media->set('status', 1);
+    $media->set('field_media_document', $file->id());
     $media->save();
     return TRUE;
   }

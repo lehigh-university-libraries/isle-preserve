@@ -3,7 +3,7 @@
 {% macro metadata(item) %}
   {% if item.date %}<p><strong>Date:</strong> {{ item.date }}</p>{% endif %}
   {% if item.description %}<p>{{ item.description }}</p>{% endif %}
-  {% if item.metadata %}<dl class="source-browser__metadata">{% for row in item.metadata %}<dt>{{ row.label }}</dt><dd>{{ row.value }}</dd>{% endfor %}</dl>{% endif %}
+  {% if item.metadata %}<dl class="source-browser__metadata">{% for row in item.metadata %}<dt>{{ row.label }}</dt><dd>{% for value in row.values %}{% if value.url is defined %}<a href="{{ value.url }}">{{ value.label }}</a>{% else %}{{ value.label }}{% endif %}{{ not loop.last ? "; " }}{% endfor %}</dd>{% endfor %}</dl>{% endif %}
 {% endmacro %}
 <div class="source-browser" data-source-browser data-source-id="{{ browser.source.nid }}">
   <div class="source-browser__loading" aria-hidden="true"><div class="source-browser__loading-panel"><span class="source-browser__spinner"></span><span>Loading collection and viewer…</span></div></div>
@@ -26,7 +26,7 @@
     </div>
     <div>
       <label for="source-browser-scope">Search within</label>
-      <select id="source-browser-scope" name="scope" class="form-select"><option value="source"{{ browser.scope == 'source' ? ' selected' }}>This source</option><option value="issue"{{ browser.scope == 'issue' ? ' selected' }}>This issue / volume</option></select>
+      <select id="source-browser-scope" name="scope" class="form-select"><option value="source"{{ browser.scope == 'source' ? ' selected' }}>{{ browser.source.title }}</option>{% if selected %}<option value="issue"{{ browser.scope == 'issue' ? ' selected' }}>{{ selected.label }}</option>{% endif %}</select>
     </div>
     <input type="hidden" name="tab" value="{{ browser.tab }}">
     {% if page %}<input type="hidden" name="page" value="{{ page.nid }}">{% endif %}
@@ -54,7 +54,7 @@
     <section class="source-browser__content" aria-label="Selected source content">
       {% if browser.query %}
         <section class="source-browser__results" aria-label="Search results">
-          <h2>Results for “{{ browser.query }}”</h2>
+          <h2 data-source-browser-focus>Results for “{{ browser.query }}”</h2>
           {% for result in browser.search_results %}
             <article class="source-browser__row"><a href="{{ result.browser_url }}" data-source-browser-link>{{ result.title }}</a><p>{{ result.snippet|striptags }}</p><a href="{{ result.url }}">View in Islandora</a></article>
           {% else %}<p>No matching items found.</p>{% endfor %}
@@ -81,10 +81,10 @@
         {% if selected.pages %}
           <form class="source-browser__page-controls" action="{{ browser.source.browse_url }}" method="get" data-source-browser-page-form>
             <input type="hidden" name="source" value="{{ browser.source.nid }}"><input type="hidden" name="issue" value="{{ selected.nid }}"><input type="hidden" name="tab" value="{{ browser.tab }}"><input type="hidden" name="q" value="{{ browser.query }}"><input type="hidden" name="scope" value="{{ browser.scope }}">
-            {% if selected.previous_page %}<a href="{{ selected.previous_page.navigation_url }}" data-source-browser-link aria-label="Previous page">← Previous page</a>{% endif %}
-            <div><label for="source-browser-page">Page</label><select id="source-browser-page" name="page" class="form-select" data-source-browser-page>{% for item in selected.pages %}<option value="{{ item.nid }}" data-url="{{ item.navigation_url }}"{{ item.active ? ' selected' }}>{{ item.page_label ? 'Page ' ~ item.page_label ~ ' — ' : '' }}{{ item.title }}</option>{% endfor %}</select></div>
+            <a href="{{ selected.previous_page.navigation_url|default('#') }}" data-source-browser-link data-page-previous aria-label="Previous page"{{ not selected.previous_page ? ' hidden' }}>← Previous page</a>
+            <div><label for="source-browser-page">Page</label><select id="source-browser-page" name="page" class="form-select" data-source-browser-page>{% for item in selected.pages %}<option value="{{ item.nid }}" data-url="{{ item.navigation_url }}" data-canvas="{{ item.canvas|default('') }}"{{ item.active ? ' selected' }}>{{ item.page_label ? 'Page ' ~ item.page_label ~ ' — ' : '' }}{{ item.title }}</option>{% endfor %}</select></div>
             <noscript><button type="submit" class="btn btn-outline-primary">Go to page</button></noscript>
-            {% if selected.next_page %}<a href="{{ selected.next_page.navigation_url }}" data-source-browser-link aria-label="Next page">Next page →</a>{% endif %}
+            <a href="{{ selected.next_page.navigation_url|default('#') }}" data-source-browser-link data-page-next aria-label="Next page"{{ not selected.next_page ? ' hidden' }}>Next page →</a>
           </form>
         {% endif %}
         {% if browser.tab == 'index' %}
@@ -92,15 +92,19 @@
             <nav class="source-browser__letters" aria-label="Index letters">{% for letter, url in browser.index_letters %}<a href="{{ url }}" data-source-browser-link{{ browser.letter == letter ? ' aria-current="page"' }}>{{ letter }}</a>{% endfor %}</nav>
             {% for letter, terms in browser.index %}
               {% if terms %}<h3>{{ letter }}</h3>{% endif %}
-              {% for term in terms %}<article class="source-browser__index-term"><h4><a href="{{ term.hits_url }}" data-source-browser-link>{{ term.title }}</a></h4><p><a href="{{ term.url }}">Browse this subject across collections</a></p>{% if term.expanded %}<ul>{% for hit in term.hits %}<li><a href="{{ hit.browser_url }}" data-source-browser-link>{{ hit.title }}</a></li>{% else %}<li>No accessible references are available.</li>{% endfor %}</ul>{% endif %}</article>{% endfor %}
+              {% for term in terms %}<article class="source-browser__index-term"><h4><a href="{{ term.hits_url }}" data-source-browser-link>{{ term.title }}</a></h4>{% if term.expanded %}
+                {% for group in term.groups %}<p><strong>{{ group.title }}:</strong> {% for hit in group.hits %}<a href="{{ hit.browser_url }}" data-source-browser-link>{{ hit.page_label|default(hit.title) }}</a>{{ not loop.last ? ', ' }}{% endfor %}</p>{% else %}<p>No accessible references are available.</p>{% endfor %}
+              {% endif %}</article>{% endfor %}
             {% else %}<p>No subject index metadata is available for this source yet.</p>{% endfor %}
           </section>
         {% elseif browser.tab == 'transcription' %}
-          {% for transcript in selected.transcriptions %}
-            <article><h3>{{ transcript.node_title }}</h3><div class="source-browser__transcription">{{ transcript.text }}</div>{% if transcript.truncated %}<p>This preview is shortened. <a href="{{ transcript.file_url }}">Download the full transcription</a>.</p>{% endif %}<p><a href="{{ transcript.url }}">View transcription media</a></p></article>
-          {% else %}<p>No transcription is available for this page or document.</p>{% endfor %}
-          {% if page %}<h3>Page-level description</h3>{{ _self.metadata(page) }}{% endif %}
-          <h3>Volume / document description</h3>{{ _self.metadata(selected) }}
+          <div class="source-browser__reading"><section class="source-browser__viewer" aria-label="Page viewer">{% if selected_issue_viewer %}{{ selected_issue_viewer }}{% else %}<p>No viewer is available for this item.</p>{% endif %}</section>
+          <div data-source-browser-transcripts>{% for transcript in selected.transcriptions %}
+            <article>{% if transcript.is_pdf and transcript.file_url %}
+              <iframe class="source-browser__transcription-pdf" src="{{ transcript.file_url }}#view=FitH" title="{{ 'PDF transcription: @title'|t({'@title': transcript.node_title}) }}"></iframe>
+              <p><a href="{{ transcript.file_url }}">Open or download the PDF transcription</a></p>
+            {% else %}<div class="source-browser__transcription">{{ transcript.text }}</div>{% endif %}{% if transcript.truncated %}<p>This preview is shortened. <a href="{{ transcript.file_url }}">Download the full transcription</a>.</p>{% endif %}</article>
+          {% else %}<p>No transcription is available for this page or document.</p>{% endfor %}</div></div>
         {% elseif browser.tab == 'about' %}
           {% if page %}<h3>Page-level description</h3>{{ _self.metadata(page) }}{% endif %}
           <h3>Volume / document description</h3>{{ _self.metadata(selected) }}
@@ -109,7 +113,7 @@
         {% else %}
           <section class="source-browser__viewer" aria-label="Page viewer">{% if selected_issue_viewer %}{{ selected_issue_viewer }}{% else %}<p>No viewer is available for this item. Use the Islandora links below for available images and files.</p>{% endif %}</section>
           {% for item in selected.pages %}
-            <article class="source-browser__row source-browser__page-row"{{ item.active ? ' aria-current="page"' }}>
+            <article class="source-browser__row source-browser__page-row" data-page-id="{{ item.nid }}"{{ item.active ? ' aria-current="page"' }}>
               <div><h3><a href="{{ item.browser_url }}" data-source-browser-link>{{ item.page_label ? 'Page ' ~ item.page_label ~ ' — ' : '' }}{{ item.title }}</a></h3><p>{{ item.description }}</p><a href="{{ item.transcription_url }}" data-source-browser-link>Read transcription</a> · <a href="{{ item.url }}">View in Islandora</a>{% for download in item.downloads %} · <a href="{{ download.url }}">{{ download.label }}</a>{% endfor %}</div>
               {% if item.thumbnail %}<a href="{{ item.browser_url }}" data-source-browser-link tabindex="-1" aria-hidden="true"><img src="{{ item.thumbnail }}" alt="" loading="lazy"></a>{% endif %}
             </article>

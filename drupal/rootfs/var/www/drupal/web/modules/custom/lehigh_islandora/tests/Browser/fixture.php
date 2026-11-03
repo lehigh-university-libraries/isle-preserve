@@ -4,20 +4,38 @@
  * @file
  * Creates isolated local fixtures for source-browser browser checks.
  *
- * Run with `drush scr path/to/fixture.php` on the local disposable site only.
+ * Run on the disposable test site only:
+ * `drush scr path/to/fixture.php -- /tmp/source-browser-fixture-ID.json`.
  * The JSON output lists exactly which entities to delete after verification.
  */
 
 use Drupal\Core\File\FileSystemInterface;
 
+if (!in_array(getenv('DRUPAL_DEFAULT_SITE_URL'), ['islandora.dev', 'wight.cc.lehigh.edu'], TRUE)) {
+  throw new \RuntimeException('Fixtures may only be created on the disposable local or CI site.');
+}
+$state_path = $extra[0] ?? NULL;
+if (!$state_path || !str_starts_with($state_path, '/tmp/source-browser-fixture-')) {
+  throw new \InvalidArgumentException('Provide a unique /tmp/source-browser-fixture-*.json state path.');
+}
 $entity_manager = \Drupal::entityTypeManager();
 $created = [];
-$create = function (string $type, array $values) use ($entity_manager, &$created) {
+$record = static function (string $type, int $id) use (&$created, $state_path): void {
+  $created[$type][] = $id;
+  if (file_put_contents($state_path, json_encode(['created' => $created], JSON_THROW_ON_ERROR), LOCK_EX) === FALSE) {
+    throw new \RuntimeException('Unable to record fixture state.');
+  }
+};
+$create = function (string $type, array $values) use ($entity_manager, $record) {
   $entity = $entity_manager->getStorage($type)->create($values);
   $entity->save();
-  $created[$type][] = (int) $entity->id();
+  $record($type, (int) $entity->id());
   return $entity;
 };
+$account = $create('user', [
+  'name' => 'source-browser-test-' . bin2hex(random_bytes(8)),
+  'status' => 1,
+]);
 $collection_model = $create('taxonomy_term', [
   'vid' => 'islandora_models',
   'name' => 'Collection',
@@ -57,7 +75,7 @@ foreach ([1, 2] as $volume_number) {
     ],
   ]);
   $issues[] = (int) $issue->id();
-  foreach ([1, 2] as $page_number) {
+  foreach ($volume_number === 1 ? [1, 2, 3, 4] : [1, 2] as $page_number) {
     $page = $create('node', [
       'type' => 'islandora_object',
       'title' => 'Diary page ' . $page_number,
@@ -76,37 +94,38 @@ foreach ([1, 2] as $volume_number) {
       ],
     ]);
     $pages[] = (int) $page->id();
-    $image = imagecreatetruecolor(500, 700);
-    $paper = imagecolorallocate($image, 250, 245, 232);
-    $ink = imagecolorallocate($image, 65, 46, 28);
-    imagefill($image, 0, 0, $paper);
-    imagestring($image, 5, 45, 65, 'Browser test fixture', $ink);
-    imagestring($image, 4, 45, 100, 'Gunn diary volume ' . $volume_number . ', page ' . $page_number, $ink);
-    for ($line = 0; $line < 18; ++$line) {
-      imagestring($image, 3, 45, 145 + $line * 24, 'Sample diary text for viewer verification.', $ink);
+    if ($volume_number !== 1 || $page_number !== 4) {
+      $image = imagecreatetruecolor(500, 700);
+      $paper = imagecolorallocate($image, 250, 245, 232);
+      $ink = imagecolorallocate($image, 65, 46, 28);
+      imagefill($image, 0, 0, $paper);
+      imagestring($image, 5, 45, 65, 'Browser test fixture', $ink);
+      imagestring($image, 4, 45, 100, 'Gunn diary volume ' . $volume_number . ', page ' . $page_number, $ink);
+      for ($line = 0; $line < 18; ++$line) {
+        imagestring($image, 3, 45, 145 + $line * 24, 'Sample diary text for viewer verification.', $ink);
+      }
+      ob_start();
+      imagepng($image);
+      $png = ob_get_clean();
+      $file = \Drupal::service('file.repository')->writeData($png, $directory . '/' . $page->id() . '.png');
+      $record('file', (int) $file->id());
+      $media = $create('media', [
+        'bundle' => 'image',
+        'name' => 'Fixture page image',
+        'status' => 1,
+        'field_media_of' => $page->id(),
+        'field_media_use' => $use->id(),
+        'field_media_image' => [
+          'target_id' => $file->id(),
+          'alt' => 'Browser fixture',
+          'width' => 500,
+          'height' => 700,
+        ],
+      ]);
+      $page->set('field_thumbnail', $media->id())->save();
     }
-    ob_start();
-    imagepng($image);
-    $png = ob_get_clean();
-    imagedestroy($image);
-    $file = \Drupal::service('file.repository')->writeData($png, $directory . '/' . $page->id() . '.png');
-    $created['file'][] = (int) $file->id();
-    $media = $create('media', [
-      'bundle' => 'image',
-      'name' => 'Fixture page image',
-      'status' => 1,
-      'field_media_of' => $page->id(),
-      'field_media_use' => $use->id(),
-      'field_media_image' => [
-        'target_id' => $file->id(),
-        'alt' => 'Browser fixture',
-        'width' => 500,
-        'height' => 700,
-      ],
-    ]);
-    $page->set('field_thumbnail', $media->id())->save();
     $file = \Drupal::service('file.repository')->writeData("Needle: café diary transcription, volume $volume_number, page $page_number.\nLiteral <brackets> are preserved.", $directory . '/' . $page->id() . '.txt');
-    $created['file'][] = (int) $file->id();
+    $record('file', (int) $file->id());
     $create('media', [
       'bundle' => 'extracted_text',
       'name' => 'Fixture page transcription',
@@ -123,7 +142,7 @@ foreach (['OriginalFile', 'ServiceFile'] as $kind) {
     'field_external_uri' => ['uri' => 'http://pcdm.org/use#' . $kind],
   ]);
   $file = \Drupal::service('file.repository')->writeData('%PDF-1.4 fixture', $directory . '/' . $kind . '.pdf');
-  $created['file'][] = (int) $file->id();
+  $record('file', (int) $file->id());
   $create('media', [
     'bundle' => 'document',
     'name' => 'Fixture ' . $kind,
@@ -132,5 +151,23 @@ foreach (['OriginalFile', 'ServiceFile'] as $kind) {
     'field_media_use' => $pdf_use->id(),
     'field_media_document' => $file->id(),
   ]);
+  if ($kind === 'ServiceFile') {
+    $create('media', [
+      'bundle' => 'document',
+      'name' => 'Fixture page PDF',
+      'status' => 1,
+      'field_media_of' => $pages[0],
+      'field_media_use' => $pdf_use->id(),
+      'field_media_document' => $file->id(),
+    ]);
+  }
 }
-print json_encode(['source' => (int) $source->id(), 'issues' => $issues, 'pages' => $pages, 'created' => $created], JSON_PRETTY_PRINT);
+$fixture = [
+  'user' => (int) $account->id(),
+  'source' => (int) $source->id(),
+  'issues' => $issues,
+  'pages' => $pages,
+  'created' => $created,
+];
+file_put_contents($state_path, json_encode($fixture, JSON_THROW_ON_ERROR), LOCK_EX);
+print json_encode($fixture, JSON_PRETTY_PRINT | JSON_THROW_ON_ERROR);

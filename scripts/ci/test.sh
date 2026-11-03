@@ -10,6 +10,8 @@ echo "waiting for drupal to come online"
 docker compose exec drupal \
   timeout 600 bash -c "while ! test -f /installed; do sleep 5; done"
 
+docker compose exec -T drupal php scripts/migration/source-browser/test-term-normalize.php
+
 echo -e "\n\n============================================="
 echo "running tests against live site config"
 echo -e "=============================================\n\n"

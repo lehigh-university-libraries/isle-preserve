@@ -388,8 +388,9 @@ final class JournalBrowserRepository {
         continue;
       }
       $query = $this->entityTypeManager->getStorage('media')->getQuery()->accessCheck(TRUE)
-        ->condition('status', 1)->condition('bundle', 'extracted_text')
-        ->condition('field_media_of', $node->id());
+        ->condition('status', 1)->condition('field_media_of', $node->id());
+      $query->condition($query->orConditionGroup()
+        ->condition('bundle', 'extracted_text')->condition('field_media_use', 20));
       foreach ($this->entityTypeManager->getStorage('media')->loadMultiple($query->execute()) as $media) {
         if ($this->access->canView($media) && $this->downloadResolver->getFile($media)) {
           return TRUE;
@@ -466,12 +467,21 @@ final class JournalBrowserRepository {
     if ($tid !== NULL) {
       $query->condition('subject', $tid);
     }
-    $rows = $query->execute();
+    $rows = $query->execute()->fetchAll();
+    $node_ids = [];
+    $term_ids = [];
+    foreach ($rows as $row) {
+      $node_ids[$row->page] = $row->page;
+      $node_ids[$row->issue] = $row->issue;
+      $term_ids[$row->subject] = $row->subject;
+    }
+    $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($node_ids);
+    $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadMultiple($term_ids);
     $index = [];
     foreach ($rows as $row) {
-      $page = $this->entityTypeManager->getStorage('node')->load($row->page);
-      $issue = $this->entityTypeManager->getStorage('node')->load($row->issue);
-      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($row->subject);
+      $page = $nodes[$row->page] ?? NULL;
+      $issue = $nodes[$row->issue] ?? NULL;
+      $term = $terms[$row->subject] ?? NULL;
       if (!$page instanceof NodeInterface || !$issue instanceof NodeInterface || !$term
         || !$this->access->canView($page) || !$this->access->canView($issue) || !$this->access->canView($term)
         || !$this->isDescendantOf($page, $issue) || !$this->isDescendantOf($issue, $source)) {
@@ -483,7 +493,9 @@ final class JournalBrowserRepository {
       $index[$tid]['hits'][] = [
         'nid' => (int) $page->id(),
         'issue' => (int) $issue->id(),
-        'title' => 'Vol. ' . $row->volume . ', pp. ' . $range,
+        'page_label' => $range,
+        'volume' => (string) $row->volume,
+        'title' => 'Vol. ' . $row->volume . ', ' . ($row->start_page == $row->end_page ? 'p. ' : 'pp. ') . $range,
         'url' => $page->toUrl()->toString(),
       ];
     }
@@ -506,8 +518,11 @@ final class JournalBrowserRepository {
     }
 
     $media_storage = $this->entityTypeManager->getStorage('media');
-    $mids = $media_storage->getQuery()->condition('field_media_of', $node_ids, 'IN')
-      ->condition('bundle', 'extracted_text')->condition('status', 1)->accessCheck(TRUE)->sort('name')->execute();
+    $query = $media_storage->getQuery()->condition('field_media_of', $node_ids, 'IN')
+      ->condition('status', 1)->accessCheck(TRUE)->sort('name');
+    $query->condition($query->orConditionGroup()
+      ->condition('bundle', 'extracted_text')->condition('field_media_use', 20));
+    $mids = $query->execute();
     if (!$mids) {
       return [];
     }
@@ -518,6 +533,7 @@ final class JournalBrowserRepository {
     }
 
     $transcriptions = [];
+    $preferred = [];
     /** @var \Drupal\media\MediaInterface[] $media_items */
     $media_items = $media_storage->loadMultiple($mids);
     foreach ($media_items as $media) {
@@ -526,19 +542,34 @@ final class JournalBrowserRepository {
         continue;
       }
       $file = $this->downloadResolver->getFile($media);
-      $transcriptions[] = [
+      if (!$file) {
+        continue;
+      }
+      $nid = (int) $parent->id();
+      $is_preferred = $media->hasField('field_media_use') && in_array(20, array_column($media->get('field_media_use')->getValue(), 'target_id'));
+      if ($is_preferred && empty($preferred[$nid])) {
+        $transcriptions[$nid] = [];
+        $preferred[$nid] = TRUE;
+      }
+      if (!$is_preferred && !empty($preferred[$nid])) {
+        continue;
+      }
+      $is_pdf = $file && ($file->getMimeType() === 'application/pdf'
+        || strtolower(pathinfo($file->getFileUri(), PATHINFO_EXTENSION)) === 'pdf');
+      $transcriptions[$nid][] = [
         'mid' => (int) $media->id(),
         'title' => $media->label(),
         'node_title' => $parent ? $parent->label() : '',
         'node_url' => $parent ? $parent->toUrl()->toString() : '',
         'url' => $media->toUrl()->toString(),
         'file_url' => $file ? $file->createFileUrl(FALSE) : '',
-        'text' => $file ? $this->readTextFile($file) : '',
-        'truncated' => $file && $file->getSize() > 100000,
+        'is_pdf' => (bool) $is_pdf,
+        'text' => $file && !$is_pdf ? $this->readTextFile($file) : '',
+        'truncated' => $file && !$is_pdf && $file->getSize() > 100000,
       ];
     }
 
-    return $transcriptions;
+    return $transcriptions ? array_merge(...array_values($transcriptions)) : [];
   }
 
   /**
@@ -780,6 +811,13 @@ final class JournalBrowserRepository {
    */
   public function getDownloads(NodeInterface $node): array {
     return $this->downloadResolver->resolve($node);
+  }
+
+  /**
+   * Resolves downloads for a set of pages or entries together.
+   */
+  public function getDownloadsForNodes(array $nodes): array {
+    return $this->downloadResolver->resolveMany($nodes);
   }
 
   /**

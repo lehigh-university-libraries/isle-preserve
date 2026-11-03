@@ -36,13 +36,14 @@ final class SourceBrowserTest extends ExistingSiteBase {
     $this->drupalLogout();
     $api = '/api/v1/source-browser/' . $source->id();
     foreach ([
-      '/browse-source',
+      '/pfaffs',
       '/browse-source/' . $source->id(),
       $api,
       $api . '/search',
       $api . '/index',
       $api . '/index/' . $subject->id(),
       $api . '/downloads',
+      $api . '/transcription/1/1',
     ] as $path) {
       $this->drupalGet($path);
       $this->assertSession()->statusCodeEquals(403);
@@ -58,7 +59,7 @@ final class SourceBrowserTest extends ExistingSiteBase {
   }
 
   /**
-   * Enabling and removing metadata switches the collection view.
+   * The display hint enables browser access without changing collection views.
    */
   public function testCollectionDisplayHint(): void {
     $model = $this->browserTerm([
@@ -99,16 +100,53 @@ final class SourceBrowserTest extends ExistingSiteBase {
 
     $this->drupalGet('/browse-items/' . $source->id());
     $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->elementNotExists('css', '[data-source-browser]');
+    $this->drupalGet('/pfaffs', ['query' => ['source' => $source->id()]]);
     $this->assertSession()->elementExists('css', '[data-source-browser]');
     $this->assertSession()->pageTextContains('1850-06-12');
-    $this->drupalGet('/browse-source', ['query' => ['source' => $source->id(), 'tab' => 'index']]);
+    $this->drupalGet('/pfaffs', ['query' => ['source' => $source->id(), 'tab' => 'index']]);
     $this->assertSession()->pageTextContains('Picayune Office');
     $this->assertSession()->pageTextNotContains('Zebra index test');
     $this->assertSession()->elementNotExists('css', '.source-browser__tabs a[href*="tab=entries"]');
     $this->assertSession()->elementNotExists('css', '.source-browser__tabs a[href*="tab=transcription"]');
     $this->assertSession()->elementNotExists('css', '.source-browser__tabs a[href*="tab=pages"]');
     $this->assertSession()->elementNotExists('css', '.source-browser__index-term li');
-    $this->drupalGet('/browse-source', ['query' => ['source' => $source->id(), 'tab' => 'index', 'letter' => 'Z']]);
+    $other_source = $this->createNode([
+      'type' => 'islandora_object',
+      'title' => 'Another browser collection',
+      'status' => 1,
+      'field_model' => $model->id(),
+      'field_display_hints' => $hint->id(),
+    ]);
+    $this->createNode([
+      'type' => 'islandora_object',
+      'title' => 'Another matching issue',
+      'status' => 1,
+      'field_model' => $issue_model->id(),
+      'field_member_of' => $other_source->id(),
+      'field_subject' => $subject->id(),
+    ]);
+    $this->createNode([
+      'type' => 'islandora_object',
+      'title' => 'Second matching volume',
+      'status' => 1,
+      'field_model' => $issue_model->id(),
+      'field_member_of' => $source->id(),
+      'field_subject' => $subject->id(),
+    ]);
+    $this->drupalGet('/pfaffs', [
+      'query' => [
+        'source' => $source->id(),
+        'tab' => 'index',
+        'letter' => 'P',
+        'term' => $subject->id(),
+      ],
+    ]);
+    $this->assertSession()->pageTextContains('Test diary volume');
+    $this->assertSession()->pageTextContains('Second matching volume');
+    $this->assertSession()->pageTextNotContains('Another matching issue');
+    $this->assertSession()->pageTextNotContains('Browse this subject across collections');
+    $this->drupalGet('/pfaffs', ['query' => ['source' => $source->id(), 'tab' => 'index', 'letter' => 'Z']]);
     $this->assertSession()->pageTextContains('Zebra index test');
     $this->assertSession()->pageTextNotContains('Picayune Office');
     $this->drupalGet('/api/v1/source-browser/' . $source->id() . '/index/' . $z_subject->id());
@@ -303,6 +341,7 @@ final class SourceBrowserTest extends ExistingSiteBase {
       $this->drupalGet('/api/v1/source-browser/' . $source->id() . '/index/' . $tid);
       $this->assertSession()->statusCodeEquals(200);
       $term = json_decode($this->getSession()->getPage()->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+      $this->assertCount(1, $term['hits']);
       $this->assertSame('Vol. 1, pp. 116–118', $term['hits'][0]['title']);
       $this->assertStringContainsString('page=' . $page->id(), $term['hits'][0]['browser_url']);
       $this->assertSame(1, $importer->importDates($source, $directory . '/dates.csv', 'gunn', TRUE)['written']);
@@ -315,13 +354,19 @@ final class SourceBrowserTest extends ExistingSiteBase {
         . $volume->id() . ",digitalcollections:gunn_183,[volume-level]\n"
         . $page->id() . ",digitalcollections:gunn_115,https://pfaffs-web.lib.lehigh.edu/gunn_transcripts/115.txt\n");
       $http = $this->createMock(ClientInterface::class);
-      $http->expects($this->exactly(2))->method('request')->with(
+      $attempts = 0;
+      $http->expects($this->exactly(3))->method('request')->with(
         'GET', $this->callback(static fn(string $url): bool => in_array($url, [
           'https://pfaffs-web.lib.lehigh.edu/gunn_transcripts/115.txt',
           'https://pfaffs-web.lib.lehigh.edu/gunn_transcripts/0.txt',
         ], TRUE)),
         $this->callback(static fn(array $options): bool => $options['allow_redirects'] === FALSE),
-      )->willReturnCallback(static fn() => new Response(200, [], file_get_contents($directory . '/115.txt')));
+      )->willReturnCallback(static function () use (&$attempts, $directory) {
+        if (++$attempts === 1) {
+          throw new \RuntimeException('Temporary download failure');
+        }
+        return new Response(200, [], file_get_contents($directory . '/115.txt'));
+      });
       $csv_importer = new SourceBrowserImporter(
         \Drupal::entityTypeManager(),
         \Drupal::service('lehigh_islandora.journal_browser.repository'),
@@ -330,29 +375,30 @@ final class SourceBrowserTest extends ExistingSiteBase {
       );
       $this->assertSame(2, $csv_importer->importTranscriptCsv($source, $csv)['skipped']);
       $old_media = \Drupal::entityTypeManager()->getStorage('media')->loadByProperties([
-        'bundle' => 'extracted_text',
+        'bundle' => 'document',
         'field_media_of' => $page->id(),
       ]);
       foreach ($old_media as $media) {
-        $this->markEntityForCleanup($media->get('field_media_file')->entity);
+        $this->markEntityForCleanup($media->get('field_media_document')->entity);
       }
       $report = $csv_importer->importTranscriptCsv($source, $csv, TRUE);
       $this->assertSame(1, $report['downloaded']);
-      $this->assertSame(1, $report['written']);
+      $this->assertSame(0, $report['written']);
+      $this->assertSame(1, $report['unchanged']);
       $this->assertSame(0, $report['invalid']);
       $new_media = \Drupal::entityTypeManager()->getStorage('media')->loadByProperties([
-        'bundle' => 'extracted_text',
+        'bundle' => 'document',
         'field_media_of' => $page->id(),
       ]);
       $this->assertCount(1, $new_media);
-      $this->assertNotSame(array_keys($old_media), array_keys($new_media));
-      $this->assertSame('private://derivatives/ocr/' . $page->id() . '.txt', reset($new_media)->get('field_media_file')->entity->getFileUri());
+      $this->assertSame(array_keys($old_media), array_keys($new_media));
+      $this->assertSame('20', (string) reset($new_media)->get('field_media_use')->target_id);
       $report = $csv_importer->importTranscriptCsv($source, $csv, TRUE);
       $this->assertSame(1, $report['cached']);
       $this->assertSame(1, $report['unchanged']);
       $this->assertSame(0, $report['written']);
       $this->assertSame(array_keys($new_media), array_keys(\Drupal::entityTypeManager()->getStorage('media')->loadByProperties([
-        'bundle' => 'extracted_text',
+        'bundle' => 'document',
         'field_media_of' => $page->id(),
       ])));
 
@@ -373,7 +419,7 @@ final class SourceBrowserTest extends ExistingSiteBase {
       $this->assertSame(1, $zero_report['written']);
       foreach (\Drupal::entityTypeManager()->getStorage('media')->loadByProperties(['field_media_of' => $zero_page->id()]) as $zero_media) {
         $this->markEntityForCleanup($zero_media);
-        $this->markEntityForCleanup($zero_media->get('field_media_file')->entity);
+        $this->markEntityForCleanup($zero_media->get('field_media_document')->entity);
       }
 
       $cache_uri = 'private://source-browser/downloads/gunn/115.txt';
@@ -382,7 +428,7 @@ final class SourceBrowserTest extends ExistingSiteBase {
       $this->assertSame(1, $report['invalid']);
       $this->assertSame(0, $report['written']);
       $this->assertSame(array_keys($new_media), array_keys(\Drupal::entityTypeManager()->getStorage('media')->loadByProperties([
-        'bundle' => 'extracted_text',
+        'bundle' => 'document',
         'field_media_of' => $page->id(),
       ])));
       file_put_contents($cache_uri, file_get_contents($directory . '/115.txt'));
@@ -391,9 +437,9 @@ final class SourceBrowserTest extends ExistingSiteBase {
 
       foreach (\Drupal::entityTypeManager()->getStorage('media')->loadByProperties(['field_media_of' => $page->id()]) as $media) {
         $this->markEntityForCleanup($media);
-        $this->markEntityForCleanup($media->get('field_media_file')->entity);
+        $this->markEntityForCleanup($media->get('field_media_document')->entity);
       }
-      $this->drupalGet('/browse-source', [
+      $this->drupalGet('/pfaffs', [
         'query' => [
           'source' => $source->id(),
           'issue' => $volume->id(),
@@ -402,7 +448,13 @@ final class SourceBrowserTest extends ExistingSiteBase {
         ],
       ]);
       $this->assertSession()->pageTextContains('A café diary transcription <with literal brackets>.');
-      $this->assertSession()->pageTextContains('Page-level description');
+      $this->assertSession()->pageTextNotContains('Page-level description');
+      $this->assertSession()->pageTextNotContains('Volume / document description');
+      $this->drupalGet('/api/v1/source-browser/' . $source->id() . '/transcription/' . $volume->id() . '/' . $page->id());
+      $data = json_decode($this->getSession()->getPage()->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+      $this->assertStringContainsString('A café diary transcription', $data['transcriptions'][0]['text']);
+      $this->drupalGet('/api/v1/source-browser/' . $source->id() . '/transcription/' . $volume->id() . '/' . $source->id());
+      $this->assertSession()->statusCodeEquals(404);
 
       foreach (['OriginalFile', 'ServiceFile'] as $kind) {
         $use = $this->browserTerm([
@@ -421,13 +473,83 @@ final class SourceBrowserTest extends ExistingSiteBase {
           'field_media_document' => $file->id(),
         ]);
       }
-      $downloads = \Drupal::service('lehigh_islandora.download_resolver')->resolve($volume);
+      $this->createMedia([
+        'bundle' => 'document',
+        'name' => 'Page PDF',
+        'status' => 1,
+        'field_media_of' => $page->id(),
+        'field_media_use' => $use->id(),
+        'field_media_document' => $file->id(),
+      ]);
+      $resolver = \Drupal::service('lehigh_islandora.download_resolver');
+      $batch = $resolver->resolveMany([$volume, $page]);
+      $this->assertCount(2, $batch[$volume->id()]);
+      $this->assertCount(1, $batch[$page->id()]);
+      $this->assertSame('Download generated page PDF', $batch[$page->id()][0]['label']);
+      $downloads = $resolver->resolve($volume);
       $this->assertSame('Download original PDF', $downloads[0]['label']);
       $this->assertSame('Download generated page PDF', $downloads[1]['label']);
+      $ocr = \Drupal::service('file.repository')->writeData('Lower priority OCR text', 'private://source-browser-ocr-' . $source->id() . '.txt');
+      $this->markEntityForCleanup($ocr);
+      $this->createMedia([
+        'bundle' => 'extracted_text',
+        'name' => 'OCR fallback',
+        'status' => 1,
+        'field_media_of' => $volume->id(),
+        'field_media_file' => $ocr->id(),
+      ]);
+      $transcript_pdf = \Drupal::service('file.repository')->writeData('%PDF-1.4 transcription', 'private://source-browser-transcript-' . $source->id() . '.pdf');
+      $this->markEntityForCleanup($transcript_pdf);
+      $this->createMedia([
+        'bundle' => 'document',
+        'name' => 'PDF transcription',
+        'field_media_use' => 20,
+        'status' => 1,
+        'field_media_of' => $volume->id(),
+        'field_media_document' => $transcript_pdf->id(),
+      ]);
+      $this->drupalGet('/pfaffs', [
+        'query' => [
+          'source' => $source->id(),
+          'issue' => $volume->id(),
+          'page' => $page->id(),
+          'tab' => 'transcription',
+        ],
+      ]);
+      $this->assertSession()->elementNotExists('css', 'iframe.source-browser__transcription-pdf');
+      $this->assertSession()->pageTextContains('A café diary transcription <with literal brackets>.');
+      $this->createMedia([
+        'bundle' => 'document',
+        'name' => 'Page PDF transcription',
+        'field_media_use' => 20,
+        'status' => 1,
+        'field_media_of' => $page->id(),
+        'field_media_document' => $transcript_pdf->id(),
+      ]);
+      $this->drupalGet('/pfaffs', [
+        'query' => [
+          'source' => $source->id(),
+          'issue' => $volume->id(),
+          'page' => $page->id(),
+          'tab' => 'transcription',
+        ],
+      ]);
+      $pdf_viewer = $this->assertSession()->elementExists('css', 'iframe.source-browser__transcription-pdf');
+      $this->assertStringEndsWith('#view=FitH', $pdf_viewer->getAttribute('src'));
+      $this->assertSession()->linkExists('Open or download the PDF transcription');
+      $this->assertSession()->pageTextNotContains('Lower priority OCR text');
+      $this->drupalGet('/api/v1/source-browser/' . $source->id() . '/transcription/' . $volume->id() . '/' . $page->id());
+      $result = json_decode($this->getSession()->getPage()->getContent(), TRUE, 512, JSON_THROW_ON_ERROR);
+      $this->assertNotEmpty($result['transcriptions']);
+      $this->assertSame([$page->label()], array_values(array_unique(array_column($result['transcriptions'], 'node_title'))));
+
       $volume->set('field_edtf_date_embargo', '2999-12-31')->save();
-      $this->assertSame([], \Drupal::service('lehigh_islandora.download_resolver')->resolve($volume));
+      $this->assertSame([], $resolver->resolveMany([$volume, $page]));
+      $this->assertSame([], $resolver->resolve($volume));
       $this->assertSame([], \Drupal::service('lehigh_islandora.journal_browser.repository')->getTranscriptions([$page]));
-      $this->drupalGet('/browse-source', [
+      $this->drupalGet('/api/v1/source-browser/' . $source->id() . '/transcription/' . $volume->id() . '/' . $page->id());
+      $this->assertSession()->statusCodeEquals(404);
+      $this->drupalGet('/pfaffs', [
         'query' => [
           'source' => $source->id(),
           'issue' => $volume->id(),
@@ -436,6 +558,7 @@ final class SourceBrowserTest extends ExistingSiteBase {
         ],
       ]);
       $this->assertSession()->pageTextNotContains('A café diary transcription');
+      $this->assertSession()->elementNotExists('css', 'iframe.source-browser__transcription-pdf');
 
       file_put_contents($directory . '/gunn_index.csv', "id,subj,spage,epage,ptr,vol\n3,2,116,118,999999,1\n");
       $this->assertSame(1, $importer->importIndex($source, $directory)['invalid']);

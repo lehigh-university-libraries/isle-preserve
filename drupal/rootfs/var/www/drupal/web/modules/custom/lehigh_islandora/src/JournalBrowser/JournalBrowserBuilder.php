@@ -66,6 +66,8 @@ final class JournalBrowserBuilder {
         'date' => $date,
         'label' => $label,
         'heading' => $issue->label(),
+        'volume_number' => $volume['number'],
+        'issue_number' => $detail['number'],
         'active' => (int) $id === $issue_id,
         'url' => $this->browserUrl($source, $state + ['issue' => (int) $id]),
       ];
@@ -99,7 +101,7 @@ final class JournalBrowserBuilder {
       if ($catalog) {
         $available_tabs[] = 'index';
       }
-      $transcript_nodes = array_merge([$issue], isset($items['pages'][$page_id]) ? [$items['pages'][$page_id]] : []);
+      $transcript_nodes = $page_node ? [$page_node] : [];
       if ($this->repository->hasTranscriptions($transcript_nodes)) {
         $available_tabs[] = 'transcription';
       }
@@ -107,25 +109,30 @@ final class JournalBrowserBuilder {
         $tab = $available_tabs[0] ?? 'pages';
         $state['tab'] = $tab;
       }
-      $canvases = $tab === 'pages' ? $this->targets->getCanvases($issue) : [];
+      $canvases = in_array($tab, ['pages', 'transcription'], TRUE) ? $this->targets->getCanvases($issue) : [];
+      $download_nodes = in_array($tab, ['pages', 'entries'], TRUE)
+        ? array_merge([$issue], array_values($items['pages']), array_values($items['entries'])) : [$issue];
+      $downloads = $this->repository->getDownloadsForNodes($download_nodes);
       $pages = [];
       foreach ($items['pages'] as $id => $page) {
-        $pages[$id] = $this->item($source, $page, $state, $canvases[$id] ?? []);
+        $pages[$id] = $this->item($source, $page, $state, $canvases[$id] ?? [], $downloads[$id] ?? []);
         $pages[$id]['active'] = (int) $id === $page_id;
       }
       $entries = [];
-      foreach ($items['entries'] as $entry) {
-        $entry_page = $this->entryPage($entry, $items['pages']);
-        $entries[] = $this->item($source, $entry, array_replace($state, ['page' => $entry_page]), $canvases[$entry_page] ?? []);
+      if ($tab === 'entries' || $request?->attributes->get('_route') === 'lehigh_islandora.source_browser_json') {
+        foreach ($items['entries'] as $entry) {
+          $entry_page = $this->entryPage($entry, $items['pages']);
+          $entries[] = $this->item($source, $entry, array_replace($state, ['page' => $entry_page]), $canvases[$entry_page] ?? [], $downloads[(int) $entry->id()] ?? []);
+        }
       }
       $selected = $summaries[$issue_id] + [
         'description' => $this->repository->getDescription($issue),
         'date' => $this->repository->getDate($issue),
-        'metadata' => $this->metadata($issue),
+        'metadata' => $tab === 'about' || $request?->attributes->get('_route') === 'lehigh_islandora.source_browser_json' ? $this->metadata($issue) : [],
         'url' => $issue->toUrl()->toString(),
       ];
       $selected['url'] = $issue->toUrl()->toString();
-      $selected['downloads'] = $this->repository->getDownloads($issue);
+      $selected['downloads'] = $downloads[$issue_id] ?? [];
       $selected['pages'] = array_values($pages);
       $selected['entries'] = $entries;
       $selected['selected_page'] = $pages[$page_id] ?? NULL;
@@ -134,10 +141,9 @@ final class JournalBrowserBuilder {
       $selected['previous_issue'] = $this->neighbor($summaries, $issue_id, -1);
       $selected['next_issue'] = $this->neighbor($summaries, $issue_id, 1);
       $selected['manifest_url'] = Url::fromUserInput('/node/' . $issue_id . '/book-manifest', ['absolute' => TRUE])->toString();
-      $selected['can_view'] = $this->repository->canReadFiles($issue) && (bool) $canvases;
-      $selected['transcriptions'] = $tab === 'transcription' ? $this->repository->getTranscriptions(
-        array_merge([$issue], isset($items['pages'][$page_id]) ? [$items['pages'][$page_id]] : [])
-      ) : [];
+      $selected['can_view'] = $this->repository->canReadFiles($issue) && (bool) $canvases
+        && (!$page_node || isset($canvases[$page_id]));
+      $selected['transcriptions'] = $tab === 'transcription' ? $this->repository->getTranscriptions($transcript_nodes) : [];
     }
     $page_size = max(1, min(100, (int) ($config->get('page_size') ?? 25)));
     $offset = max(0, min(100000, (int) ($request?->query->get('offset') ?? 0)));
@@ -156,7 +162,8 @@ final class JournalBrowserBuilder {
     }
     unset($result);
     $sources = [];
-    foreach ($this->repository->getSources() as $node) {
+    $source_nodes = $this->repository->getSources();
+    foreach ($source_nodes as $node) {
       $sources[] = [
         'nid' => (int) $node->id(),
         'label' => $node->label(),
@@ -181,6 +188,27 @@ final class JournalBrowserBuilder {
             'term' => $subject['tid'],
           ]));
           $subject['expanded'] = $term === $subject['tid'];
+          $subject['groups'] = [];
+          if ($subject['expanded']) {
+            foreach ($subject['hits'] as $hit) {
+              $issue_id_for_hit = $hit['issue'] ?? 0;
+              $summary = $summaries[$issue_id_for_hit] ?? NULL;
+              $volume_number = $hit['volume'] ?? ($summary['volume_number'] ?? '');
+              $year = substr($summary['date'] ?? '', 0, 4);
+              $key = $volume_number !== '' ? $year . ':volume:' . $volume_number : 'issue:' . $issue_id_for_hit;
+              $group = $volume_number !== '' ? 'Vol. ' . $volume_number . ($year ? ' (' . $year . ')' : '') : ($summary['title'] ?? 'Other references');
+              if (!empty($summary['issue_number'])) {
+                $hit['page_label'] = 'Issue ' . $summary['issue_number'] . ', ' . ($hit['page_label'] ?? $hit['title']);
+              }
+              $subject['groups'][$key]['title'] = $group;
+              $subject['groups'][$key]['hits'][] = $hit;
+            }
+            uasort($subject['groups'], static fn(array $a, array $b): int => strnatcasecmp($a['title'], $b['title']));
+            foreach ($subject['groups'] as &$group) {
+              usort($group['hits'], static fn(array $a, array $b): int => strnatcasecmp($a['page_label'] ?? $a['title'], $b['page_label'] ?? $b['title']));
+            }
+            unset($group);
+          }
         }
         unset($subject);
       }
@@ -240,7 +268,10 @@ final class JournalBrowserBuilder {
       $found = FALSE;
       foreach ($index[$letter] ?? [] as $position => $term) {
         if ($term['tid'] === $curated['tid']) {
-          $index[$letter][$position]['hits'] = $curated['hits'];
+          $curated_pages = array_column($curated['hits'], 'nid');
+          $native_hits = array_filter($index[$letter][$position]['hits'],
+            static fn(array $hit): bool => !in_array($hit['nid'], $curated_pages, TRUE));
+          $index[$letter][$position]['hits'] = array_merge($curated['hits'], $native_hits);
           $found = TRUE;
           break;
         }
@@ -271,6 +302,19 @@ final class JournalBrowserBuilder {
             continue;
           }
           $issue = $this->targets->getIssue($node, $issues);
+          if ($issue) {
+            $hit['issue'] = (int) $issue->id();
+            $volume = $this->repository->getPartDetail($issue, 'volume')['number'];
+            $page = $this->repository->getPartDetail($node, 'page')['number'];
+            $hit['page_label'] = $page !== '' ? $page : $node->label();
+            $parts = array_filter([
+              $volume !== '' ? 'Vol. ' . $volume : '',
+              $page !== '' ? 'p. ' . $page : '',
+            ]);
+            if ($parts) {
+              $hit['title'] = implode(', ', $parts) . ' — ' . $node->label();
+            }
+          }
           $hit['browser_url'] = $issue ? $this->browserUrl($source, [
             'issue' => (int) $issue->id(),
             'page' => $this->repository->getModel($node) === 'Page' ? (int) $node->id() : 0,
@@ -301,31 +345,33 @@ final class JournalBrowserBuilder {
   /**
    * Normalizes a page/entry and keeps page state in every link.
    */
-  protected function item(NodeInterface $source, NodeInterface $node, array $state, array $canvas): array {
+  protected function item(NodeInterface $source, NodeInterface $node, array $state, array $canvas, array $downloads): array {
     $id = (int) $node->id();
     $is_page = $this->repository->getModel($node) === 'Page';
     $state['page'] = $is_page ? $id : $state['page'];
     $detail = $this->repository->getPartDetail($node, 'page');
+    $api = $this->requestStack->getCurrentRequest()?->attributes->get('_route') === 'lehigh_islandora.source_browser_json';
+    $show_row = in_array($state['tab'], ['pages', 'entries'], TRUE);
     return [
       'nid' => $id,
       'title' => $node->label(),
       'page_label' => $detail['number'] ?: $detail['title'],
       'date' => $this->repository->getDate($node),
-      'description' => $this->repository->getDescription($node),
-      'metadata' => $this->metadata($node),
+      'description' => $api || $show_row || ($id === $state['page'] && $state['tab'] === 'about') ? $this->repository->getDescription($node) : '',
+      'metadata' => $api || ($id === $state['page'] && $state['tab'] === 'about') ? $this->metadata($node) : [],
       'thumbnail' => $state['tab'] === 'pages' ? $this->repository->getThumbnail($node) : '',
-      'url' => $node->toUrl()->toString(),
-      'browser_url' => $this->browserUrl($source, array_replace($state, ['tab' => 'pages'])),
+      'url' => $api || $show_row ? $node->toUrl()->toString() : '',
+      'browser_url' => $api || $show_row ? $this->browserUrl($source, array_replace($state, ['tab' => 'pages'])) : '',
       'navigation_url' => $this->browserUrl($source, $state),
-      'transcription_url' => $this->browserUrl($source, array_replace($state, ['tab' => 'transcription'])),
-      'downloads' => in_array($state['tab'], ['pages', 'entries'], TRUE) ? $this->repository->getDownloads($node) : [],
+      'transcription_url' => $api || $state['tab'] === 'pages' ? $this->browserUrl($source, array_replace($state, ['tab' => 'transcription'])) : '',
+      'downloads' => in_array($state['tab'], ['pages', 'entries'], TRUE) ? $downloads : [],
     ] + $canvas;
   }
 
   /**
    * Supplies metadata for page and volume descriptions without raw HTML.
    */
-  protected function metadata(NodeInterface $node): array {
+  public function metadata(NodeInterface $node): array {
     $rows = [];
     foreach ([
       'field_publisher', 'field_note', 'field_rights', 'field_source',
@@ -340,15 +386,15 @@ final class JournalBrowserBuilder {
       foreach ($field as $item) {
         if (isset($item->target_id) && $item->entity) {
           if ($this->access->canView($item->entity)) {
-            $values[] = $item->entity->label();
+            $values[] = ['label' => $item->entity->label(), 'url' => $item->entity->toUrl()->toString()];
           }
         }
         elseif (isset($item->value)) {
-          $values[] = trim(strip_tags((string) $item->value));
+          $values[] = ['label' => trim(strip_tags((string) $item->value))];
         }
       }
       if ($values) {
-        $rows[] = ['label' => $field->getFieldDefinition()->getLabel(), 'value' => implode('; ', $values)];
+        $rows[] = ['label' => $field->getFieldDefinition()->getLabel(), 'values' => $values];
       }
     }
     return $rows;

@@ -60,25 +60,76 @@ final class DownloadResolver {
    * Returns all PDFs, originals first; never hides generated alternatives.
    */
   public function resolve(NodeInterface $node): array {
-    $downloads = [];
-    $seen = [];
-    foreach ([
+    return $this->resolveMany([$node])[(int) $node->id()] ?? [];
+  }
+
+  /**
+   * Resolves PDF downloads for multiple nodes with a single media query.
+   *
+   * @param \Drupal\node\NodeInterface[] $nodes
+   *   Nodes whose downloads should be listed.
+   *
+   * @return array<int, array>
+   *   Downloads keyed by node ID.
+   */
+  public function resolveMany(array $nodes): array {
+    $uses = [
       'http://pcdm.org/use#OriginalFile' => 'Download original PDF',
       'http://pcdm.org/use#ServiceFile' => 'Download generated page PDF',
       'http://pcdm.org/use#PreservationMasterFile' => 'Download preservation PDF',
-    ] as $use => $label) {
-      foreach ($this->getMedia($node, $use) as $media) {
-        $file = $this->getFile($media);
-        if (!$file || $file->getMimeType() !== 'application/pdf' || isset($seen[$file->id()])) {
+    ];
+    $allowed = [];
+    foreach ($nodes as $node) {
+      if ($this->access->canReadFiles($node)) {
+        $allowed[(int) $node->id()] = TRUE;
+      }
+    }
+    if (!$allowed) {
+      return [];
+    }
+    $storage = $this->entityTypeManager->getStorage('media');
+    $ids = $storage->getQuery()->accessCheck(TRUE)->condition('status', 1)
+      ->condition('field_media_of', array_keys($allowed), 'IN')
+      ->condition('field_media_use.entity:taxonomy_term.field_external_uri.uri', array_keys($uses), 'IN')
+      ->sort('mid')->execute();
+    $grouped = [];
+    foreach ($storage->loadMultiple($ids) as $media) {
+      if (!$media instanceof MediaInterface || !$this->access->canView($media)) {
+        continue;
+      }
+      $file = $this->getFile($media);
+      if (!$file || $file->getMimeType() !== 'application/pdf') {
+        continue;
+      }
+      foreach ($media->get('field_media_use')->referencedEntities() as $use) {
+        $this->access->track($use);
+        $uri = $use->hasField('field_external_uri') ? $use->get('field_external_uri')->uri : '';
+        if (!isset($uses[$uri])) {
           continue;
         }
-        $seen[$file->id()] = TRUE;
-        $downloads[] = [
-          'label' => $label,
-          'url' => $file->createFileUrl(FALSE),
-          'mid' => (int) $media->id(),
-          'fid' => (int) $file->id(),
-        ];
+        foreach ($media->get('field_media_of') as $parent) {
+          $nid = (int) $parent->target_id;
+          if (isset($allowed[$nid])) {
+            $grouped[$nid][$uri][] = [
+              'label' => $uses[$uri],
+              'url' => $file->createFileUrl(FALSE),
+              'mid' => (int) $media->id(),
+              'fid' => (int) $file->id(),
+            ];
+          }
+        }
+      }
+    }
+    $downloads = [];
+    foreach ($grouped as $nid => $by_use) {
+      $seen = [];
+      foreach ($uses as $uri => $_label) {
+        foreach ($by_use[$uri] ?? [] as $download) {
+          if (!isset($seen[$download['fid']])) {
+            $downloads[$nid][] = $download;
+            $seen[$download['fid']] = TRUE;
+          }
+        }
       }
     }
     return $downloads;

@@ -1,3 +1,4 @@
+uuid: 1313172b-c847-4443-9fe3-33ff4cefe3bd
 langcode: en
 status: false
 dependencies:
@@ -8,4 +9,6 @@ label: 'Transcribe paged content: Medieval manuscripts + Kraken CATMuS'
 type: node
 plugin: transcribe_scribe_paged_content
 configuration:
-  context_id: 0
+  queue: islandora-scribe-book
+  event: 'Generate Derivative'
+  context_id: 14
