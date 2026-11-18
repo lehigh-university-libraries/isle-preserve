@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-ffmpeg
-          image: islandora/homarus:7.0.27@sha256:49bff7fb1f8203693586f5a11b7c9930027c0e8b12a08f87ce0b12e2b41a5c74
+          image: islandora/homarus:7.0.32@sha256:c7afa242e1f7c90ff05d5300f86c4a5ef934689e2c0194ad0c34f526bef2a360
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"

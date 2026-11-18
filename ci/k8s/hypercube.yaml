@@ -28,7 +28,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-tesseract
-          image: islandora/hypercube:7.0.27@sha256:3b5559e43f4b8f264a89a61acb2b6f3194ee79c60bea1ccf00a62553c5b59460
+          image: islandora/hypercube:7.0.32@sha256:df2e810ae13d81f7ace65429d91b2577e37b5146e15c58bc55f961fa279c952e
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"

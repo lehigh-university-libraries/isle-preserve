@@ -220,11 +220,7 @@
                 "Issues 3209755": "assets/patches/drupal/drupal_slider/3209755.patch"
             },
             "drupal/islandora": {
-                "Rewrite canonical event URLs for microservices": "assets/patches/drupal/islandora/rewrite-canonical-event-urls.patch",
                 "read from OCFL root": "assets/patches/drupal/islandora/fcrepo-ro.patch"
-            },
-            "twistor/flysystem-stream-wrapper": {
-                "Fix php82 warning": "assets/patches/twistor/flysystem-stream-wrapper/28.patch"
             },
             "drupal/context": {
                 "Fix str_replace warning": "assets/patches/drupal/context/str_replace.patch"
@@ -249,6 +245,7 @@
     },
     "require-dev": {
         "chi-teck/drupal-code-generator": "^4.0",
+        "composer/composer": "~2.8.0",
         "drupal/config_inspector": "^2.1",
         "drupal/core-dev": "^11.1",
         "drupal/devel": "^5.0",
