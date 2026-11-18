@@ -69,6 +69,7 @@ sources:
       - https://wight.cc.lehigh.edu
       - https://islandora-stage.lib.lehigh.edu
       - https://preserve.lehigh.edu
+      - https://scribe-915966395449.us-east5.run.app
     allow_private_hosts: true
     metadata_cache_ttl: 240h
 

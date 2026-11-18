@@ -21,6 +21,7 @@ http:
           protectRoutes: ^/
           excludeRoutes:
             - \/node\/\d+\/manifest
+            - \/node\/\d+\/book-manifest
           protectParameters: "true"
 # Allow testing the captcha protection on staging server
 # if we exempt on staging we can't tell if the captcha will work for non-Lehigh visitors
