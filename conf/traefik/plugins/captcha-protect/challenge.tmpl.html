@@ -1,31 +1,114 @@
-<html>
+<!doctype html>
+<html lang="en" dir="ltr">
   <head>
-    <title>Verifying connection</title>
-    <script src="{{ .FrontendJS }}" async defer referrerpolicy="no-referrer"></script>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Verifying connection | Lehigh University Libraries</title>
+    <link
+      rel="icon"
+      href="https://library.lehigh.edu/themes/custom/leh_storybook/favicon.ico"
+    />
+    <link
+      rel="stylesheet"
+      href="https://library.lehigh.edu/themes/custom/leh_storybook/css/base/fonts.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://library.lehigh.edu/themes/custom/leh_storybook/css/base/bootstrap.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://library.lehigh.edu/themes/custom/leh_storybook/css/base/typography.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://library.lehigh.edu/themes/custom/leh_storybook/css/base/layout.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://library.lehigh.edu/themes/custom/leh_storybook/components/hero/hero.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://library.lehigh.edu/themes/custom/leh_storybook/css/layout/single-search.css"
+    />
+    <style>
+      .challenge-header {
+        padding: 1rem 2rem;
+        background: #fff;
+      }
+      .challenge-header .library-logo {
+        display: block;
+        width: auto;
+        max-width: 100%;
+        height: 74px;
+      }
+      .challenge-hero {
+        min-height: 380px;
+        padding: 5rem 2rem;
+        background: #502d0e
+          url("https://library.lehigh.edu/themes/custom/leh_storybook/static/images/welcome-bg.png.webp")
+          center / cover;
+      }
+      .challenge-content {
+        max-width: 760px;
+        margin: 0 auto;
+      }
+      .challenge-panel {
+        padding: 2rem;
+        background: #fff;
+        color: #111;
+      }
+    </style>
+    <script
+      src="{{ .FrontendJS }}"
+      async
+      defer
+      referrerpolicy="no-referrer"
+    ></script>
   </head>
   <body>
-    <h1>Verifying connection</h1>
-    <p>One moment while we verify your network connection.</p>
-    <form action="{{ .ChallengeURL }}" method="post" id="captcha-form" accept-charset="UTF-8">
-        <div
-            data-callback="captchaCallback"
-            class="{{ .FrontendKey }}"
-            data-sitekey="{{ .SiteKey }}"
-            data-theme="auto"
-            data-size="normal"
-            data-language="auto"
-            data-retry="auto"
-            interval="8000"
-            data-appearance="always">
+    <header class="challenge-header">
+      <a class="leh-logo" href="https://library.lehigh.edu/">
+        <img class="library-logo" src="https://library.lehigh.edu/themes/custom/leh_storybook/libraries.svg" alt="Lehigh University Libraries" />
+      </a>
+    </header>
+    <main id="main-content">
+      <div class="challenge-hero">
+        <div class="challenge-content">
+          <h1 class="heading white bar">Lehigh University Libraries</h1>
+          <div class="challenge-panel single-search bg-white text-dark">
+            <h2 class="heading">Verifying connection...</h2>
+            <p>One moment while we verify your connection.</p>
+            <form
+              action="{{ .ChallengeURL }}"
+              method="post"
+              id="captcha-form"
+              accept-charset="UTF-8"
+            >
+              <div
+                data-callback="captchaCallback"
+                class="{{ .FrontendKey }}"
+                data-sitekey="{{ .SiteKey }}"
+                data-theme="auto"
+              ></div>
+              <input
+                type="hidden"
+                name="destination"
+                value="{{ .Destination }}"
+              />
+            </form>
+            <noscript
+              >JavaScript is required to verify your connection.</noscript
+            >
+          </div>
         </div>
-        <input type="hidden" name="destination" value="{{ .Destination }}">
-    </form>
-    <script type="text/javascript">
-        function captchaCallback(token) {
-            setTimeout(function() {
-                document.getElementById("captcha-form").submit();
-            }, 1000);
-        }
+      </div>
+    </main>
+    <script>
+      function captchaCallback(token) {
+        document.getElementById("captcha-form").submit();
+      }
     </script>
   </body>
 </html>

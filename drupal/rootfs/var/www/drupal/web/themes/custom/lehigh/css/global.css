@@ -475,3 +475,24 @@ footer .btn-primary {
     grid-template-columns: 1fr;
   }
 }
+
+
+.utility-nav--start .leh-logo img.library-logo {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: 74px;
+  max-height: 74px;
+  margin: 0;
+}
+@media (min-width: 992px) {
+  .utility-nav--start .leh-logo img.library-logo {
+    margin-top: 0.9375rem;
+    margin-bottom: 0.5rem;
+  }
+}
+
+.views-attachment-tabs {
+  display: none;
+}
+
