@@ -47,7 +47,7 @@
         "drupal/crosswalk": "^1.0@dev",
         "drupal/csp": "^2.0",
         "drupal/csv_serialization": "^4.0",
-        "drupal/diff": "^1.1",
+        "drupal/diff": "^2.0.1",
         "drupal/entity": "^1.4",
         "drupal/entity_browser": "^2.9",
         "drupal/entity_metrics": "^1.0@beta",
@@ -138,6 +138,17 @@
             "tbachert/spi": false,
             "symfony/runtime": true
         },
+        "policy": {
+            "advisories": {
+                "ignore-id": {
+                    "PKSA-w9tt-7782-78jx": {
+                        "reason": "CVE-2026-102601 backported by assets/patches/league/flysystem/reject-malformed-utf8.patch; verify with php assets/tests/flysystem-path-normalization.php",
+                        "on-block": true,
+                        "on-audit": false
+                    }
+                }
+            }
+        },
         "sort-packages": true
     },
     "extra": {
@@ -195,6 +206,9 @@
             ]
         },
         "patches": {
+            "league/flysystem": {
+                "CVE-2026-102601: reject malformed UTF-8 paths (upstream ef4a9a557d769b5d472c403125716706a0d9cc77)": "assets/patches/league/flysystem/reject-malformed-utf8.patch"
+            },
             "codementality/flysystem-stream-wrapper": {
                 "Use an explicit nullable configuration type for PHP 8.4": "assets/patches/codementality/flysystem-stream-wrapper/explicit-nullable-configuration.patch"
             },
@@ -239,13 +253,15 @@
         }
     },
     "scripts": {
+        "post-install-cmd": ["rm -f web/core/install.php"],
+        "post-update-cmd": ["rm -f web/core/install.php"],
         "post-root-package-install": [
             "Islandora\\StarterSite::rootPackageInstall"
         ]
     },
     "require-dev": {
         "chi-teck/drupal-code-generator": "^4.0",
-        "composer/composer": "~2.8.0",
+        "composer/composer": "^2.9",
         "drupal/config_inspector": "^2.1",
         "drupal/core-dev": "^11.1",
         "drupal/devel": "^5.0",
