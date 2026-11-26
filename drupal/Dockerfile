@@ -1,4 +1,4 @@
-FROM islandora/drupal:7.1.0@sha256:8eb45402fdfa54c1db3753d3b17ea1d2bf1db3035efcf2025e8cbfd940462a37
+FROM islandora/drupal:7.1.3@sha256:cb5407046d41ea8a27bad7ecceb3baa7bb752d34b454711e9c5964d7848895d6
 
 ARG \
     # renovate: datasource=repology depName=alpine_3_24/ffmpeg
@@ -6,7 +6,7 @@ ARG \
     # renovate: datasource=repology depName=alpine_3_24/imagemagick
     IMAGEMAGICK_VERSION=7.1.2.35-r0 \
     # renovate: datasource=repology depName=alpine_3_24/php84
-    PHP_VERSION=8.4.27-r0 \
+    PHP_VERSION=8.4.28-r0 \
     # renovate: datasource=repology depName=alpine_3_24/php84-pecl-memcache
     PHP_MEMCACHE_VERSION=8.2-r1 \
     # renovate: datasource=repology depName=alpine_3_24/php84-pecl-uploadprogress
@@ -32,7 +32,7 @@ RUN apk add --no-cache \
 ARG \
   TARGETARCH \
   # renovate: datasource=github-releases depName=crosswalk packageName=lehigh-university-libraries/crosswalk
-  CROSSWALK_VERSION=0.3.9 \
+  CROSSWALK_VERSION=0.6.0 \
   CROSSWALK_BASE_URL="https://github.com/lehigh-university-libraries/crosswalk/releases/download/v${CROSSWALK_VERSION}" \
   CROSSWALK_AMD64=crosswalk_Linux_x86_64.tar.gz \
   CROSSWALK_AMD64_SHA256="77b29f8f34c030d6b52194b7d9dcb41b087810a984be43f8c9615316658ef2fe" \
