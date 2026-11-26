@@ -229,7 +229,22 @@ In summary: These two messages seem to be ignorable.
 
 If a patch (external or internal) is necessary, it can be applied automatically by composer by using the [composer-patches plugin](https://github.com/cweagans/composer-patches). Any patches included in the Starter Site should be described fully in this section (including when they should be removed).
 
-* None, presently.
+Patch definitions are maintained in `composer.json` under `extra.patches`. Composer
+Patches 2.x records their checksums in `patches.lock.json`; commit this file
+alongside `composer.json` and `composer.lock`. Git must be available when Composer
+installs dependencies.
+
+After adding, changing, or removing a patch, run from this directory:
+
+```sh
+composer patches-relock
+composer patches-repatch
+composer update --lock
+```
+
+`patches-repatch` deletes and reinstalls patched dependencies. Save any local
+changes in those dependencies before running it. A fresh checkout only needs
+`composer install` to apply the locked patches.
 
 ### Ongoing Project Maintenance
 

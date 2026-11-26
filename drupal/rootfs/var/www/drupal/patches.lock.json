@@ -1,0 +1,145 @@
+{
+    "_hash": "482dade740aeaa2aca6755f4bf821eb5fc8e051cb002bad8b2856fbccd848b9f",
+    "patches": {
+        "league/flysystem": [
+            {
+                "package": "league/flysystem",
+                "description": "CVE-2026-102601: reject malformed UTF-8 paths (upstream ef4a9a557d769b5d472c403125716706a0d9cc77)",
+                "url": "assets/patches/league/flysystem/reject-malformed-utf8.patch",
+                "sha256": "657c2e37401ea574056f436eda83b85580514147aa4a157e51363a8a0c3345d8",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "codementality/flysystem-stream-wrapper": [
+            {
+                "package": "codementality/flysystem-stream-wrapper",
+                "description": "Use an explicit nullable configuration type for PHP 8.4",
+                "url": "assets/patches/codementality/flysystem-stream-wrapper/explicit-nullable-configuration.patch",
+                "sha256": "deefb89655e46b6ba0ea5cfc08e3586fd5b4d0b2c3ad5e206d6185939aa1d730",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "drupal/entity_metrics": [
+            {
+                "package": "drupal/entity_metrics",
+                "description": "Allow Drush upgrade commands before the GeoIP updater is available",
+                "url": "assets/patches/drupal/entity_metrics/optional-geoip-updater.patch",
+                "sha256": "663e892504c9fe2506686b3717c07ff3557534c13fed5312405ebf3adc9fb07c",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "drupal/controlled_access_terms": [
+            {
+                "package": "drupal/controlled_access_terms",
+                "description": "Handle empty EDTF fields in RDF and OAI-PMH exports",
+                "url": "assets/patches/drupal/controlled_access_terms/empty-edtf.patch",
+                "sha256": "9e3282c84a1177d9cea0f10ee98f56ca426a21f54ef366869be957d7386650c4",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "drupal/geoip_autoupdate": [
+            {
+                "package": "drupal/geoip_autoupdate",
+                "description": "Support City databases, safe updates, and Drupal 11 settings forms",
+                "url": "assets/patches/drupal/geoip_autoupdate/city-and-drupal11.patch",
+                "sha256": "82c27b6b7296f730d8fd1fc31dbc033990227ee2242de4ee24138c2b9993d86e",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "drupal/core": [
+            {
+                "package": "drupal/core",
+                "description": "Fix PHP 8 deprecation warnings in response content-type checks",
+                "url": "assets/patches/drupal/core/stripos.patch",
+                "sha256": "ef470d87c75373e8b8abf8a6308e7e1f53d5c817631c94ab5ccf929ffde54a12",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "drupal/facets": [
+            {
+                "package": "drupal/facets",
+                "description": "Allow exposed filters to work with AJAX Facets",
+                "url": "assets/patches/drupal/facets/3168241-8.patch",
+                "sha256": "80cd438e0cccad2811cd250a1c33bce84040ca12f8ef30d79e5be0be9f65446c",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            },
+            {
+                "package": "drupal/facets",
+                "description": "Allow views attachments to reflect search parameters (still not working)",
+                "url": "assets/patches/drupal/facets/facets-attachments-3116236-16.patch",
+                "sha256": "7fc266c67ecbfcd5c748b03ea19b7dba3a156973a0737019e7357a70c5f6de72",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            },
+            {
+                "package": "drupal/facets",
+                "description": "Show label on summary",
+                "url": "assets/patches/drupal/facets/summary-label.patch",
+                "sha256": "bdad7dcb8bb217fb4b910def1af6b80721443ca693420841cc7d5cd37be37f48",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "drupal/islandora": [
+            {
+                "package": "drupal/islandora",
+                "description": "read from OCFL root",
+                "url": "assets/patches/drupal/islandora/fcrepo-ro.patch",
+                "sha256": "d6fc16d8b160ca9f6ad64e130b9222c701e7d257611653eaf6a9c152cfe409e8",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "born-digital/islandora_iiif_hocr": [
+            {
+                "package": "born-digital/islandora_iiif_hocr",
+                "description": "d11",
+                "url": "assets/patches/born-digital/islandora_iiif_hocr/d11.patch",
+                "sha256": "e61b163c700e382b50d793ae330c9357ad164c25ef38757b07f8ecfd980438e2",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ],
+        "drupal/flysystem_gcs": [
+            {
+                "package": "drupal/flysystem_gcs",
+                "description": "revert https://www.drupal.org/project/flysystem_gcs/issues/3324562",
+                "url": "assets/patches/drupal/flysystem_gcs/revert-3324562.patch",
+                "sha256": "8a416b8c67557b3b610a52a3f6e7f6325b657028bfdd59f87ac0164d1b7ee3f0",
+                "depth": 1,
+                "extra": {
+                    "provenance": "root"
+                }
+            }
+        ]
+    }
+}
