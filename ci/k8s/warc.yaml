@@ -27,7 +27,7 @@ spec:
     spec:
       containers:
         - name: scyllaridae-tn-warc
-          image: ghcr.io/lehigh-university-libraries/scyllaridae-tn-warc:main@sha256:6475f9260157fdce3e9d4ba8e0025a1421ab1b0b655603c6dc7ea2c337b89bea
+          image: ghcr.io/lehigh-university-libraries/scyllaridae-tn-warc:main@sha256:d0788a62ddce708c40756191f5f06c016c946359135e7c84f3f4b1cfae7a8931
           imagePullPolicy: IfNotPresent
           env:
             - name: "JWKS_URI"

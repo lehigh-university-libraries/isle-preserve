@@ -1,4 +1,4 @@
-FROM islandora/drupal:7.1.0@sha256:8eb45402fdfa54c1db3753d3b17ea1d2bf1db3035efcf2025e8cbfd940462a37
+FROM islandora/drupal:7.1.3@sha256:cb5407046d41ea8a27bad7ecceb3baa7bb752d34b454711e9c5964d7848895d6
 
 ARG \
     # renovate: datasource=repology depName=alpine_3_24/ffmpeg
@@ -6,7 +6,7 @@ ARG \
     # renovate: datasource=repology depName=alpine_3_24/imagemagick
     IMAGEMAGICK_VERSION=7.1.2.35-r0 \
     # renovate: datasource=repology depName=alpine_3_24/php84
-    PHP_VERSION=8.4.27-r0 \
+    PHP_VERSION=8.4.28-r0 \
     # renovate: datasource=repology depName=alpine_3_24/php84-pecl-memcache
     PHP_MEMCACHE_VERSION=8.2-r1 \
     # renovate: datasource=repology depName=alpine_3_24/php84-pecl-uploadprogress

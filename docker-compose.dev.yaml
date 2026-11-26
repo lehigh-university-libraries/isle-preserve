@@ -56,12 +56,12 @@ services:
     command: memcached -m 256 -I 5m
   fits:
     logging: *logging
-    image: islandora/fits:7.0.32@sha256:5366184924abfc55a5ac06ed2efb797f77de74257703b97e4ce1cdd076159107
+    image: islandora/fits:7.1.3@sha256:965a2c6559c907428ea6abd29a70dba5e2edc6be7854a5b47cac3e06f0f041be
     volumes:
       - ./tmp/fits:/tmp:rw
   crayfits:
     logging: *logging
-    image: islandora/crayfits:7.0.32@sha256:c20cc5235e602e406db7b86eb6927ed63c423109d6d4af208c889dd36c68c0b8
+    image: islandora/crayfits:7.1.3@sha256:397636e775bb9c07c60954c20810c4f8a7dc0a8b0ab115cafee71d4a6216a451
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -69,7 +69,7 @@ services:
       - ./certs/rootCA.pem:/app/ca.pem:r
   hls:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:da146ec88cc007f5a9058a646797c78757261b325afeb6191e2f5529528fde2e
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-hls:main@sha256:82179e5d80b1d661540e3bb9a14801de0a0b5a4203d6435ebd8e8e267cced01c
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -78,7 +78,7 @@ services:
       - source: JWT_PUBLIC_KEY
   homarus:
     logging: *logging
-    image: islandora/homarus:7.0.32@sha256:c7afa242e1f7c90ff05d5300f86c4a5ef934689e2c0194ad0c34f526bef2a360
+    image: islandora/homarus:7.1.3@sha256:b2f16b62c0a66dff84e882cc873e2086f509ebaf42b19eecfc2c515f2a856d5c
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -86,7 +86,7 @@ services:
       - ./certs/rootCA.pem:/app/ca.pem:r
   houdini:
     logging: *logging
-    image: islandora/houdini:7.0.32@sha256:dcdde8c3fa327848f6a91ea3d8e5be7d7ac85cfa0b37f246994b0922582b7a64
+    image: islandora/houdini:7.1.3@sha256:d19ab4c8c926be4c6f9a695a444c7f65361fb8b55fd38314048b808a8ab64c56
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -94,7 +94,7 @@ services:
       - ./certs/rootCA.pem:/app/ca.pem:r
   hypercube:
     logging: *logging
-    image: islandora/hypercube:7.0.32@sha256:df2e810ae13d81f7ace65429d91b2577e37b5146e15c58bc55f961fa279c952e
+    image: islandora/hypercube:7.1.3@sha256:b43a6b1c182e4922fd8d8f01f9bb84769175090bf15cbbf02e8fbac591d1fd83
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     volumes:
@@ -102,7 +102,7 @@ services:
       - ./certs/rootCA.pem:/app/ca.pem:r
   ocrpdf:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:6b649f4a5add2ab59f6d4cd55a1b951a2e09889af3c8424c011a81c1844f9f93
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-ocrpdf:main@sha256:2d62f9e88d7ca0a174be929583f73bc05cecd0c42b671800f8ce4f01345988bb
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
   scribe:
@@ -119,7 +119,7 @@ services:
       - ./certs/rootCA.pem:/app/ca.pem:r
   libreoffice:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:b94296ab099519bac2db95a7ec9a8dd9208569ab90b061e62a09756e9ac9a888
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-libreoffice:main@sha256:58ae1d7f9f8b209af22ce4d4989f43355679dfde829aa1ba51b10d6515c0c934
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -128,7 +128,7 @@ services:
       - source: JWT_PUBLIC_KEY
   coverpage:
     logging: *logging
-    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:ec8d5c3005f026a975920409b3afdbf30d8e04ebedaa7446a80d087a62ac753e
+    image: ghcr.io/lehigh-university-libraries/scyllaridae-coverpage:main@sha256:6e4439a461c18349212bb1a78fb42a190097a75f92ad9cbefc041ab8cc69de75
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
     secrets:
@@ -137,7 +137,7 @@ services:
       - source: JWT_PUBLIC_KEY
   mergepdf:
     logging: *logging
-    image: islandora/mergepdf:7.0.32@sha256:1871243d2e71c381b1f8905623e9469b07723dcd913ad518f4620d27b05819e5
+    image: islandora/mergepdf:7.1.3@sha256:c4622c706cc56ee1106ccbc5f53ba9b9d22e6b472140326a3cf67df1836ae092
     environment:
       JWKS_URI: https://${DOMAIN}/oauth/discovery/keys
       MAX_THREADS: 3
