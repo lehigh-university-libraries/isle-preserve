@@ -4,6 +4,11 @@
     'github>lehigh-university-libraries/renovate-config',
     'github>lehigh-university-libraries/renovate-config:weeklyBump.json5',
   ],
+  composer: {
+    constraints: {
+      php: '8.4.*',
+    },
+  },
   kubernetes: {
     managerFilePatterns: [
       '/ci/k8s/.+\\.yaml$/',
